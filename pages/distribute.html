@@ -1,0 +1,2846 @@
+﻿<!-- ========== DIST SCREEN 1: 유통데이터 구성·관리 ========== -->
+<div class="screen" id="screen-dist-product">
+  <div class="breadcrumb"><a href="#" onclick="navigate('dist-product')">데이터 유통·활용</a> &gt; <strong>Data Product 관리</strong></div>
+  <div class="page-title">유통데이터 구성 및 관리 (Data Product)</div>
+  <div class="filter-bar">
+    <input type="text" placeholder="Data Product 검색 (이름, 도메인, 포맷)"
+      style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+    <select>
+      <option>도메인: 전체</option>
+      <option>상수도</option>
+      <option>에너지</option>
+      <option>고객</option>
+      <option>수질</option>
+      <option>수자원</option>
+    </select>
+    <select>
+      <option>유통상태: 전체</option>
+      <option>활성</option>
+      <option>준비중</option>
+      <option>제한</option>
+    </select>
+    <button class="btn btn-primary" data-perm="write" onclick="navigate('dist-register')">➕ Data Product 등록</button>
+  </div>
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div id="ag-grid-dist-product" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
+<!-- ========== DIST SCREEN 2: Data Product 상세 ========== -->
+<div class="screen" id="screen-dist-detail">
+  <div class="breadcrumb"><a href="#" onclick="navigate('dist-product')">데이터 유통·활용</a> &gt; <a href="#" onclick="navigate('dist-product')">Data Product 관리</a> &gt; <strong>댐수위·방류량종합 상세</strong></div>
+  <div class="detail-header">
+    <div class="title-area">
+      <div style="font-size:20px; font-weight:700; color:#1a2744;">댐수위·방류량종합</div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-primary" onclick="openApiDocModal()">📄 API 문서</button>
+      <button class="btn btn-outline" data-perm="write" onclick="openStatusModal()">상태변경</button>
+    </div>
+  </div>
+  <div class="detail-info-grid">
+    <div class="detail-info-item">
+      <div class="dil">Product명</div>
+      <div class="div">댐수위·방류량종합</div>
+    </div>
+    <div class="detail-info-item">
+      <div class="dil">도메인</div>
+      <div class="div">수자원</div>
+    </div>
+    <div class="detail-info-item">
+      <div class="dil">포맷</div>
+      <div class="div">JSON</div>
+    </div>
+    <div class="detail-info-item">
+      <div class="dil">보안등급</div>
+      <div class="div" style="color:#ef6c00;">2등급 (일반)</div>
+    </div>
+    <div class="detail-info-item">
+      <div class="dil">유통상태</div>
+      <div class="div" id="distDetailStatus" style="color:#4caf50;">활성</div>
+    </div>
+    <div class="detail-info-item">
+      <div class="dil">API 유형</div>
+      <div class="div">REST / Kafka</div>
+    </div>
+    <div class="detail-info-item">
+      <div class="dil">소스데이터</div>
+      <div class="div">TB_WATER_LEVEL, TB_FLOW_RATE</div>
+    </div>
+    <div class="detail-info-item">
+      <div class="dil">갱신주기</div>
+      <div class="div">실시간 (CDC)</div>
+    </div>
+    <div class="detail-info-item">
+      <div class="dil">일간호출수</div>
+      <div class="div" style="color:#1967d2;">18,700건</div>
+    </div>
+    <div class="detail-info-item">
+      <div class="dil">담당자</div>
+      <div class="div">박수원 (수자원관리팀)</div>
+    </div>
+    <div class="detail-info-item">
+      <div class="dil">등록일</div>
+      <div class="div">2025-08-15</div>
+    </div>
+    <div class="detail-info-item">
+      <div class="dil">최종수정</div>
+      <div class="div">2025-11-10</div>
+    </div>
+  </div>
+  <!-- API 엔드포인트 -->
+  <div class="card">
+    <div class="card-title">🔌 API 엔드포인트</div>
+    <div class="api-endpoint">
+      <span class="method">GET</span> <span class="url">/api/v1/dam-water-level</span><br>
+      <span class="header">Authorization: Bearer {API_KEY}</span>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>파라미터</th>
+          <th>타입</th>
+          <th>설명</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>dam_id</strong></td>
+          <td>string</td>
+          <td>댐 식별코드 (필수)</td>
+        </tr>
+        <tr>
+          <td>start_dt</td>
+          <td>datetime</td>
+          <td>조회 시작일시</td>
+        </tr>
+        <tr>
+          <td>end_dt</td>
+          <td>datetime</td>
+          <td>조회 종료일시</td>
+        </tr>
+        <tr>
+          <td>interval</td>
+          <td>enum</td>
+          <td>1m / 5m / 1h / 1d</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="display:flex; gap:8px; margin-top:12px;">
+      <span class="api-stat good">✅ 200 OK</span>
+      <span class="api-stat good">Avg Response: 45ms</span>
+      <span class="api-stat good">99.9% Uptime</span>
+    </div>
+  </div>
+  <!-- 출력 스키마 -->
+  <div class="card">
+    <div class="card-title">📊 출력 스키마 (Response Fields)</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>필드명</th>
+          <th>타입</th>
+          <th>설명</th>
+          <th>비식별화</th>
+          <th>표준용어</th>
+          <th>예시값</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>dam_id</td>
+          <td>string</td>
+          <td>댐 식별코드</td>
+          <td>-</td>
+          <td>댐코드</td>
+          <td>DAM_001</td>
+        </tr>
+        <tr>
+          <td>dam_name</td>
+          <td>string</td>
+          <td>댐 명칭</td>
+          <td>-</td>
+          <td>댐명</td>
+          <td>소양강댐</td>
+        </tr>
+        <tr>
+          <td>water_level</td>
+          <td>float</td>
+          <td>현재수위 (m)</td>
+          <td>-</td>
+          <td>수위</td>
+          <td>175.23</td>
+        </tr>
+        <tr>
+          <td>flow_rate</td>
+          <td>float</td>
+          <td>유입량 (㎥/s)</td>
+          <td>-</td>
+          <td>유입량</td>
+          <td>45.8</td>
+        </tr>
+        <tr>
+          <td>discharge</td>
+          <td>float</td>
+          <td>방류량 (㎥/s)</td>
+          <td>-</td>
+          <td>방류량</td>
+          <td>32.1</td>
+        </tr>
+        <tr>
+          <td>measured_at</td>
+          <td>datetime</td>
+          <td>측정일시</td>
+          <td>-</td>
+          <td>관측일시</td>
+          <td>2025-11-12T11:42</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 상태변경 모달 -->
+<div class="modal-overlay" id="statusModal" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">📋 유통상태 변경</div>
+      <span class="modal-close" onclick="closeStatusModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-info-row">
+        <span class="modal-info-label">Product명</span>
+        <span class="modal-info-value">댐수위·방류량종합</span>
+      </div>
+      <div class="modal-info-row">
+        <span class="modal-info-label">도메인</span>
+        <span class="modal-info-value">수자원</span>
+      </div>
+      <div class="modal-info-row">
+        <span class="modal-info-label">현재 상태</span>
+        <span class="modal-info-value"><span class="badge badge-success">활성</span></span>
+      </div>
+      <hr style="border:none; border-top:1px solid #eee; margin:16px 0;">
+      <div class="form-group">
+        <label style="display:block; font-size:13px; font-weight:600; color:#333; margin-bottom:6px;">변경할 상태 <span
+            style="color:#f44336;">*</span></label>
+        <div class="status-select-group">
+          <label class="status-radio">
+            <input type="radio" name="newStatus" value="active" checked>
+            <span class="status-dot dot-active"></span>
+            <span class="status-radio-label active-label">활성</span>
+          </label>
+          <label class="status-radio">
+            <input type="radio" name="newStatus" value="paused">
+            <span class="status-dot dot-paused"></span>
+            <span class="status-radio-label paused-label">일시중지</span>
+          </label>
+          <label class="status-radio">
+            <input type="radio" name="newStatus" value="restricted">
+            <span class="status-dot dot-restricted"></span>
+            <span class="status-radio-label restricted-label">제한</span>
+          </label>
+          <label class="status-radio">
+            <input type="radio" name="newStatus" value="deprecated">
+            <span class="status-dot dot-deprecated"></span>
+            <span class="status-radio-label deprecated-label">폐기</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:14px;">
+        <label style="display:block; font-size:13px; font-weight:600; color:#333; margin-bottom:6px;">변경 사유 <span
+            style="color:#f44336;">*</span></label>
+        <textarea
+          style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; min-height:70px; resize:vertical; box-sizing:border-box;"
+          placeholder="상태 변경 사유를 입력하세요 (예: 정기 데이터 정합성 점검으로 인한 일시 중지)">정기 데이터 정합성 점검 완료 후 활성 상태 유지</textarea>
+      </div>
+      <div class="form-group" style="margin-top:14px;">
+        <label style="display:block; font-size:13px; font-weight:600; color:#333; margin-bottom:6px;">알림 대상</label>
+        <div style="display:flex; gap:16px; font-size:12px; white-space:nowrap;">
+          <label style="display:flex; align-items:center; gap:4px;"><input type="checkbox" checked> 구독자 전체 (18명)</label>
+          <label style="display:flex; align-items:center; gap:4px;"><input type="checkbox" checked> 담당자 (박수원)</label>
+          <label style="display:flex; align-items:center; gap:4px;"><input type="checkbox"> 관리자</label>
+        </div>
+      </div>
+      <div style="background:#f8f9fa; border-radius:8px; padding:12px; margin-top:14px; font-size:11px; color:#666;">
+        <div style="font-weight:600; color:#333; margin-bottom:4px;">📌 상태 변경 이력 (최근)</div>
+        <div style="display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px solid #eee;">
+          <span>2025-11-10 14:30</span><span>준비중 → <strong style="color:#4caf50;">활성</strong></span><span>박수원</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px solid #eee;">
+          <span>2025-10-05 09:00</span><span>활성 → <strong style="color:#ff9800;">일시중지</strong></span><span>김데이터</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:3px 0;">
+          <span>2025-08-15 10:00</span><span>등록 → <strong style="color:#ff9800;">준비중</strong></span><span>박수원</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeStatusModal()">취소</button>
+      <button class="btn btn-primary" data-perm="write" onclick="applyStatusChange()">변경 적용</button>
+    </div>
+  </div>
+</div>
+
+<!-- API 문서 모달 -->
+<div class="modal-overlay" id="apiDocModal" style="display:none;">
+  <div class="modal-card" style="width:780px; max-height:88vh;">
+    <div class="modal-header" style="background:#2d3748; border-radius:14px 14px 0 0; border-bottom:none;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span
+          style="background:#4caf50; color:#fff; font-size:11px; font-weight:700; padding:3px 10px; border-radius:4px;">OAS
+          3.0</span>
+        <span style="color:#fff; font-size:16px; font-weight:700;">댐수위·방류량종합 API</span>
+        <span style="color:#8b95a5; font-size:12px;">v1.2.0</span>
+      </div>
+      <span class="modal-close" onclick="closeApiDocModal()"
+        style="background:rgba(255,255,255,0.1); color:#ccc;">✕</span>
+    </div>
+    <div class="modal-body" style="padding:0; overflow-y:auto;">
+      <!-- Base URL -->
+      <div style="background:#f7fafc; padding:14px 24px; border-bottom:1px solid #e2e8f0; font-size:13px;">
+        <span style="color:#888;">Base URL</span>
+        <code
+          style="margin-left:8px; background:#edf2f7; padding:4px 10px; border-radius:4px; font-size:12px; color:#2d3748;">https://api.datahub.kwater.or.kr/v1</code>
+      </div>
+
+      <!-- GET 엔드포인트 -->
+      <div class="api-doc-endpoint">
+        <div class="api-doc-method-row" onclick="this.parentElement.classList.toggle('open')">
+          <span class="api-method-badge get">GET</span>
+          <span class="api-doc-path">/dam-water-level</span>
+          <span class="api-doc-summary">댐 수위·방류량 실시간 조회</span>
+          <span class="api-doc-toggle">▼</span>
+        </div>
+        <div class="api-doc-detail">
+          <div class="api-doc-section-title">Parameters</div>
+          <table class="api-doc-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>dam_id</code></td>
+                <td>string</td>
+                <td><span style="color:#e53e3e; font-weight:600;">Yes</span></td>
+                <td>댐 식별코드 (예: DAM_001)</td>
+              </tr>
+              <tr>
+                <td><code>start_dt</code></td>
+                <td>datetime</td>
+                <td>No</td>
+                <td>조회 시작일시 (ISO 8601)</td>
+              </tr>
+              <tr>
+                <td><code>end_dt</code></td>
+                <td>datetime</td>
+                <td>No</td>
+                <td>조회 종료일시 (ISO 8601)</td>
+              </tr>
+              <tr>
+                <td><code>interval</code></td>
+                <td>enum</td>
+                <td>No</td>
+                <td>집계간격: 1m, 5m, 1h, 1d (기본: 1h)</td>
+              </tr>
+              <tr>
+                <td><code>format</code></td>
+                <td>string</td>
+                <td>No</td>
+                <td>응답형식: json, csv (기본: json)</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="api-doc-section-title">Headers</div>
+          <table class="api-doc-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>Authorization</code></td>
+                <td>Bearer {API_KEY}</td>
+                <td>발급받은 API 키</td>
+              </tr>
+              <tr>
+                <td><code>Content-Type</code></td>
+                <td>application/json</td>
+                <td>요청 콘텐츠 타입</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="api-doc-section-title">Response Schema <span class="api-method-badge get"
+              style="font-size:10px; padding:1px 6px;">200 OK</span></div>
+          <pre class="api-doc-code">{
+  "status": "success",
+  "count": 24,
+  "data": [
+    {
+      "dam_id": "DAM_001",
+      "dam_name": "소양강댐",
+      "water_level": 175.23,
+      "flow_rate": 45.8,
+      "discharge": 32.1,
+      "storage_rate": 78.5,
+      "measured_at": "2025-11-12T11:42:00+09:00"
+    }
+  ],
+  "meta": {
+    "unit": { "water_level": "m", "flow_rate": "㎥/s" },
+    "next_cursor": "eyJwYWdlIjoyfQ=="
+  }
+}</pre>
+
+          <div class="api-doc-section-title">Error Codes</div>
+          <table class="api-doc-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Message</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="api-method-badge"
+                    style="background:#ecc94b; color:#744210; font-size:10px; padding:1px 6px;">400</span></td>
+                <td>Bad Request</td>
+                <td>필수 파라미터 누락 또는 형식 오류</td>
+              </tr>
+              <tr>
+                <td><span class="api-method-badge"
+                    style="background:#fc8181; color:#742a2a; font-size:10px; padding:1px 6px;">401</span></td>
+                <td>Unauthorized</td>
+                <td>API 키 미전송 또는 만료</td>
+              </tr>
+              <tr>
+                <td><span class="api-method-badge"
+                    style="background:#fc8181; color:#742a2a; font-size:10px; padding:1px 6px;">429</span></td>
+                <td>Too Many Requests</td>
+                <td>Rate limit 초과 (1,000회/분)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- POST 엔드포인트 -->
+      <div class="api-doc-endpoint">
+        <div class="api-doc-method-row" onclick="this.parentElement.classList.toggle('open')">
+          <span class="api-method-badge post">POST</span>
+          <span class="api-doc-path">/dam-water-level/subscribe</span>
+          <span class="api-doc-summary">실시간 데이터 구독 등록</span>
+          <span class="api-doc-toggle">▼</span>
+        </div>
+        <div class="api-doc-detail">
+          <div class="api-doc-section-title">Request Body</div>
+          <pre class="api-doc-code">{
+  "dam_ids": ["DAM_001", "DAM_003"],
+  "callback_url": "https://your-service.com/webhook",
+  "interval": "5m",
+  "events": ["level_change", "alert"]
+}</pre>
+          <div class="api-doc-section-title">Response <span class="api-method-badge"
+              style="background:#48bb78; color:#fff; font-size:10px; padding:1px 6px;">201 Created</span></div>
+          <pre class="api-doc-code">{
+  "subscription_id": "SUB_20251112_001",
+  "status": "active",
+  "created_at": "2025-11-12T12:00:00+09:00"
+}</pre>
+        </div>
+      </div>
+
+      <!-- DELETE 엔드포인트 -->
+      <div class="api-doc-endpoint">
+        <div class="api-doc-method-row" onclick="this.parentElement.classList.toggle('open')">
+          <span class="api-method-badge delete">DELETE</span>
+          <span class="api-doc-path">/dam-water-level/subscribe/{id}</span>
+          <span class="api-doc-summary">구독 해제</span>
+          <span class="api-doc-toggle">▼</span>
+        </div>
+        <div class="api-doc-detail">
+          <div class="api-doc-section-title">Response <span class="api-method-badge"
+              style="background:#48bb78; color:#fff; font-size:10px; padding:1px 6px;">204 No Content</span></div>
+          <p style="font-size:13px; color:#666; margin:0;">성공 시 빈 응답을 반환합니다.</p>
+        </div>
+      </div>
+
+      <!-- Usage Info -->
+      <div style="padding:16px 24px; background:#f7fafc; border-top:1px solid #e2e8f0;">
+        <div style="display:flex; gap:24px; font-size:12px; color:#666;">
+          <div><span style="font-weight:600; color:#333;">Rate Limit</span> 1,000 req/min</div>
+          <div><span style="font-weight:600; color:#333;">인증</span> Bearer Token</div>
+          <div><span style="font-weight:600; color:#333;">프로토콜</span> HTTPS / WSS</div>
+          <div><span style="font-weight:600; color:#333;">SLA</span> 99.9% Uptime</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeApiDocModal()">닫기</button>
+      <button class="btn btn-primary" onclick="issueApiKey()">📋 API Key 발급</button>
+    </div>
+  </div>
+</div>
+
+<!-- API Key 발급 모달 -->
+<div class="modal-overlay" id="apiKeyModal" style="display:none;">
+  <div class="modal-card" style="width:560px;">
+    <div class="modal-header" style="background:#1a7f37; border-radius:14px 14px 0 0; border-bottom:none;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:20px;">🔑</span>
+        <span style="color:#fff; font-size:16px; font-weight:700;">API Key 발급 완료</span>
+      </div>
+      <span class="modal-close" onclick="closeApiKeyModal()"
+        style="background:rgba(255,255,255,0.15); color:#ccc;">✕</span>
+    </div>
+    <div class="modal-body" style="padding:20px 24px;">
+      <div
+        style="background:#f0fff4; border:1px solid #c6f6d5; border-radius:8px; padding:14px 16px; margin-bottom:16px; display:flex; align-items:center; gap:10px;">
+        <span style="font-size:18px;">✅</span>
+        <div style="font-size:13px; color:#22543d;">API Key가 성공적으로 발급되었습니다. <strong>이 키는 한 번만 표시</strong>되므로 반드시 안전한 곳에
+          복사해 두세요.</div>
+      </div>
+
+      <div class="apikey-field-group">
+        <label class="apikey-label">API Key</label>
+        <div class="apikey-value-row">
+          <code class="apikey-code" id="apiKeyValue">dhk_live_a7Bf9xQ2mR4sK8wLpN3vT6yH1jE5cU0g</code>
+          <button class="btn btn-outline apikey-copy-btn" onclick="copyApiKey()">📋 복사</button>
+        </div>
+      </div>
+
+      <div class="apikey-field-group">
+        <label class="apikey-label">Secret</label>
+        <div class="apikey-value-row">
+          <code class="apikey-code" id="apiSecretValue">sk_prod_Xm9pR2wF4vQn7bLk0sHjT3yA6cN8eU1g5dZ</code>
+          <button class="btn btn-outline apikey-copy-btn" onclick="copyApiSecret()">📋 복사</button>
+        </div>
+      </div>
+
+      <table class="api-doc-table" style="margin-top:16px;">
+        <tbody>
+          <tr>
+            <td style="font-weight:600; color:#555; width:120px;">대상 API</td>
+            <td>댐수위·방류량종합 API v1.2.0</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">발급일시</td>
+            <td id="apiKeyIssuedAt">2026-02-25 14:32:18</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">만료일</td>
+            <td>2027-02-25 (1년)</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">Rate Limit</td>
+            <td>1,000 req/min</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">권한</td>
+            <td><span class="badge badge-success">READ</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">발급자</td>
+            <td>박수원 (수자원관리팀)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div
+        style="background:#fffbeb; border:1px solid #fefcbf; border-radius:8px; padding:12px 14px; margin-top:16px; font-size:12px; color:#744210; display:flex; align-items:flex-start; gap:8px;">
+        <span style="font-size:14px;">⚠️</span>
+        <div>
+          <div style="font-weight:600; margin-bottom:2px;">보안 주의사항</div>
+          • API Key는 절대 클라이언트 코드에 노출하지 마세요.<br>
+          • Git 등 버전관리 시스템에 커밋하지 마세요.<br>
+          • 유출이 의심되면 즉시 키를 재발급하세요.
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeApiKeyModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== DIST SCREEN 1-1: Data Product 등록 ========== -->
+<div class="screen" id="screen-dist-register">
+  <div class="breadcrumb"><a href="#" onclick="navigate('dist-product')">데이터 유통·활용</a> &gt; <a href="#" onclick="navigate('dist-product')">Data Product 관리</a> &gt; <strong>Data Product 등록</strong></div>
+  <div class="page-title">Data Product 등록</div>
+
+  <!-- 기본 정보 -->
+  <div class="card">
+    <div class="card-title">📋 기본 정보</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Product명 <span class="required">*</span></label>
+        <input type="text" class="form-control" value="하수도 관로 유량 모니터링">
+      </div>
+      <div class="form-group">
+        <label class="form-label">도메인 <span class="required">*</span></label>
+        <select class="form-control">
+          <option>하수도</option>
+          <option>상수도</option>
+          <option>에너지</option>
+          <option>수자원</option>
+          <option>수질</option>
+          <option>고객</option>
+          <option>계측</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">데이터 포맷 <span class="required">*</span></label>
+        <select class="form-control">
+          <option>JSON</option>
+          <option>CSV</option>
+          <option>JSON/CSV</option>
+          <option>Parquet</option>
+          <option>엑셀</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">보안등급 <span class="required">*</span></label>
+        <select class="form-control">
+          <option>3등급 (공개)</option>
+          <option selected>2등급 (일반)</option>
+          <option>1등급 (기밀)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">갱신주기 <span class="required">*</span></label>
+        <select class="form-control">
+          <option selected>실시간 (CDC)</option>
+          <option>5분 주기</option>
+          <option>30분 주기</option>
+          <option>1시간 주기</option>
+          <option>일배치</option>
+          <option>수동</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">담당자 <span class="required">*</span></label>
+        <input type="text" class="form-control" value="김하수 (하수도관리팀)">
+      </div>
+      <div class="form-group full-width">
+        <label class="form-label">설명</label>
+        <textarea class="form-control" rows="3"
+          style="resize:vertical;">전국 하수도 관로에 설치된 유량센서의 실시간 모니터링 데이터를 제공합니다. 5분 단위 유량(㎥/s), 수위(m), 유속(m/s) 데이터를 포함하며, 관거 막힘 예측 및 침입수 분석에 활용됩니다.</textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- 소스 데이터 설정 -->
+  <div class="card">
+    <div class="card-title">🗄️ 소스 데이터 설정</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">소스 시스템</label>
+        <select class="form-control">
+          <option selected>하수도 TM/TC 시스템</option>
+          <option>K-water IoT 플랫폼</option>
+          <option>환경부 연계</option>
+          <option>기상청 API</option>
+          <option>직접 입력</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">연결 방식</label>
+        <select class="form-control">
+          <option selected>Kafka (실시간)</option>
+          <option>REST API</option>
+          <option>JDBC</option>
+          <option>파일 업로드</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:12px;">
+      <label class="form-label">소스 테이블/토픽</label>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>순번</th>
+            <th>소스 유형</th>
+            <th>테이블/토픽명</th>
+            <th>스키마</th>
+            <th>비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><span class="ds-tag" style="background:#fce4ec; color:#c62828;">Kafka</span></td>
+            <td style="font-family:monospace; font-size:12px;">sewer.flow.realtime</td>
+            <td>AVRO</td>
+            <td>실시간 유량 데이터</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">DB</span></td>
+            <td style="font-family:monospace; font-size:12px;">TB_SEWER_PIPE_MASTER</td>
+            <td>PostgreSQL</td>
+            <td>관로 기준정보</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">DB</span></td>
+            <td style="font-family:monospace; font-size:12px;">TB_SEWER_SENSOR_INFO</td>
+            <td>PostgreSQL</td>
+            <td>센서 위치/상태</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- API 유통 설정 -->
+  <div class="card">
+    <div class="card-title">🔌 API 유통 설정</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">API 유형 <span class="required">*</span></label>
+        <select class="form-control">
+          <option selected>REST API</option>
+          <option>GraphQL</option>
+          <option>Kafka Topic</option>
+          <option>gRPC</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">엔드포인트 Path</label>
+        <input type="text" class="form-control" value="/api/v1/sewer-flow" style="font-family:monospace;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">인증방식</label>
+        <select class="form-control">
+          <option selected>API Key</option>
+          <option>OAuth 2.0</option>
+          <option>JWT</option>
+          <option>인증 없음 (공개)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rate Limit</label>
+        <input type="text" class="form-control" value="1,000 req/min">
+      </div>
+    </div>
+    <div style="margin-top:12px;">
+      <label class="form-label">응답 필드 구성</label>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>필드명</th>
+            <th>타입</th>
+            <th>필수</th>
+            <th>설명</th>
+            <th>예시값</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-family:monospace;">pipe_id</td>
+            <td>string</td>
+            <td><span style="color:#4caf50;">●</span></td>
+            <td>관로 식별코드</td>
+            <td style="color:#888;">SP-GJ-001</td>
+          </tr>
+          <tr>
+            <td style="font-family:monospace;">measure_dt</td>
+            <td>datetime</td>
+            <td><span style="color:#4caf50;">●</span></td>
+            <td>측정 일시</td>
+            <td style="color:#888;">2026-02-25T10:30:00</td>
+          </tr>
+          <tr>
+            <td style="font-family:monospace;">flow_rate</td>
+            <td>float</td>
+            <td><span style="color:#4caf50;">●</span></td>
+            <td>유량 (㎥/s)</td>
+            <td style="color:#888;">1.247</td>
+          </tr>
+          <tr>
+            <td style="font-family:monospace;">water_level</td>
+            <td>float</td>
+            <td><span style="color:#ff9800;">○</span></td>
+            <td>수위 (m)</td>
+            <td style="color:#888;">0.85</td>
+          </tr>
+          <tr>
+            <td style="font-family:monospace;">velocity</td>
+            <td>float</td>
+            <td><span style="color:#ff9800;">○</span></td>
+            <td>유속 (m/s)</td>
+            <td style="color:#888;">1.12</td>
+          </tr>
+          <tr>
+            <td style="font-family:monospace;">status</td>
+            <td>enum</td>
+            <td><span style="color:#4caf50;">●</span></td>
+            <td>측정 상태</td>
+            <td style="color:#888;">NORMAL</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 품질 · 접근 정책 -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">✅ 품질 검증 규칙</div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">NULL 허용 비율</label>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <input type="range" min="0" max="100" value="5" style="flex:1;">
+          <span style="font-size:13px; font-weight:600; color:#1967d2;">5%</span>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">이상치 탐지</label>
+        <select class="form-control">
+          <option selected>Z-Score (±3σ)</option>
+          <option>IQR 방식</option>
+          <option>사용 안 함</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">유효 범위 (flow_rate)</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" class="form-control" value="0.0" style="width:80px; text-align:center;">
+          <span style="line-height:36px;">~</span>
+          <input type="text" class="form-control" value="50.0" style="width:80px; text-align:center;">
+          <span style="line-height:36px; font-size:12px; color:#888;">㎥/s</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">데이터 지연 임계</label>
+        <input type="text" class="form-control" value="10분 이상 미수신 시 알림">
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🔐 접근 정책 설정</div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">공개 범위</label>
+        <select class="form-control">
+          <option>전체 공개</option>
+          <option selected>부서 제한</option>
+          <option>승인 후 공개</option>
+          <option>내부 전용</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">허용 부서</label>
+        <input type="text" class="form-control" value="하수도관리팀, 시설관리팀, 환경안전팀">
+      </div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">비식별 처리</label>
+        <select class="form-control">
+          <option>적용 안 함</option>
+          <option selected>부분 마스킹 (위치 좌표)</option>
+          <option>전체 가명처리</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">로그 정책</label>
+        <div style="display:flex; gap:12px; font-size:12px; margin-top:4px;">
+          <label style="display:flex; align-items:center; gap:4px;"><input type="checkbox" checked> 조회 이력 기록</label>
+          <label style="display:flex; align-items:center; gap:4px;"><input type="checkbox" checked> 다운로드 이력 기록</label>
+          <label style="display:flex; align-items:center; gap:4px;"><input type="checkbox"> 통계 집계</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 버튼 -->
+  <div style="display:flex; justify-content:space-between; margin-top:20px;">
+    <button class="btn btn-outline" onclick="navigate('dist-product')">← 취소</button>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-outline" data-perm="write">임시저장</button>
+      <button class="btn btn-primary" data-perm="write" onclick="navigate('dist-product')">등록 완료</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== DIST SCREEN 3: 비식별화·가명처리 ========== -->
+<div class="screen" id="screen-dist-deidentify">
+  <div class="breadcrumb"><a href="#" onclick="navigate('dist-product')">데이터 유통·활용</a> &gt; <strong>비식별화·가명처리</strong></div>
+
+  <!-- Row 1: 헤더 + KPI 6개 -->
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+    <div>
+      <div class="page-title" style="margin-bottom:2px;">🔒 비식별화 및 가명처리 관리</div>
+      <div style="font-size:12px; color:var(--text-secondary);">개인정보·민감데이터 비식별 정책을 관리하고 처리 현황을 모니터링합니다</div>
+    </div>
+    <div style="display:flex; gap:6px; flex-shrink:0;">
+      <button class="btn btn-primary btn-sm" data-perm="write">➕ 정책등록</button>
+      <button class="btn btn-outline btn-sm">📄 보고서</button>
+      <button class="btn btn-outline btn-sm" data-perm="write">🔍 민감정보 스캔</button>
+    </div>
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-bottom:14px;">
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #1677ff;">
+      <div style="font-size:11px; color:var(--text-secondary);">비식별 정책</div>
+      <div style="font-size:22px; font-weight:800; color:#1677ff; margin:2px 0;">15<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:var(--text-secondary);">5개 기법 적용</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #f5222d;">
+      <div style="font-size:11px; color:var(--text-secondary);">민감정보 탐지</div>
+      <div style="font-size:22px; font-weight:800; color:#f5222d; margin:2px 0;">8<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:#f5222d;">신규 2건 탐지</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #52c41a;">
+      <div style="font-size:11px; color:var(--text-secondary);">처리완료</div>
+      <div style="font-size:22px; font-weight:800; color:#52c41a; margin:2px 0;">12<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:var(--text-secondary);">80.0% 완료율</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #fa8c16;">
+      <div style="font-size:11px; color:var(--text-secondary);">검토대기</div>
+      <div style="font-size:22px; font-weight:800; color:#fa8c16; margin:2px 0;">3<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:#fa8c16;">금일 1건 접수</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #722ed1;">
+      <div style="font-size:11px; color:var(--text-secondary);">적용률</div>
+      <div style="font-size:22px; font-weight:800; color:#722ed1; margin:2px 0;">95.6<span style="font-size:12px; font-weight:400;">%</span></div>
+      <div style="font-size:10px; color:#52c41a;">▲ 3.2%p</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #13c2c2;">
+      <div style="font-size:11px; color:var(--text-secondary);">최종 처리</div>
+      <div style="font-size:22px; font-weight:800; color:#13c2c2; margin:2px 0;">02-28</div>
+      <div style="font-size:10px; color:var(--text-secondary);">금일 4건 처리</div>
+    </div>
+  </div>
+
+  <!-- Row 2: AG Grid -->
+  <div class="card" style="padding:0; margin-bottom:14px;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div class="card-title">🔒 비식별화 정책 목록</div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option>전체 등급</option><option>1등급</option><option>2등급</option><option>전체등급</option>
+        </select>
+        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option>전체 기법</option><option>마스킹</option><option>해싱</option><option>일반화</option><option>가명치환</option><option>암호화</option>
+        </select>
+        <input type="text" placeholder="정책 검색..." style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; width:130px;">
+      </div>
+    </div>
+    <div id="ag-grid-dist-deidentify" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+
+  <!-- Row 3: 처리기법 분포 + 등급별 민감정보 분포 -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">📊 처리기법 분포</div></div>
+      <div class="card-body" style="padding:14px; display:flex; align-items:center; gap:20px;">
+        <svg viewBox="0 0 100 100" style="width:110px; height:110px;">
+          <circle cx="50" cy="50" r="38" fill="none" stroke="#1677ff" stroke-width="12" stroke-dasharray="60 179" stroke-dashoffset="-60"/>
+          <circle cx="50" cy="50" r="38" fill="none" stroke="#722ed1" stroke-width="12" stroke-dasharray="48 191" stroke-dashoffset="0"/>
+          <circle cx="50" cy="50" r="38" fill="none" stroke="#fa8c16" stroke-width="12" stroke-dasharray="36 203" stroke-dashoffset="48"/>
+          <circle cx="50" cy="50" r="38" fill="none" stroke="#52c41a" stroke-width="12" stroke-dasharray="48 191" stroke-dashoffset="84"/>
+          <circle cx="50" cy="50" r="38" fill="none" stroke="#f5222d" stroke-width="12" stroke-dasharray="36 203" stroke-dashoffset="132"/>
+        </svg>
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:11px;">
+          <div style="display:flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:2px; background:#1677ff;"></span>마스킹 <strong>5건</strong></div>
+          <div style="display:flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:2px; background:#722ed1;"></span>SHA-256 해싱 <strong>4건</strong></div>
+          <div style="display:flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:2px; background:#fa8c16;"></span>일반화 <strong>3건</strong></div>
+          <div style="display:flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:2px; background:#52c41a;"></span>가명치환 <strong>2건</strong></div>
+          <div style="display:flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:2px; background:#f5222d;"></span>AES-256 암호화 <strong>1건</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">📈 등급별 민감정보 분포</div></div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div><div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:3px;"><span style="font-weight:600;">1등급 (비밀)</span><span style="color:#c62828; font-weight:700;">47건 (2.9%)</span></div><div style="background:#f0f0f0; border-radius:4px; height:14px; overflow:hidden;"><div style="background:#f5222d; height:100%; width:2.9%; min-width:6px; border-radius:4px;"></div></div></div>
+          <div><div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:3px;"><span style="font-weight:600;">2등급 (일반)</span><span style="color:#ef6c00; font-weight:700;">328건 (20.2%)</span></div><div style="background:#f0f0f0; border-radius:4px; height:14px; overflow:hidden;"><div style="background:#fa8c16; height:100%; width:20.2%; border-radius:4px;"></div></div></div>
+          <div><div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:3px;"><span style="font-weight:600;">3등급 (공개)</span><span style="color:#2e7d32; font-weight:700;">1,245건 (76.9%)</span></div><div style="background:#f0f0f0; border-radius:4px; height:14px; overflow:hidden;"><div style="background:#52c41a; height:100%; width:76.9%; border-radius:4px;"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4: 비식별 규칙 요약 + 최근 처리 이력 -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">📋 비식별화 규칙 요약</div></div>
+      <div class="card-body" style="padding:10px 14px;">
+        <div style="display:flex; flex-direction:column; gap:5px;">
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #f5222d; background:#fff1f0; border-radius:0 6px 6px 0;"><span style="font-size:12px;">🔐</span><div style="flex:1; font-size:12px;">1등급 개인정보는 반드시 AES-256 또는 SHA-256 적용</div><span style="background:#ffebee;color:#c62828;padding:1px 6px;border-radius:3px;font-size:10px;">필수</span></div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #fa8c16; background:#fff7e6; border-radius:0 6px 6px 0;"><span style="font-size:12px;">📧</span><div style="flex:1; font-size:12px;">이메일·전화번호는 가명치환 또는 마스킹 처리</div><span style="background:#fff3e0;color:#ef6c00;padding:1px 6px;border-radius:3px;font-size:10px;">권장</span></div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #1677ff; background:#e6f7ff; border-radius:0 6px 6px 0;"><span style="font-size:12px;">📍</span><div style="flex:1; font-size:12px;">위치정보는 지역단위 일반화 (시/군/구 수준)</div><span style="background:#e8f0fe;color:#1967d2;padding:1px 6px;border-radius:3px;font-size:10px;">필수</span></div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #52c41a; background:#f6ffed; border-radius:0 6px 6px 0;"><span style="font-size:12px;">🤖</span><div style="flex:1; font-size:12px;">AI 학습 데이터는 k-익명성(k≥5) 적용 필수</div><span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:3px;font-size:10px;">필수</span></div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #722ed1; background:#f9f0ff; border-radius:0 6px 6px 0;"><span style="font-size:12px;">📊</span><div style="flex:1; font-size:12px;">비식별 처리 후 재식별 가능성 평가 필수</div><span style="background:#f9f0ff;color:#722ed1;padding:1px 6px;border-radius:3px;font-size:10px;">권장</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;"><div class="card-title">🕐 최근 처리 이력</div><span style="font-size:10px; color:var(--text-secondary);">최근 24시간</span></div>
+      <div class="card-body" style="padding:10px 14px;">
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #52c41a; background:#f6ffed; border-radius:0 6px 6px 0;"><div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">14:30</div><div><div style="font-size:12px; font-weight:600;">고객개인정보 마스킹 완료</div><div style="font-size:11px; color:var(--text-secondary);">원격검침 사용량 · 12,450건 처리</div></div></div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #722ed1; background:#f9f0ff; border-radius:0 6px 6px 0;"><div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">11:20</div><div><div style="font-size:12px; font-weight:600;">주민번호 SHA-256 해싱 적용</div><div style="font-size:11px; color:var(--text-secondary);">고객정보 테이블 · 8,200건 변환</div></div></div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #1677ff; background:#e6f7ff; border-radius:0 6px 6px 0;"><div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">09:45</div><div><div style="font-size:12px; font-weight:600;">IoT 위치정보 일반화 처리</div><div style="font-size:11px; color:var(--text-secondary);">GPS 좌표 → 시/군/구 · 45,000건</div></div></div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #fa8c16; background:#fff7e6; border-radius:0 6px 6px 0;"><div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">어제</div><div><div style="font-size:12px; font-weight:600;">금융정보 암호화 검토 요청</div><div style="font-size:11px; color:var(--text-secondary);">요금정보 AES-256 · 검토대기 중</div></div></div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #f5222d; background:#fff1f0; border-radius:0 6px 6px 0;"><div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">어제</div><div><div style="font-size:12px; font-weight:600;">민감정보 신규 탐지 알림</div><div style="font-size:11px; color:var(--text-secondary);">고객 이메일 필드 2건 · 가명치환 필요</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 5: 월별 처리 추이 -->
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-head"><div class="card-title">📈 월별 비식별 처리 추이</div><span style="font-size:10px; color:var(--text-secondary);">2025.09 ~ 2026.02</span></div>
+    <div class="card-body" style="padding:14px;">
+      <svg viewBox="0 0 480 130" style="width:100%; font-family:Arial,sans-serif;">
+        <line x1="40" y1="105" x2="460" y2="105" stroke="#e8e8e8" stroke-width="1"/>
+        <line x1="40" y1="70" x2="460" y2="70" stroke="#f5f5f5" stroke-width="0.5"/>
+        <line x1="40" y1="35" x2="460" y2="35" stroke="#f5f5f5" stroke-width="0.5"/>
+        <rect x="55" y="70" width="50" height="35" rx="3" fill="#1677ff" opacity="0.6"/><text x="80" y="66" text-anchor="middle" font-size="9" fill="#1677ff" font-weight="700">8</text>
+        <rect x="125" y="56" width="50" height="49" rx="3" fill="#1677ff" opacity="0.7"/><text x="150" y="52" text-anchor="middle" font-size="9" fill="#1677ff" font-weight="700">11</text>
+        <rect x="195" y="49" width="50" height="56" rx="3" fill="#1677ff" opacity="0.7"/><text x="220" y="45" text-anchor="middle" font-size="9" fill="#1677ff" font-weight="700">13</text>
+        <rect x="265" y="63" width="50" height="42" rx="3" fill="#1677ff" opacity="0.7"/><text x="290" y="59" text-anchor="middle" font-size="9" fill="#1677ff" font-weight="700">10</text>
+        <rect x="335" y="42" width="50" height="63" rx="3" fill="#1677ff" opacity="0.8"/><text x="360" y="38" text-anchor="middle" font-size="9" fill="#1677ff" font-weight="700">14</text>
+        <rect x="405" y="35" width="50" height="70" rx="3" fill="#52c41a" opacity="0.9"/><text x="430" y="31" text-anchor="middle" font-size="9" fill="#52c41a" font-weight="700">15</text>
+        <text x="80" y="118" text-anchor="middle" font-size="8" fill="#999">9월</text>
+        <text x="150" y="118" text-anchor="middle" font-size="8" fill="#999">10월</text>
+        <text x="220" y="118" text-anchor="middle" font-size="8" fill="#999">11월</text>
+        <text x="290" y="118" text-anchor="middle" font-size="8" fill="#999">12월</text>
+        <text x="360" y="118" text-anchor="middle" font-size="8" fill="#999">1월</text>
+        <text x="430" y="118" text-anchor="middle" font-size="8" fill="#52c41a" font-weight="700">2월</text>
+        <text x="34" y="108" text-anchor="end" font-size="7" fill="#999">0</text>
+        <text x="34" y="38" text-anchor="end" font-size="7" fill="#999">16</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ========== DIST SCREEN 3-1: 비식별화 정책 상세 ========== -->
+<div class="screen" id="screen-dist-deidentify-detail">
+  <div class="breadcrumb"><a href="#" onclick="navigate('dist-product')">데이터 유통·활용</a> &gt; <a href="#" onclick="navigate('dist-deidentify')">비식별화·가명처리</a> &gt; <strong>정책 상세</strong></div>
+  <div class="page-title" style="display:flex; align-items:center; gap:12px;">
+    고객개인정보 마스킹 정책
+    <span class="policy-badge active" style="font-size:12px;">적용중</span>
+  </div>
+
+  <!-- 기본 정보 -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">📋 기본 정보</div>
+      <table class="data-table" style="margin:0;">
+        <tbody>
+          <tr>
+            <td style="width:130px; font-weight:600; color:#555;">정책 ID</td>
+            <td>DI-POL-001</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">정책명</td>
+            <td>고객개인정보 마스킹</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">처리 기법</td>
+            <td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">마스킹</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">적용 등급</td>
+            <td>전체 등급</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">적용 대상</td>
+            <td>원격검침 사용량 (TB_METER_USAGE)</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">등록일</td>
+            <td>2025-06-15</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">최종수정</td>
+            <td>2025-11-08 14:22</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">담당자</td>
+            <td>김보안 (정보보호팀)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 적용 현황</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+        <div style="background:#f0f7ff; border-radius:10px; padding:14px; text-align:center;">
+          <div style="font-size:22px; font-weight:700; color:#1967d2;">3개</div>
+          <div style="font-size:12px; color:#888; margin-top:2px;">대상 필드</div>
+        </div>
+        <div style="background:#f0fff4; border-radius:10px; padding:14px; text-align:center;">
+          <div style="font-size:22px; font-weight:700; color:#4caf50;">128,450건</div>
+          <div style="font-size:12px; color:#888; margin-top:2px;">처리 완료 건수</div>
+        </div>
+        <div style="background:#fff8e1; border-radius:10px; padding:14px; text-align:center;">
+          <div style="font-size:22px; font-weight:700; color:#ff9800;">99.7%</div>
+          <div style="font-size:12px; color:#888; margin-top:2px;">처리 성공률</div>
+        </div>
+        <div style="background:#fce4ec; border-radius:10px; padding:14px; text-align:center;">
+          <div style="font-size:22px; font-weight:700; color:#e53935;">38건</div>
+          <div style="font-size:12px; color:#888; margin-top:2px;">처리 실패/예외</div>
+        </div>
+      </div>
+      <div style="font-size:12px; color:#888;">
+        <div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #f0f0f0;">
+          <span>최근 1일 처리량</span><span style="font-weight:600; color:#333;">4,820건</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #f0f0f0;">
+          <span>평균 처리 시간</span><span style="font-weight:600; color:#333;">0.12초/건</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:4px 0;">
+          <span>마지막 실행</span><span style="font-weight:600; color:#333;">2025-11-12 15:30:22</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 대상 필드 목록 -->
+  <div class="card">
+    <div class="card-title">🏷️ 대상 필드 및 마스킹 규칙</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>대상 필드</th>
+          <th>데이터 타입</th>
+          <th>마스킹 패턴</th>
+          <th>예시 (원본)</th>
+          <th>예시 (처리 후)</th>
+          <th>비고</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>고객명</strong> <code
+              style="font-size:10px; background:#f5f5f5; padding:1px 5px; border-radius:3px;">cust_name</code></td>
+          <td>VARCHAR(50)</td>
+          <td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">부분 마스킹</span> 첫 글자 외 *</td>
+          <td style="font-family:monospace; color:#888;">홍길동</td>
+          <td style="font-family:monospace; color:#1967d2; font-weight:600;">홍**</td>
+          <td>성(1자) 유지</td>
+        </tr>
+        <tr>
+          <td><strong>전화번호</strong> <code
+              style="font-size:10px; background:#f5f5f5; padding:1px 5px; border-radius:3px;">phone_no</code></td>
+          <td>VARCHAR(20)</td>
+          <td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">중간 마스킹</span> 가운데 4자리 *</td>
+          <td style="font-family:monospace; color:#888;">010-1234-5678</td>
+          <td style="font-family:monospace; color:#1967d2; font-weight:600;">010-****-5678</td>
+          <td>앞3 + 뒤4 유지</td>
+        </tr>
+        <tr>
+          <td><strong>주소</strong> <code
+              style="font-size:10px; background:#f5f5f5; padding:1px 5px; border-radius:3px;">address</code></td>
+          <td>VARCHAR(200)</td>
+          <td><span class="ds-tag" style="background:#fff3e0; color:#e65100;">일반화</span> 시/군/구까지만</td>
+          <td style="font-family:monospace; color:#888;">대전시 유성구 대학로 99</td>
+          <td style="font-family:monospace; color:#1967d2; font-weight:600;">대전시 유성구 ***</td>
+          <td>상세주소 제거</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 처리 전/후 미리보기 -->
+  <div class="card">
+    <div class="card-title">🔍 처리 전/후 데이터 미리보기</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div>
+        <div
+          style="font-size:12px; font-weight:600; color:#c62828; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+          <span
+            style="background:#ffebee; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">🔓</span>
+          원본 데이터 (비식별 처리 전)
+        </div>
+        <div style="background:#fff5f5; border:1px solid #fed7d7; border-radius:8px; overflow:hidden;">
+          <table class="data-table" style="margin:0; font-size:11px;">
+            <thead>
+              <tr style="background:#fff0f0;">
+                <th>cust_name</th>
+                <th>phone_no</th>
+                <th>address</th>
+                <th>usage_kwh</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="color:#c62828;">홍길동</td>
+                <td style="color:#c62828;">010-1234-5678</td>
+                <td style="color:#c62828;">대전시 유성구 대학로 99</td>
+                <td>245.3</td>
+              </tr>
+              <tr>
+                <td style="color:#c62828;">김수자</td>
+                <td style="color:#c62828;">010-9876-5432</td>
+                <td style="color:#c62828;">서울시 강남구 테헤란로 152</td>
+                <td>189.7</td>
+              </tr>
+              <tr>
+                <td style="color:#c62828;">이물관</td>
+                <td style="color:#c62828;">010-5555-3333</td>
+                <td style="color:#c62828;">부산시 해운대구 센텀로 45</td>
+                <td>312.1</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div
+          style="font-size:12px; font-weight:600; color:#2e7d32; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+          <span
+            style="background:#e8f5e9; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">🔒</span>
+          비식별 데이터 (처리 후)
+        </div>
+        <div style="background:#f0fff4; border:1px solid #c6f6d5; border-radius:8px; overflow:hidden;">
+          <table class="data-table" style="margin:0; font-size:11px;">
+            <thead>
+              <tr style="background:#f0fff0;">
+                <th>cust_name</th>
+                <th>phone_no</th>
+                <th>address</th>
+                <th>usage_kwh</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="color:#2e7d32; font-weight:600;">홍**</td>
+                <td style="color:#2e7d32; font-weight:600;">010-****-5678</td>
+                <td style="color:#2e7d32; font-weight:600;">대전시 유성구 ***</td>
+                <td>245.3</td>
+              </tr>
+              <tr>
+                <td style="color:#2e7d32; font-weight:600;">김**</td>
+                <td style="color:#2e7d32; font-weight:600;">010-****-5432</td>
+                <td style="color:#2e7d32; font-weight:600;">서울시 강남구 ***</td>
+                <td>189.7</td>
+              </tr>
+              <tr>
+                <td style="color:#2e7d32; font-weight:600;">이**</td>
+                <td style="color:#2e7d32; font-weight:600;">010-****-3333</td>
+                <td style="color:#2e7d32; font-weight:600;">부산시 해운대구 ***</td>
+                <td>312.1</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 적용 이력 / 법적 근거 -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">📜 변경 이력</div>
+      <table class="data-table" style="font-size:12px;">
+        <thead>
+          <tr>
+            <th>일시</th>
+            <th>변경 내용</th>
+            <th>변경자</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="white-space:nowrap;">2025-11-08 14:22</td>
+            <td>주소 필드 마스킹 규칙 변경 (전체마스킹→시/군/구 유지)</td>
+            <td>김보안</td>
+          </tr>
+          <tr>
+            <td style="white-space:nowrap;">2025-09-20 10:15</td>
+            <td>전화번호 마스킹 패턴 수정 (뒤4자리→가운데4자리)</td>
+            <td>김보안</td>
+          </tr>
+          <tr>
+            <td style="white-space:nowrap;">2025-08-01 09:30</td>
+            <td>적용대상 확대: 원격검침 사용량 테이블 추가</td>
+            <td>박관리</td>
+          </tr>
+          <tr>
+            <td style="white-space:nowrap;">2025-06-15 11:00</td>
+            <td>정책 최초 등록 (고객명, 전화번호 마스킹)</td>
+            <td>김보안</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">⚖️ 법적 근거 및 준수 기준</div>
+      <div style="font-size:13px; line-height:1.8;">
+        <div style="display:flex; align-items:flex-start; gap:8px; padding:8px 0; border-bottom:1px solid #f0f0f0;">
+          <span
+            style="background:#e8f0fe; color:#1967d2; font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; white-space:nowrap; margin-top:2px;">법령</span>
+          <span>개인정보 보호법 제2조, 제28조의2 (가명처리)</span>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:8px; padding:8px 0; border-bottom:1px solid #f0f0f0;">
+          <span
+            style="background:#e8f0fe; color:#1967d2; font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; white-space:nowrap; margin-top:2px;">법령</span>
+          <span>정보통신망법 제23조 (개인정보의 이용제한)</span>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:8px; padding:8px 0; border-bottom:1px solid #f0f0f0;">
+          <span
+            style="background:#fff3e0; color:#e65100; font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; white-space:nowrap; margin-top:2px;">가이드</span>
+          <span>개인정보 비식별 조치 가이드라인 (2020, 관계부처 합동)</span>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:8px; padding:8px 0; border-bottom:1px solid #f0f0f0;">
+          <span
+            style="background:#f3e5f5; color:#7b1fa2; font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; white-space:nowrap; margin-top:2px;">내규</span>
+          <span>K-water 개인정보처리 운영지침 제15조</span>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:8px; padding:8px 0;">
+          <span
+            style="background:#e8f5e9; color:#2e7d32; font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; white-space:nowrap; margin-top:2px;">인증</span>
+          <span>ISO 27701 (개인정보보호 관리체계) 준수</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 버튼 -->
+  <div style="display:flex; justify-content:space-between; margin-top:20px;">
+    <button class="btn btn-outline" onclick="navigate('dist-deidentify')">← 목록으로</button>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-outline"
+        onclick="document.getElementById('modal-deidentify-report').style.display='flex'">🖨️ 보고서 출력</button>
+      <button class="btn btn-primary" data-perm="write" onclick="document.getElementById('modal-deidentify-edit').style.display='flex'">✏️
+        정책 수정</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 모달: 보고서 출력 ===== -->
+<div id="modal-deidentify-report"
+  style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.45); z-index:9999; align-items:center; justify-content:center; animation:fadeIn .2s;">
+  <div
+    style="background:#fff; border-radius:14px; width:560px; max-height:85vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.25); animation:slideUp .25s ease;">
+    <!-- 헤더 -->
+    <div
+      style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px 16px; border-bottom:1px solid #eee;">
+      <div style="font-size:17px; font-weight:700; color:#1a2744;">🖨️ 비식별화 정책 보고서 출력</div>
+      <button onclick="document.getElementById('modal-deidentify-report').style.display='none'"
+        style="background:none; border:none; font-size:20px; cursor:pointer; color:#888; width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center;"
+        onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='none'">✕</button>
+    </div>
+    <!-- 본문 -->
+    <div style="padding:20px 24px;">
+      <!-- 보고서 유형 -->
+      <div style="margin-bottom:18px;">
+        <label style="display:block; font-size:13px; font-weight:600; color:#555; margin-bottom:8px;">보고서 유형</label>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <label
+            style="display:flex; align-items:center; gap:10px; padding:12px 14px; border:1px solid #e0e0e0; border-radius:8px; cursor:pointer; transition:all .15s;"
+            onmouseover="this.style.borderColor='#1967d2'; this.style.background='#f8faff'"
+            onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='#fff'">
+            <input type="radio" name="report-type" value="summary" checked style="accent-color:#1967d2;">
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#333;">📄 정책 요약 보고서</div>
+              <div style="font-size:11px; color:#888; margin-top:2px;">기본 정보, 적용 현황, 마스킹 규칙 요약</div>
+            </div>
+          </label>
+          <label
+            style="display:flex; align-items:center; gap:10px; padding:12px 14px; border:1px solid #e0e0e0; border-radius:8px; cursor:pointer; transition:all .15s;"
+            onmouseover="this.style.borderColor='#1967d2'; this.style.background='#f8faff'"
+            onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='#fff'">
+            <input type="radio" name="report-type" value="detail" style="accent-color:#1967d2;">
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#333;">📊 상세 처리 보고서</div>
+              <div style="font-size:11px; color:#888; margin-top:2px;">처리 통계, 전/후 비교, 변경 이력 포함</div>
+            </div>
+          </label>
+          <label
+            style="display:flex; align-items:center; gap:10px; padding:12px 14px; border:1px solid #e0e0e0; border-radius:8px; cursor:pointer; transition:all .15s;"
+            onmouseover="this.style.borderColor='#1967d2'; this.style.background='#f8faff'"
+            onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='#fff'">
+            <input type="radio" name="report-type" value="compliance" style="accent-color:#1967d2;">
+            <div>
+              <div style="font-size:13px; font-weight:600; color:#333;">⚖️ 컴플라이언스 보고서</div>
+              <div style="font-size:11px; color:#888; margin-top:2px;">법적 근거, 준수 여부, 감사 대응용</div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <!-- 기간 선택 -->
+      <div style="margin-bottom:18px;">
+        <label style="display:block; font-size:13px; font-weight:600; color:#555; margin-bottom:8px;">보고 기간</label>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="date" value="2025-10-01"
+            style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+          <span style="color:#888;">~</span>
+          <input type="date" value="2025-11-12"
+            style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+        </div>
+      </div>
+      <!-- 출력 포맷 -->
+      <div style="margin-bottom:18px;">
+        <label style="display:block; font-size:13px; font-weight:600; color:#555; margin-bottom:8px;">출력 포맷</label>
+        <div style="display:flex; gap:8px;">
+          <label
+            style="display:flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid #e0e0e0; border-radius:6px; cursor:pointer; font-size:13px;"
+            onmouseover="this.style.borderColor='#1967d2'" onmouseout="this.style.borderColor='#e0e0e0'">
+            <input type="radio" name="report-format" value="pdf" checked style="accent-color:#1967d2;">
+            📕 PDF
+          </label>
+          <label
+            style="display:flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid #e0e0e0; border-radius:6px; cursor:pointer; font-size:13px;"
+            onmouseover="this.style.borderColor='#1967d2'" onmouseout="this.style.borderColor='#e0e0e0'">
+            <input type="radio" name="report-format" value="excel" style="accent-color:#1967d2;">
+            📗 Excel
+          </label>
+          <label
+            style="display:flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid #e0e0e0; border-radius:6px; cursor:pointer; font-size:13px;"
+            onmouseover="this.style.borderColor='#1967d2'" onmouseout="this.style.borderColor='#e0e0e0'">
+            <input type="radio" name="report-format" value="hwp" style="accent-color:#1967d2;">
+            📘 한글(HWP)
+          </label>
+        </div>
+      </div>
+      <!-- 포함 항목 -->
+      <div style="margin-bottom:6px;">
+        <label style="display:block; font-size:13px; font-weight:600; color:#555; margin-bottom:8px;">포함 항목</label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+          <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#555; cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:#1967d2;"> 기본 정보
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#555; cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:#1967d2;"> 적용 현황 통계
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#555; cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:#1967d2;"> 마스킹 규칙 상세
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#555; cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:#1967d2;"> 처리 전/후 미리보기
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#555; cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:#1967d2;"> 변경 이력
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#555; cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:#1967d2;"> 법적 근거
+          </label>
+        </div>
+      </div>
+    </div>
+    <!-- 푸터 -->
+    <div
+      style="display:flex; justify-content:flex-end; gap:8px; padding:16px 24px; border-top:1px solid #eee; background:#fafbfc; border-radius:0 0 14px 14px;">
+      <button onclick="document.getElementById('modal-deidentify-report').style.display='none'"
+        style="padding:8px 20px; border:1px solid #ddd; border-radius:6px; background:#fff; font-size:13px; cursor:pointer; color:#555;"
+        onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">취소</button>
+      <button
+        onclick="alert('보고서가 생성되었습니다.\n다운로드가 시작됩니다.'); document.getElementById('modal-deidentify-report').style.display='none'"
+        style="padding:8px 20px; border:none; border-radius:6px; background:#1967d2; color:#fff; font-size:13px; cursor:pointer; font-weight:600;"
+        onmouseover="this.style.background='#1557b0'" onmouseout="this.style.background='#1967d2'">📥 보고서 생성 및
+        다운로드</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 모달: 정책 수정 ===== -->
+<div id="modal-deidentify-edit"
+  style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.45); z-index:9999; align-items:center; justify-content:center; animation:fadeIn .2s;">
+  <div
+    style="background:#fff; border-radius:14px; width:640px; max-height:85vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.25); animation:slideUp .25s ease;">
+    <!-- 헤더 -->
+    <div
+      style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px 16px; border-bottom:1px solid #eee;">
+      <div style="font-size:17px; font-weight:700; color:#1a2744;">✏️ 비식별화 정책 수정</div>
+      <button onclick="document.getElementById('modal-deidentify-edit').style.display='none'"
+        style="background:none; border:none; font-size:20px; cursor:pointer; color:#888; width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center;"
+        onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='none'">✕</button>
+    </div>
+    <!-- 본문 -->
+    <div style="padding:20px 24px;">
+      <!-- 기본 정보 -->
+      <div
+        style="font-size:13px; font-weight:700; color:#1a2744; margin-bottom:12px; padding-bottom:6px; border-bottom:2px solid #1967d2; display:inline-block;">
+        기본 정보</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px;">
+        <div>
+          <label style="display:block; font-size:12px; font-weight:600; color:#555; margin-bottom:5px;">정책명 <span
+              style="color:#e53935;">*</span></label>
+          <input type="text" value="고객개인정보 마스킹"
+            style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="display:block; font-size:12px; font-weight:600; color:#555; margin-bottom:5px;">처리 기법 <span
+              style="color:#e53935;">*</span></label>
+          <select
+            style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box; background:#fff;">
+            <option selected>마스킹</option>
+            <option>SHA-256 해싱</option>
+            <option>AES-256 암호화</option>
+            <option>지역단위 일반화</option>
+            <option>가명치환</option>
+            <option>k-익명성</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:12px; font-weight:600; color:#555; margin-bottom:5px;">적용 등급 <span
+              style="color:#e53935;">*</span></label>
+          <select
+            style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box; background:#fff;">
+            <option selected>전체</option>
+            <option>1등급</option>
+            <option>2등급↑</option>
+            <option>3등급↑</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:12px; font-weight:600; color:#555; margin-bottom:5px;">담당자</label>
+          <input type="text" value="김보안 (정보보호팀)"
+            style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box;">
+        </div>
+        <div style="grid-column:span 2;">
+          <label style="display:block; font-size:12px; font-weight:600; color:#555; margin-bottom:5px;">적용 대상
+            테이블</label>
+          <input type="text" value="원격검침 사용량 (TB_METER_USAGE)"
+            style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box;">
+        </div>
+      </div>
+
+      <!-- 대상 필드 및 마스킹 규칙 -->
+      <div
+        style="font-size:13px; font-weight:700; color:#1a2744; margin-bottom:12px; padding-bottom:6px; border-bottom:2px solid #1967d2; display:inline-block;">
+        대상 필드 및 마스킹 규칙</div>
+      <table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:16px;">
+        <thead>
+          <tr style="background:#f5f7fa;">
+            <th
+              style="padding:8px 10px; text-align:left; border-bottom:1px solid #e0e0e0; font-weight:600; color:#555;">
+              필드명</th>
+            <th
+              style="padding:8px 10px; text-align:left; border-bottom:1px solid #e0e0e0; font-weight:600; color:#555;">
+              마스킹 패턴</th>
+            <th
+              style="padding:8px 10px; text-align:center; border-bottom:1px solid #e0e0e0; font-weight:600; color:#555; width:50px;">
+              활성</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #f0f0f0;">
+            <td style="padding:8px 10px;">
+              <input type="text" value="cust_name (고객명)"
+                style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:5px; font-size:12px; box-sizing:border-box;">
+            </td>
+            <td style="padding:8px 10px;">
+              <select
+                style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:5px; font-size:12px; box-sizing:border-box; background:#fff;">
+                <option selected>부분 마스킹 (첫 글자 외 *)</option>
+                <option>전체 마스킹</option>
+                <option>SHA-256 해싱</option>
+                <option>가명치환</option>
+              </select>
+            </td>
+            <td style="padding:8px 10px; text-align:center;">
+              <input type="checkbox" checked style="accent-color:#1967d2; transform:scale(1.2);">
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid #f0f0f0;">
+            <td style="padding:8px 10px;">
+              <input type="text" value="phone_no (전화번호)"
+                style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:5px; font-size:12px; box-sizing:border-box;">
+            </td>
+            <td style="padding:8px 10px;">
+              <select
+                style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:5px; font-size:12px; box-sizing:border-box; background:#fff;">
+                <option>부분 마스킹 (첫 글자 외 *)</option>
+                <option selected>중간 마스킹 (가운데 4자리 *)</option>
+                <option>전체 마스킹</option>
+                <option>SHA-256 해싱</option>
+              </select>
+            </td>
+            <td style="padding:8px 10px; text-align:center;">
+              <input type="checkbox" checked style="accent-color:#1967d2; transform:scale(1.2);">
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid #f0f0f0;">
+            <td style="padding:8px 10px;">
+              <input type="text" value="address (주소)"
+                style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:5px; font-size:12px; box-sizing:border-box;">
+            </td>
+            <td style="padding:8px 10px;">
+              <select
+                style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:5px; font-size:12px; box-sizing:border-box; background:#fff;">
+                <option>부분 마스킹 (첫 글자 외 *)</option>
+                <option>전체 마스킹</option>
+                <option selected>일반화 (시/군/구까지)</option>
+                <option>삭제</option>
+              </select>
+            </td>
+            <td style="padding:8px 10px; text-align:center;">
+              <input type="checkbox" checked style="accent-color:#1967d2; transform:scale(1.2);">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <button
+        style="padding:6px 14px; font-size:12px; border:1px dashed #1967d2; border-radius:6px; background:#f8faff; color:#1967d2; cursor:pointer; font-weight:600;"
+        onmouseover="this.style.background='#e8f0fe'" onmouseout="this.style.background='#f8faff'">+ 필드 추가</button>
+
+      <!-- 상태 변경 -->
+      <div style="margin-top:20px;">
+        <div
+          style="font-size:13px; font-weight:700; color:#1a2744; margin-bottom:12px; padding-bottom:6px; border-bottom:2px solid #1967d2; display:inline-block;">
+          정책 상태</div>
+        <div style="display:flex; gap:10px;">
+          <label
+            style="display:flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid #e0e0e0; border-radius:6px; cursor:pointer; font-size:13px;"
+            onmouseover="this.style.borderColor='#4caf50'" onmouseout="this.style.borderColor='#e0e0e0'">
+            <input type="radio" name="policy-status" value="active" checked style="accent-color:#4caf50;">
+            <span style="color:#4caf50; font-weight:600;">적용중</span>
+          </label>
+          <label
+            style="display:flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid #e0e0e0; border-radius:6px; cursor:pointer; font-size:13px;"
+            onmouseover="this.style.borderColor='#ff9800'" onmouseout="this.style.borderColor='#e0e0e0'">
+            <input type="radio" name="policy-status" value="paused" style="accent-color:#ff9800;">
+            <span style="color:#ff9800; font-weight:600;">일시중지</span>
+          </label>
+          <label
+            style="display:flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid #e0e0e0; border-radius:6px; cursor:pointer; font-size:13px;"
+            onmouseover="this.style.borderColor='#f44336'" onmouseout="this.style.borderColor='#e0e0e0'">
+            <input type="radio" name="policy-status" value="disabled" style="accent-color:#f44336;">
+            <span style="color:#f44336; font-weight:600;">비활성</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 수정 사유 -->
+      <div style="margin-top:18px;">
+        <label style="display:block; font-size:12px; font-weight:600; color:#555; margin-bottom:5px;">수정 사유 <span
+            style="color:#e53935;">*</span></label>
+        <textarea placeholder="정책 변경 사유를 입력해 주세요..." rows="3"
+          style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; resize:vertical; box-sizing:border-box; font-family:inherit;"></textarea>
+      </div>
+    </div>
+    <!-- 푸터 -->
+    <div
+      style="display:flex; justify-content:flex-end; gap:8px; padding:16px 24px; border-top:1px solid #eee; background:#fafbfc; border-radius:0 0 14px 14px;">
+      <button onclick="document.getElementById('modal-deidentify-edit').style.display='none'"
+        style="padding:8px 20px; border:1px solid #ddd; border-radius:6px; background:#fff; font-size:13px; cursor:pointer; color:#555;"
+        onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">취소</button>
+      <button onclick="alert('정책이 수정되었습니다.'); document.getElementById('modal-deidentify-edit').style.display='none'"
+        style="padding:8px 20px; border:none; border-radius:6px; background:#1967d2; color:#fff; font-size:13px; cursor:pointer; font-weight:600;"
+        onmouseover="this.style.background='#1557b0'" onmouseout="this.style.background='#1967d2'" data-perm="write">💾 저장</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0
+    }
+
+    to {
+      opacity: 1
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px)
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0)
+    }
+  }
+</style>
+
+<!-- ========== DIST SCREEN 4: 데이터 신청·승인 ========== -->
+<div class="screen" id="screen-dist-approval">
+  <div class="breadcrumb"><a href="#" onclick="navigate('dist-product')">데이터 유통·활용</a> &gt; <strong>데이터 신청·승인</strong></div>
+  <div class="page-title">데이터 신청 및 승인 관리</div>
+  <div class="count-cards">
+    <div class="count-card">
+      <div class="cc-num" style="color:#ff9800;">3</div>
+      <div class="cc-label">승인대기</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#4caf50;">48</div>
+      <div class="cc-label">금월 승인</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#f44336;">2</div>
+      <div class="cc-label">금월 반려</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num">4.2h</div>
+      <div class="cc-label">평균 처리시간</div>
+    </div>
+  </div>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>유형</th>
+          <th>신청내용</th>
+          <th>대상데이터</th>
+          <th>등급</th>
+          <th>신청자</th>
+          <th>신청일</th>
+          <th>상태</th>
+          <th>관리</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>AP-056</td>
+          <td>API 활용</td>
+          <td>댐수위 실시간 API 연동신청</td>
+          <td>댐수위·방류량</td>
+          <td>2등급</td>
+          <td>김개발</td>
+          <td>11-12</td>
+          <td><span class="badge badge-warning">대기</span></td>
+          <td>
+            <div class="approval-btns"><button class="btn-approve" data-perm="admin">승인</button><button class="btn-reject" data-perm="admin">반려</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>AP-055</td>
+          <td>다운로드</td>
+          <td>수력발전 통계 CSV 다운로드</td>
+          <td>수력발전 일간통계</td>
+          <td>2등급</td>
+          <td>이분석</td>
+          <td>11-11</td>
+          <td><span class="badge badge-warning">대기</span></td>
+          <td>
+            <div class="approval-btns"><button class="btn-approve" data-perm="admin">승인</button><button class="btn-reject" data-perm="admin">반려</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>AP-054</td>
+          <td>Kafka</td>
+          <td>실시간검침 스트리밍 구독신청</td>
+          <td>원격검침 사용량</td>
+          <td>3등급</td>
+          <td>박실시</td>
+          <td>11-10</td>
+          <td><span class="badge badge-warning">대기</span></td>
+          <td>
+            <div class="approval-btns"><button class="btn-approve" data-perm="admin">승인</button><button class="btn-reject" data-perm="admin">반려</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>AP-053</td>
+          <td>API 활용</td>
+          <td>수질데이터 REST API 활용신청</td>
+          <td>수질측정데이터</td>
+          <td>2등급</td>
+          <td>최수질</td>
+          <td>11-09</td>
+          <td><span class="badge badge-success">승인</span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>AP-052</td>
+          <td>권한상향</td>
+          <td>IoT 센서원시데이터 1등급 권한요청</td>
+          <td>IoT 센서원시</td>
+          <td style="color:#c62828;">1등급</td>
+          <td>정보안</td>
+          <td>11-08</td>
+          <td><span class="badge badge-error">반려</span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>AP-051</td>
+          <td>API 활용</td>
+          <td>광역상수도 유량데이터 API 신청</td>
+          <td>광역상수도 유량</td>
+          <td>2등급</td>
+          <td>한상수</td>
+          <td>11-07</td>
+          <td><span class="badge badge-success">승인</span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>AP-050</td>
+          <td>다운로드</td>
+          <td>정수장운영실적 엑셀 다운로드</td>
+          <td>정수장운영실적</td>
+          <td>2등급</td>
+          <td>오정수</td>
+          <td>11-05</td>
+          <td><span class="badge badge-success">승인</span></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ========== DIST SCREEN 5: 유통 API 관리 ========== -->
+<div class="screen" id="screen-dist-api">
+  <div class="breadcrumb"><a href="#" onclick="navigate('dist-product')">데이터 유통·활용</a> &gt; <strong>유통 API 관리</strong></div>
+  <div class="page-title">유통 API 관리</div>
+  <div class="count-cards">
+    <div class="count-card">
+      <div class="cc-num">8</div>
+      <div class="cc-label">전체 API</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#4caf50;">6</div>
+      <div class="cc-label">활성 API</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#ff9800;">1</div>
+      <div class="cc-label">시범운영</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#1967d2;">910K</div>
+      <div class="cc-label">일간 총호출</div>
+    </div>
+  </div>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>API / 연동</th>
+          <th>유형</th>
+          <th>엔드포인트</th>
+          <th>상태</th>
+          <th>일간호출</th>
+          <th>Avg Latency</th>
+          <th>Uptime</th>
+          <th>관리</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>유통데이터 REST API</strong></td>
+          <td>OpenAPI</td>
+          <td style="font-family:monospace; font-size:11px;">/api/v1/*</td>
+          <td><span class="status-dot green"></span>정상</td>
+          <td>12.4K</td>
+          <td style="color:#4caf50;">45ms</td>
+          <td>99.9%</td>
+          <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;" onclick="navigate('dist-api-detail')">상세</button></td>
+        </tr>
+        <tr>
+          <td><strong>실시간 스트리밍 API</strong></td>
+          <td>Kafka</td>
+          <td style="font-family:monospace; font-size:11px;">kafka://stream.*</td>
+          <td><span class="status-dot green"></span>정상</td>
+          <td>892K</td>
+          <td style="color:#4caf50;">8ms</td>
+          <td>99.99%</td>
+          <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;" onclick="navigate('dist-api-detail')">상세</button></td>
+        </tr>
+        <tr>
+          <td><strong>MCP 디지털트윈 연동</strong></td>
+          <td>MCP</td>
+          <td style="font-family:monospace; font-size:11px;">/mcp/v1/twin</td>
+          <td><span class="status-dot green"></span>정상</td>
+          <td>4.8K</td>
+          <td>120ms</td>
+          <td>99.5%</td>
+          <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;" onclick="navigate('dist-api-detail')">상세</button></td>
+        </tr>
+        <tr class="row-warn">
+          <td><strong>데이터융합모델 API</strong></td>
+          <td>NGSI-LD</td>
+          <td style="font-family:monospace; font-size:11px;">/ngsi-ld/v1/entities</td>
+          <td><span class="status-dot orange"></span>시범</td>
+          <td>256</td>
+          <td style="color:#ff9800;">350ms</td>
+          <td>98.2%</td>
+          <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;" onclick="navigate('dist-api-detail')">상세</button></td>
+        </tr>
+        <tr>
+          <td><strong>수질모니터링 API</strong></td>
+          <td>OpenAPI</td>
+          <td style="font-family:monospace; font-size:11px;">/api/v1/water-qual</td>
+          <td><span class="status-dot green"></span>정상</td>
+          <td>5.8K</td>
+          <td style="color:#4caf50;">38ms</td>
+          <td>99.8%</td>
+          <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;" onclick="navigate('dist-api-detail')">상세</button></td>
+        </tr>
+        <tr>
+          <td><strong>GIS 공간정보 API</strong></td>
+          <td>WFS/WMS</td>
+          <td style="font-family:monospace; font-size:11px;">/gis/wfs?service=*</td>
+          <td><span class="status-dot green"></span>정상</td>
+          <td>3.2K</td>
+          <td>180ms</td>
+          <td>99.5%</td>
+          <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;" onclick="navigate('dist-api-detail')">상세</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ========== DIST SCREEN 5-1: 유통 API 상세 ========== -->
+<div class="screen" id="screen-dist-api-detail">
+  <div class="breadcrumb"><a href="#" onclick="navigate('dist-product')">데이터 유통·활용</a> &gt; <a href="#" onclick="navigate('dist-api')">유통 API 관리</a> &gt; <strong>API 상세</strong></div>
+  <div class="detail-header">
+    <div class="title-area">
+      <div style="font-size:20px; font-weight:700; color:#1a2744;">유통데이터 REST API</div>
+      <span class="badge badge-success" style="margin-left:12px;">정상</span>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-primary">📄 API 문서</button>
+      <button class="btn btn-outline">설정 변경</button>
+      <button class="btn btn-outline" onclick="navigate('dist-api')">목록</button>
+    </div>
+  </div>
+
+  <!-- 기본 정보 + 실시간 현황 -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">📋 기본 정보</div>
+      <table class="data-table" style="margin:0;">
+        <tbody>
+          <tr>
+            <td style="width:130px; font-weight:600; color:#555;">API ID</td>
+            <td>API-REST-001</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">API명</td>
+            <td>유통데이터 REST API</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">유형</td>
+            <td><span class="badge badge-info">OpenAPI 3.0</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">프로토콜</td>
+            <td>HTTPS / REST</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">Base URL</td>
+            <td style="font-family:monospace; font-size:12px;">https://api.kwater-dh.kr/api/v1</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">인증방식</td>
+            <td>Bearer Token (OAuth 2.0)</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">Rate Limit</td>
+            <td>1,000 req/min</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">등록일</td>
+            <td>2025-07-10</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:#555;">담당자</td>
+            <td>이시스 (플랫폼운영팀)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 실시간 운영 현황</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+        <div style="background:#f0f7ff; border-radius:10px; padding:14px; text-align:center;">
+          <div style="font-size:22px; font-weight:700; color:#1967d2;">12.4K</div>
+          <div style="font-size:12px; color:#888; margin-top:2px;">일간 호출수</div>
+        </div>
+        <div style="background:#f0fff4; border-radius:10px; padding:14px; text-align:center;">
+          <div style="font-size:22px; font-weight:700; color:#4caf50;">45ms</div>
+          <div style="font-size:12px; color:#888; margin-top:2px;">평균 응답시간</div>
+        </div>
+        <div style="background:#f0fff4; border-radius:10px; padding:14px; text-align:center;">
+          <div style="font-size:22px; font-weight:700; color:#4caf50;">99.9%</div>
+          <div style="font-size:12px; color:#888; margin-top:2px;">가용률 (Uptime)</div>
+        </div>
+        <div style="background:#fff8e1; border-radius:10px; padding:14px; text-align:center;">
+          <div style="font-size:22px; font-weight:700; color:#ff9800;">0.3%</div>
+          <div style="font-size:12px; color:#888; margin-top:2px;">에러율 (4xx/5xx)</div>
+        </div>
+      </div>
+      <div style="font-size:12px; color:#888;">
+        <div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #f0f0f0;">
+          <span>월간 총호출</span><span style="font-weight:600; color:#333;">372.8K</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #f0f0f0;">
+          <span>P95 Latency</span><span style="font-weight:600; color:#333;">120ms</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #f0f0f0;">
+          <span>P99 Latency</span><span style="font-weight:600; color:#333;">280ms</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:4px 0;">
+          <span>마지막 헬스체크</span><span style="font-weight:600; color:#333;">2025-11-12 16:05:32</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 엔드포인트 목록 -->
+  <div class="card">
+    <div class="card-title">🔌 엔드포인트 목록</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>엔드포인트</th>
+          <th>설명</th>
+          <th>인증</th>
+          <th>일간호출</th>
+          <th>Avg Latency</th>
+          <th>상태</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span style="background:#e8f5e9; color:#2e7d32; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600;">GET</span></td>
+          <td style="font-family:monospace; font-size:11px;">/api/v1/datasets</td>
+          <td>데이터셋 목록 조회</td>
+          <td>Bearer</td>
+          <td>5,240</td>
+          <td style="color:#4caf50;">32ms</td>
+          <td><span class="status-dot green"></span>정상</td>
+        </tr>
+        <tr>
+          <td><span style="background:#e8f5e9; color:#2e7d32; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600;">GET</span></td>
+          <td style="font-family:monospace; font-size:11px;">/api/v1/datasets/{id}</td>
+          <td>데이터셋 상세 조회</td>
+          <td>Bearer</td>
+          <td>3,180</td>
+          <td style="color:#4caf50;">45ms</td>
+          <td><span class="status-dot green"></span>정상</td>
+        </tr>
+        <tr>
+          <td><span style="background:#fff3e0; color:#e65100; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600;">POST</span></td>
+          <td style="font-family:monospace; font-size:11px;">/api/v1/datasets/{id}/download</td>
+          <td>데이터 다운로드 요청</td>
+          <td>Bearer + 권한</td>
+          <td>2,850</td>
+          <td>68ms</td>
+          <td><span class="status-dot green"></span>정상</td>
+        </tr>
+        <tr>
+          <td><span style="background:#e8f5e9; color:#2e7d32; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600;">GET</span></td>
+          <td style="font-family:monospace; font-size:11px;">/api/v1/quality/{dataset_id}</td>
+          <td>품질 리포트 조회</td>
+          <td>Bearer</td>
+          <td>890</td>
+          <td style="color:#4caf50;">52ms</td>
+          <td><span class="status-dot green"></span>정상</td>
+        </tr>
+        <tr>
+          <td><span style="background:#e3f2fd; color:#1565c0; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600;">PUT</span></td>
+          <td style="font-family:monospace; font-size:11px;">/api/v1/datasets/{id}/meta</td>
+          <td>메타데이터 수정</td>
+          <td>Bearer + 관리자</td>
+          <td>230</td>
+          <td>85ms</td>
+          <td><span class="status-dot green"></span>정상</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 요청/응답 스키마 예시 -->
+  <div class="card">
+    <div class="card-title">📝 요청·응답 스키마 (GET /api/v1/datasets)</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div>
+        <div style="font-size:12px; font-weight:600; color:#1565c0; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+          <span style="background:#e3f2fd; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">📤</span>
+          Request Parameters
+        </div>
+        <div style="background:#f8f9fa; border:1px solid #e0e0e0; border-radius:8px; overflow:hidden;">
+          <table class="data-table" style="margin:0; font-size:11px;">
+            <thead>
+              <tr style="background:#f0f0f0;">
+                <th>파라미터</th>
+                <th>타입</th>
+                <th>필수</th>
+                <th>설명</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code style="font-size:10px; background:#f5f5f5; padding:1px 5px; border-radius:3px;">domain</code></td>
+                <td>string</td>
+                <td>N</td>
+                <td>도메인 필터 (수자원, 상하수도 등)</td>
+              </tr>
+              <tr>
+                <td><code style="font-size:10px; background:#f5f5f5; padding:1px 5px; border-radius:3px;">keyword</code></td>
+                <td>string</td>
+                <td>N</td>
+                <td>검색 키워드</td>
+              </tr>
+              <tr>
+                <td><code style="font-size:10px; background:#f5f5f5; padding:1px 5px; border-radius:3px;">page</code></td>
+                <td>integer</td>
+                <td>N</td>
+                <td>페이지 번호 (기본: 1)</td>
+              </tr>
+              <tr>
+                <td><code style="font-size:10px; background:#f5f5f5; padding:1px 5px; border-radius:3px;">size</code></td>
+                <td>integer</td>
+                <td>N</td>
+                <td>페이지 크기 (기본: 20, 최대: 100)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px; font-weight:600; color:#2e7d32; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+          <span style="background:#e8f5e9; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">📥</span>
+          Response Fields (200 OK)
+        </div>
+        <div style="background:#f0fff4; border:1px solid #c6f6d5; border-radius:8px; overflow:hidden;">
+          <table class="data-table" style="margin:0; font-size:11px;">
+            <thead>
+              <tr style="background:#f0fff0;">
+                <th>필드</th>
+                <th>타입</th>
+                <th>설명</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code style="font-size:10px; background:#f5f5f5; padding:1px 5px; border-radius:3px;">total_count</code></td>
+                <td>integer</td>
+                <td>총 데이터셋 수</td>
+              </tr>
+              <tr>
+                <td><code style="font-size:10px; background:#f5f5f5; padding:1px 5px; border-radius:3px;">datasets[]</code></td>
+                <td>array</td>
+                <td>데이터셋 목록</td>
+              </tr>
+              <tr>
+                <td><code style="font-size:10px; background:#f5f5f5; padding:1px 5px; border-radius:3px;">.dataset_id</code></td>
+                <td>string</td>
+                <td>데이터셋 고유 ID</td>
+              </tr>
+              <tr>
+                <td><code style="font-size:10px; background:#f5f5f5; padding:1px 5px; border-radius:3px;">.name</code></td>
+                <td>string</td>
+                <td>데이터셋명</td>
+              </tr>
+              <tr>
+                <td><code style="font-size:10px; background:#f5f5f5; padding:1px 5px; border-radius:3px;">.domain</code></td>
+                <td>string</td>
+                <td>소속 도메인</td>
+              </tr>
+              <tr>
+                <td><code style="font-size:10px; background:#f5f5f5; padding:1px 5px; border-radius:3px;">.updated_at</code></td>
+                <td>datetime</td>
+                <td>최종 갱신일시</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 최근 호출 이력 -->
+  <div class="card">
+    <div class="card-title">📈 최근 호출 이력</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>시각</th>
+          <th>Method</th>
+          <th>엔드포인트</th>
+          <th>호출자</th>
+          <th>Status</th>
+          <th>Latency</th>
+          <th>응답크기</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family:monospace; font-size:11px;">16:05:28</td>
+          <td><span style="color:#2e7d32; font-weight:600; font-size:11px;">GET</span></td>
+          <td style="font-family:monospace; font-size:11px;">/api/v1/datasets</td>
+          <td>협력사A (api-key-3f8a)</td>
+          <td><span style="background:#e8f5e9; color:#2e7d32; padding:1px 6px; border-radius:3px; font-size:11px;">200</span></td>
+          <td>38ms</td>
+          <td>12.4 KB</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace; font-size:11px;">16:05:25</td>
+          <td><span style="color:#2e7d32; font-weight:600; font-size:11px;">GET</span></td>
+          <td style="font-family:monospace; font-size:11px;">/api/v1/datasets/DS-042</td>
+          <td>수자원관리팀 (api-key-7b2c)</td>
+          <td><span style="background:#e8f5e9; color:#2e7d32; padding:1px 6px; border-radius:3px; font-size:11px;">200</span></td>
+          <td>52ms</td>
+          <td>3.8 KB</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace; font-size:11px;">16:05:21</td>
+          <td><span style="color:#e65100; font-weight:600; font-size:11px;">POST</span></td>
+          <td style="font-family:monospace; font-size:11px;">/api/v1/datasets/DS-018/download</td>
+          <td>상하수도팀 (api-key-9d1e)</td>
+          <td><span style="background:#e8f5e9; color:#2e7d32; padding:1px 6px; border-radius:3px; font-size:11px;">200</span></td>
+          <td>145ms</td>
+          <td>2.1 MB</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace; font-size:11px;">16:05:18</td>
+          <td><span style="color:#2e7d32; font-weight:600; font-size:11px;">GET</span></td>
+          <td style="font-family:monospace; font-size:11px;">/api/v1/datasets</td>
+          <td>외부개발자B (api-key-5c4f)</td>
+          <td><span style="background:#ffebee; color:#c62828; padding:1px 6px; border-radius:3px; font-size:11px;">429</span></td>
+          <td>5ms</td>
+          <td>0.2 KB</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace; font-size:11px;">16:05:12</td>
+          <td><span style="color:#1565c0; font-weight:600; font-size:11px;">PUT</span></td>
+          <td style="font-family:monospace; font-size:11px;">/api/v1/datasets/DS-007/meta</td>
+          <td>데이터스튜어드 (api-key-2a8b)</td>
+          <td><span style="background:#e8f5e9; color:#2e7d32; padding:1px 6px; border-radius:3px; font-size:11px;">200</span></td>
+          <td>92ms</td>
+          <td>1.5 KB</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ========== DIST SCREEN 6: 데이터 유통통계 ========== -->
+<div class="screen" id="screen-dist-stats">
+  <div class="breadcrumb"><a href="#" onclick="navigate('dist-product')">데이터 유통·활용</a> &gt; <strong>데이터 유통통계</strong></div>
+
+  <!-- ===== Row 1: 전문 헤더 + KPI 6개 ===== -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+    <div>
+      <div style="font-size:20px; font-weight:700; color:var(--text-color);">📊 데이터 유통통계</div>
+      <div style="font-size:13px; color:var(--text-secondary); margin-top:2px;">K-water 데이터 유통 현황을 실시간으로 모니터링합니다 <span style="display:inline-block;width:6px;height:6px;background:#52c41a;border-radius:50%;animation:pulse 1.5s infinite;margin-left:4px;"></span></div>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <select style="padding:4px 10px; border:1px solid var(--border-color); border-radius:6px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+        <option>2026년 2월</option><option>2026년 1월</option><option>2025년 12월</option>
+      </select>
+      <button class="btn btn-primary" style="font-size:12px;">📋 조회</button>
+      <button class="btn btn-outline" style="font-size:12px;">📥 리포트</button>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-bottom:14px;">
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #1677ff;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">월간 API 호출</div>
+      <div style="font-size:22px; font-weight:700; color:#1677ff;">2.84<span style="font-size:12px; font-weight:400;">M</span></div>
+      <div style="font-size:11px; margin-top:4px; color:#52c41a; font-weight:600;">▲ 12.3% <span style="color:var(--text-secondary); font-weight:400;">vs 전월</span></div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #52c41a;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">월간 다운로드</div>
+      <div style="font-size:22px; font-weight:700; color:#52c41a;">1,842<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:11px; margin-top:4px; color:#52c41a; font-weight:600;">▲ 8.1% <span style="color:var(--text-secondary); font-weight:400;">vs 전월</span></div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #13c2c2;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">활성 사용자</div>
+      <div style="font-size:22px; font-weight:700; color:#13c2c2;">156<span style="font-size:12px; font-weight:400;">명</span></div>
+      <div style="font-size:11px; margin-top:4px; color:#52c41a; font-weight:600;">▲ 23명 <span style="color:var(--text-secondary); font-weight:400;">신규</span></div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #fa8c16;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">데이터 품질평균</div>
+      <div style="font-size:22px; font-weight:700; color:#fa8c16;">93.8<span style="font-size:12px; font-weight:400;">%</span></div>
+      <div style="font-size:11px; margin-top:4px; color:#52c41a; font-weight:600;">▲ 1.2%p <span style="color:var(--text-secondary); font-weight:400;">개선</span></div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #722ed1;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">응답시간 평균</div>
+      <div style="font-size:22px; font-weight:700; color:#722ed1;">42<span style="font-size:12px; font-weight:400;">ms</span></div>
+      <div style="font-size:11px; margin-top:4px; color:#52c41a; font-weight:600;">▼ 8ms <span style="color:var(--text-secondary); font-weight:400;">개선</span></div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #eb2f96;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">SLA 달성률</div>
+      <div style="font-size:22px; font-weight:700; color:#eb2f96;">99.2<span style="font-size:12px; font-weight:400;">%</span></div>
+      <div style="font-size:11px; margin-top:4px; color:var(--text-secondary);">목표 99.0%</div>
+    </div>
+  </div>
+
+  <!-- ===== Row 2: 월별 유통 추이 + API 유형별 호출 비율 ===== -->
+  <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:12px; margin-bottom:14px;">
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">📈 월별 유통 추이</div>
+        <div style="display:flex; gap:12px; font-size:10px; color:var(--text-secondary);">
+          <span><span style="display:inline-block;width:8px;height:8px;background:#1677ff;border-radius:2px;margin-right:3px;"></span>API 호출</span>
+          <span><span style="display:inline-block;width:8px;height:8px;background:#52c41a;border-radius:2px;margin-right:3px;"></span>다운로드</span>
+        </div>
+      </div>
+      <div class="card-body" style="padding:10px 14px;">
+        <svg viewBox="0 0 600 180" style="width:100%; display:block;">
+          <!-- Y축 기준선 -->
+          <line x1="30" y1="20" x2="590" y2="20" stroke="#f0f0f0" stroke-width="0.5"/>
+          <line x1="30" y1="55" x2="590" y2="55" stroke="#f0f0f0" stroke-width="0.5"/>
+          <line x1="30" y1="90" x2="590" y2="90" stroke="#f0f0f0" stroke-width="0.5"/>
+          <line x1="30" y1="125" x2="590" y2="125" stroke="#f0f0f0" stroke-width="0.5"/>
+          <text x="8" y="24" font-size="8" fill="#aaa">3.0M</text>
+          <text x="8" y="59" font-size="8" fill="#aaa">2.5M</text>
+          <text x="8" y="94" font-size="8" fill="#aaa">2.0M</text>
+          <text x="8" y="129" font-size="8" fill="#aaa">1.5M</text>
+          <!-- API 호출 바 (12개월) -->
+          <rect x="38" y="115" width="22" rx="2" height="45" fill="#bbdefb"/><text x="49" y="112" font-size="7" fill="#1677ff" text-anchor="middle">1.6M</text>
+          <rect x="84" y="108" width="22" rx="2" height="52" fill="#90caf9"/><text x="95" y="105" font-size="7" fill="#1677ff" text-anchor="middle">1.8M</text>
+          <rect x="130" y="100" width="22" rx="2" height="60" fill="#90caf9"/><text x="141" y="97" font-size="7" fill="#1677ff" text-anchor="middle">2.0M</text>
+          <rect x="176" y="93" width="22" rx="2" height="67" fill="#64b5f6"/><text x="187" y="90" font-size="7" fill="#1677ff" text-anchor="middle">2.1M</text>
+          <rect x="222" y="85" width="22" rx="2" height="75" fill="#64b5f6"/><text x="233" y="82" font-size="7" fill="#1677ff" text-anchor="middle">2.2M</text>
+          <rect x="268" y="78" width="22" rx="2" height="82" fill="#42a5f5"/><text x="279" y="75" font-size="7" fill="#1677ff" text-anchor="middle">2.3M</text>
+          <rect x="314" y="70" width="22" rx="2" height="90" fill="#42a5f5"/><text x="325" y="67" font-size="7" fill="#1677ff" text-anchor="middle">2.4M</text>
+          <rect x="360" y="63" width="22" rx="2" height="97" fill="#1e88e5"/><text x="371" y="60" font-size="7" fill="#1677ff" text-anchor="middle">2.5M</text>
+          <rect x="406" y="48" width="22" rx="2" height="112" fill="#1e88e5"/><text x="417" y="45" font-size="7" fill="#1677ff" text-anchor="middle">2.6M</text>
+          <rect x="452" y="40" width="22" rx="2" height="120" fill="#1677ff"/><text x="463" y="37" font-size="7" fill="#1677ff" text-anchor="middle">2.7M</text>
+          <rect x="498" y="35" width="22" rx="2" height="125" fill="#1677ff"/><text x="509" y="32" font-size="7" fill="#1677ff" text-anchor="middle">2.8M</text>
+          <rect x="544" y="25" width="22" rx="2" height="135" fill="#0958d9"/><text x="555" y="22" font-size="7" fill="#0958d9" text-anchor="middle" font-weight="700">2.84M</text>
+          <!-- 다운로드 라인 -->
+          <polyline points="49,148 95,145 141,142 187,140 233,138 279,136 325,133 371,130 417,126 463,122 509,118 555,114" fill="none" stroke="#52c41a" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="555" cy="114" r="3" fill="#52c41a"/>
+          <!-- X축 레이블 -->
+          <text x="49" y="172" font-size="7" fill="#aaa" text-anchor="middle">3월</text>
+          <text x="95" y="172" font-size="7" fill="#aaa" text-anchor="middle">4월</text>
+          <text x="141" y="172" font-size="7" fill="#aaa" text-anchor="middle">5월</text>
+          <text x="187" y="172" font-size="7" fill="#aaa" text-anchor="middle">6월</text>
+          <text x="233" y="172" font-size="7" fill="#aaa" text-anchor="middle">7월</text>
+          <text x="279" y="172" font-size="7" fill="#aaa" text-anchor="middle">8월</text>
+          <text x="325" y="172" font-size="7" fill="#aaa" text-anchor="middle">9월</text>
+          <text x="371" y="172" font-size="7" fill="#aaa" text-anchor="middle">10월</text>
+          <text x="417" y="172" font-size="7" fill="#aaa" text-anchor="middle">11월</text>
+          <text x="463" y="172" font-size="7" fill="#aaa" text-anchor="middle">12월</text>
+          <text x="509" y="172" font-size="7" fill="#aaa" text-anchor="middle">1월</text>
+          <text x="555" y="172" font-size="7" fill="#0958d9" text-anchor="middle" font-weight="700">2월</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">🍩 API 유형별 호출 비율</div>
+        <span style="font-size:10px; color:var(--text-secondary);">일간 기준</span>
+      </div>
+      <div class="card-body" style="padding:10px 14px; text-align:center;">
+        <div class="donut-chart">
+          <svg viewBox="0 0 42 42">
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#e0e0e0" stroke-width="5"/>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#4caf50" stroke-width="5" stroke-dasharray="42 58" stroke-dashoffset="25"/>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#1967d2" stroke-width="5" stroke-dasharray="35 65" stroke-dashoffset="83"/>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#ff9800" stroke-width="5" stroke-dasharray="10 90" stroke-dashoffset="48"/>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#607d8b" stroke-width="5" stroke-dasharray="8 92" stroke-dashoffset="38"/>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#9c27b0" stroke-width="5" stroke-dasharray="5 95" stroke-dashoffset="30"/>
+          </svg>
+          <div class="donut-center">
+            <div class="dc-total">910K</div>
+            <div class="dc-label">일간 총호출</div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px; text-align:left;">
+          <div style="display:flex; align-items:center; gap:6px; font-size:11px;">
+            <span style="width:8px;height:8px;background:#4caf50;border-radius:2px;flex-shrink:0;"></span>
+            <span style="color:var(--text-secondary);">Kafka</span>
+            <span style="margin-left:auto; font-weight:600;">42%</span>
+            <span style="font-size:10px; color:var(--text-secondary);">382K</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px; font-size:11px;">
+            <span style="width:8px;height:8px;background:#1967d2;border-radius:2px;flex-shrink:0;"></span>
+            <span style="color:var(--text-secondary);">REST API</span>
+            <span style="margin-left:auto; font-weight:600;">35%</span>
+            <span style="font-size:10px; color:var(--text-secondary);">319K</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px; font-size:11px;">
+            <span style="width:8px;height:8px;background:#ff9800;border-radius:2px;flex-shrink:0;"></span>
+            <span style="color:var(--text-secondary);">MCP</span>
+            <span style="margin-left:auto; font-weight:600;">10%</span>
+            <span style="font-size:10px; color:var(--text-secondary);">91K</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px; font-size:11px;">
+            <span style="width:8px;height:8px;background:#607d8b;border-radius:2px;flex-shrink:0;"></span>
+            <span style="color:var(--text-secondary);">GIS</span>
+            <span style="margin-left:auto; font-weight:600;">8%</span>
+            <span style="font-size:10px; color:var(--text-secondary);">73K</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px; font-size:11px;">
+            <span style="width:8px;height:8px;background:#9c27b0;border-radius:2px;flex-shrink:0;"></span>
+            <span style="color:var(--text-secondary);">NGSI-LD</span>
+            <span style="margin-left:auto; font-weight:600;">5%</span>
+            <span style="font-size:10px; color:var(--text-secondary);">45K</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Row 3: AG Grid 유통 상세 현황 ===== -->
+  <div class="card" style="padding:0; margin-bottom:14px;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="card-title">📋 데이터 유통 상세 현황</div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <select style="padding:3px 8px; border:1px solid var(--border-color); border-radius:4px; font-size:11px; background:var(--card-bg); color:var(--text-color);">
+          <option>전체 유형</option><option>REST API</option><option>Kafka</option><option>MCP</option><option>GIS</option>
+        </select>
+        <button class="btn btn-outline" style="padding:2px 10px; font-size:11px;">📥 내보내기</button>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0;">
+      <div id="ag-grid-dist-stats" class="ag-theme-alpine" style="width:100%;"></div>
+    </div>
+  </div>
+
+  <!-- ===== Row 4: Top 5 랭킹 + 부서별 활용 현황 ===== -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">🏆 Top 5 Data Product</div>
+        <span style="font-size:10px; color:var(--text-secondary);">월간 호출 기준</span>
+      </div>
+      <div class="card-body" style="padding:10px 14px;">
+        <div class="rank-list">
+          <div class="rank-item">
+            <span class="rank-num" style="background:linear-gradient(135deg,#ffd700,#ffb300);">1</span>
+            <span class="rank-name">원격검침 사용량분석</span>
+            <span style="background:#e6f7ff;color:#0958d9;padding:1px 6px;border-radius:4px;font-size:10px;">수자원</span>
+            <span class="rank-calls">892K</span>
+            <span class="rank-users">42명</span>
+            <span class="rank-trend up">▲ 15%</span>
+          </div>
+          <div class="rank-item">
+            <span class="rank-num" style="background:linear-gradient(135deg,#c0c0c0,#9e9e9e);">2</span>
+            <span class="rank-name">댐수위·방류량종합</span>
+            <span style="background:#e6f7ff;color:#0958d9;padding:1px 6px;border-radius:4px;font-size:10px;">수자원</span>
+            <span class="rank-calls">561K</span>
+            <span class="rank-users">38명</span>
+            <span class="rank-trend up">▲ 22%</span>
+          </div>
+          <div class="rank-item">
+            <span class="rank-num" style="background:linear-gradient(135deg,#cd7f32,#a0522d);">3</span>
+            <span class="rank-name">광역상수도 유량실시간</span>
+            <span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:4px;font-size:10px;">상수도</span>
+            <span class="rank-calls">372K</span>
+            <span class="rank-users">31명</span>
+            <span class="rank-trend up">▲ 8%</span>
+          </div>
+          <div class="rank-item">
+            <span class="rank-num">4</span>
+            <span class="rank-name">수질측정데이터 (환경부)</span>
+            <span style="background:#fff7e6;color:#d48806;padding:1px 6px;border-radius:4px;font-size:10px;">수질</span>
+            <span class="rank-calls">174K</span>
+            <span class="rank-users">25명</span>
+            <span class="rank-trend up">▲ 5%</span>
+          </div>
+          <div class="rank-item">
+            <span class="rank-num" style="background:#888;">5</span>
+            <span class="rank-name">수력발전 일간통계</span>
+            <span style="background:#fce4ec;color:#c62828;padding:1px 6px;border-radius:4px;font-size:10px;">발전</span>
+            <span class="rank-calls">96K</span>
+            <span class="rank-users">18명</span>
+            <span class="rank-trend down">▼ 3%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">🏢 부서별 활용 현황</div>
+        <span style="font-size:10px; color:var(--text-secondary);">월간 API 호출수</span>
+      </div>
+      <div class="card-body" style="padding:10px 14px;">
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px; font-size:11px;">
+            <span style="width:90px; flex-shrink:0; text-align:right; color:var(--text-secondary);">수자원관리</span>
+            <div style="flex:1; height:18px; background:#f0f0f0; border-radius:3px; overflow:hidden;">
+              <div style="width:92%; height:100%; background:linear-gradient(90deg,#1677ff,#0958d9); border-radius:3px;"></div>
+            </div>
+            <span style="width:48px; flex-shrink:0; font-weight:600;">824K</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; font-size:11px;">
+            <span style="width:90px; flex-shrink:0; text-align:right; color:var(--text-secondary);">상수도운영</span>
+            <div style="flex:1; height:18px; background:#f0f0f0; border-radius:3px; overflow:hidden;">
+              <div style="width:78%; height:100%; background:linear-gradient(90deg,#1677ff,#4096ff); border-radius:3px;"></div>
+            </div>
+            <span style="width:48px; flex-shrink:0; font-weight:600;">698K</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; font-size:11px;">
+            <span style="width:90px; flex-shrink:0; text-align:right; color:var(--text-secondary);">수질환경</span>
+            <div style="flex:1; height:18px; background:#f0f0f0; border-radius:3px; overflow:hidden;">
+              <div style="width:62%; height:100%; background:linear-gradient(90deg,#52c41a,#389e0d); border-radius:3px;"></div>
+            </div>
+            <span style="width:48px; flex-shrink:0; font-weight:600;">556K</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; font-size:11px;">
+            <span style="width:90px; flex-shrink:0; text-align:right; color:var(--text-secondary);">발전운영</span>
+            <div style="flex:1; height:18px; background:#f0f0f0; border-radius:3px; overflow:hidden;">
+              <div style="width:45%; height:100%; background:linear-gradient(90deg,#fa8c16,#d48806); border-radius:3px;"></div>
+            </div>
+            <span style="width:48px; flex-shrink:0; font-weight:600;">402K</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; font-size:11px;">
+            <span style="width:90px; flex-shrink:0; text-align:right; color:var(--text-secondary);">데이터융합</span>
+            <div style="flex:1; height:18px; background:#f0f0f0; border-radius:3px; overflow:hidden;">
+              <div style="width:35%; height:100%; background:linear-gradient(90deg,#722ed1,#9254de); border-radius:3px;"></div>
+            </div>
+            <span style="width:48px; flex-shrink:0; font-weight:600;">314K</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; font-size:11px;">
+            <span style="width:90px; flex-shrink:0; text-align:right; color:var(--text-secondary);">안전재난</span>
+            <div style="flex:1; height:18px; background:#f0f0f0; border-radius:3px; overflow:hidden;">
+              <div style="width:22%; height:100%; background:linear-gradient(90deg,#13c2c2,#08979c); border-radius:3px;"></div>
+            </div>
+            <span style="width:48px; flex-shrink:0; font-weight:600;">198K</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; font-size:11px;">
+            <span style="width:90px; flex-shrink:0; text-align:right; color:var(--text-secondary);">경영지원</span>
+            <div style="flex:1; height:18px; background:#f0f0f0; border-radius:3px; overflow:hidden;">
+              <div style="width:12%; height:100%; background:linear-gradient(90deg,#eb2f96,#c41d7f); border-radius:3px;"></div>
+            </div>
+            <span style="width:48px; flex-shrink:0; font-weight:600;">108K</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; font-size:11px;">
+            <span style="width:90px; flex-shrink:0; text-align:right; color:var(--text-secondary);">기타</span>
+            <div style="flex:1; height:18px; background:#f0f0f0; border-radius:3px; overflow:hidden;">
+              <div style="width:8%; height:100%; background:#bfbfbf; border-radius:3px;"></div>
+            </div>
+            <span style="width:48px; flex-shrink:0; font-weight:600;">72K</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Row 5: 시간대별 트래픽 히트맵 + 최근 유통 이벤트 ===== -->
+  <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:12px; margin-bottom:14px;">
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">🗓️ 시간대별 트래픽 히트맵</div>
+        <div style="display:flex; gap:8px; font-size:10px; color:var(--text-secondary); align-items:center;">
+          <span style="display:flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;background:#e6f0ff;border-radius:2px;"></span>Low</span>
+          <span style="display:flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;background:#91caff;border-radius:2px;"></span>Mid</span>
+          <span style="display:flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;background:#1677ff;border-radius:2px;"></span>High</span>
+          <span style="display:flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;background:#003eb3;border-radius:2px;"></span>Peak</span>
+        </div>
+      </div>
+      <div class="card-body" style="padding:10px 14px;">
+        <svg viewBox="0 0 520 155" style="width:100%; display:block;">
+          <!-- 시간 헤더 (0~23시, 주요 시간대만 표시) -->
+          <text x="60" y="10" font-size="7" fill="#aaa" text-anchor="middle">0</text>
+          <text x="82" y="10" font-size="7" fill="#aaa" text-anchor="middle">2</text>
+          <text x="104" y="10" font-size="7" fill="#aaa" text-anchor="middle">4</text>
+          <text x="126" y="10" font-size="7" fill="#aaa" text-anchor="middle">6</text>
+          <text x="148" y="10" font-size="7" fill="#aaa" text-anchor="middle">8</text>
+          <text x="170" y="10" font-size="7" fill="#aaa" text-anchor="middle">10</text>
+          <text x="192" y="10" font-size="7" fill="#aaa" text-anchor="middle">12</text>
+          <text x="214" y="10" font-size="7" fill="#aaa" text-anchor="middle">14</text>
+          <text x="236" y="10" font-size="7" fill="#aaa" text-anchor="middle">16</text>
+          <text x="258" y="10" font-size="7" fill="#aaa" text-anchor="middle">18</text>
+          <text x="280" y="10" font-size="7" fill="#aaa" text-anchor="middle">20</text>
+          <text x="302" y="10" font-size="7" fill="#aaa" text-anchor="middle">22</text>
+          <!-- 요일 레이블 -->
+          <text x="30" y="28" font-size="8" fill="#666" text-anchor="end">월</text>
+          <text x="30" y="48" font-size="8" fill="#666" text-anchor="end">화</text>
+          <text x="30" y="68" font-size="8" fill="#666" text-anchor="end">수</text>
+          <text x="30" y="88" font-size="8" fill="#666" text-anchor="end">목</text>
+          <text x="30" y="108" font-size="8" fill="#666" text-anchor="end">금</text>
+          <text x="30" y="128" font-size="8" fill="#666" text-anchor="end">토</text>
+          <text x="30" y="148" font-size="8" fill="#666" text-anchor="end">일</text>
+          <!-- 월요일 -->
+          <rect x="38" y="17" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="60" y="17" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="82" y="17" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <rect x="104" y="17" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="126" y="17" width="20" height="14" rx="2" fill="#91caff"/><rect x="148" y="17" width="20" height="14" rx="2" fill="#1677ff"/>
+          <rect x="170" y="17" width="20" height="14" rx="2" fill="#003eb3"/><rect x="192" y="17" width="20" height="14" rx="2" fill="#1677ff"/><rect x="214" y="17" width="20" height="14" rx="2" fill="#003eb3"/>
+          <rect x="236" y="17" width="20" height="14" rx="2" fill="#1677ff"/><rect x="258" y="17" width="20" height="14" rx="2" fill="#91caff"/><rect x="280" y="17" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <!-- 화요일 -->
+          <rect x="38" y="37" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="60" y="37" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="82" y="37" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <rect x="104" y="37" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="126" y="37" width="20" height="14" rx="2" fill="#91caff"/><rect x="148" y="37" width="20" height="14" rx="2" fill="#003eb3"/>
+          <rect x="170" y="37" width="20" height="14" rx="2" fill="#1677ff"/><rect x="192" y="37" width="20" height="14" rx="2" fill="#003eb3"/><rect x="214" y="37" width="20" height="14" rx="2" fill="#1677ff"/>
+          <rect x="236" y="37" width="20" height="14" rx="2" fill="#1677ff"/><rect x="258" y="37" width="20" height="14" rx="2" fill="#91caff"/><rect x="280" y="37" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <!-- 수요일 -->
+          <rect x="38" y="57" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="60" y="57" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="82" y="57" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <rect x="104" y="57" width="20" height="14" rx="2" fill="#91caff"/><rect x="126" y="57" width="20" height="14" rx="2" fill="#1677ff"/><rect x="148" y="57" width="20" height="14" rx="2" fill="#003eb3"/>
+          <rect x="170" y="57" width="20" height="14" rx="2" fill="#003eb3"/><rect x="192" y="57" width="20" height="14" rx="2" fill="#1677ff"/><rect x="214" y="57" width="20" height="14" rx="2" fill="#003eb3"/>
+          <rect x="236" y="57" width="20" height="14" rx="2" fill="#1677ff"/><rect x="258" y="57" width="20" height="14" rx="2" fill="#91caff"/><rect x="280" y="57" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <!-- 목요일 -->
+          <rect x="38" y="77" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="60" y="77" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="82" y="77" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <rect x="104" y="77" width="20" height="14" rx="2" fill="#91caff"/><rect x="126" y="77" width="20" height="14" rx="2" fill="#91caff"/><rect x="148" y="77" width="20" height="14" rx="2" fill="#1677ff"/>
+          <rect x="170" y="77" width="20" height="14" rx="2" fill="#003eb3"/><rect x="192" y="77" width="20" height="14" rx="2" fill="#1677ff"/><rect x="214" y="77" width="20" height="14" rx="2" fill="#1677ff"/>
+          <rect x="236" y="77" width="20" height="14" rx="2" fill="#91caff"/><rect x="258" y="77" width="20" height="14" rx="2" fill="#91caff"/><rect x="280" y="77" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <!-- 금요일 -->
+          <rect x="38" y="97" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="60" y="97" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="82" y="97" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <rect x="104" y="97" width="20" height="14" rx="2" fill="#91caff"/><rect x="126" y="97" width="20" height="14" rx="2" fill="#91caff"/><rect x="148" y="97" width="20" height="14" rx="2" fill="#1677ff"/>
+          <rect x="170" y="97" width="20" height="14" rx="2" fill="#1677ff"/><rect x="192" y="97" width="20" height="14" rx="2" fill="#91caff"/><rect x="214" y="97" width="20" height="14" rx="2" fill="#1677ff"/>
+          <rect x="236" y="97" width="20" height="14" rx="2" fill="#91caff"/><rect x="258" y="97" width="20" height="14" rx="2" fill="#91caff"/><rect x="280" y="97" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <!-- 토요일 -->
+          <rect x="38" y="117" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="60" y="117" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="82" y="117" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <rect x="104" y="117" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="126" y="117" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="148" y="117" width="20" height="14" rx="2" fill="#91caff"/>
+          <rect x="170" y="117" width="20" height="14" rx="2" fill="#91caff"/><rect x="192" y="117" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="214" y="117" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <rect x="236" y="117" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="258" y="117" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="280" y="117" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <!-- 일요일 -->
+          <rect x="38" y="137" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="60" y="137" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="82" y="137" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <rect x="104" y="137" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="126" y="137" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="148" y="137" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <rect x="170" y="137" width="20" height="14" rx="2" fill="#91caff"/><rect x="192" y="137" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="214" y="137" width="20" height="14" rx="2" fill="#e6f0ff"/>
+          <rect x="236" y="137" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="258" y="137" width="20" height="14" rx="2" fill="#e6f0ff"/><rect x="280" y="137" width="20" height="14" rx="2" fill="#e6f0ff"/>
+        </svg>
+      </div>
+    </div>
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">🔔 최근 유통 이벤트</div>
+        <span style="font-size:10px; color:var(--text-secondary);">최근 24시간</span>
+      </div>
+      <div class="card-body" style="padding:10px 14px;">
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; gap:10px; padding:8px 10px; border-left:3px solid #52c41a; background:#f6ffed; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">11:42</div>
+            <div>
+              <div style="font-size:12px; font-weight:600; color:var(--text-color);">새 API 키 발급 — 수질환경팀</div>
+              <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">수질측정 API v2 접근 키 생성</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; padding:8px 10px; border-left:3px solid #fa8c16; background:#fffbe6; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">10:58</div>
+            <div>
+              <div style="font-size:12px; font-weight:600; color:var(--text-color);">SLA 임계치 근접 — Water Level API</div>
+              <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">응답시간 98ms (임계: 100ms)</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; padding:8px 10px; border-left:3px solid #1677ff; background:#e6f7ff; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">10:15</div>
+            <div>
+              <div style="font-size:12px; font-weight:600; color:var(--text-color);">데이터셋 업데이트 — 원격검침 사용량</div>
+              <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">스키마 v3.2 → v3.3 마이그레이션 완료</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; padding:8px 10px; border-left:3px solid #f5222d; background:#fff1f0; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">09:33</div>
+            <div>
+              <div style="font-size:12px; font-weight:600; color:var(--text-color);">API 호출 실패율 급증 — GIS 공간 API</div>
+              <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">5xx 에러 12% → 자동 스케일 아웃 트리거</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; padding:8px 10px; border-left:3px solid #52c41a; background:#f6ffed; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">08:00</div>
+            <div>
+              <div style="font-size:12px; font-weight:600; color:var(--text-color);">일간 유통 리포트 자동 생성</div>
+              <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">2026-02-27 유통 현황 리포트 배포 완료</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; padding:8px 10px; border-left:3px solid #722ed1; background:#f9f0ff; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">07:15</div>
+            <div>
+              <div style="font-size:12px; font-weight:600; color:var(--text-color);">Kafka 토픽 파티션 확장</div>
+              <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">rwis-water-level 파티션 8→12 확장</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ========== 4.5 외부시스템 데이터 제공 [신규] ========== -->
+<div class="screen" id="screen-dist-external">
+  <div class="breadcrumb"><a href="#" onclick="navigate('dist-product')">데이터 유통·활용</a> &gt; <strong>외부시스템 데이터 제공</strong></div>
+  <div class="page-title">외부시스템 데이터 제공 (DT 연계)</div>
+  <div class="alert-box" style="margin-bottom:16px;">
+    <strong>역할 범위:</strong> 디지털트윈(DT) 5종에 API/데이터를 제공하는 것까지가 DataHub 포털의 범위입니다. DT 시스템 자체는 별도 팀에서 운영합니다.
+  </div>
+  <div class="grid-4" style="margin-bottom:20px;">
+    <div class="kpi-card"><div class="kpi-label">API서버 상태</div><div class="kpi-value" style="color:#4caf50;">4/4</div></div>
+    <div class="kpi-card"><div class="kpi-label">MCP서버 상태</div><div class="kpi-value" style="color:#4caf50;">4/4</div></div>
+    <div class="kpi-card"><div class="kpi-label">연계 DT</div><div class="kpi-value" style="color:#1967d2;">5종</div></div>
+    <div class="kpi-card"><div class="kpi-label">SLA 충족률</div><div class="kpi-value" style="color:#4caf50;">98.7%</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">🔗 DT 연계 API 현황</div>
+    <table class="data-table">
+      <thead><tr><th>디지털트윈</th><th>제공 데이터</th><th>API 방식</th><th>일간 호출</th><th>SLA</th><th>상태</th></tr></thead>
+      <tbody>
+        <tr><td><strong>정수장 DT</strong></td><td>수질검사, 운영실적, 약품투입</td><td>REST + Kafka</td><td>45.2K</td><td>99.1%</td><td><span class="badge badge-success">정상</span></td></tr>
+        <tr><td><strong>관로 DT</strong></td><td>관망데이터, 누수탐지, 압력</td><td>REST</td><td>23.8K</td><td>98.5%</td><td><span class="badge badge-success">정상</span></td></tr>
+        <tr><td><strong>댐 DT</strong></td><td>수위, 유량, 저수율, 방류량</td><td>REST + Kafka</td><td>67.1K</td><td>99.8%</td><td><span class="badge badge-success">정상</span></td></tr>
+        <tr><td><strong>발전 DT</strong></td><td>발전량, 터빈상태, 효율</td><td>REST</td><td>18.4K</td><td>97.2%</td><td><span class="badge badge-success">정상</span></td></tr>
+        <tr><td><strong>스마트 DT</strong></td><td>검침데이터, 사용량 패턴</td><td>Kafka</td><td>892K</td><td>99.5%</td><td><span class="badge badge-success">정상</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ========== DIST SCREEN 7: 시각화 차트 콘텐츠 ========== -->
+<div class="screen" id="screen-dist-chart-content">
+  <div class="breadcrumb"><a href="#" onclick="navigate('home')">개인 대시보드</a> &gt; <strong>차트 콘텐츠 관리</strong></div>
+  <div class="page-title">시각화 차트 콘텐츠 관리</div>
+  <div class="grid-4" style="margin-bottom:20px;">
+    <div class="kpi-card"><div class="kpi-label">전체 차트</div><div class="kpi-value" style="color:#1967d2;">21개</div></div>
+    <div class="kpi-card"><div class="kpi-label">공개 등급</div><div class="kpi-value" style="color:#52c41a;">9개</div></div>
+    <div class="kpi-card"><div class="kpi-label">내부 등급</div><div class="kpi-value" style="color:#fa8c16;">8개</div></div>
+    <div class="kpi-card"><div class="kpi-label">기밀 등급</div><div class="kpi-value" style="color:#f5222d;">4개</div></div>
+  </div>
+  <div class="filter-bar">
+    <input type="text" id="cc-search" placeholder="차트명, 설명 검색" style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+    <select id="cc-domain-filter" style="padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+      <option value="">도메인 전체</option>
+      <option value="water">수질·수량</option>
+      <option value="dam">댐·저수지</option>
+      <option value="supply">광역상수도</option>
+      <option value="energy">에너지·발전</option>
+      <option value="env">환경·기상</option>
+    </select>
+    <select id="cc-level-filter" style="padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+      <option value="">데이터등급 전체</option>
+      <option value="public">공개</option>
+      <option value="internal">내부일반</option>
+      <option value="restricted">내부중요</option>
+      <option value="confidential">기밀</option>
+    </select>
+    <button class="btn btn-primary" data-perm="write" onclick="navigate('dist-chart-content-register')">➕ 차트 추가</button>
+  </div>
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div id="ag-grid-dist-chart-content" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
+<!-- ========== DIST SCREEN 7-1: 시각화 차트 등록 ========== -->
+<div class="screen" id="screen-dist-chart-content-register">
+  <div class="breadcrumb"><a href="#" onclick="navigate('home')">개인 대시보드</a> &gt; <a href="#" onclick="navigate('dist-chart-content')">차트 콘텐츠 관리</a> &gt; <strong>차트 등록</strong></div>
+  <div class="page-title">시각화 차트 콘텐츠 등록</div>
+
+  <div class="card">
+    <div class="card-title">📋 기본 정보</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">차트 ID <span class="required">*</span></label>
+        <input type="text" class="form-control" placeholder="예: g-new-chart (영문+하이픈)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">차트명 <span class="required">*</span></label>
+        <input type="text" class="form-control" placeholder="차트 표시 이름">
+      </div>
+      <div class="form-group">
+        <label class="form-label">아이콘</label>
+        <input type="text" class="form-control" placeholder="이모지 입력 (예: 🌊)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">도메인 <span class="required">*</span></label>
+        <select class="form-control">
+          <option value="">선택</option>
+          <option value="water">수질·수량</option>
+          <option value="dam">댐·저수지</option>
+          <option value="supply">광역상수도</option>
+          <option value="energy">에너지·발전</option>
+          <option value="env">환경·기상</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">차트 유형 <span class="required">*</span></label>
+        <select class="form-control">
+          <option value="">선택</option>
+          <option value="line">라인</option>
+          <option value="bar">바</option>
+          <option value="area">영역</option>
+          <option value="pie">파이</option>
+          <option value="gauge">게이지</option>
+          <option value="heatmap">히트맵</option>
+          <option value="table">테이블</option>
+          <option value="donut">도넛</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">작성자</label>
+        <input type="text" class="form-control" placeholder="작성자명">
+      </div>
+      <div class="form-group" style="grid-column: span 2;">
+        <label class="form-label">설명</label>
+        <textarea class="form-control" style="min-height:60px; resize:vertical;" placeholder="차트에 대한 설명을 입력하세요"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">색상</label>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <input type="color" value="#1677ff" style="width:40px; height:34px; border:1px solid #ddd; border-radius:6px; cursor:pointer;">
+          <input type="text" class="form-control" value="#1677ff" style="flex:1;" placeholder="#HEX">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">🔐 접근 정책</div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="form-label">접근 역할 <span class="required">*</span></label>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:4px;">
+          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+            <input type="checkbox"> <span>전체</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+            <input type="checkbox"> <span>수공직원</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+            <input type="checkbox"> <span>협력직원</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+            <input type="checkbox"> <span>엔지니어</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+            <input type="checkbox"> <span>관리자</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">데이터등급 <span class="required">*</span></label>
+        <select class="form-control">
+          <option value="">선택</option>
+          <option value="public">공개</option>
+          <option value="internal">내부일반</option>
+          <option value="restricted">내부중요</option>
+          <option value="confidential">기밀</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 표시 옵션</div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label style="display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer;">
+          <input type="checkbox"> <span>추천 차트로 표시 (recommend)</span>
+        </label>
+      </div>
+      <div class="form-group">
+        <label style="display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer;">
+          <input type="checkbox"> <span>인기 차트로 표시 (popular)</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; justify-content:space-between; margin-top:20px;">
+    <button class="btn btn-outline" onclick="navigate('dist-chart-content')">← 취소</button>
+    <button class="btn btn-primary" data-perm="write" onclick="alert('차트가 등록되었습니다.'); navigate('dist-chart-content')">등록 완료</button>
+  </div>
+</div>
+
+<!-- ========== DIST SCREEN 7-2: 시각화 차트 상세 ========== -->
+<div class="screen" id="screen-dist-chart-content-detail">
+  <div class="breadcrumb"><a href="#" onclick="navigate('home')">개인 대시보드</a> &gt; <a href="#" onclick="navigate('dist-chart-content')">차트 콘텐츠 관리</a> &gt; <strong>차트 상세</strong></div>
+  <div class="page-title" id="chart-detail-title">차트 상세 정보</div>
+  <div class="card">
+    <div class="card-title">📋 속성 정보</div>
+    <div class="detail-info-grid" id="chart-detail-content">
+      <!-- 동적으로 채워짐 (showChartDetail) -->
+    </div>
+  </div>
+  <div class="card" id="chart-detail-preview-card" style="display:none;">
+    <div class="card-title">📊 차트 미리보기</div>
+    <div id="chart-detail-preview" style="text-align:center; padding:20px;"></div>
+  </div>
+  <div style="display:flex; gap:8px; margin-top:16px;">
+    <button class="btn btn-outline" onclick="navigate('dist-chart-content')">← 목록으로</button>
+    <button class="btn btn-outline" id="chart-detail-edit-btn" data-perm="write">수정</button>
+    <button class="btn btn-outline" style="color:#f44336; border-color:#f44336;" id="chart-detail-delete-btn" data-perm="manage">삭제</button>
+  </div>
+</div>

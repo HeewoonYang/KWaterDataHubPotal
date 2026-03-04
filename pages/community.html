@@ -1,0 +1,99 @@
+﻿<!-- ========== SCREEN: 공지사항 ========== -->
+<div class="screen" id="screen-comm-notice">
+  <div class="breadcrumb"><a href="#" onclick="navigate('comm-notice')">커뮤니티·소통</a> &gt; <strong>공지사항</strong></div>
+  <div class="page-title">공지사항</div>
+
+  <div class="grid-4" style="margin-bottom:20px;">
+    <div class="kpi-card"><div class="kpi-label">전체 공지</div><div class="kpi-value" style="color:#1967d2;">128건</div></div>
+    <div class="kpi-card"><div class="kpi-label">이번 달 신규</div><div class="kpi-value" style="color:#52c41a;">7건</div></div>
+    <div class="kpi-card"><div class="kpi-label">긴급공지</div><div class="kpi-value" style="color:#f44336;">2건</div></div>
+    <div class="kpi-card"><div class="kpi-label">내 읽지 않음</div><div class="kpi-value" style="color:#fa8c16;">5건</div></div>
+  </div>
+
+  <div class="filter-bar" style="margin-bottom:16px;">
+    <select class="select select-bordered select-sm text-sm">
+      <option>전체 분류</option><option>시스템 안내</option><option>데이터 정책</option><option>교육·세미나</option><option>긴급공지</option>
+    </select>
+    <input type="text" placeholder="공지사항 검색..." class="input input-bordered input-sm text-sm" style="flex:1;">
+    <button class="btn btn-primary btn-sm">🔍 검색</button>
+  </div>
+
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div id="ag-grid-comm-notice" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
+<!-- ========== SCREEN: 내부게시판 ========== -->
+<div class="screen" id="screen-comm-internal">
+  <div class="breadcrumb"><a href="#" onclick="navigate('comm-notice')">커뮤니티·소통</a> &gt; <strong>내부게시판</strong></div>
+  <div class="page-title">내부게시판</div>
+
+  <div class="grid-4" style="margin-bottom:20px;">
+    <div class="kpi-card"><div class="kpi-label">전체 게시글</div><div class="kpi-value" style="color:#1967d2;">456건</div></div>
+    <div class="kpi-card"><div class="kpi-label">이번 주 신규</div><div class="kpi-value" style="color:#52c41a;">12건</div></div>
+    <div class="kpi-card"><div class="kpi-label">내 게시글</div><div class="kpi-value" style="color:#722ed1;">8건</div></div>
+    <div class="kpi-card"><div class="kpi-label">미답변 질문</div><div class="kpi-value" style="color:#fa8c16;">3건</div></div>
+  </div>
+
+  <div class="filter-bar" style="margin-bottom:16px;">
+    <select class="select select-bordered select-sm text-sm">
+      <option>전체 게시판</option><option>자유게시판</option><option>기술Q&A</option><option>데이터 활용 팁</option><option>프로젝트 공유</option>
+    </select>
+    <input type="text" placeholder="게시글 검색..." class="input input-bordered input-sm text-sm" style="flex:1;">
+    <button class="btn btn-primary btn-sm" data-perm="write">✏️ 글쓰기</button>
+  </div>
+
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div id="ag-grid-comm-internal" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
+<!-- ========== SCREEN: 외부게시판 ========== -->
+<div class="screen" id="screen-comm-external">
+  <div class="breadcrumb"><a href="#" onclick="navigate('comm-notice')">커뮤니티·소통</a> &gt; <strong>외부게시판</strong></div>
+  <div class="page-title">외부게시판</div>
+
+  <div class="grid-4" style="margin-bottom:20px;">
+    <div class="kpi-card"><div class="kpi-label">전체 게시글</div><div class="kpi-value" style="color:#1967d2;">89건</div></div>
+    <div class="kpi-card"><div class="kpi-label">API 문의</div><div class="kpi-value" style="color:#52c41a;">23건</div></div>
+    <div class="kpi-card"><div class="kpi-label">데이터 요청</div><div class="kpi-value" style="color:#722ed1;">15건</div></div>
+    <div class="kpi-card"><div class="kpi-label">미답변</div><div class="kpi-value" style="color:#f44336;">4건</div></div>
+  </div>
+
+  <div class="filter-bar" style="margin-bottom:16px;">
+    <select class="select select-bordered select-sm text-sm">
+      <option>전체 분류</option><option>API 문의</option><option>데이터 요청</option><option>기술 지원</option><option>제안·건의</option>
+    </select>
+    <input type="text" placeholder="게시글 검색..." class="input input-bordered input-sm text-sm" style="flex:1;">
+    <button class="btn btn-primary btn-sm" data-perm="write">✏️ 글쓰기</button>
+  </div>
+
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div id="ag-grid-comm-external" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
+<!-- ========== SCREEN: 자료실 ========== -->
+<div class="screen" id="screen-comm-archive">
+  <div class="breadcrumb"><a href="#" onclick="navigate('comm-notice')">커뮤니티·소통</a> &gt; <strong>자료실</strong></div>
+  <div class="page-title">자료실</div>
+
+  <div class="grid-4" style="margin-bottom:20px;">
+    <div class="kpi-card"><div class="kpi-label">전체 자료</div><div class="kpi-value" style="color:#1967d2;">234건</div></div>
+    <div class="kpi-card"><div class="kpi-label">가이드·매뉴얼</div><div class="kpi-value" style="color:#52c41a;">45건</div></div>
+    <div class="kpi-card"><div class="kpi-label">교육 자료</div><div class="kpi-value" style="color:#722ed1;">32건</div></div>
+    <div class="kpi-card"><div class="kpi-label">총 다운로드</div><div class="kpi-value" style="color:#fa8c16;">1,847</div></div>
+  </div>
+
+  <div class="filter-bar" style="margin-bottom:16px;">
+    <select class="select select-bordered select-sm text-sm">
+      <option>전체 분류</option><option>가이드·매뉴얼</option><option>교육 자료</option><option>정책·규정</option><option>양식·서식</option><option>기술 문서</option>
+    </select>
+    <input type="text" placeholder="자료 검색..." class="input input-bordered input-sm text-sm" style="flex:1;">
+    <button class="btn btn-primary btn-sm" data-perm="write">📤 자료 업로드</button>
+  </div>
+
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div id="ag-grid-comm-archive" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>

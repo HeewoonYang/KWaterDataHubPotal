@@ -1,0 +1,3151 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>데이터허브 포털 - 통합대시보드 / 카탈로그·탐색</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Malgun Gothic','맑은 고딕', sans-serif; background:#f0f2f5; color:#333; }
+
+  /* ===== TOP NAV ===== */
+  .top-nav {
+    display:flex; align-items:center; height:48px; background:#1a2744; color:#fff; padding:0 24px; font-size:13px; position:fixed; top:0; left:0; right:0; z-index:100;
+  }
+  .top-nav .logo { font-weight:700; font-size:16px; margin-right:32px; cursor:pointer; letter-spacing:1px; }
+  .top-nav .nav-items { display:flex; gap:0; }
+  .top-nav .nav-item { padding:14px 18px; cursor:pointer; position:relative; font-size:13px; transition:background .2s; }
+  .top-nav .nav-item:hover, .top-nav .nav-item.active { background:rgba(255,255,255,0.12); }
+  .top-nav .nav-item.active::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:#4fc3f7; }
+  .top-nav .right-area { margin-left:auto; display:flex; align-items:center; gap:16px; font-size:12px; }
+
+  /* ===== LAYOUT ===== */
+  .layout { display:flex; margin-top:48px; min-height:calc(100vh - 48px); }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width:220px; background:#fff; border-right:1px solid #e0e0e0; padding:16px 0; position:fixed; top:48px; bottom:0; overflow-y:auto; z-index:50;
+  }
+  .sidebar .section-title { font-size:11px; color:#888; font-weight:700; padding:10px 20px 10px; text-transform:uppercase; letter-spacing:1px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; user-select:none; transition:background .15s; border-bottom:1px solid #f0f0f0; }
+  .sidebar .section-title:hover { background:#f5f7fa; }
+  .sidebar .section-title .arrow { font-size:10px; transition:transform .25s ease; color:#aaa; }
+  .sidebar .section-title.open .arrow { transform:rotate(90deg); }
+  .sidebar .accordion-body { max-height:0; overflow:hidden; transition:max-height .3s ease; }
+  .sidebar .accordion-body.open { max-height:600px; }
+  .sidebar .menu-item {
+    padding:9px 20px 9px 28px; cursor:pointer; font-size:13px; display:flex; align-items:center; gap:10px; transition:all .15s; border-left:3px solid transparent;
+  }
+  .sidebar .menu-item:hover { background:#f5f7fa; }
+  .sidebar .menu-item.active { background:#e8f0fe; color:#1967d2; border-left-color:#1967d2; font-weight:600; }
+  .sidebar .menu-item .icon { width:18px; text-align:center; font-size:14px; }
+
+  /* ===== MAIN CONTENT ===== */
+  .main { margin-left:220px; flex:1; padding:24px; }
+  .breadcrumb { font-size:12px; color:#888; margin-bottom:16px; }
+  .breadcrumb a { color:#1967d2; text-decoration:none; }
+  .page-title { font-size:22px; font-weight:700; margin-bottom:20px; color:#1a2744; }
+
+  /* ===== CARDS ===== */
+  .card {
+    background:#fff; border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,0.08); padding:20px; margin-bottom:16px;
+  }
+  .card-title { font-size:14px; font-weight:700; margin-bottom:12px; color:#1a2744; display:flex; align-items:center; gap:8px; }
+  .card-title .badge { background:#e8f0fe; color:#1967d2; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:500; }
+
+  /* ===== GRID ===== */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+  .grid-4 { display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; }
+
+  /* ===== KPI CARDS ===== */
+  .kpi-card {
+    background:#fff; border-radius:10px; padding:18px 20px; box-shadow:0 1px 4px rgba(0,0,0,0.08); text-align:center;
+  }
+  .kpi-card .kpi-label { font-size:12px; color:#888; margin-bottom:6px; }
+  .kpi-card .kpi-value { font-size:28px; font-weight:700; color:#1a2744; }
+  .kpi-card .kpi-sub { font-size:11px; color:#888; margin-top:4px; }
+  .kpi-card .kpi-up { color:#4caf50; }
+  .kpi-card .kpi-down { color:#f44336; }
+
+  /* ===== QUALITY BARS ===== */
+  .quality-bar { margin-bottom:10px; }
+  .quality-bar .label-row { display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; }
+  .quality-bar .bar-bg { height:8px; background:#e0e0e0; border-radius:4px; }
+  .quality-bar .bar-fill { height:8px; border-radius:4px; transition:width .6s ease; }
+
+  /* ===== TABLE ===== */
+  .data-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .data-table th { background:#f5f7fa; padding:10px 12px; text-align:left; font-weight:600; color:#555; border-bottom:2px solid #e0e0e0; }
+  .data-table td { padding:10px 12px; border-bottom:1px solid #eee; }
+  .data-table tr:hover { background:#fafbfc; }
+  .status-badge { padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; }
+  .status-progress { background:#e3f2fd; color:#1565c0; }
+  .status-active { background:#e8f5e9; color:#2e7d32; }
+  .status-wait { background:#fff3e0; color:#ef6c00; }
+  .status-done { background:#f3e5f5; color:#7b1fa2; }
+
+  /* ===== PROCESS STEPS ===== */
+  .process-steps { display:flex; gap:0; margin-bottom:24px; }
+  .step {
+    flex:1; text-align:center; padding:16px 8px; background:#f5f7fa; position:relative; cursor:pointer; transition:all .2s;
+  }
+  .step:first-child { border-radius:8px 0 0 8px; }
+  .step:last-child { border-radius:0 8px 8px 0; }
+  .step .step-num { font-size:20px; font-weight:700; color:#1967d2; }
+  .step .step-title { font-size:12px; font-weight:600; margin-top:4px; }
+  .step .step-desc { font-size:11px; color:#888; margin-top:2px; }
+  .step .arrow { position:absolute; right:-12px; top:50%; transform:translateY(-50%); font-size:18px; color:#bbb; z-index:2; }
+  .step:hover { background:#e8f0fe; }
+  .step.active-step { background:#1967d2; color:#fff; }
+  .step.active-step .step-num, .step.active-step .step-desc { color:#fff; }
+
+  /* ===== AI CHAT ===== */
+  .ai-search-box {
+    background:linear-gradient(135deg, #1967d2, #4fc3f7); border-radius:12px; padding:24px; margin-bottom:20px; color:#fff;
+  }
+  .ai-search-box input {
+    width:100%; padding:14px 18px; border-radius:8px; border:none; font-size:14px; background:rgba(255,255,255,0.95); color:#333; outline:none;
+  }
+  .ai-response { background:#f8f9ff; border-left:4px solid #1967d2; padding:16px 20px; border-radius:0 8px 8px 0; margin-bottom:16px; }
+  .ai-response .resp-title { font-weight:700; font-size:14px; margin-bottom:8px; color:#1967d2; }
+  .ai-response ul { padding-left:18px; font-size:13px; line-height:1.8; }
+
+  /* ===== CHART PLACEHOLDER ===== */
+  .chart-placeholder {
+    background:#f9fafb; border:1px dashed #ccc; border-radius:8px; height:180px; display:flex; align-items:center; justify-content:center; color:#aaa; font-size:13px; position:relative; overflow:hidden;
+  }
+  .chart-placeholder canvas { position:absolute; top:0; left:0; width:100%; height:100%; }
+
+  /* ===== WIDGET GRID ===== */
+  .widget-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+  .widget-card {
+    background:#fff; border:2px dashed #d0d0d0; border-radius:10px; padding:20px; min-height:160px; cursor:grab; transition:all .2s; position:relative;
+  }
+  .widget-card:hover { border-color:#1967d2; box-shadow:0 2px 12px rgba(25,103,210,0.12); }
+  .widget-card .wtype { font-size:11px; color:#1967d2; background:#e8f0fe; display:inline-block; padding:2px 8px; border-radius:4px; margin-bottom:8px; }
+  .widget-card .wname { font-size:14px; font-weight:600; }
+  .widget-card .warea { margin-top:12px; background:#f5f7fa; border-radius:6px; height:70px; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:12px; }
+
+  /* ===== TAGS ===== */
+  .tag-stat { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+  .tag-stat .tag-item { background:#f5f7fa; border-radius:8px; padding:14px 20px; text-align:center; flex:1; min-width:120px; }
+  .tag-stat .tag-item .tv { font-size:22px; font-weight:700; color:#1967d2; }
+  .tag-stat .tag-item .tl { font-size:11px; color:#888; margin-top:2px; }
+
+  /* ===== SIM BOX ===== */
+  .sim-box {
+    background:#fffde7; border:1px solid #ffd54f; border-radius:8px; padding:14px 18px; font-size:12px; line-height:1.7; margin-top:16px;
+  }
+  .sim-box .sim-title { font-weight:700; font-size:13px; margin-bottom:6px; color:#f57f17; }
+
+  /* ===== ALERT BOX ===== */
+  .alert-box { background:#fff3e0; border-left:4px solid #ff9800; padding:12px 16px; border-radius:0 8px 8px 0; font-size:12px; margin-bottom:16px; }
+
+  /* ===== BUTTONS ===== */
+  .btn { padding:8px 16px; border-radius:6px; border:none; cursor:pointer; font-size:12px; font-weight:600; transition:all .15s; }
+  .btn-primary { background:#1967d2; color:#fff; }
+  .btn-primary:hover { background:#1557b0; }
+  .btn-outline { background:#fff; color:#1967d2; border:1px solid #1967d2; }
+  .btn-outline:hover { background:#e8f0fe; }
+
+  /* ===== LIST ITEMS ===== */
+  .list-item { padding:8px 0; border-bottom:1px solid #f0f0f0; font-size:13px; display:flex; justify-content:space-between; align-items:center; }
+  .list-item:last-child { border-bottom:none; }
+  .rank-num { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; background:#1967d2; color:#fff; border-radius:50%; font-size:11px; font-weight:700; margin-right:8px; }
+
+  /* ===== UPDATE LIST ===== */
+  .update-item { display:flex; align-items:center; gap:10px; padding:6px 0; font-size:12px; }
+  .update-item .dot { width:8px; height:8px; border-radius:50%; }
+  .update-item .time { color:#888; font-size:11px; margin-left:auto; }
+
+  /* ===== TAB ===== */
+  .tabs { display:flex; gap:0; margin-bottom:20px; border-bottom:2px solid #e0e0e0; }
+  .tab { padding:10px 20px; cursor:pointer; font-size:13px; font-weight:600; color:#888; border-bottom:2px solid transparent; margin-bottom:-2px; transition:all .15s; }
+  .tab:hover { color:#333; }
+  .tab.active { color:#1967d2; border-bottom-color:#1967d2; }
+
+  /* ===== SCREEN PAGES ===== */
+  .screen { display:none; }
+  .screen.active { display:block; }
+
+  /* ===== MINI CHART (SVG) ===== */
+  .mini-chart { width:100%; }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-thumb { background:#ccc; border-radius:3px; }
+
+  /* Simple bar chart via CSS */
+  .bar-chart { display:flex; align-items:flex-end; gap:8px; height:120px; padding-top:10px; }
+  .bar-col { flex:1; display:flex; flex-direction:column; align-items:center; }
+  .bar-col .bar { width:100%; border-radius:4px 4px 0 0; transition:height .5s ease; }
+  .bar-col .bar-label { font-size:10px; color:#888; margin-top:4px; text-align:center; }
+
+  /* Donut via conic-gradient */
+  .donut {
+    width:100px; height:100px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto;
+  }
+  .donut .donut-inner { width:60px; height:60px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; color:#1a2744; }
+
+  .action-btns { display:flex; gap:8px; margin-top:16px; }
+
+  /* Tooltip */
+  .info-tip { display:inline-block; width:16px; height:16px; background:#e0e0e0; color:#666; border-radius:50%; text-align:center; font-size:11px; line-height:16px; cursor:help; }
+
+  /* Transition */
+  .fade-in { animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ===== CATALOG SPECIFIC ===== */
+  .search-box { display:flex; gap:8px; margin-bottom:16px; }
+  .search-box input { flex:1; padding:12px 16px; border:2px solid #1967d2; border-radius:8px; font-size:14px; outline:none; }
+  .search-box input:focus { box-shadow:0 0 0 3px rgba(25,103,210,0.15); }
+  .search-box .btn-search { padding:12px 24px; background:#1967d2; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; }
+  .search-box .btn-search:hover { background:#1557b0; }
+  .tag-pills { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .tag-pill { padding:6px 14px; border-radius:20px; font-size:12px; cursor:pointer; transition:all .15s; border:1px solid #e0e0e0; background:#fff; }
+  .tag-pill:hover { background:#e8f0fe; border-color:#1967d2; color:#1967d2; }
+  .tag-pill.active { background:#1967d2; color:#fff; border-color:#1967d2; }
+  .filter-bar { display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+  .filter-bar select { padding:6px 12px; border:1px solid #ddd; border-radius:6px; font-size:12px; background:#fff; cursor:pointer; }
+  .filter-bar .result-count { margin-left:auto; font-size:12px; color:#888; }
+  .dataset-card { background:#fff; border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,0.08); padding:18px 20px; margin-bottom:12px; cursor:pointer; transition:all .15s; border-left:4px solid transparent; }
+  .dataset-card:hover { border-left-color:#1967d2; box-shadow:0 2px 8px rgba(0,0,0,0.12); }
+  .dataset-card .ds-name { font-size:15px; font-weight:700; color:#1a2744; margin-bottom:4px; }
+  .dataset-card .ds-desc { font-size:12px; color:#666; margin-bottom:8px; }
+  .dataset-card .ds-tags { display:flex; gap:6px; flex-wrap:wrap; }
+  .dataset-card .ds-tag { font-size:11px; padding:2px 8px; border-radius:4px; background:#f0f2f5; color:#555; }
+  .dataset-card .ds-tag.domain { background:#e8f0fe; color:#1967d2; }
+  .dataset-card .ds-tag.security { background:#fff3e0; color:#ef6c00; }
+  .dataset-card .ds-tag.quality { background:#e8f5e9; color:#2e7d32; }
+  .dataset-card .ds-meta { display:flex; gap:16px; font-size:11px; color:#888; margin-bottom:8px; }
+  .detail-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; }
+  .detail-header .title-area .ds-name { font-size:20px; }
+  .detail-info-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
+  .detail-info-item { background:#f5f7fa; border-radius:8px; padding:12px 16px; }
+  .detail-info-item .dil { font-size:11px; color:#888; margin-bottom:2px; }
+  .detail-info-item .div { font-size:14px; font-weight:600; color:#1a2744; }
+  /* Graph */
+  .graph-container { background:#1a2744; border-radius:12px; padding:24px; min-height:320px; position:relative; overflow:hidden; margin-bottom:16px; }
+  .graph-node { position:absolute; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:#fff; cursor:pointer; transition:all .2s; text-align:center; line-height:1.2; z-index:2; }
+  .graph-node:hover { transform:scale(1.15); z-index:3; }
+  .graph-node.facility { background:#4caf50; }
+  .graph-node.system { background:#ff9800; }
+  .graph-node.dataset { background:#2196f3; }
+  .graph-node.metric { background:#e91e63; }
+  .graph-legend { display:flex; gap:16px; margin-bottom:12px; }
+  .graph-legend span { font-size:12px; color:#fff; display:flex; align-items:center; gap:4px; }
+  .graph-legend span::before { content:''; display:inline-block; width:10px; height:10px; border-radius:50%; }
+  .graph-legend .lg-facility::before { background:#4caf50; }
+  .graph-legend .lg-system::before { background:#ff9800; }
+  .graph-legend .lg-dataset::before { background:#2196f3; }
+  .graph-legend .lg-metric::before { background:#e91e63; }
+  .node-detail-panel { background:#fff; border-radius:10px; padding:20px; }
+  .node-detail-panel .ndp-title { font-size:16px; font-weight:700; margin-bottom:12px; color:#1a2744; }
+  .ndp-row { display:flex; padding:6px 0; border-bottom:1px solid #f0f0f0; font-size:13px; }
+  .ndp-row .ndp-label { width:120px; color:#888; }
+  .ndp-row .ndp-value { flex:1; font-weight:500; }
+  /* Ontology tree */
+  .onto-tree { font-size:13px; line-height:1.8; font-family:'Consolas','Courier New',monospace; }
+  .onto-tree .tree-item { cursor:pointer; padding:2px 4px; border-radius:4px; }
+  .onto-tree .tree-item:hover { background:#e8f0fe; }
+  .onto-tree .tree-item.selected { background:#1967d2; color:#fff; }
+  .onto-indent { padding-left:20px; }
+  /* Code block */
+  .code-block { background:#1e1e1e; color:#d4d4d4; border-radius:8px; padding:16px; font-family:'Consolas','Courier New',monospace; font-size:12px; line-height:1.6; overflow-x:auto; margin-bottom:12px; }
+  .code-block .comment { color:#6a9955; }
+  .code-block .keyword { color:#569cd6; }
+  .code-block .string { color:#ce9178; }
+  /* Lineage */
+  .lineage-flow { display:flex; gap:0; align-items:stretch; margin-bottom:20px; overflow-x:auto; padding:16px 0; }
+  .lineage-stage { flex:0 0 auto; text-align:center; position:relative; }
+  .lineage-stage .stage-label { font-size:11px; color:#888; margin-bottom:8px; font-weight:600; }
+  .lineage-stage .stage-items { display:flex; flex-direction:column; gap:8px; }
+  .lineage-item { background:#fff; border:1px solid #e0e0e0; border-radius:8px; padding:10px 14px; font-size:11px; min-width:120px; cursor:pointer; transition:all .15s; }
+  .lineage-item:hover { border-color:#1967d2; background:#e8f0fe; }
+  .lineage-item .li-name { font-weight:600; color:#1a2744; }
+  .lineage-item .li-sub { color:#888; font-size:10px; }
+  .lineage-arrow { display:flex; align-items:center; padding:0 8px; color:#bbb; font-size:20px; }
+  /* Count badges */
+  .count-cards { display:flex; gap:16px; margin-bottom:20px; }
+  .count-card { background:#fff; border-radius:10px; padding:16px 20px; box-shadow:0 1px 4px rgba(0,0,0,0.08); display:flex; align-items:center; gap:12px; flex:1; }
+  .count-card .cc-num { font-size:24px; font-weight:700; color:#1967d2; }
+  .count-card .cc-label { font-size:12px; color:#666; }
+  /* ===== COLLECTION / REFINEMENT SPECIFIC ===== */
+  .pipeline-table tr.row-error { background:#fff5f5; }
+  .pipeline-table tr.row-warn { background:#fffde7; }
+  .status-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+  .status-dot.green { background:#4caf50; }
+  .status-dot.red { background:#f44336; }
+  .status-dot.orange { background:#ff9800; }
+  .status-dot.blue { background:#2196f3; }
+  .form-group { margin-bottom:14px; }
+  .form-group label { display:block; font-size:12px; font-weight:600; color:#555; margin-bottom:4px; }
+  .form-group input, .form-group select, .form-group textarea { width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box; }
+  .form-group textarea { min-height:60px; resize:vertical; }
+  .conn-test-result { display:flex; flex-direction:column; gap:6px; padding:12px; background:#f5f7fa; border-radius:8px; font-size:12px; }
+  .conn-test-item { display:flex; align-items:center; gap:8px; }
+  .conn-test-item .pass { color:#4caf50; }
+  .conn-test-item .fail { color:#f44336; }
+  /* Architecture diagram */
+  .arch-zone { border:2px dashed; border-radius:12px; padding:16px; margin-bottom:12px; position:relative; }
+  .arch-zone .zone-label { position:absolute; top:-10px; left:16px; background:#fff; padding:0 8px; font-size:11px; font-weight:700; }
+  .arch-zone.external { border-color:#ef6c00; }
+  .arch-zone.dmz { border-color:#f44336; }
+  .arch-zone.oa { border-color:#1967d2; }
+  .arch-zone.fa { border-color:#4caf50; }
+  .arch-box { display:inline-block; padding:8px 14px; border-radius:6px; font-size:11px; font-weight:600; margin:4px; cursor:pointer; transition:all .15s; }
+  .arch-box:hover { transform:translateY(-2px); box-shadow:0 2px 6px rgba(0,0,0,0.15); }
+  .arch-box.ext { background:#fff3e0; color:#ef6c00; border:1px solid #ef6c00; }
+  .arch-box.dmz-item { background:#ffebee; color:#c62828; border:1px solid #ef5350; }
+  .arch-box.oa-item { background:#e8f0fe; color:#1967d2; border:1px solid #1967d2; }
+  .arch-box.fa-item { background:#e8f5e9; color:#2e7d32; border:1px solid #4caf50; }
+  .arch-arrow { display:inline-block; padding:4px 8px; color:#888; font-size:16px; }
+  /* Live log */
+  .log-container { background:#1e1e1e; border-radius:8px; padding:16px; font-family:'Consolas','Courier New',monospace; font-size:11px; line-height:1.7; max-height:380px; overflow-y:auto; }
+  .log-line { color:#d4d4d4; }
+  .log-line .time { color:#888; }
+  .log-line .level-info { color:#4fc3f7; }
+  .log-line .level-warn { color:#ffb74d; }
+  .log-line .level-error { color:#ef5350; font-weight:700; }
+  .log-line .source { color:#ce9178; }
+  .alert-card { background:#fff; border-radius:8px; padding:12px 16px; margin-bottom:8px; border-left:4px solid; font-size:12px; }
+  .alert-card.alert-error { border-left-color:#f44336; }
+  .alert-card.alert-warn { border-left-color:#ff9800; }
+  .alert-card.alert-ok { border-left-color:#4caf50; }
+  .alert-card .alert-time { font-weight:700; color:#555; margin-right:8px; }
+  /* dbt model */
+  .model-info-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; font-size:12px; }
+  .model-info-grid .mi-row { display:flex; padding:6px 0; border-bottom:1px solid #f0f0f0; }
+  .model-info-grid .mi-label { width:100px; color:#888; }
+  .model-info-grid .mi-value { flex:1; font-weight:500; }
+  .mini-lineage { display:flex; align-items:center; gap:8px; font-size:11px; margin-top:8px; }
+  .mini-lineage .ml-node { background:#e8f0fe; padding:6px 12px; border-radius:6px; color:#1967d2; font-weight:600; }
+  .mini-lineage .ml-arrow { color:#bbb; }
+  /* ===== DISTRIBUTION / UTILIZATION SPECIFIC ===== */
+  .api-endpoint { background:#1e1e1e; border-radius:8px; padding:12px 16px; font-family:'Consolas','Courier New',monospace; font-size:12px; color:#d4d4d4; margin-bottom:12px; }
+  .api-endpoint .method { color:#4fc3f7; font-weight:700; }
+  .api-endpoint .url { color:#ce9178; }
+  .api-endpoint .header { color:#6a9955; }
+  .api-stat { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; background:#f5f7fa; border-radius:20px; font-size:12px; margin:4px; }
+  .api-stat.good { color:#4caf50; }
+  .api-stat.warn { color:#ff9800; }
+  .policy-badge { display:inline-block; padding:3px 10px; border-radius:4px; font-size:11px; font-weight:600; }
+  .policy-badge.active { background:#e8f5e9; color:#2e7d32; }
+  .policy-badge.review { background:#fff3e0; color:#ef6c00; }
+  .approval-btns { display:flex; gap:6px; }
+  .approval-btns .btn-approve { padding:3px 10px; background:#4caf50; color:#fff; border:none; border-radius:4px; font-size:11px; cursor:pointer; }
+  .approval-btns .btn-reject { padding:3px 10px; background:#f44336; color:#fff; border:none; border-radius:4px; font-size:11px; cursor:pointer; }
+  .rank-list { padding:0; }
+  .rank-item { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #f0f0f0; font-size:13px; }
+  .rank-item .rank-num { width:24px; height:24px; border-radius:50%; background:#1967d2; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; }
+  .rank-item .rank-name { flex:1; font-weight:600; }
+  .rank-item .rank-calls { color:#1967d2; font-weight:700; }
+  .rank-item .rank-users { color:#888; font-size:11px; }
+  .rank-item .rank-trend { font-size:11px; }
+  .rank-item .rank-trend.up { color:#4caf50; }
+  .rank-item .rank-trend.down { color:#f44336; }
+  .donut-chart { position:relative; width:180px; height:180px; margin:0 auto; }
+  .donut-chart svg { width:100%; height:100%; }
+  .donut-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+  .donut-center .dc-total { font-size:22px; font-weight:700; color:#1a2744; }
+  .donut-center .dc-label { font-size:10px; color:#888; }
+  .donut-legend { display:flex; gap:12px; justify-content:center; margin-top:12px; flex-wrap:wrap; }
+  .donut-legend span { font-size:11px; display:flex; align-items:center; gap:4px; }
+  .donut-legend span::before { content:''; display:inline-block; width:8px; height:8px; border-radius:2px; }
+  /* ===== METADATA MANAGEMENT SPECIFIC ===== */
+  .glossary-status { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; }
+  .glossary-status .gs-dot { width:8px; height:8px; border-radius:50%; }
+  .glossary-status.approved .gs-dot { background:#4caf50; }
+  .glossary-status.approved { color:#4caf50; }
+  .glossary-status.review .gs-dot { background:#ff9800; }
+  .glossary-status.review { color:#ff9800; }
+  .domain-tag-cards { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+  .domain-tag-card { background:#fff; border-radius:10px; padding:16px 20px; box-shadow:0 1px 4px rgba(0,0,0,0.08); min-width:140px; text-align:center; cursor:pointer; transition:all .15s; border:2px solid transparent; }
+  .domain-tag-card:hover { border-color:#1967d2; transform:translateY(-2px); }
+  .domain-tag-card .dtc-name { font-size:14px; font-weight:700; color:#1a2744; margin-bottom:4px; }
+  .domain-tag-card .dtc-count { font-size:12px; color:#888; }
+  .security-tag { display:inline-flex; flex-direction:column; align-items:center; padding:12px 16px; border-radius:8px; min-width:100px; }
+  .security-tag .st-level { font-size:13px; font-weight:700; margin-bottom:2px; }
+  .security-tag .st-count { font-size:18px; font-weight:700; }
+  .security-tag .st-desc { font-size:10px; color:#666; margin-top:2px; }
+  .security-tag.lv1 { background:#ffebee; color:#c62828; }
+  .security-tag.lv2 { background:#fff3e0; color:#ef6c00; }
+  .security-tag.lv3 { background:#e8f5e9; color:#2e7d32; }
+  .erd-container { background:#f5f7fa; border-radius:10px; padding:20px; position:relative; min-height:200px; overflow:auto; }
+  .erd-table { background:#fff; border:1px solid #ddd; border-radius:6px; display:inline-block; min-width:160px; font-size:11px; margin:8px; vertical-align:top; }
+  .erd-table .erd-header { background:#1967d2; color:#fff; padding:6px 10px; font-weight:700; border-radius:5px 5px 0 0; text-align:center; }
+  .erd-table .erd-cols { padding:6px 10px; }
+  .erd-table .erd-col { padding:2px 0; border-bottom:1px solid #f0f0f0; color:#555; }
+  .erd-table .erd-col .pk { color:#1967d2; font-weight:700; }
+  .erd-table .erd-col .fk { color:#ff9800; font-weight:700; }
+  .dq-result .pass { color:#4caf50; }
+  .dq-result .warn { color:#ff9800; }
+  .dq-result .fail { color:#f44336; }
+  .dq-trend { font-size:11px; }
+  .dq-trend.up { color:#f44336; }
+  .dq-trend.down { color:#4caf50; }
+  .dq-trend.flat { color:#888; }
+  /* ===== SYSTEM MANAGEMENT SPECIFIC ===== */
+  .engine-cards { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px; margin-bottom:20px; }
+  .engine-card { background:#fff; border-radius:12px; padding:18px; box-shadow:0 1px 5px rgba(0,0,0,0.07); position:relative; border-left:4px solid #4caf50; }
+  .engine-card .ec-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .engine-card .ec-name { font-size:14px; font-weight:700; color:#1a2744; }
+  .engine-card .ec-status { font-size:11px; padding:3px 8px; border-radius:10px; background:#e8f5e9; color:#2e7d32; font-weight:600; }
+  .engine-card .ec-info { font-size:12px; color:#666; margin-bottom:10px; line-height:1.6; }
+  .engine-card .ec-meters { display:flex; gap:10px; }
+  .ec-meter { text-align:center; flex:1; }
+  .ec-meter .em-label { font-size:10px; color:#999; margin-bottom:2px; }
+  .ec-meter .em-bar { height:6px; background:#eee; border-radius:3px; overflow:hidden; }
+  .ec-meter .em-bar .em-fill { height:100%; border-radius:3px; transition:width .3s; }
+  .ec-meter .em-val { font-size:10px; color:#555; margin-top:2px; }
+  .if-status { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:#2e7d32; }
+  .if-status .if-dot { width:7px; height:7px; border-radius:50%; background:#4caf50; }
+  .latency-chart { background:#f5f7fa; border-radius:10px; padding:20px; height:180px; display:flex; align-items:flex-end; gap:4px; justify-content:space-around; }
+  .latency-bar { display:flex; flex-direction:column; align-items:center; }
+  .latency-bar .lb-bar { width:28px; border-radius:4px 4px 0 0; transition:height .3s; }
+  .latency-bar .lb-label { font-size:9px; color:#999; margin-top:4px; }
+  .audit-result { font-size:11px; font-weight:600; padding:2px 8px; border-radius:4px; }
+  .audit-result.success { background:#e8f5e9; color:#2e7d32; }
+  .audit-result.blocked { background:#ffebee; color:#c62828; }
+  .rbac-matrix { border-collapse:collapse; width:100%; font-size:12px; }
+  .rbac-matrix th, .rbac-matrix td { padding:8px 10px; text-align:center; border:1px solid #eee; }
+  .rbac-matrix th { background:#f5f7fa; font-weight:600; color:#555; }
+  .rbac-matrix td:first-child { text-align:left; font-weight:600; }
+  .rbac-full { color:#1967d2; font-size:16px; }
+  .rbac-limited { color:#ff9800; font-size:16px; }
+  .rbac-none { color:#ccc; font-size:16px; }
+  .sec-level-cards { display:flex; gap:16px; margin-bottom:16px; flex-wrap:wrap; }
+  .sec-level-card { flex:1; min-width:200px; padding:16px; border-radius:10px; }
+  .sec-level-card .sl-title { font-size:14px; font-weight:700; margin-bottom:4px; }
+  .sec-level-card .sl-desc { font-size:12px; margin-bottom:6px; }
+  .sec-level-card .sl-rule { font-size:11px; line-height:1.6; }
+  .sec-level-card.lv1 { background:#ffebee; border-left:4px solid #c62828; }
+  .sec-level-card.lv1 .sl-title { color:#c62828; }
+  .sec-level-card.lv2 { background:#fff3e0; border-left:4px solid #ef6c00; }
+  .sec-level-card.lv2 .sl-title { color:#ef6c00; }
+  .sec-level-card.lv3 { background:#e8f5e9; border-left:4px solid #2e7d32; }
+  .sec-level-card.lv3 .sl-title { color:#2e7d32; }
+</style>
+</head>
+<body>
+
+<!-- ===== TOP NAVIGATION ===== -->
+<div class="top-nav">
+  <div class="logo" onclick="navigate('home')">📊 DataHub Portal</div>
+  <div class="nav-items">
+    <div class="nav-item active" data-menu="dashboard">통합대시보드</div>
+    <div class="nav-item" data-menu="catalog">카탈로그·탐색</div>
+    <div class="nav-item" data-menu="collect">수집·정제</div>
+    <div class="nav-item" data-menu="distribute">유통·활용</div>
+    <div class="nav-item" data-menu="meta">메타데이터 관리</div>
+    <div class="nav-item" data-menu="system">시스템관리</div>
+  </div>
+  <div class="right-area">
+    <span>🔔 3</span>
+    <span>👤 관리자</span>
+  </div>
+</div>
+
+<!-- ===== LAYOUT ===== -->
+<div class="layout">
+
+  <!-- ===== SIDEBAR ===== -->
+  <div class="sidebar">
+    <!-- 통합대시보드 -->
+    <div class="section-title" data-accordion="acc-dashboard" onclick="toggleAccordion(this)">통합대시보드 <span class="arrow">▶</span></div>
+    <div class="accordion-body" id="acc-dashboard">
+      <div class="menu-item active" data-screen="home" onclick="navigate('home')">
+        <span class="icon">🏠</span> 업무중심홈
+      </div>
+      <div class="menu-item" data-screen="process" onclick="navigate('process')">
+        <span class="icon">🔄</span> 데이터 워크플로우
+      </div>
+      <div class="menu-item" data-screen="quality" onclick="navigate('quality')">
+        <span class="icon">✅</span> 데이터 품질현황
+      </div>
+      <div class="menu-item" data-screen="measurement" onclick="navigate('measurement')">
+        <span class="icon">📡</span> 통합계측요약
+      </div>
+      <div class="menu-item" data-screen="ai" onclick="navigate('ai')">
+        <span class="icon">🤖</span> AI 검색 및 질의응답
+      </div>
+      <div class="menu-item" data-screen="gallery" onclick="navigate('gallery')">
+        <span class="icon">📊</span> 시각화 및 차트갤러리
+      </div>
+      <div class="menu-item" data-screen="gallery" onclick="navigate('gallery')">
+        <span class="icon">⚙️</span> 메인화면(위젯) 설정
+      </div>
+    </div>
+    <!-- 카탈로그 및 탐색 -->
+    <div class="section-title" data-accordion="acc-catalog" onclick="toggleAccordion(this)">카탈로그 및 탐색 <span class="arrow">▶</span></div>
+    <div class="accordion-body" id="acc-catalog">
+      <div class="menu-item" data-screen="cat-search" onclick="navigate('cat-search')">
+        <span class="icon">🔍</span> 통합데이터 검색
+      </div>
+      <div class="menu-item" data-screen="cat-detail" onclick="navigate('cat-detail')">
+        <span class="icon">📋</span> 데이터셋 상세정보
+      </div>
+      <div class="menu-item" data-screen="cat-graph" onclick="navigate('cat-graph')">
+        <span class="icon">🕸️</span> 지식그래프·온톨로지
+      </div>
+      <div class="menu-item" data-screen="cat-ontology" onclick="navigate('cat-ontology')">
+        <span class="icon">🌳</span> 온톨로지 클래스탐색
+      </div>
+      <div class="menu-item" data-screen="cat-lineage" onclick="navigate('cat-lineage')">
+        <span class="icon">🔗</span> 데이터 리니지(계보)
+      </div>
+      <div class="menu-item" data-screen="cat-bookmark" onclick="navigate('cat-bookmark')">
+        <span class="icon">⭐</span> 내 보관함
+      </div>
+      <div class="menu-item" data-screen="cat-request" onclick="navigate('cat-request')">
+        <span class="icon">📝</span> 데이터 요청·피드백
+      </div>
+    </div>
+    <!-- 수집 및 정제 -->
+    <div class="section-title" data-accordion="acc-collect" onclick="toggleAccordion(this)">수집 및 정제 <span class="arrow">▶</span></div>
+    <div class="accordion-body" id="acc-collect">
+      <div class="menu-item" data-screen="col-pipeline" onclick="navigate('col-pipeline')">
+        <span class="icon">⚙️</span> 파이프라인 관리
+      </div>
+      <div class="menu-item" data-screen="col-register" onclick="navigate('col-register')">
+        <span class="icon">➕</span> 파이프라인 등록
+      </div>
+      <div class="menu-item" data-screen="col-system" onclick="navigate('col-system')">
+        <span class="icon">🔌</span> 대내외시스템 연계
+      </div>
+      <div class="menu-item" data-screen="col-arch" onclick="navigate('col-arch')">
+        <span class="icon">🏗️</span> 연계아키텍처 구조도
+      </div>
+      <div class="menu-item" data-screen="col-monitor" onclick="navigate('col-monitor')">
+        <span class="icon">📈</span> 수집현황·모니터링
+      </div>
+      <div class="menu-item" data-screen="col-log" onclick="navigate('col-log')">
+        <span class="icon">📋</span> 실시간 로그·알림
+      </div>
+      <div class="menu-item" data-screen="col-dbt" onclick="navigate('col-dbt')">
+        <span class="icon">🔧</span> 정제·변환 관리(dbt)
+      </div>
+      <div class="menu-item" data-screen="col-dbt-detail" onclick="navigate('col-dbt-detail')">
+        <span class="icon">📄</span> dbt 모델 상세
+      </div>
+    </div>
+    <!-- 유통 및 활용 -->
+    <div class="section-title" data-accordion="acc-distribute" onclick="toggleAccordion(this)">유통 및 활용 <span class="arrow">▶</span></div>
+    <div class="accordion-body" id="acc-distribute">
+      <div class="menu-item" data-screen="dist-product" onclick="navigate('dist-product')">
+        <span class="icon">📦</span> 유통데이터 구성·관리
+      </div>
+      <div class="menu-item" data-screen="dist-detail" onclick="navigate('dist-detail')">
+        <span class="icon">📄</span> Data Product 상세
+      </div>
+      <div class="menu-item" data-screen="dist-deidentify" onclick="navigate('dist-deidentify')">
+        <span class="icon">🔒</span> 비식별화·가명처리
+      </div>
+      <div class="menu-item" data-screen="dist-approval" onclick="navigate('dist-approval')">
+        <span class="icon">✅</span> 데이터 신청·승인
+      </div>
+      <div class="menu-item" data-screen="dist-api" onclick="navigate('dist-api')">
+        <span class="icon">🔌</span> 유통 API 관리
+      </div>
+      <div class="menu-item" data-screen="dist-stats" onclick="navigate('dist-stats')">
+        <span class="icon">📊</span> 데이터 유통통계
+      </div>
+    </div>
+    <!-- 메타데이터 관리 -->
+    <div class="section-title" data-accordion="acc-meta" onclick="toggleAccordion(this)">메타데이터 관리 <span class="arrow">▶</span></div>
+    <div class="accordion-body" id="acc-meta">
+      <div class="menu-item" data-screen="meta-glossary" onclick="navigate('meta-glossary')">
+        <span class="icon">📖</span> 표준용어·코드관리
+      </div>
+      <div class="menu-item" data-screen="meta-tag" onclick="navigate('meta-tag')">
+        <span class="icon">🏷️</span> 분류체계·태그관리
+      </div>
+      <div class="menu-item" data-screen="meta-model" onclick="navigate('meta-model')">
+        <span class="icon">🗂️</span> 데이터모델관리
+      </div>
+      <div class="menu-item" data-screen="meta-dq" onclick="navigate('meta-dq')">
+        <span class="icon">🔍</span> DQ 검증·프로파일링
+      </div>
+    </div>
+    <!-- 시스템관리 -->
+    <div class="section-title" data-accordion="acc-system" onclick="toggleAccordion(this)">시스템관리 <span class="arrow">▶</span></div>
+    <div class="accordion-body" id="acc-system">
+      <div class="menu-item" data-screen="sys-user" onclick="navigate('sys-user')">
+        <span class="icon">👥</span> 조직 및 사용자관리
+      </div>
+      <div class="menu-item" data-screen="sys-role" onclick="navigate('sys-role')">
+        <span class="icon">🛡️</span> 권한 및 역할관리
+      </div>
+      <div class="menu-item" data-screen="sys-security" onclick="navigate('sys-security')">
+        <span class="icon">🔐</span> 데이터등급·보안정책
+      </div>
+      <div class="menu-item" data-screen="sys-engine" onclick="navigate('sys-engine')">
+        <span class="icon">⚙️</span> 데이터허브 엔진관리
+      </div>
+      <div class="menu-item" data-screen="sys-interface" onclick="navigate('sys-interface')">
+        <span class="icon">🔗</span> 연계인터페이스 모니터링
+      </div>
+      <div class="menu-item" data-screen="sys-audit" onclick="navigate('sys-audit')">
+        <span class="icon">📋</span> 접속통계·감사로그
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="main">
+
+    <!-- ========== SCREEN 1: 업무중심홈 ========== -->
+    <div class="screen active" id="screen-home">
+      <div class="breadcrumb">
+        <a href="#" onclick="navigate('home')">홈</a> &gt; 통합대시보드 &gt; <strong>업무중심홈(개인화)</strong>
+      </div>
+      <div class="page-title">업무중심홈 (개인화 대시보드)</div>
+
+      <!-- AI 검색 -->
+      <div class="ai-search-box">
+        <div style="font-size:15px; font-weight:700; margin-bottom:10px;">🤖 AI 검색 및 질의응답 (생성형 AI 기반)</div>
+        <input type="text" placeholder="자연어로 데이터를 검색하세요... (예: 소양강댐 수위와 발전량)" onclick="navigate('ai')">
+      </div>
+
+      <!-- 탭 -->
+      <div style="display:flex; gap:8px; margin-bottom:16px;">
+        <span class="btn btn-primary">개인화 대시보드</span>
+        <span class="btn btn-outline" onclick="navigate('gallery')">공유차트</span>
+        <span class="btn btn-outline" onclick="navigate('gallery')">위젯설정</span>
+      </div>
+
+      <!-- KPI 카드 4개 -->
+      <div class="grid-4" style="margin-bottom:20px;">
+        <div class="kpi-card">
+          <div class="kpi-label">신규 활용 데이터 증가율</div>
+          <div class="kpi-value kpi-up">+8.3%</div>
+          <div class="kpi-sub">전일 대비 (수집 1.24M건)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">SLA 충족률</div>
+          <div class="kpi-value" style="color:#4caf50;">97.8%</div>
+          <div class="kpi-sub">금일 기준 (전체 엔진 정상)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">평균 승인 처리시간</div>
+          <div class="kpi-value" style="color:#ff9800;">2.4h</div>
+          <div class="kpi-sub">목표 4h (금월 48건 완료)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">데이터 품질점수</div>
+          <div class="kpi-value">94.2</div>
+          <div class="kpi-sub kpi-up">전월 대비 +1.8p</div>
+        </div>
+      </div>
+
+      <!-- 하단 3컬럼 -->
+      <div class="grid-3">
+        <!-- 나의 업무 현황 -->
+        <div class="card">
+          <div class="card-title">📋 나의 업무 현황</div>
+          <div class="list-item" style="cursor:pointer;" onclick="navigate('process')">
+            <span>● 승인대기 요청</span> <span style="color:#1967d2; font-weight:700;">3건</span>
+          </div>
+          <div class="list-item"><span>★ 즐겨찾기 자산</span> <span>12건</span></div>
+          <div class="list-item"><span>◎ 최근 본 항목</span> <span>8건</span></div>
+          <div class="list-item" style="cursor:pointer;" onclick="navigate('process')">
+            <span>▶ 나의 데이터 요청</span> <span style="color:#ff9800; font-weight:600;">5건 진행중</span>
+          </div>
+        </div>
+
+        <!-- 데이터 품질 현황 -->
+        <div class="card" style="cursor:pointer;" onclick="navigate('quality')">
+          <div class="card-title">✅ 데이터 품질 현황</div>
+          <div class="quality-bar">
+            <div class="label-row"><span>완전성</span><span style="font-weight:600;">96.8%</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:96.8%; background:#4caf50;"></div></div>
+          </div>
+          <div class="quality-bar">
+            <div class="label-row"><span>정합성</span><span style="font-weight:600;">93.1%</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:93.1%; background:#2196f3;"></div></div>
+          </div>
+          <div class="quality-bar">
+            <div class="label-row"><span>유효성</span><span style="font-weight:600;">92.7%</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:92.7%; background:#ff9800;"></div></div>
+          </div>
+          <div class="quality-bar">
+            <div class="label-row"><span>적시성</span><span style="font-weight:600;">94.8%</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:94.8%; background:#9c27b0;"></div></div>
+          </div>
+        </div>
+
+        <!-- 인기 데이터 & 최근 업데이트 -->
+        <div>
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-title">🔥 인기 데이터 TOP 5</div>
+            <div class="list-item"><span><span class="rank-num">1</span>광역상수도 유량 실시간</span></div>
+            <div class="list-item"><span><span class="rank-num">2</span>수력발전 일간통계</span></div>
+            <div class="list-item"><span><span class="rank-num">3</span>RWIS 수위데이터</span></div>
+            <div class="list-item"><span><span class="rank-num" style="background:#888;">4</span>원격검침 사용량분석</span></div>
+            <div class="list-item"><span><span class="rank-num" style="background:#888;">5</span>정수장 운영실적</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">🕐 최근 업데이트 데이터</div>
+            <div class="update-item"><span class="dot" style="background:#4caf50;"></span> RWIS 수위센서 갱신 <span class="time">11:42</span></div>
+            <div class="update-item"><span class="dot" style="background:#2196f3;"></span> SAP 재무 수집완료 <span class="time">06:15</span></div>
+            <div class="update-item"><span class="dot" style="background:#ff9800;"></span> 스마트미터 검침수집 <span class="time">상시</span></div>
+            <div class="update-item"><span class="dot" style="background:#9c27b0;"></span> 환경부 수질데이터 연계 <span class="time">11:30</span></div>
+            <div class="update-item"><span class="dot" style="background:#607d8b;"></span> Oracle 인사데이터 배치 <span class="time">02:00</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========== SCREEN 2: 데이터 워크플로우 ========== -->
+    <div class="screen" id="screen-process">
+      <div class="breadcrumb">
+        <a href="#" onclick="navigate('home')">홈</a> &gt; 통합대시보드 &gt; <strong>데이터 워크플로우</strong>
+      </div>
+      <div class="page-title">데이터 워크플로우</div>
+
+      <!-- 프로세스 단계 -->
+      <div class="process-steps">
+        <div class="step" onclick="highlightStep(this)">
+          <div class="step-num">1</div>
+          <div class="step-title">검색·탐색</div>
+          <div class="step-desc">카탈로그 검색<br>지식그래프 탐색</div>
+          <span class="arrow">→</span>
+        </div>
+        <div class="step" onclick="highlightStep(this)">
+          <div class="step-num">2</div>
+          <div class="step-title">데이터 확인</div>
+          <div class="step-desc">스키마·품질 확인<br>샘플 미리보기</div>
+          <span class="arrow">→</span>
+        </div>
+        <div class="step" onclick="highlightStep(this)">
+          <div class="step-num">3</div>
+          <div class="step-title">활용 신청</div>
+          <div class="step-desc">API/다운로드<br>신청서 작성</div>
+          <span class="arrow">→</span>
+        </div>
+        <div class="step active-step" onclick="highlightStep(this)">
+          <div class="step-num">4</div>
+          <div class="step-title">승인·발급</div>
+          <div class="step-desc">소유자 검토·승인<br>API Key 발급</div>
+          <span class="arrow">→</span>
+        </div>
+        <div class="step" onclick="highlightStep(this)">
+          <div class="step-num">5</div>
+          <div class="step-title">데이터 활용</div>
+          <div class="step-desc">API 연동·분석<br>대시보드 구성</div>
+          <span class="arrow">→</span>
+        </div>
+        <div class="step" onclick="highlightStep(this)">
+          <div class="step-num">6</div>
+          <div class="step-title">피드백</div>
+          <div class="step-desc">품질 피드백<br>개선 요청</div>
+        </div>
+      </div>
+
+      <!-- 업무프로세스 테이블 -->
+      <div class="card">
+        <div class="card-title">현재 진행중인 업무프로세스</div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>번호</th><th>활용 목적</th><th>대상 데이터</th><th>신청자</th><th>현재 단계</th><th>상태</th><th>경과일</th><th>다음 액션</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>WF-089</td>
+              <td>댐 수위 실시간 모니터링 시스템 구축</td>
+              <td>댐수위·방류량</td>
+              <td>김개발</td>
+              <td><strong>4. 승인</strong></td>
+              <td><span class="status-badge status-progress">진행</span></td>
+              <td>2일</td>
+              <td>관리자 승인 대기</td>
+            </tr>
+            <tr>
+              <td>WF-088</td>
+              <td>수질 이상 예측 AI 모델 학습</td>
+              <td>수질측정데이터</td>
+              <td>이AI</td>
+              <td><strong>3. 신청</strong></td>
+              <td><span class="status-badge status-progress">진행</span></td>
+              <td>1일</td>
+              <td>신청서 보완 필요</td>
+            </tr>
+            <tr>
+              <td>WF-087</td>
+              <td>광역상수도 유량 분석 보고서</td>
+              <td>광역상수도 유량</td>
+              <td>박분석</td>
+              <td><strong>5. 활용</strong></td>
+              <td><span class="status-badge status-active">활용중</span></td>
+              <td>5일</td>
+              <td>보고서 작성중</td>
+            </tr>
+            <tr>
+              <td>WF-086</td>
+              <td>스마트미터 데이터 기반 요금분석</td>
+              <td>원격검침 사용량</td>
+              <td>최요금</td>
+              <td><strong>5. 활용</strong></td>
+              <td><span class="status-badge status-active">활용중</span></td>
+              <td>8일</td>
+              <td>결과 리뷰 예정</td>
+            </tr>
+            <tr>
+              <td>WF-085</td>
+              <td>정수장 운영 최적화 대시보드</td>
+              <td>정수장 운영실적</td>
+              <td>한정수</td>
+              <td><strong>4. 승인</strong></td>
+              <td><span class="status-badge status-wait">대기</span></td>
+              <td>3일</td>
+              <td>데이터 소유자 승인</td>
+            </tr>
+            <tr>
+              <td>WF-084</td>
+              <td>환경부 수질데이터 외부 공유</td>
+              <td>환경부 수질 API</td>
+              <td>정공유</td>
+              <td><strong>6. 피드백</strong></td>
+              <td><span class="status-badge status-done">완료</span></td>
+              <td>12일</td>
+              <td>품질 피드백 제출</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ========== SCREEN 3: 데이터 품질현황 ========== -->
+    <div class="screen" id="screen-quality">
+      <div class="breadcrumb">
+        <a href="#" onclick="navigate('home')">홈</a> &gt; 통합대시보드 &gt; <strong>데이터 품질현황</strong>
+      </div>
+      <div class="page-title">데이터 품질현황</div>
+
+      <!-- 종합 점수 & 4개 지표 -->
+      <div style="display:flex; gap:16px; margin-bottom:20px;">
+        <div class="kpi-card" style="flex:1.2;">
+          <div class="kpi-label">종합 품질점수</div>
+          <div style="margin:12px auto;">
+            <div class="donut" style="background:conic-gradient(#1967d2 0% 94.2%, #e0e0e0 94.2% 100%);">
+              <div class="donut-inner">94.2</div>
+            </div>
+          </div>
+          <div class="kpi-sub kpi-up">전월 대비 ▲1.8p</div>
+        </div>
+        <div class="kpi-card" style="flex:1;">
+          <div class="kpi-label">완전성</div>
+          <div class="kpi-value" style="color:#4caf50; font-size:24px;">96.8%</div>
+          <div class="kpi-sub">NULL/누락 비율</div>
+        </div>
+        <div class="kpi-card" style="flex:1;">
+          <div class="kpi-label">정합성</div>
+          <div class="kpi-value" style="color:#2196f3; font-size:24px;">93.1%</div>
+          <div class="kpi-sub">참조 무결성</div>
+        </div>
+        <div class="kpi-card" style="flex:1;">
+          <div class="kpi-label">유효성</div>
+          <div class="kpi-value" style="color:#ff9800; font-size:24px;">92.7%</div>
+          <div class="kpi-sub">범위/형식 적합</div>
+        </div>
+        <div class="kpi-card" style="flex:1;">
+          <div class="kpi-label">적시성</div>
+          <div class="kpi-value" style="color:#9c27b0; font-size:24px;">94.8%</div>
+          <div class="kpi-sub">수집 지연율</div>
+        </div>
+      </div>
+
+      <!-- 차트 2개 -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">도메인별 품질점수</div>
+          <div class="bar-chart">
+            <div class="bar-col"><div class="bar" style="height:92%; background:#1967d2;"></div><div class="bar-label">수자원<br><b>96.2</b></div></div>
+            <div class="bar-col"><div class="bar" style="height:90%; background:#4fc3f7;"></div><div class="bar-label">에너지<br><b>94.5</b></div></div>
+            <div class="bar-col"><div class="bar" style="height:88%; background:#81c784;"></div><div class="bar-label">수질<br><b>93.8</b></div></div>
+            <div class="bar-col"><div class="bar" style="height:86%; background:#ffb74d;"></div><div class="bar-label">정수<br><b>92.1</b></div></div>
+            <div class="bar-col"><div class="bar" style="height:78%; background:#e57373;"></div><div class="bar-label">고객<br><b>89.7</b></div></div>
+            <div class="bar-col"><div class="bar" style="height:85%; background:#ba68c8;"></div><div class="bar-label">계측<br><b>91.4</b></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">월별 품질추이</div>
+          <svg viewBox="0 0 400 160" class="mini-chart" style="margin-top:8px;">
+            <!-- Grid -->
+            <line x1="40" y1="10" x2="40" y2="130" stroke="#eee" stroke-width="1"/>
+            <line x1="40" y1="130" x2="380" y2="130" stroke="#eee" stroke-width="1"/>
+            <line x1="40" y1="70" x2="380" y2="70" stroke="#f5f5f5" stroke-width="1"/>
+            <line x1="40" y1="10" x2="380" y2="10" stroke="#f5f5f5" stroke-width="1"/>
+            <!-- Labels -->
+            <text x="8" y="14" font-size="9" fill="#aaa">98</text>
+            <text x="8" y="74" font-size="9" fill="#aaa">94</text>
+            <text x="8" y="134" font-size="9" fill="#aaa">88</text>
+            <text x="100" y="148" font-size="9" fill="#aaa">7월</text>
+            <text x="170" y="148" font-size="9" fill="#aaa">8월</text>
+            <text x="240" y="148" font-size="9" fill="#aaa">9월</text>
+            <text x="310" y="148" font-size="9" fill="#aaa">10월</text>
+            <text x="370" y="148" font-size="9" fill="#aaa">11월</text>
+            <!-- 완전성 -->
+            <polyline points="108,30 178,35 248,25 318,22 378,18" fill="none" stroke="#4caf50" stroke-width="2"/>
+            <!-- 정합성 -->
+            <polyline points="108,70 178,75 248,65 318,60 378,55" fill="none" stroke="#2196f3" stroke-width="2"/>
+            <!-- 유효성 -->
+            <polyline points="108,85 178,80 248,78 318,72 378,62" fill="none" stroke="#ff9800" stroke-width="2"/>
+            <!-- 적시성 -->
+            <polyline points="108,60 178,55 248,50 318,45 378,40" fill="none" stroke="#9c27b0" stroke-width="2"/>
+            <!-- Legend -->
+            <rect x="60" y="150" width="8" height="3" fill="#4caf50"/><text x="72" y="153" font-size="8" fill="#666">완전성</text>
+            <rect x="120" y="150" width="8" height="3" fill="#2196f3"/><text x="132" y="153" font-size="8" fill="#666">정합성</text>
+            <rect x="180" y="150" width="8" height="3" fill="#ff9800"/><text x="192" y="153" font-size="8" fill="#666">유효성</text>
+            <rect x="240" y="150" width="8" height="3" fill="#9c27b0"/><text x="252" y="153" font-size="8" fill="#666">적시성</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="alert-box">
+        ⚠️ <strong>품질 경고:</strong> 고객 도메인(89.7%) 유효성 기준 미달 — 원격검침 데이터 포맷 오류 12건 확인 필요
+      </div>
+
+    </div>
+
+    <!-- ========== SCREEN 4: 통합계측요약 ========== -->
+    <div class="screen" id="screen-measurement">
+      <div class="breadcrumb">
+        <a href="#" onclick="navigate('home')">홈</a> &gt; 통합대시보드 &gt; <strong>통합계측요약</strong>
+      </div>
+      <div class="page-title">GRE 데이터 통계</div>
+      <p style="font-size:13px; color:#666; margin-bottom:16px;">GRE 시계열 데이터 현황을 한눈에 확인하세요. 📅 2월17일 08:59 ~ 2월24일 08:59</p>
+
+      <!-- 태그 통계 -->
+      <div class="tag-stat">
+        <div class="tag-item">
+          <div class="tv">71,612</div>
+          <div class="tl">전체 태그수</div>
+        </div>
+        <div class="tag-item">
+          <div class="tv">0건</div>
+          <div class="tl">데이터건수 (15분)</div>
+        </div>
+        <div class="tag-item">
+          <div class="tv">2.3억건</div>
+          <div class="tl">데이터건수 (1시간)</div>
+        </div>
+        <div class="tag-item">
+          <div class="tv">7</div>
+          <div class="tl">유역/지사 (사무소 78개)</div>
+        </div>
+        <div class="tag-item">
+          <div class="tv">463</div>
+          <div class="tl">전체 사업장</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- 유역별 태그 분포 -->
+        <div class="card">
+          <div class="card-title">유역별 태그 분포</div>
+          <div class="bar-chart" style="height:140px;">
+            <div class="bar-col"><div class="bar" style="height:95%; background:#1967d2;"></div><div class="bar-label">충청<br><b>16,206</b></div></div>
+            <div class="bar-col"><div class="bar" style="height:88%; background:#4fc3f7;"></div><div class="bar-label">한강<br><b>15,546</b></div></div>
+            <div class="bar-col"><div class="bar" style="height:60%; background:#81c784;"></div><div class="bar-label">경남<br><b>9,108</b></div></div>
+            <div class="bar-col"><div class="bar" style="height:55%; background:#ffb74d;"></div><div class="bar-label">낙동강<br><b>9,108</b></div></div>
+            <div class="bar-col"><div class="bar" style="height:45%; background:#ba68c8;"></div><div class="bar-label">금영섬<br><b>7,128</b></div></div>
+            <div class="bar-col"><div class="bar" style="height:42%; background:#e57373;"></div><div class="bar-label">광주전남<br><b>6,847</b></div></div>
+          </div>
+        </div>
+        <!-- 데이터 유입 추이 -->
+        <div class="card">
+          <div class="card-title">데이터 유입추이 (15분)</div>
+          <svg viewBox="0 0 400 140" class="mini-chart">
+            <line x1="20" y1="120" x2="390" y2="120" stroke="#eee" stroke-width="1"/>
+            <polyline points="20,100 60,95 100,80 140,85 180,60 220,65 260,50 300,55 340,45 380,40" fill="none" stroke="#1967d2" stroke-width="2"/>
+            <polyline points="20,100 60,95 100,80 140,85 180,60 220,65 260,50 300,55 340,45 380,40" fill="url(#grad1)" stroke="none" opacity="0.15"/>
+            <defs><linearGradient id="grad1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1967d2"/><stop offset="100%" stop-color="#fff"/></linearGradient></defs>
+            <text x="20" y="135" font-size="8" fill="#aaa">00:00</text>
+            <text x="100" y="135" font-size="8" fill="#aaa">04:00</text>
+            <text x="200" y="135" font-size="8" fill="#aaa">08:00</text>
+            <text x="300" y="135" font-size="8" fill="#aaa">12:00</text>
+            <text x="370" y="135" font-size="8" fill="#aaa">16:00</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 유역/지사별 현황 테이블 -->
+      <div class="card">
+        <div class="card-title">유역/지사별 현황 <span class="badge">총 7개 항목 | 태그 합계: 71,612개</span></div>
+        <table class="data-table">
+          <thead><tr><th>유역/지사</th><th>사무소</th><th>태그수</th><th>상세</th></tr></thead>
+          <tbody>
+            <tr><td>한강권역본부</td><td>11</td><td>15,546</td><td><a href="#" style="color:#1967d2;">상세 &gt;</a></td></tr>
+            <tr><td>강원지역지사</td><td>2</td><td>4,457</td><td><a href="#" style="color:#1967d2;">상세 &gt;</a></td></tr>
+            <tr><td>충청지역지사</td><td>12</td><td>16,206</td><td><a href="#" style="color:#1967d2;">상세 &gt;</a></td></tr>
+            <tr><td>금영섬권역본부</td><td>7</td><td>7,128</td><td><a href="#" style="color:#1967d2;">상세 &gt;</a></td></tr>
+            <tr><td>광주전남지역지사</td><td>10</td><td>6,847</td><td><a href="#" style="color:#1967d2;">상세 &gt;</a></td></tr>
+            <tr><td>낙동강권역본부</td><td>8</td><td>9,108</td><td><a href="#" style="color:#1967d2;">상세 &gt;</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ========== SCREEN 5: AI 검색 및 질의응답 ========== -->
+    <div class="screen" id="screen-ai">
+      <div class="breadcrumb">
+        <a href="#" onclick="navigate('home')">홈</a> &gt; 통합대시보드 &gt; <strong>AI 검색 및 질의응답</strong>
+      </div>
+      <div class="page-title">AI 검색 및 질의응답 (생성형 AI 기반)</div>
+
+      <!-- 질의 -->
+      <div class="card" style="background:#e8f0fe; border-left:4px solid #1967d2;">
+        <div style="font-size:13px; color:#1967d2; font-weight:600; margin-bottom:4px;">💬 질의</div>
+        <div style="font-size:15px; font-weight:600;">소양강댐의 최근 1주일 수위변화와 발전량 추이를 보여줘</div>
+      </div>
+
+      <!-- AI 응답 -->
+      <div class="ai-response">
+        <div class="resp-title">🤖 AI 응답</div>
+        <p style="font-size:13px; margin-bottom:10px;">소양강댐 최근 1주일 데이터를 분석했습니다.</p>
+        <ul>
+          <li><strong>수위:</strong> 11/6 172.3m → 11/12 175.2m (▲2.9m, 1.7% 상승) — 우기영향으로 유입량 증가</li>
+          <li><strong>발전량:</strong> 일평균 1,245MWh → 1,380MWh (▲10.8%) — 방류량 증가에 따른 발전효율 개선</li>
+          <li><strong>유입량:</strong> 평균 52.3㎥/s → 68.7㎥/s (▲31.4%) — 강원지역 강수 영향</li>
+          <li><strong>이상 징후:</strong> 11/9 수위급등 (+1.2m/day) → 방류량 조정으로 안정화 완료</li>
+        </ul>
+      </div>
+
+      <!-- 차트 2개 -->
+      <div class="grid-2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-title">수위 추이 (11/6~11/12)</div>
+          <svg viewBox="0 0 400 140" class="mini-chart">
+            <line x1="30" y1="120" x2="380" y2="120" stroke="#eee" stroke-width="1"/>
+            <line x1="30" y1="60" x2="380" y2="60" stroke="#f5f5f5" stroke-width="1"/>
+            <line x1="30" y1="10" x2="380" y2="10" stroke="#f5f5f5" stroke-width="1"/>
+            <text x="5" y="14" font-size="8" fill="#aaa">180</text>
+            <text x="5" y="64" font-size="8" fill="#aaa">175</text>
+            <text x="5" y="124" font-size="8" fill="#aaa">170</text>
+            <polyline points="55,110 105,105 155,95 205,50 255,45 305,35 355,25" fill="none" stroke="#1967d2" stroke-width="2.5"/>
+            <circle cx="205" cy="50" r="4" fill="#f44336" stroke="#fff" stroke-width="2"/>
+            <text x="190" y="45" font-size="7" fill="#f44336">수위급등</text>
+            <text x="45" y="135" font-size="8" fill="#aaa">11/6</text>
+            <text x="100" y="135" font-size="8" fill="#aaa">11/7</text>
+            <text x="150" y="135" font-size="8" fill="#aaa">11/8</text>
+            <text x="200" y="135" font-size="8" fill="#aaa">11/9</text>
+            <text x="250" y="135" font-size="8" fill="#aaa">11/10</text>
+            <text x="300" y="135" font-size="8" fill="#aaa">11/11</text>
+            <text x="345" y="135" font-size="8" fill="#aaa">11/12</text>
+          </svg>
+        </div>
+        <div class="card">
+          <div class="card-title">발전량 추이 (11/6~11/12)</div>
+          <svg viewBox="0 0 400 140" class="mini-chart">
+            <line x1="30" y1="120" x2="380" y2="120" stroke="#eee" stroke-width="1"/>
+            <text x="3" y="14" font-size="8" fill="#aaa">1600</text>
+            <text x="3" y="64" font-size="8" fill="#aaa">1200</text>
+            <text x="3" y="124" font-size="8" fill="#aaa">1000</text>
+            <rect x="45" y="80" width="30" height="40" rx="3" fill="#4fc3f7"/>
+            <rect x="95" y="75" width="30" height="45" rx="3" fill="#4fc3f7"/>
+            <rect x="145" y="65" width="30" height="55" rx="3" fill="#4fc3f7"/>
+            <rect x="195" y="40" width="30" height="80" rx="3" fill="#1967d2"/>
+            <rect x="245" y="35" width="30" height="85" rx="3" fill="#1967d2"/>
+            <rect x="295" y="30" width="30" height="90" rx="3" fill="#1967d2"/>
+            <rect x="345" y="25" width="30" height="95" rx="3" fill="#1967d2"/>
+            <text x="50" y="135" font-size="8" fill="#aaa">11/6</text>
+            <text x="100" y="135" font-size="8" fill="#aaa">11/7</text>
+            <text x="150" y="135" font-size="8" fill="#aaa">11/8</text>
+            <text x="200" y="135" font-size="8" fill="#aaa">11/9</text>
+            <text x="245" y="135" font-size="8" fill="#aaa">11/10</text>
+            <text x="298" y="135" font-size="8" fill="#aaa">11/11</text>
+            <text x="348" y="135" font-size="8" fill="#aaa">11/12</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 액션 버튼 -->
+      <div class="action-btns" style="margin-bottom:16px;">
+        <button class="btn btn-primary">📁 보관함 저장</button>
+        <button class="btn btn-outline">📤 차트 공유</button>
+        <button class="btn btn-outline">📊 데이터 상세보기</button>
+        <button class="btn btn-outline">💬 추가 질문하기</button>
+      </div>
+
+      <!-- 추가 질의 입력 -->
+      <div class="ai-search-box">
+        <input type="text" placeholder="추가 질문을 입력하세요... (예: 방류량 증가 원인을 분석해줘)">
+      </div>
+
+    </div>
+
+    <!-- ========== SCREEN 6: 시각화 및 차트갤러리 ========== -->
+    <div class="screen" id="screen-gallery">
+      <div class="breadcrumb">
+        <a href="#" onclick="navigate('home')">홈</a> &gt; 통합대시보드 &gt; <strong>시각화 및 차트갤러리</strong>
+      </div>
+      <div class="page-title">시각화 및 차트갤러리 / 메인화면(위젯) 설정</div>
+
+      <!-- 탭 -->
+      <div class="tabs">
+        <div class="tab active" onclick="switchGalleryTab(this, 'personal')">개인화 대시보드</div>
+        <div class="tab" onclick="switchGalleryTab(this, 'shared')">공유차트</div>
+        <div class="tab" onclick="switchGalleryTab(this, 'widget')">위젯설정</div>
+        <div class="tab" onclick="switchGalleryTab(this, 'template')">템플릿</div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <span style="font-size:13px; color:#666;">드래그 앤 드롭으로 위젯을 배치하세요 | 현재 <strong>6개</strong> 위젯 활성</span>
+        <button class="btn btn-primary">➕ 위젯 추가</button>
+      </div>
+
+      <!-- 위젯 그리드 -->
+      <div class="widget-grid">
+        <div class="widget-card" draggable="true">
+          <div class="wtype">실시간 차트</div>
+          <div class="wname">수위 실시간 모니터링</div>
+          <div class="warea">
+            <svg viewBox="0 0 200 50" style="width:90%;">
+              <polyline points="0,40 30,35 60,20 90,25 120,15 150,18 180,10 200,12" fill="none" stroke="#1967d2" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+        <div class="widget-card" draggable="true">
+          <div class="wtype">KPI 카드</div>
+          <div class="wname">금일 수집현황</div>
+          <div class="warea">
+            <div style="text-align:center;">
+              <div style="font-size:24px; font-weight:700; color:#1967d2;">1.24M</div>
+              <div style="font-size:11px; color:#888;">금일 수집건수</div>
+            </div>
+          </div>
+        </div>
+        <div class="widget-card" draggable="true">
+          <div class="wtype">게이지 차트</div>
+          <div class="wname">데이터 품질 게이지</div>
+          <div class="warea">
+            <div style="text-align:center;">
+              <div class="donut" style="width:60px; height:60px; background:conic-gradient(#4caf50 0% 94%, #e0e0e0 94% 100%);">
+                <div class="donut-inner" style="width:38px; height:38px; font-size:12px;">94.2</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="widget-card" draggable="true">
+          <div class="wtype">랭킹 리스트</div>
+          <div class="wname">인기 데이터 TOP 5</div>
+          <div class="warea" style="flex-direction:column; font-size:11px; gap:2px; align-items:flex-start; padding:8px 12px;">
+            <div>🥇 광역상수도 유량</div>
+            <div>🥈 수력발전 일간통계</div>
+            <div>🥉 RWIS 수위데이터</div>
+          </div>
+        </div>
+        <div class="widget-card" draggable="true">
+          <div class="wtype">알림 패널</div>
+          <div class="wname">알림·이벤트 피드</div>
+          <div class="warea" style="flex-direction:column; font-size:11px; gap:2px; align-items:flex-start; padding:8px 12px;">
+            <div>🔔 승인 요청 3건</div>
+            <div>⚠️ 품질 경고 1건</div>
+            <div>✅ 수집 완료 알림</div>
+          </div>
+        </div>
+        <div class="widget-card" draggable="true">
+          <div class="wtype">업무 카드</div>
+          <div class="wname">나의 업무 현황</div>
+          <div class="warea" style="flex-direction:column; font-size:11px; gap:2px; align-items:flex-start; padding:8px 12px;">
+            <div>● 승인대기 3건</div>
+            <div>★ 즐겨찾기 12건</div>
+            <div>▶ 진행중 5건</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========== CATALOG SCREEN 1: 통합데이터 검색 ========== -->
+    <div class="screen" id="screen-cat-search">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 카탈로그 및 탐색 &gt; <strong>통합데이터 검색 및 탐색</strong></div>
+      <div class="page-title">통합데이터 검색 및 탐색</div>
+      <div class="search-box">
+        <input type="text" placeholder="도메인, 태그, 표준용어 기반 통합검색..." id="catalogSearchInput">
+        <button class="btn-search">🔍 검색</button>
+      </div>
+      <div class="tag-pills">
+        <span class="tag-pill active">수위데이터</span>
+        <span class="tag-pill">발전량</span>
+        <span class="tag-pill">수질이상</span>
+        <span class="tag-pill">누수탐지</span>
+        <span class="tag-pill">고객정보</span>
+        <span class="tag-pill">GIS 공간</span>
+      </div>
+      <div class="filter-bar">
+        <select><option>도메인: 수자원</option><option>도메인: 에너지</option><option>도메인: 수질</option><option>도메인: 전체</option></select>
+        <select><option>보안등급: 전체</option><option>1등급</option><option>2등급</option><option>3등급</option></select>
+        <select><option>수집방식: 전체</option><option>실시간(CDC)</option><option>배치</option><option>API</option></select>
+        <select><option>데이터유형: 전체</option><option>테이블</option><option>API</option><option>파일</option></select>
+        <select><option>정렬: 관련도순</option><option>최신순</option><option>품질순</option></select>
+        <span class="result-count">검색결과: <strong>34건</strong></span>
+      </div>
+      <div class="dataset-card" onclick="navigate('cat-detail')">
+        <div class="ds-name">TB_WATER_LEVEL (수위관측 테이블)</div>
+        <div class="ds-desc">전국 관측소별 수위데이터. 실시간 CDC 수집. 1,234,567건.</div>
+        <div class="ds-meta"><span>📦 RWIS</span><span>🏷️ 수자원</span></div>
+        <div class="ds-tags">
+          <span class="ds-tag domain">수위</span><span class="ds-tag domain">실시간</span><span class="ds-tag">계측</span><span class="ds-tag security">2등급</span><span class="ds-tag quality">품질 94.2%</span>
+        </div>
+      </div>
+      <div class="dataset-card" onclick="navigate('cat-detail')">
+        <div class="ds-name">TB_FLOW_RATE (유량관측 테이블)</div>
+        <div class="ds-desc">댐·하천 유량 관측데이터. 초당수집. 987,654건.</div>
+        <div class="ds-meta"><span>📦 RWIS</span><span>🏷️ 수자원</span></div>
+        <div class="ds-tags">
+          <span class="ds-tag domain">유량</span><span class="ds-tag domain">실시간</span><span class="ds-tag">댐</span><span class="ds-tag security">2등급</span><span class="ds-tag quality">품질 92.8%</span>
+        </div>
+      </div>
+      <div class="dataset-card" onclick="navigate('cat-detail')">
+        <div class="ds-name">TB_WATER_QUALITY (수질분석 데이터)</div>
+        <div class="ds-desc">환경부 수질측정데이터. 30분 주기 수집. 456,789건.</div>
+        <div class="ds-meta"><span>📦 환경부 API</span><span>🏷️ 수질</span></div>
+        <div class="ds-tags">
+          <span class="ds-tag domain">수질</span><span class="ds-tag">탁도</span><span class="ds-tag">pH</span><span class="ds-tag security">2등급</span><span class="ds-tag quality">품질 89.5%</span>
+        </div>
+      </div>
+      <div class="dataset-card" onclick="navigate('cat-detail')">
+        <div class="ds-name">TB_POWER_GENERATION (발전량 데이터)</div>
+        <div class="ds-desc">수력발전 발전량 일별 집계데이터. 23,456건.</div>
+        <div class="ds-meta"><span>📦 HDAPS</span><span>🏷️ 에너지</span></div>
+        <div class="ds-tags">
+          <span class="ds-tag domain">발전량</span><span class="ds-tag">수력</span><span class="ds-tag">에너지</span><span class="ds-tag security">3등급</span><span class="ds-tag quality">품질 97.1%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CATALOG SCREEN 2: 데이터셋 상세정보 ========== -->
+    <div class="screen" id="screen-cat-detail">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; <a href="#" onclick="navigate('cat-search')">카탈로그 및 탐색</a> &gt; 통합검색 &gt; <strong>TB_WATER_LEVEL 상세</strong></div>
+      <div class="detail-header">
+        <div class="title-area">
+          <div class="ds-name" style="font-size:20px; font-weight:700; color:#1a2744;">TB_WATER_LEVEL (수위관측 테이블)</div>
+        </div>
+        <div class="action-btns" style="margin-top:0;">
+          <button class="btn btn-primary" onclick="navigate('cat-bookmark')">⭐ 보관함 추가</button>
+          <button class="btn btn-outline" onclick="navigate('cat-lineage')">🔗 리니지 보기</button>
+          <button class="btn btn-outline" onclick="navigate('cat-request')">📝 데이터 요청</button>
+        </div>
+      </div>
+      <div class="detail-info-grid">
+        <div class="detail-info-item"><div class="dil">원본 시스템</div><div class="div">RWIS DB (FA망)</div></div>
+        <div class="detail-info-item"><div class="dil">도메인</div><div class="div">수자원</div></div>
+        <div class="detail-info-item"><div class="dil">온톨로지 클래스</div><div class="div">kw:WaterLevelObservation</div></div>
+        <div class="detail-info-item"><div class="dil">총 레코드 수</div><div class="div">1,234,567건</div></div>
+        <div class="detail-info-item"><div class="dil">수집방식</div><div class="div">실시간 (CDC)</div></div>
+        <div class="detail-info-item"><div class="dil">최종수집일시</div><div class="div">2025-11-12 11:42:30</div></div>
+        <div class="detail-info-item"><div class="dil">보안등급</div><div class="div" style="color:#ef6c00;">2등급 (일반)</div></div>
+        <div class="detail-info-item"><div class="dil">데이터 품질점수</div><div class="div" style="color:#4caf50;">94.2% (양호)</div></div>
+        <div class="detail-info-item"><div class="dil">담당자</div><div class="div">박수원 (수자원관리팀)</div></div>
+      </div>
+      <!-- 태그 및 분류 -->
+      <div class="card">
+        <div class="card-title">🏷️ 태그 및 분류</div>
+        <div class="ds-tags" style="gap:8px;">
+          <span class="ds-tag domain">도메인: 수자원</span>
+          <span class="ds-tag">업무영역: 계측</span>
+          <span class="ds-tag">업무영역: 수자원관리</span>
+          <span class="ds-tag security">보안등급: 2등급</span>
+          <span class="ds-tag">키워드: 수위</span>
+          <span class="ds-tag">키워드: 실시간</span>
+          <span class="ds-tag">키워드: CDC</span>
+        </div>
+      </div>
+      <!-- 컬럼 스키마 -->
+      <div class="card">
+        <div class="card-title">📊 컬럼 스키마 정보 <span class="badge">7개 컬럼</span></div>
+        <table class="data-table">
+          <thead><tr><th>컬럼명</th><th>영문명</th><th>타입</th><th>PK</th><th>NOT NULL</th><th>표준용어</th><th>설명</th><th>프로파일링</th></tr></thead>
+          <tbody>
+            <tr><td>관측소ID</td><td>OBSV_STN_ID</td><td>VARCHAR(20)</td><td>✅</td><td>✅</td><td>관측소코드</td><td>관측소 식별자</td><td>342 고유값</td></tr>
+            <tr><td>관측일시</td><td>OBSV_DT</td><td>TIMESTAMP</td><td>✅</td><td>✅</td><td>관측일시</td><td>측정시각</td><td>100% 채움</td></tr>
+            <tr><td>수위값</td><td>WATER_LVL</td><td>FLOAT</td><td></td><td>✅</td><td>수위</td><td>수면높이(m)</td><td>평균 23.47</td></tr>
+            <tr><td>측정방법</td><td>MEAS_MTHD</td><td>VARCHAR(10)</td><td></td><td></td><td>측정방법코드</td><td>자동/수동 구분</td><td>3 고유값</td></tr>
+            <tr><td>품질등급</td><td>QA_GRADE_CD</td><td>CHAR(1)</td><td></td><td></td><td>품질등급</td><td>A/B/C/D 등급</td><td>4 고유값</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- 샘플 데이터 -->
+      <div class="card">
+        <div class="card-title">🔎 샘플 데이터 미리보기 <span class="badge">최근 3건</span></div>
+        <table class="data-table">
+          <thead><tr><th>관측소ID</th><th>관측일시</th><th>수위값</th><th>측정방법</th><th>품질등급</th></tr></thead>
+          <tbody>
+            <tr><td>STN-001</td><td>2025-11-12 11:42:30</td><td>23.47</td><td>자동</td><td>A</td></tr>
+            <tr><td>STN-001</td><td>2025-11-12 11:27:30</td><td>23.45</td><td>자동</td><td>A</td></tr>
+            <tr><td>STN-002</td><td>2025-11-12 11:42:15</td><td>18.92</td><td>자동</td><td>A</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== CATALOG SCREEN 3: 지식그래프·온톨로지 뷰어 ========== -->
+    <div class="screen" id="screen-cat-graph">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 카탈로그 및 탐색 &gt; <strong>지식그래프 및 온톨로지 뷰어</strong></div>
+      <div class="page-title">지식그래프 및 온톨로지 뷰어 (Neo4j 기반)</div>
+      <div class="grid-2">
+        <div>
+          <div class="graph-container" id="graphArea">
+            <div class="graph-legend">
+              <span class="lg-facility">시설</span>
+              <span class="lg-system">시스템</span>
+              <span class="lg-dataset">데이터셋</span>
+              <span class="lg-metric">지표</span>
+            </div>
+            <!-- SVG lines -->
+            <svg style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;">
+              <!-- 소양강댐 -> RWIS -->
+              <line x1="120" y1="160" x2="260" y2="100" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+              <!-- 소양강댐 -> HDAPS -->
+              <line x1="120" y1="160" x2="260" y2="220" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+              <!-- RWIS -> datasets -->
+              <line x1="290" y1="100" x2="420" y2="60" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+              <line x1="290" y1="100" x2="420" y2="120" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+              <line x1="290" y1="100" x2="420" y2="180" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+              <!-- HDAPS -> 발전량 -->
+              <line x1="290" y1="220" x2="420" y2="240" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+              <!-- datasets -> metrics -->
+              <line x1="460" y1="60" x2="560" y2="90" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+              <line x1="460" y1="120" x2="560" y2="150" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+              <line x1="460" y1="240" x2="560" y2="210" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+            </svg>
+            <div class="graph-node facility" style="width:80px; height:80px; left:80px; top:120px;" onclick="selectGraphNode('소양강댐')">소양강댐</div>
+            <div class="graph-node system" style="width:60px; height:60px; left:260px; top:70px;">RWIS</div>
+            <div class="graph-node system" style="width:64px; height:64px; left:258px; top:188px;">HDAPS</div>
+            <div class="graph-node dataset" style="width:70px; height:44px; border-radius:8px; left:385px; top:38px;" onclick="navigate('cat-detail')">수위데이터</div>
+            <div class="graph-node dataset" style="width:70px; height:44px; border-radius:8px; left:385px; top:98px;">기상데이터</div>
+            <div class="graph-node dataset" style="width:70px; height:44px; border-radius:8px; left:385px; top:158px;">방류량</div>
+            <div class="graph-node dataset" style="width:70px; height:44px; border-radius:8px; left:385px; top:218px;">발전량</div>
+            <div class="graph-node metric" style="width:56px; height:56px; left:532px; top:62px;">유입량</div>
+            <div class="graph-node metric" style="width:56px; height:56px; left:532px; top:122px;">수위</div>
+            <div class="graph-node metric" style="width:56px; height:56px; left:532px; top:182px;">발전량</div>
+          </div>
+        </div>
+        <div>
+          <div class="node-detail-panel">
+            <div class="ndp-title">📍 소양강댐</div>
+            <div class="ndp-row"><span class="ndp-label">유형</span><span class="ndp-value">수자원시설 (Dam)</span></div>
+            <div class="ndp-row"><span class="ndp-label">온톨로지</span><span class="ndp-value">kw:WaterFacility</span></div>
+            <div class="ndp-row"><span class="ndp-label">연결 시스템</span><span class="ndp-value">RWIS, HDAPS</span></div>
+            <div class="ndp-row"><span class="ndp-label">관련 데이터셋</span><span class="ndp-value">8건</span></div>
+            <div class="ndp-row"><span class="ndp-label">등급</span><span class="ndp-value" style="color:#ef6c00;">2등급</span></div>
+            <div style="margin-top:16px;">
+              <div class="card-title">📂 연결된 데이터셋</div>
+              <div class="list-item" style="cursor:pointer;" onclick="navigate('cat-detail')"><span>수위관측 (실시간)</span><span style="color:#888; font-size:11px;">RWIS</span></div>
+              <div class="list-item"><span>유량관측 (실시간)</span><span style="color:#888; font-size:11px;">RWIS</span></div>
+              <div class="list-item"><span>기상데이터 (시간별)</span><span style="color:#888; font-size:11px;">기상청</span></div>
+              <div class="list-item"><span>발전량 (일별)</span><span style="color:#888; font-size:11px;">HDAPS</span></div>
+              <div class="list-item"><span>방류량 이력</span><span style="color:#888; font-size:11px;">RWIS</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CATALOG SCREEN 4: 온톨로지 클래스탐색 ========== -->
+    <div class="screen" id="screen-cat-ontology">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 카탈로그 및 탐색 &gt; 지식그래프·온톨로지 뷰어 &gt; <strong>온톨로지 클래스탐색</strong></div>
+      <div class="page-title">온톨로지 클래스탐색 및 Cypher 질의</div>
+      <div class="grid-2">
+        <div>
+          <!-- 온톨로지 트리 -->
+          <div class="card">
+            <div class="card-title">🌳 온톨로지 클래스 트리</div>
+            <div class="onto-tree">
+              <div>▼ <span class="tree-item">kw:Thing</span></div>
+              <div class="onto-indent">▼ <span class="tree-item">kw:Facility</span></div>
+              <div class="onto-indent"><div class="onto-indent">· <span class="tree-item selected">kw:WaterFacility</span></div></div>
+              <div class="onto-indent"><div class="onto-indent">· <span class="tree-item">kw:PowerPlant</span></div></div>
+              <div class="onto-indent"><div class="onto-indent">· <span class="tree-item">kw:Pipeline</span></div></div>
+              <div class="onto-indent">▼ <span class="tree-item">kw:System</span></div>
+              <div class="onto-indent"><div class="onto-indent">· <span class="tree-item">kw:SCADA</span></div></div>
+              <div class="onto-indent"><div class="onto-indent">· <span class="tree-item">kw:RWIS</span></div></div>
+              <div class="onto-indent">▼ <span class="tree-item">kw:Observation</span></div>
+              <div class="onto-indent"><div class="onto-indent">· <span class="tree-item">kw:WaterLevelObs</span></div></div>
+              <div class="onto-indent"><div class="onto-indent">· <span class="tree-item">kw:WaterQualityObs</span></div></div>
+              <div class="onto-indent"><div class="onto-indent">· <span class="tree-item">kw:FlowRateObs</span></div></div>
+              <div class="onto-indent">▶ <span class="tree-item">kw:Metric</span></div>
+              <div class="onto-indent">▶ <span class="tree-item">kw:DataSet</span></div>
+            </div>
+          </div>
+          <!-- 클래스 상세 -->
+          <div class="card">
+            <div class="card-title">kw:WaterFacility (수자원시설)</div>
+            <div style="font-size:12px; color:#888; margin-bottom:12px;">상위클래스: kw:Facility &gt; kw:Thing</div>
+            <table class="data-table">
+              <thead><tr><th>속성</th><th>타입</th><th>설명</th></tr></thead>
+              <tbody>
+                <tr><td>facilityId</td><td>STRING</td><td>시설 고유 식별자</td></tr>
+                <tr><td>facilityName</td><td>STRING</td><td>시설명 (한글)</td></tr>
+                <tr><td>facilityType</td><td>ENUM</td><td>댐/보/하천/정수장</td></tr>
+                <tr><td>location</td><td>POINT</td><td>위치좌표 (경위도)</td></tr>
+                <tr><td>linkedSystems</td><td>REL[]</td><td>연결된 시스템 목록</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <!-- Cypher 질의 -->
+          <div class="card">
+            <div class="card-title">💻 Cypher 질의 (Neo4j) <button class="btn btn-primary" style="margin-left:auto; padding:4px 12px; font-size:11px;">▶ 실행</button></div>
+            <div class="code-block">
+              <span class="comment">// 소양강댐 연결 데이터셋 조회</span><br>
+              <span class="keyword">MATCH</span> (f:WaterFacility {name: <span class="string">'소양강댐'</span>})<br>
+              &nbsp;&nbsp;-[:HAS_SYSTEM]-&gt;(s:System)<br>
+              &nbsp;&nbsp;-[:PRODUCES]-&gt;(d:DataSet)<br>
+              <span class="keyword">RETURN</span> f.name, s.name, d.name,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;d.recordCount, d.qualityScore<br>
+              <span class="keyword">ORDER BY</span> d.qualityScore <span class="keyword">DESC</span>
+            </div>
+            <div style="background:#f5f7fa; border-radius:8px; padding:12px 16px; font-size:12px; color:#666;">결과: <strong>8 rows</strong> | 실행시간: <strong>12ms</strong></div>
+          </div>
+          <!-- 결과 테이블 -->
+          <div class="card">
+            <div class="card-title">📊 질의 결과</div>
+            <table class="data-table">
+              <thead><tr><th>시설명</th><th>시스템</th><th>데이터셋</th><th>레코드수</th><th>품질점수</th></tr></thead>
+              <tbody>
+                <tr><td>소양강댐</td><td>RWIS</td><td>수위관측</td><td>1,234,567</td><td style="color:#4caf50;">94.2%</td></tr>
+                <tr><td>소양강댐</td><td>RWIS</td><td>유량관측</td><td>987,654</td><td style="color:#4caf50;">92.8%</td></tr>
+                <tr><td>소양강댐</td><td>기상청</td><td>기상데이터</td><td>365,000</td><td style="color:#4caf50;">91.5%</td></tr>
+                <tr><td>소양강댐</td><td>HDAPS</td><td>발전량</td><td>23,456</td><td style="color:#4caf50;">97.1%</td></tr>
+                <tr><td>소양강댐</td><td>RWIS</td><td>방류량</td><td>456,789</td><td style="color:#ff9800;">89.3%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CATALOG SCREEN 5: 데이터 리니지 ========== -->
+    <div class="screen" id="screen-cat-lineage">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 카탈로그 및 탐색 &gt; <strong>데이터 리니지(계보) 조회</strong></div>
+      <div class="page-title">데이터 리니지 (계보) 조회</div>
+      <div class="filter-bar" style="margin-bottom:20px;">
+        <span style="font-size:13px;">리니지 대상:</span>
+        <select style="font-size:13px; padding:8px 12px;"><option>TB_WATER_LEVEL (수위관측 테이블)</option><option>TB_FLOW_RATE</option><option>TB_WATER_QUALITY</option></select>
+        <span class="tag-pill active" style="margin-left:8px;">전체경로</span>
+        <span class="tag-pill">단계별</span>
+      </div>
+      <div class="lineage-flow">
+        <div class="lineage-stage">
+          <div class="stage-label">원시데이터 (센서/DB)</div>
+          <div class="stage-items">
+            <div class="lineage-item" style="border-left:3px solid #4caf50;"><div class="li-name">RWIS 수위센서</div><div class="li-sub">(FA망)</div></div>
+            <div class="lineage-item" style="border-left:3px solid #4caf50;"><div class="li-name">RWIS 유량센서</div><div class="li-sub">(FA망)</div></div>
+            <div class="lineage-item" style="border-left:3px solid #ff9800;"><div class="li-name">기상청 API</div><div class="li-sub">(외부)</div></div>
+          </div>
+        </div>
+        <div class="lineage-arrow">→</div>
+        <div class="lineage-stage">
+          <div class="stage-label">수집 파이프라인</div>
+          <div class="stage-items">
+            <div class="lineage-item" style="border-left:3px solid #2196f3;"><div class="li-name">CDC 실시간</div><div class="li-sub">수집엔진</div></div>
+            <div class="lineage-item" style="border-left:3px solid #2196f3;"><div class="li-name">MindsDB</div><div class="li-sub">메타추출</div></div>
+            <div class="lineage-item" style="border-left:3px solid #9c27b0;"><div class="li-name">Neo4j</div><div class="li-sub">온톨로지 적재</div></div>
+          </div>
+        </div>
+        <div class="lineage-arrow">→</div>
+        <div class="lineage-stage">
+          <div class="stage-label">dbt 정제·변환</div>
+          <div class="stage-items">
+            <div class="lineage-item" style="border-left:3px solid #e91e63;"><div class="li-name">stg_rwis_water_level</div><div class="li-sub">Staging</div></div>
+            <div class="lineage-item" style="border-left:3px solid #e91e63;"><div class="li-name">int_water_monitoring</div><div class="li-sub">Intermediate</div></div>
+            <div class="lineage-item" style="border-left:3px solid #e91e63;"><div class="li-name">fct_daily_water_report</div><div class="li-sub">Fact</div></div>
+          </div>
+        </div>
+        <div class="lineage-arrow">→</div>
+        <div class="lineage-stage">
+          <div class="stage-label">Serve Layer</div>
+          <div class="stage-items">
+            <div class="lineage-item" style="border-left:3px solid #ff5722;"><div class="li-name">수위현황 대시보드 뷰</div><div class="li-sub">Dashboard</div></div>
+            <div class="lineage-item" style="border-left:3px solid #ff5722;"><div class="li-name">일보 리포트 집계테이블</div><div class="li-sub">Report</div></div>
+          </div>
+        </div>
+        <div class="lineage-arrow">→</div>
+        <div class="lineage-stage">
+          <div class="stage-label">API / 다운로드</div>
+          <div class="stage-items">
+            <div class="lineage-item" style="border-left:3px solid #607d8b;"><div class="li-name">REST API</div><div class="li-sub">/api/water-level</div></div>
+            <div class="lineage-item" style="border-left:3px solid #607d8b;"><div class="li-name">CSV 다운로드</div><div class="li-sub">(데이터포털)</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CATALOG SCREEN 6: 내 보관함 ========== -->
+    <div class="screen" id="screen-cat-bookmark">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 카탈로그 및 탐색 &gt; <strong>내 보관함</strong></div>
+      <div class="page-title">내 보관함</div>
+      <div class="count-cards">
+        <div class="count-card"><div class="cc-num">12건</div><div class="cc-label">⭐ 즐겨찾기 자산</div></div>
+        <div class="count-card"><div class="cc-num">8건</div><div class="cc-label">◎ 최근 본 항목</div></div>
+        <div class="count-card"><div class="cc-num">34건</div><div class="cc-label">📝 나의 질의 히스토리</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">⭐ 즐겨찾기 데이터 자산</div>
+        <table class="data-table">
+          <thead><tr><th>데이터 자산명</th><th>유형</th><th>시스템</th><th>도메인</th><th>추가일</th><th>품질</th><th>관리</th></tr></thead>
+          <tbody>
+            <tr onclick="navigate('cat-detail')" style="cursor:pointer;">
+              <td><strong>TB_WATER_LEVEL</strong> (수위관측)</td><td>테이블</td><td>RWIS</td><td>수자원</td><td>2025-10-15</td><td style="color:#4caf50;">94.2%</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">공유</button> <button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">📥</button></td>
+            </tr>
+            <tr>
+              <td><strong>TB_FLOW_RATE</strong> (유량관측)</td><td>테이블</td><td>RWIS</td><td>수자원</td><td>2025-10-15</td><td style="color:#4caf50;">92.8%</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">공유</button> <button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">📥</button></td>
+            </tr>
+            <tr>
+              <td><strong>소양강댐 수위 대시보드</strong></td><td>대시보드</td><td>Serve Layer</td><td>수자원</td><td>2025-10-20</td><td>-</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">공유</button> <button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">📥</button></td>
+            </tr>
+            <tr>
+              <td><strong>수질분석_온톨로지_뷰</strong></td><td>그래프뷰</td><td>Neo4j</td><td>수질</td><td>2025-11-01</td><td>-</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">공유</button> <button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">📥</button></td>
+            </tr>
+            <tr>
+              <td><strong>TB_POWER_GENERATION</strong> (발전량)</td><td>테이블</td><td>HDAPS</td><td>에너지</td><td>2025-11-05</td><td style="color:#4caf50;">97.1%</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">공유</button> <button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">📥</button></td>
+            </tr>
+            <tr>
+              <td><strong>일별수위리포트</strong> (fct_daily)</td><td>dbt 모델</td><td>dbt</td><td>수자원</td><td>2025-11-10</td><td style="color:#ff9800;">91.5%</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">공유</button> <button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">📥</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== CATALOG SCREEN 7: 데이터 요청 및 피드백 ========== -->
+    <div class="screen" id="screen-cat-request">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 카탈로그 및 탐색 &gt; <strong>데이터 요청 및 피드백</strong></div>
+      <div class="page-title">데이터 요청 및 피드백</div>
+      <div class="count-cards">
+        <div class="count-card"><div class="cc-num">5건</div><div class="cc-label">📋 내 요청</div></div>
+        <div class="count-card"><div class="cc-num" style="color:#ff9800;">2건</div><div class="cc-label">⏳ 승인대기</div></div>
+        <div class="count-card"><div class="cc-num" style="color:#4caf50;">3건</div><div class="cc-label">✅ 처리완료</div></div>
+        <div class="count-card"><div class="cc-num" style="color:#9c27b0;">7건</div><div class="cc-label">💬 피드백 제출</div></div>
+      </div>
+      <div class="tabs">
+        <div class="tab active">데이터 활용요청</div>
+        <div class="tab">권한 요청</div>
+        <div class="tab">품질 오류 신고</div>
+        <div class="tab">메타데이터 수정요청</div>
+      </div>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="card-title" style="margin-bottom:0;">📋 요청 목록</div>
+          <button class="btn btn-primary">➕ 새 요청 등록</button>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>요청번호</th><th>요청내용</th><th>대상데이터</th><th>요청자</th><th>요청일</th><th>상태</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>REQ-042</td><td>소양강댐 수위데이터 API 활용 신청</td><td>TB_WATER_LEVEL</td><td>김데이터</td><td>11-10</td>
+              <td><span class="status-badge status-wait">승인대기</span></td>
+            </tr>
+            <tr>
+              <td>REQ-041</td><td>발전량 데이터 CSV 다운로드 요청</td><td>TB_POWER_GEN</td><td>이분석</td><td>11-08</td>
+              <td><span class="status-badge status-active">승인완료</span></td>
+            </tr>
+            <tr>
+              <td>REQ-040</td><td>고객정보 접근권한 요청 (1등급)</td><td>TB_CUSTOMER</td><td>박요금</td><td>11-05</td>
+              <td><span class="status-badge" style="background:#ffebee; color:#c62828;">반려</span></td>
+            </tr>
+            <tr>
+              <td>REQ-039</td><td>GIS 공간정보 + 수질데이터 조인 요청</td><td>TB_WATER_QUAL</td><td>최공간</td><td>11-01</td>
+              <td><span class="status-badge status-progress">처리중</span></td>
+            </tr>
+            <tr>
+              <td>REQ-038</td><td>환경부 수질데이터 일배치 주기 변경 요청</td><td>환경부 API</td><td>홍수질</td><td>10-28</td>
+              <td><span class="status-badge status-active">승인완료</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== COLLECT SCREEN 1: 파이프라인 관리 ========== -->
+    <div class="screen" id="screen-col-pipeline">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 수집 및 정제 &gt; <strong>수집대상 및 파이프라인 관리</strong></div>
+      <div class="page-title">수집대상 및 파이프라인 관리 (Ingestion 관리)</div>
+      <div class="filter-bar">
+        <input type="text" placeholder="파이프라인 검색 (이름, 원본시스템, 수집방식)" style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+        <select><option>수집방식: 전체</option><option>배치(ETL)</option><option>실시간(CDC)</option><option>API호출</option></select>
+        <select><option>상태: 전체</option><option>정상</option><option>오류</option><option>지연</option></select>
+        <button class="btn btn-primary" onclick="navigate('col-register')">➕ 파이프라인 등록</button>
+      </div>
+      <div class="card">
+        <table class="data-table pipeline-table">
+          <thead><tr><th>파이프라인명</th><th>원본시스템</th><th>수집방식</th><th>스케줄</th><th>상태</th><th>처리량</th><th>최근실행</th><th>관리</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>SAP 재무수집</strong></td><td>SAP HANA</td><td>배치(ETL)</td><td>매일 06:00</td>
+              <td><span class="status-dot green"></span>정상</td><td>48.2K/일</td><td>06:02:15</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>RWIS 실시간수위</strong></td><td>RWIS DB (FA)</td><td>실시간(CDC)</td><td>상시</td>
+              <td><span class="status-dot green"></span>정상</td><td>12K/분</td><td>실시간</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>환경부수질연계</strong></td><td>환경부 API</td><td>DMZ 단방향</td><td>매30분</td>
+              <td><span class="status-dot green"></span>정상</td><td>2.4K/회</td><td>11:30:00</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr class="row-warn">
+              <td><strong>스마트미터 검침</strong></td><td>계측 DB</td><td>실시간(CDC)</td><td>상시</td>
+              <td><span class="status-dot orange"></span>지연</td><td>28K/분</td><td>11:41:22</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>Oracle 인사데이터</strong></td><td>Oracle ERP</td><td>배치(ETL)</td><td>매일 02:00</td>
+              <td><span class="status-dot green"></span>정상</td><td>8.7K/일</td><td>02:05:33</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>GIS 공간정보 수집</strong></td><td>arcGIS Server</td><td>배치(ETL)</td><td>매주월</td>
+              <td><span class="status-dot green"></span>정상</td><td>1.2K/회</td><td>월 03:00</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr class="row-error">
+              <td><strong>기상청날씨 API</strong></td><td>기상청 API</td><td>API 호출</td><td>매시간</td>
+              <td><span class="status-dot red"></span>오류</td><td style="color:#f44336;">0/회</td><td>09:00:00</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== COLLECT SCREEN 2: 파이프라인 등록 ========== -->
+    <div class="screen" id="screen-col-register">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 수집 및 정제 &gt; <a href="#" onclick="navigate('col-pipeline')">파이프라인 관리</a> &gt; <strong>파이프라인 등록</strong></div>
+      <div class="page-title">파이프라인 등록</div>
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="card-title">📝 기본정보</div>
+            <div class="form-group"><label>파이프라인명 *</label><input type="text" value="SAP 재무수집_월별정산"></div>
+            <div class="form-group"><label>원본시스템 *</label><select><option>SAP HANA</option><option>RWIS DB (FA)</option><option>Oracle ERP</option><option>환경부 API</option></select></div>
+            <div class="form-group"><label>수집방식 *</label><select><option>배치(ETL)</option><option>실시간(CDC)</option><option>API 호출</option><option>DMZ 단방향</option></select></div>
+            <div class="form-group"><label>스케줄</label><input type="text" value="매일 06:00 (Cron: 0 6 * * *)"></div>
+            <div class="form-group"><label>대상테이블</label><input type="text" value="BKPF, BSEG, ACDOCA (3개 선택됨)"></div>
+            <div class="form-group"><label>타겟저장소</label><input type="text" value="MindsDB → Neo4j (온톨로지 매핑 후 적재)"></div>
+            <div class="form-group"><label>설명</label><textarea>SAP 재무회계 전표데이터 일배치 수집</textarea></div>
+            <div class="form-group"><label>담당자</label><input type="text" value="홍길동 (데이터엔지니어링팀)"></div>
+            <div style="display:flex; gap:8px; margin-top:16px;">
+              <button class="btn btn-outline" onclick="navigate('col-pipeline')">취소</button>
+              <button class="btn btn-primary">🔌 연결테스트</button>
+              <button class="btn btn-primary">등록요청</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-title">✅ 연결테스트 결과</div>
+            <div class="conn-test-result">
+              <div class="conn-test-item"><span class="pass">✅</span> DB 접속 — 성공</div>
+              <div class="conn-test-item"><span class="pass">✅</span> 테이블 접근권한 — 성공</div>
+              <div class="conn-test-item"><span class="pass">✅</span> 네트워크 (방화벽) — 성공</div>
+              <div class="conn-test-item"><span class="pass">✅</span> 샘플 데이터 조회 (10건) — 성공</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🔄 컬럼매핑 미리보기</div>
+            <table class="data-table">
+              <thead><tr><th>소스 컬럼</th><th></th><th>타겟 컬럼</th><th>상태</th></tr></thead>
+              <tbody>
+                <tr><td>BUKRS</td><td>→</td><td>회사코드</td><td><span class="pass">✅</span></td></tr>
+                <tr><td>BELNR</td><td>→</td><td>전표번호</td><td><span class="pass">✅</span></td></tr>
+                <tr><td>GJAHR</td><td>→</td><td>회계연도</td><td><span class="pass">✅</span></td></tr>
+                <tr><td>DMBTR</td><td>→</td><td>금액(원화)</td><td><span class="pass">✅</span></td></tr>
+                <tr><td>BUDAT</td><td>→</td><td>전기일</td><td><span class="pass">✅</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== COLLECT SCREEN 3: 대내외시스템연계관리 ========== -->
+    <div class="screen" id="screen-col-system">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 수집 및 정제 &gt; <strong>대내외시스템 연계관리</strong></div>
+      <div class="page-title">대내외시스템 연계관리</div>
+      <div class="count-cards">
+        <div class="count-card"><div class="cc-num">12</div><div class="cc-label">전체 연계</div></div>
+        <div class="count-card"><div class="cc-num" style="color:#4caf50;">9</div><div class="cc-label">정상 연계</div></div>
+        <div class="count-card"><div class="cc-num" style="color:#2196f3;">2</div><div class="cc-label">진행중</div></div>
+        <div class="count-card"><div class="cc-num" style="color:#f44336;">1</div><div class="cc-label">오류</div></div>
+      </div>
+      <div class="card">
+        <table class="data-table pipeline-table">
+          <thead><tr><th>연계시스템</th><th>구분</th><th>연계방식</th><th>프로토콜</th><th>상태</th><th>최근동기화</th><th>레코드수</th><th>관리</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>환경부 (수질데이터)</strong></td><td>외부기관</td><td>API 연계</td><td>REST/HTTPS</td>
+              <td><span class="status-dot green"></span>정상</td><td>11:30</td><td>2.4K</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>수자원공사 (댐수위)</strong></td><td>외부기관</td><td>SFTP 전송</td><td>SFTP/SSH</td>
+              <td><span class="status-dot green"></span>정상</td><td>06:15</td><td>1.8K</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>arcGIS (공간정보)</strong></td><td>내부시스템</td><td>DB Link</td><td>JDBC</td>
+              <td><span class="status-dot green"></span>정상</td><td>03:00</td><td>12K</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>FA망 RWIS (실시간)</strong></td><td>내부시스템</td><td>CDC</td><td>FA→OA 단방향</td>
+              <td><span class="status-dot green"></span>정상</td><td>실시간</td><td>342K</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr class="row-error">
+              <td><strong>기상청 (날씨 API)</strong></td><td>외부기관</td><td>API 연계</td><td>REST/HTTPS</td>
+              <td><span class="status-dot red"></span>오류</td><td style="color:#f44336;">09:00 실패</td><td>0</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr class="row-warn">
+              <td><strong>FA망 DB 이전</strong></td><td>내부시스템</td><td>마이그레이션</td><td>벌크전송</td>
+              <td><span class="status-dot blue"></span>진행중</td><td>42% 완료</td><td>1.2M</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== COLLECT SCREEN 4: 시스템연계 아키텍처 구조도 ========== -->
+    <div class="screen" id="screen-col-arch">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 수집 및 정제 &gt; <a href="#" onclick="navigate('col-system')">대내외시스템 연계</a> &gt; <strong>연계아키텍처 구조도</strong></div>
+      <div class="page-title">시스템 연계 아키텍처 구조도</div>
+      <div style="display:flex; gap:16px; align-items:stretch;">
+        <!-- 외부망 -->
+        <div class="arch-zone external" style="flex:0 0 160px;">
+          <div class="zone-label" style="color:#ef6c00;">🌐 외부망 (Internet)</div>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
+            <div class="arch-box ext">환경부 API</div>
+            <div class="arch-box ext">기상청 API</div>
+            <div class="arch-box ext">수자원공사</div>
+            <div class="arch-box ext">한전/에너지</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center;"><div class="arch-arrow">→</div></div>
+        <!-- DMZ -->
+        <div class="arch-zone dmz" style="flex:0 0 140px;">
+          <div class="zone-label" style="color:#c62828;">🛡️ DMZ 구간</div>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
+            <div class="arch-box dmz-item">API Gateway</div>
+            <div class="arch-box dmz-item">SFTP 중계서버</div>
+            <div class="arch-box dmz-item">방화벽 (단방향)</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center;"><div class="arch-arrow">→</div></div>
+        <!-- OA망 -->
+        <div class="arch-zone oa" style="flex:1;">
+          <div class="zone-label" style="color:#1967d2;">🏢 OA망 (업무망)</div>
+          <div style="display:flex; gap:12px; margin-top:16px; flex-wrap:wrap;">
+            <div class="arch-box oa-item">Data Hub 수집엔진</div>
+            <div class="arch-box oa-item">MindsDB</div>
+            <div class="arch-box oa-item">Neo4j</div>
+            <div class="arch-box oa-item">dbt 변환</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center;"><div class="arch-arrow">←</div></div>
+        <!-- FA망 -->
+        <div class="arch-zone fa" style="flex:0 0 160px;">
+          <div class="zone-label" style="color:#2e7d32;">🏭 FA망 (제어망)</div>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
+            <div class="arch-box fa-item">RWIS (수위/유량)</div>
+            <div class="arch-box fa-item">계측 DB (미터)</div>
+            <div class="arch-box fa-item">SCADA (제어)</div>
+            <div class="arch-box fa-item">RTU 센서</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:20px;">
+        <div class="card-title">📌 연계 흐름 요약</div>
+        <div class="list-item"><span><span class="status-dot green"></span><strong>FA→OA</strong>: RWIS CDC 실시간, 계측 DB CDC, SCADA OPC-UA</span><span style="font-size:11px; color:#888;">단방향 (방화벽)</span></div>
+        <div class="list-item"><span><span class="status-dot blue"></span><strong>외부→DMZ→OA</strong>: 환경부 REST API, 기상청 API, 수자원공사 SFTP</span><span style="font-size:11px; color:#888;">API GW 경유</span></div>
+        <div class="list-item"><span><span class="status-dot green"></span><strong>OA 내부</strong>: arcGIS JDBC, Oracle ERP, SAP HANA</span><span style="font-size:11px; color:#888;">직접 연결</span></div>
+      </div>
+    </div>
+
+    <!-- ========== COLLECT SCREEN 5: 수집현황·성능모니터링 ========== -->
+    <div class="screen" id="screen-col-monitor">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 수집 및 정제 &gt; <strong>수집현황·성능 모니터링</strong></div>
+      <div class="page-title">수집현황·성능 모니터링</div>
+      <div class="grid-4" style="margin-bottom:20px;">
+        <div class="kpi-card">
+          <div class="kpi-label">Throughput</div>
+          <div class="kpi-value" style="color:#1967d2;">45.2K/min</div>
+          <div class="kpi-change up">▲ 2.3% vs 어제</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Latency</div>
+          <div class="kpi-value" style="color:#4caf50;">1.2s</div>
+          <div class="kpi-change up">▼ 0.3s 개선</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">원본 DB 부하</div>
+          <div class="kpi-value" style="color:#4caf50;">12%</div>
+          <div class="kpi-change">정상범위 (임계: 80%)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">오류율</div>
+          <div class="kpi-value" style="color:#4caf50;">0.03%</div>
+          <div class="kpi-change">기준 0.1% 이내</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📈 처리량 추이 (최근 24시간)</div>
+          <div class="chart-placeholder">
+            <svg viewBox="0 0 400 160" style="width:100%;">
+              <defs><linearGradient id="cg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1967d2" stop-opacity=".3"/><stop offset="100%" stop-color="#1967d2" stop-opacity="0"/></linearGradient></defs>
+              <polyline fill="url(#cg2)" stroke="none" points="0,120 30,100 60,90 90,85 120,60 150,45 180,50 210,40 240,35 270,38 300,30 330,25 360,20 400,18 400,160 0,160"/>
+              <polyline fill="none" stroke="#1967d2" stroke-width="2" points="0,120 30,100 60,90 90,85 120,60 150,45 180,50 210,40 240,35 270,38 300,30 330,25 360,20 400,18"/>
+              <line x1="0" y1="140" x2="400" y2="140" stroke="#eee" stroke-width="1"/>
+              <text x="0" y="155" font-size="8" fill="#888">00h</text>
+              <text x="65" y="155" font-size="8" fill="#888">04h</text>
+              <text x="130" y="155" font-size="8" fill="#888">08h</text>
+              <text x="195" y="155" font-size="8" fill="#888">12h</text>
+              <text x="260" y="155" font-size="8" fill="#888">16h</text>
+              <text x="325" y="155" font-size="8" fill="#888">20h</text>
+              <text x="380" y="155" font-size="8" fill="#888">지금</text>
+            </svg>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 파이프라인별 상태분포</div>
+          <div style="display:flex; flex-direction:column; gap:10px; padding:8px 0;">
+            <div style="display:flex; align-items:center; gap:8px; font-size:12px;"><span style="width:60px;">SAP</span><div style="flex:1; background:#e8f5e9; border-radius:4px; height:18px;"><div style="width:100%; height:100%; background:#4caf50; border-radius:4px;"></div></div><span style="color:#4caf50;">정상</span></div>
+            <div style="display:flex; align-items:center; gap:8px; font-size:12px;"><span style="width:60px;">RWIS</span><div style="flex:1; background:#e8f5e9; border-radius:4px; height:18px;"><div style="width:100%; height:100%; background:#4caf50; border-radius:4px;"></div></div><span style="color:#4caf50;">정상</span></div>
+            <div style="display:flex; align-items:center; gap:8px; font-size:12px;"><span style="width:60px;">환경부</span><div style="flex:1; background:#e8f5e9; border-radius:4px; height:18px;"><div style="width:100%; height:100%; background:#4caf50; border-radius:4px;"></div></div><span style="color:#4caf50;">정상</span></div>
+            <div style="display:flex; align-items:center; gap:8px; font-size:12px;"><span style="width:60px;">미터</span><div style="flex:1; background:#fff3e0; border-radius:4px; height:18px;"><div style="width:85%; height:100%; background:#ff9800; border-radius:4px 0 0 4px;"></div></div><span style="color:#ff9800;">지연</span></div>
+            <div style="display:flex; align-items:center; gap:8px; font-size:12px;"><span style="width:60px;">Oracle</span><div style="flex:1; background:#e8f5e9; border-radius:4px; height:18px;"><div style="width:100%; height:100%; background:#4caf50; border-radius:4px;"></div></div><span style="color:#4caf50;">정상</span></div>
+            <div style="display:flex; align-items:center; gap:8px; font-size:12px;"><span style="width:60px;">GIS</span><div style="flex:1; background:#e8f5e9; border-radius:4px; height:18px;"><div style="width:100%; height:100%; background:#4caf50; border-radius:4px;"></div></div><span style="color:#4caf50;">정상</span></div>
+            <div style="display:flex; align-items:center; gap:8px; font-size:12px;"><span style="width:60px;">기상청</span><div style="flex:1; background:#ffebee; border-radius:4px; height:18px;"><div style="width:10%; height:100%; background:#f44336; border-radius:4px 0 0 4px;"></div></div><span style="color:#f44336;">오류</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== COLLECT SCREEN 6: 실시간 수집 로그 ========== -->
+    <div class="screen" id="screen-col-log">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 수집 및 정제 &gt; <a href="#" onclick="navigate('col-monitor')">수집현황·모니터링</a> &gt; <strong>실시간 수집 로그</strong></div>
+      <div class="page-title">실시간 수집 로그 및 알림 관리</div>
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="card-title">📋 실시간 수집 로그 (Live Tail) <span class="badge" style="background:#f44336; color:#fff; animation:pulse 1.5s infinite;">● LIVE</span></div>
+            <style>@keyframes pulse {0%,100%{opacity:1;}50%{opacity:.5;}}</style>
+            <div class="log-container">
+              <div class="log-line"><span class="time">11:42:30.123</span> <span class="level-info">INFO</span> <span class="source">[SAP-ETL]</span> 배치시작: BKPF 테이블 스캔중...</div>
+              <div class="log-line"><span class="time">11:42:30.456</span> <span class="level-info">INFO</span> <span class="source">[SAP-ETL]</span> 48,231 레코드 감지, 변경분 2,341건 추출</div>
+              <div class="log-line"><span class="time">11:42:31.012</span> <span class="level-info">INFO</span> <span class="source">[SAP-ETL]</span> MindsDB 메타추출 완료 → 컬럼 12개 매핑</div>
+              <div class="log-line"><span class="time">11:42:31.234</span> <span class="level-info">INFO</span> <span class="source">[RWIS-CDC]</span> 수위데이터 수신: STN_042, 12.34m</div>
+              <div class="log-line"><span class="time">11:42:31.567</span> <span class="level-warn">WARN</span> <span class="source">[METER-CDC]</span> 커넥션 지연: 응답시간 4.2s (임계 3s 초과)</div>
+              <div class="log-line"><span class="time">11:42:32.001</span> <span class="level-error">ERROR</span> <span class="source">[KMA-API]</span> 기상청 API 호출실패: HTTP 503 (재시도 3/3)</div>
+              <div class="log-line"><span class="time">11:42:32.345</span> <span class="level-info">INFO</span> <span class="source">[SAP-ETL]</span> Neo4j 적재완료: 2,341건 노드/엣지 생성</div>
+              <div class="log-line"><span class="time">11:42:33.012</span> <span class="level-info">INFO</span> <span class="source">[RWIS-CDC]</span> 온톨로지 매핑: WaterLevel → obs:hasValue</div>
+              <div class="log-line"><span class="time">11:42:33.456</span> <span class="level-info">INFO</span> <span class="source">[SAP-ETL]</span> dbt 변환시작: stg_sap_journal → fct_journal</div>
+              <div class="log-line"><span class="time">11:42:34.789</span> <span class="level-info">INFO</span> <span class="source">[SAP-ETL]</span> 배치완료: 소요시간 4.67s, 성공률 100%</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-title">🔔 알림 현황</div>
+            <div class="alert-card alert-error">
+              <span class="alert-time">11:42</span> 기상청 API 3회 연속 실패<br>
+              <span style="color:#888; font-size:11px;">→ 자동 일시정지 처리됨</span>
+            </div>
+            <div class="alert-card alert-warn">
+              <span class="alert-time">11:41</span> 스마트미터 Latency 4.2s<br>
+              <span style="color:#888; font-size:11px;">임계치 3s 초과 경고</span>
+            </div>
+            <div class="alert-card alert-ok">
+              <span class="alert-time">11:30</span> 환경부 수질데이터<br>
+              <span style="color:#888; font-size:11px;">2,400건 수집 정상 완료</span>
+            </div>
+            <div class="alert-card alert-ok">
+              <span class="alert-time">06:02</span> SAP 재무 일배치<br>
+              <span style="color:#888; font-size:11px;">48,231건 수집 완료</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== COLLECT SCREEN 7: 데이터 정제·변환 관리 (dbt) ========== -->
+    <div class="screen" id="screen-col-dbt">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 수집 및 정제 &gt; <strong>데이터 정제·변환 관리 (dbt 기반)</strong></div>
+      <div class="page-title">데이터 정제 및 변환 관리 (dbt 기반 모델링·변환)</div>
+      <div class="grid-4" style="margin-bottom:20px;">
+        <div class="kpi-card"><div class="kpi-label">전체 모델</div><div class="kpi-value" style="color:#1967d2;">42</div></div>
+        <div class="kpi-card"><div class="kpi-label">실행 성공</div><div class="kpi-value" style="color:#4caf50;">38</div></div>
+        <div class="kpi-card"><div class="kpi-label">경고</div><div class="kpi-value" style="color:#ff9800;">3</div></div>
+        <div class="kpi-card"><div class="kpi-label">실패</div><div class="kpi-value" style="color:#f44336;">1</div></div>
+      </div>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="card-title" style="margin-bottom:0;">📊 dbt 모델 목록</div>
+          <div style="font-size:12px; color:#888;">평균 실행시간: <strong>2.3s</strong></div>
+        </div>
+        <table class="data-table pipeline-table">
+          <thead><tr><th>레이어</th><th>모델명</th><th>소스</th><th>정제·변환 규칙</th><th>상태</th><th>실행시간</th><th>관리</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">staging</span></td>
+              <td><strong>stg_sap_journal</strong></td><td>SAP HANA</td><td>NULL 제거, 타입캐스팅</td>
+              <td><span class="status-dot green"></span>성공</td><td>1.2s</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;" onclick="navigate('col-dbt-detail')">상세</button></td>
+            </tr>
+            <tr>
+              <td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">staging</span></td>
+              <td><strong>stg_rwis_water_level</strong></td><td>RWIS DB</td><td>이상치 제거(3σ), 단위변환</td>
+              <td><span class="status-dot green"></span>성공</td><td>0.8s</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;" onclick="navigate('col-dbt-detail')">상세</button></td>
+            </tr>
+            <tr>
+              <td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">staging</span></td>
+              <td><strong>stg_env_water_quality</strong></td><td>환경부 API</td><td>NULL 보간, 코드→텍스트 변환</td>
+              <td><span class="status-dot green"></span>성공</td><td>1.5s</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;" onclick="navigate('col-dbt-detail')">상세</button></td>
+            </tr>
+            <tr>
+              <td><span class="ds-tag" style="background:#fff3e0; color:#ef6c00;">intermediate</span></td>
+              <td><strong>int_water_monitoring</strong></td><td>stg_rwis + stg_env</td><td>수위+수질 조인, 관측소 매핑</td>
+              <td><span class="status-dot green"></span>성공</td><td>3.2s</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;" onclick="navigate('col-dbt-detail')">상세</button></td>
+            </tr>
+            <tr class="row-warn">
+              <td><span class="ds-tag" style="background:#e8f5e9; color:#2e7d32;">mart</span></td>
+              <td><strong>fct_daily_water_report</strong></td><td>int_water_monitoring</td><td>일별 집계, KPI 산출</td>
+              <td><span class="status-dot orange"></span>경고</td><td>4.1s</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;" onclick="navigate('col-dbt-detail')">상세</button></td>
+            </tr>
+            <tr>
+              <td><span class="ds-tag" style="background:#e8f5e9; color:#2e7d32;">mart</span></td>
+              <td><strong>fct_customer_billing</strong></td><td>stg_sap + stg_meter</td><td>요금산정, 고객매핑</td>
+              <td><span class="status-dot green"></span>성공</td><td>2.8s</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;" onclick="navigate('col-dbt-detail')">상세</button></td>
+            </tr>
+            <tr class="row-error">
+              <td><span class="ds-tag" style="background:#e8f5e9; color:#2e7d32;">mart</span></td>
+              <td><strong>dim_observation_station</strong></td><td>stg_rwis + GIS</td><td>좌표변환, 메타보강</td>
+              <td><span class="status-dot red"></span>실패</td><td style="color:#f44336;">ERR</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;" onclick="navigate('col-dbt-detail')">상세</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== COLLECT SCREEN 8: dbt 모델 상세 ========== -->
+    <div class="screen" id="screen-col-dbt-detail">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 수집 및 정제 &gt; <a href="#" onclick="navigate('col-dbt')">정제·변환 관리</a> &gt; <strong>모델 상세</strong></div>
+      <div class="page-title">dbt 모델 상세: stg_rwis_water_level</div>
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <div class="card-title" style="margin-bottom:0;">📝 stg_rwis_water_level.sql</div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-primary" style="padding:4px 12px; font-size:11px;">▶ 실행</button>
+                <button class="btn btn-outline" style="padding:4px 12px; font-size:11px;">💾 저장</button>
+              </div>
+            </div>
+            <div class="code-block">
+<span class="comment">-- dbt model: stg_rwis_water_level</span><br>
+<span class="comment">-- 이상치 제거 + 단위 통일 변환</span><br>
+<br>
+<span class="keyword">WITH</span> source <span class="keyword">AS</span> (<br>
+&nbsp;&nbsp;<span class="keyword">SELECT</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;obsv_stn_id,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;obsv_dt,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;water_lvl,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;meas_mthd_cd<br>
+&nbsp;&nbsp;<span class="keyword">FROM</span> {{ source(<span class="string">'rwis'</span>, <span class="string">'tb_water'</span>) }}<br>
+)<br>
+<br>
+<span class="keyword">SELECT</span><br>
+&nbsp;&nbsp;obsv_stn_id,<br>
+&nbsp;&nbsp;obsv_dt,<br>
+&nbsp;&nbsp;<span class="keyword">CASE</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">WHEN</span> water_lvl &lt; 0 <span class="keyword">THEN</span> <span class="keyword">NULL</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">WHEN</span> water_lvl &gt; 200 <span class="keyword">THEN</span> <span class="keyword">NULL</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">ELSE</span> ROUND(water_lvl, 2)<br>
+&nbsp;&nbsp;<span class="keyword">END</span> <span class="keyword">AS</span> water_level_m,<br>
+&nbsp;&nbsp;COALESCE(meas_mthd_cd, <span class="string">'UNKNOWN'</span>)<br>
+<span class="keyword">FROM</span> source
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-title">ℹ️ 모델 정보</div>
+            <div class="model-info-grid">
+              <div class="mi-row"><span class="mi-label">레이어</span><span class="mi-value">staging</span></div>
+              <div class="mi-row"><span class="mi-label">스키마</span><span class="mi-value">stg_rwis</span></div>
+              <div class="mi-row"><span class="mi-label">materialized</span><span class="mi-value">view</span></div>
+              <div class="mi-row"><span class="mi-label">소스테이블</span><span class="mi-value">rwis.tb_water</span></div>
+              <div class="mi-row"><span class="mi-label">최근실행</span><span class="mi-value">11:42 (0.8s)</span></div>
+              <div class="mi-row"><span class="mi-label">버전</span><span class="mi-value">v2.4</span></div>
+              <div class="mi-row"><span class="mi-label">담당자</span><span class="mi-value">박수원</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🔗 데이터 리니지 (Lineage)</div>
+            <div class="mini-lineage">
+              <span class="ml-node" onclick="navigate('cat-detail')">tb_water</span>
+              <span class="ml-arrow">→</span>
+              <span class="ml-node" style="background:#1967d2; color:#fff;">stg_water_level</span>
+              <span class="ml-arrow">→</span>
+              <span class="ml-node">int_water_mon</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== DIST SCREEN 1: 유통데이터 구성·관리 ========== -->
+    <div class="screen" id="screen-dist-product">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 유통 및 활용 &gt; <strong>유통데이터 구성 및 관리</strong></div>
+      <div class="page-title">유통데이터 구성 및 관리 (Data Product)</div>
+      <div class="filter-bar">
+        <input type="text" placeholder="Data Product 검색 (이름, 도메인, 포맷)" style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+        <select><option>도메인: 전체</option><option>상수도</option><option>에너지</option><option>고객</option><option>수질</option><option>수자원</option></select>
+        <select><option>유통상태: 전체</option><option>활성</option><option>준비중</option><option>제한</option></select>
+        <button class="btn btn-primary">➕ Data Product 등록</button>
+      </div>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Data Product</th><th>도메인</th><th>포맷</th><th>등급</th><th>유통상태</th><th>API</th><th>일간호출</th><th>최종갱신</th><th>관리</th></tr></thead>
+          <tbody>
+            <tr onclick="navigate('dist-detail')" style="cursor:pointer;">
+              <td><strong>광역상수도 유량실시간</strong></td><td>상수도</td><td>JSON/CSV</td><td>2등급</td>
+              <td><span class="status-badge status-active">활성</span></td><td>REST</td><td>12.4K</td><td>실시간</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>수력발전 일간통계</strong></td><td>에너지</td><td>CSV/엑셀</td><td>2등급</td>
+              <td><span class="status-badge status-active">활성</span></td><td>REST</td><td>3.2K</td><td>매일 06시</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>원격검침 사용량분석</strong></td><td>고객</td><td>JSON</td><td>3등급</td>
+              <td><span class="status-badge status-active">활성</span></td><td>Kafka</td><td>892K</td><td>실시간</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>정수장운영실적</strong></td><td>정수</td><td>CSV/엑셀</td><td>2등급</td>
+              <td><span class="status-badge status-wait">준비중</span></td><td>-</td><td>-</td><td>준비중</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>IoT 센서원시데이터</strong></td><td>계측</td><td>Parquet</td><td style="color:#c62828;">1등급</td>
+              <td><span class="status-badge" style="background:#ffebee; color:#c62828;">제한</span></td><td>내부전용</td><td>내부</td><td>실시간</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>수질측정데이터 (환경부)</strong></td><td>수질</td><td>JSON/CSV</td><td>2등급</td>
+              <td><span class="status-badge status-active">활성</span></td><td>REST</td><td>5.8K</td><td>30분주기</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr onclick="navigate('dist-detail')" style="cursor:pointer;">
+              <td><strong>댐수위·방류량종합</strong></td><td>수자원</td><td>JSON</td><td>2등급</td>
+              <td><span class="status-badge status-active">활성</span></td><td>REST/Kafka</td><td>18.7K</td><td>실시간</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== DIST SCREEN 2: Data Product 상세 ========== -->
+    <div class="screen" id="screen-dist-detail">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 유통 및 활용 &gt; <a href="#" onclick="navigate('dist-product')">유통데이터 구성·관리</a> &gt; <strong>댐수위·방류량종합 상세</strong></div>
+      <div class="detail-header">
+        <div class="title-area">
+          <div style="font-size:20px; font-weight:700; color:#1a2744;">댐수위·방류량종합</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary">📄 API 문서</button>
+          <button class="btn btn-outline">상태변경</button>
+        </div>
+      </div>
+      <div class="detail-info-grid">
+        <div class="detail-info-item"><div class="dil">Product명</div><div class="div">댐수위·방류량종합</div></div>
+        <div class="detail-info-item"><div class="dil">도메인</div><div class="div">수자원</div></div>
+        <div class="detail-info-item"><div class="dil">포맷</div><div class="div">JSON</div></div>
+        <div class="detail-info-item"><div class="dil">보안등급</div><div class="div" style="color:#ef6c00;">2등급 (일반)</div></div>
+        <div class="detail-info-item"><div class="dil">유통상태</div><div class="div" style="color:#4caf50;">활성</div></div>
+        <div class="detail-info-item"><div class="dil">API 유형</div><div class="div">REST / Kafka</div></div>
+        <div class="detail-info-item"><div class="dil">소스데이터</div><div class="div">TB_WATER_LEVEL, TB_FLOW_RATE</div></div>
+        <div class="detail-info-item"><div class="dil">갱신주기</div><div class="div">실시간 (CDC)</div></div>
+        <div class="detail-info-item"><div class="dil">일간호출수</div><div class="div" style="color:#1967d2;">18,700건</div></div>
+        <div class="detail-info-item"><div class="dil">담당자</div><div class="div">박수원 (수자원관리팀)</div></div>
+        <div class="detail-info-item"><div class="dil">등록일</div><div class="div">2025-08-15</div></div>
+        <div class="detail-info-item"><div class="dil">최종수정</div><div class="div">2025-11-10</div></div>
+      </div>
+      <!-- API 엔드포인트 -->
+      <div class="card">
+        <div class="card-title">🔌 API 엔드포인트</div>
+        <div class="api-endpoint">
+          <span class="method">GET</span> <span class="url">/api/v1/dam-water-level</span><br>
+          <span class="header">Authorization: Bearer {API_KEY}</span>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>파라미터</th><th>타입</th><th>설명</th></tr></thead>
+          <tbody>
+            <tr><td><strong>dam_id</strong></td><td>string</td><td>댐 식별코드 (필수)</td></tr>
+            <tr><td>start_dt</td><td>datetime</td><td>조회 시작일시</td></tr>
+            <tr><td>end_dt</td><td>datetime</td><td>조회 종료일시</td></tr>
+            <tr><td>interval</td><td>enum</td><td>1m / 5m / 1h / 1d</td></tr>
+          </tbody>
+        </table>
+        <div style="display:flex; gap:8px; margin-top:12px;">
+          <span class="api-stat good">✅ 200 OK</span>
+          <span class="api-stat good">Avg Response: 45ms</span>
+          <span class="api-stat good">99.9% Uptime</span>
+        </div>
+      </div>
+      <!-- 출력 스키마 -->
+      <div class="card">
+        <div class="card-title">📊 출력 스키마 (Response Fields)</div>
+        <table class="data-table">
+          <thead><tr><th>필드명</th><th>타입</th><th>설명</th><th>비식별화</th><th>표준용어</th><th>예시값</th></tr></thead>
+          <tbody>
+            <tr><td>dam_id</td><td>string</td><td>댐 식별코드</td><td>-</td><td>댐코드</td><td>DAM_001</td></tr>
+            <tr><td>dam_name</td><td>string</td><td>댐 명칭</td><td>-</td><td>댐명</td><td>소양강댐</td></tr>
+            <tr><td>water_level</td><td>float</td><td>현재수위 (m)</td><td>-</td><td>수위</td><td>175.23</td></tr>
+            <tr><td>flow_rate</td><td>float</td><td>유입량 (㎥/s)</td><td>-</td><td>유입량</td><td>45.8</td></tr>
+            <tr><td>discharge</td><td>float</td><td>방류량 (㎥/s)</td><td>-</td><td>방류량</td><td>32.1</td></tr>
+            <tr><td>measured_at</td><td>datetime</td><td>측정일시</td><td>-</td><td>관측일시</td><td>2025-11-12T11:42</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== DIST SCREEN 3: 비식별화·가명처리 ========== -->
+    <div class="screen" id="screen-dist-deidentify">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 유통 및 활용 &gt; <strong>비식별화 및 가명처리 관리</strong></div>
+      <div class="page-title">비식별화 및 가명처리 관리</div>
+      <div class="count-cards">
+        <div class="count-card"><div class="cc-num">15건</div><div class="cc-label">비식별 정책</div></div>
+        <div class="count-card"><div class="cc-num" style="color:#ff9800;">8건</div><div class="cc-label">민감정보 탐지</div></div>
+        <div class="count-card"><div class="cc-num" style="color:#4caf50;">12건</div><div class="cc-label">처리완료</div></div>
+        <div class="count-card"><div class="cc-num" style="color:#ef6c00;">3건</div><div class="cc-label">검토대기</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🔒 비식별화 정책 목록</div>
+        <table class="data-table">
+          <thead><tr><th>정책명</th><th>대상필드</th><th>처리기법</th><th>적용등급</th><th>상태</th><th>적용대상</th><th>관리</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>고객개인정보 마스킹</strong></td><td>고객명, 전화번호, 주소</td><td>마스킹</td><td>전체</td>
+              <td><span class="policy-badge active">적용중</span></td><td>원격검침 사용량</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>주민번호 가명처리</strong></td><td>주민등록번호</td><td>SHA-256 해싱</td><td>전체</td>
+              <td><span class="policy-badge active">적용중</span></td><td>고객정보 테이블</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>위치정보 일반화</strong></td><td>GPS좌표, 주소</td><td>지역단위 일반화</td><td>3등급↑</td>
+              <td><span class="policy-badge active">적용중</span></td><td>IoT 센서데이터</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>이메일 치환처리</strong></td><td>이메일</td><td>가명치환</td><td>전체</td>
+              <td><span class="policy-badge active">적용중</span></td><td>사용자 로그</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>금융정보 암호화</strong></td><td>계좌번호, 카드번호</td><td>AES-256 암호화</td><td style="color:#c62828;">1등급</td>
+              <td><span class="policy-badge review">검토중</span></td><td>요금정보 테이블</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>AI 학습용 데이터처리</strong></td><td>고객명, 위치</td><td>k-익명성 (k=5)</td><td>2등급↑</td>
+              <td><span class="policy-badge review">검토중</span></td><td>AI 분석 데이터셋</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== DIST SCREEN 4: 데이터 신청·승인 ========== -->
+    <div class="screen" id="screen-dist-approval">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 유통 및 활용 &gt; <strong>데이터 신청 및 승인관리</strong></div>
+      <div class="page-title">데이터 신청 및 승인 관리</div>
+      <div class="count-cards">
+        <div class="count-card"><div class="cc-num" style="color:#ff9800;">3</div><div class="cc-label">승인대기</div></div>
+        <div class="count-card"><div class="cc-num" style="color:#4caf50;">48</div><div class="cc-label">금월 승인</div></div>
+        <div class="count-card"><div class="cc-num" style="color:#f44336;">2</div><div class="cc-label">금월 반려</div></div>
+        <div class="count-card"><div class="cc-num">4.2h</div><div class="cc-label">평균 처리시간</div></div>
+      </div>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>번호</th><th>유형</th><th>신청내용</th><th>대상데이터</th><th>등급</th><th>신청자</th><th>신청일</th><th>상태</th><th>관리</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>AP-056</td><td>API 활용</td><td>댐수위 실시간 API 연동신청</td><td>댐수위·방류량</td><td>2등급</td><td>김개발</td><td>11-12</td>
+              <td><span class="status-badge status-wait">대기</span></td>
+              <td><div class="approval-btns"><button class="btn-approve">승인</button><button class="btn-reject">반려</button></div></td>
+            </tr>
+            <tr>
+              <td>AP-055</td><td>다운로드</td><td>수력발전 통계 CSV 다운로드</td><td>수력발전 일간통계</td><td>2등급</td><td>이분석</td><td>11-11</td>
+              <td><span class="status-badge status-wait">대기</span></td>
+              <td><div class="approval-btns"><button class="btn-approve">승인</button><button class="btn-reject">반려</button></div></td>
+            </tr>
+            <tr>
+              <td>AP-054</td><td>Kafka</td><td>실시간검침 스트리밍 구독신청</td><td>원격검침 사용량</td><td>3등급</td><td>박실시</td><td>11-10</td>
+              <td><span class="status-badge status-wait">대기</span></td>
+              <td><div class="approval-btns"><button class="btn-approve">승인</button><button class="btn-reject">반려</button></div></td>
+            </tr>
+            <tr>
+              <td>AP-053</td><td>API 활용</td><td>수질데이터 REST API 활용신청</td><td>수질측정데이터</td><td>2등급</td><td>최수질</td><td>11-09</td>
+              <td><span class="status-badge status-active">승인</span></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>AP-052</td><td>권한상향</td><td>IoT 센서원시데이터 1등급 권한요청</td><td>IoT 센서원시</td><td style="color:#c62828;">1등급</td><td>정보안</td><td>11-08</td>
+              <td><span class="status-badge" style="background:#ffebee; color:#c62828;">반려</span></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>AP-051</td><td>API 활용</td><td>광역상수도 유량데이터 API 신청</td><td>광역상수도 유량</td><td>2등급</td><td>한상수</td><td>11-07</td>
+              <td><span class="status-badge status-active">승인</span></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>AP-050</td><td>다운로드</td><td>정수장운영실적 엑셀 다운로드</td><td>정수장운영실적</td><td>2등급</td><td>오정수</td><td>11-05</td>
+              <td><span class="status-badge status-active">승인</span></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== DIST SCREEN 5: 유통 API 관리 ========== -->
+    <div class="screen" id="screen-dist-api">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 유통 및 활용 &gt; <strong>유통 API 관리</strong></div>
+      <div class="page-title">유통 API 관리</div>
+      <div class="count-cards">
+        <div class="count-card"><div class="cc-num">8</div><div class="cc-label">전체 API</div></div>
+        <div class="count-card"><div class="cc-num" style="color:#4caf50;">6</div><div class="cc-label">활성 API</div></div>
+        <div class="count-card"><div class="cc-num" style="color:#ff9800;">1</div><div class="cc-label">시범운영</div></div>
+        <div class="count-card"><div class="cc-num" style="color:#1967d2;">910K</div><div class="cc-label">일간 총호출</div></div>
+      </div>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>API / 연동</th><th>유형</th><th>엔드포인트</th><th>상태</th><th>일간호출</th><th>Avg Latency</th><th>Uptime</th><th>관리</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>유통데이터 REST API</strong></td><td>OpenAPI</td><td style="font-family:monospace; font-size:11px;">/api/v1/*</td>
+              <td><span class="status-dot green"></span>정상</td><td>12.4K</td><td style="color:#4caf50;">45ms</td><td>99.9%</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>실시간 스트리밍 API</strong></td><td>Kafka</td><td style="font-family:monospace; font-size:11px;">kafka://stream.*</td>
+              <td><span class="status-dot green"></span>정상</td><td>892K</td><td style="color:#4caf50;">8ms</td><td>99.99%</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>MCP 디지털트윈 연동</strong></td><td>MCP</td><td style="font-family:monospace; font-size:11px;">/mcp/v1/twin</td>
+              <td><span class="status-dot green"></span>정상</td><td>4.8K</td><td>120ms</td><td>99.5%</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr class="row-warn">
+              <td><strong>데이터융합모델 API</strong></td><td>NGSI-LD</td><td style="font-family:monospace; font-size:11px;">/ngsi-ld/v1/entities</td>
+              <td><span class="status-dot orange"></span>시범</td><td>256</td><td style="color:#ff9800;">350ms</td><td>98.2%</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>수질모니터링 API</strong></td><td>OpenAPI</td><td style="font-family:monospace; font-size:11px;">/api/v1/water-qual</td>
+              <td><span class="status-dot green"></span>정상</td><td>5.8K</td><td style="color:#4caf50;">38ms</td><td>99.8%</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>GIS 공간정보 API</strong></td><td>WFS/WMS</td><td style="font-family:monospace; font-size:11px;">/gis/wfs?service=*</td>
+              <td><span class="status-dot green"></span>정상</td><td>3.2K</td><td>180ms</td><td>99.5%</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== DIST SCREEN 6: 데이터 유통통계 ========== -->
+    <div class="screen" id="screen-dist-stats">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 유통 및 활용 &gt; <strong>데이터 유통통계</strong></div>
+      <div class="page-title">데이터 유통통계</div>
+      <div class="grid-4" style="margin-bottom:20px;">
+        <div class="kpi-card">
+          <div class="kpi-label">월간 API 호출</div>
+          <div class="kpi-value" style="color:#1967d2;">2.8M</div>
+          <div class="kpi-change up">▲ 12% vs 전월</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">월간 다운로드</div>
+          <div class="kpi-value" style="color:#4caf50;">1,842</div>
+          <div class="kpi-change up">▲ 8% vs 전월</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">활성 사용자</div>
+          <div class="kpi-value">156명</div>
+          <div class="kpi-change up">▲ 23명 신규</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">데이터 품질평균</div>
+          <div class="kpi-value" style="color:#4caf50;">93.8%</div>
+          <div class="kpi-change up">▲ 1.2% 개선</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📈 월별 유통 추이 (API 호출수)</div>
+          <div class="chart-placeholder">
+            <svg viewBox="0 0 400 180" style="width:100%;">
+              <!-- 바 차트 -->
+              <rect x="30" y="120" width="40" height="40" rx="3" fill="#bbdefb"/>
+              <rect x="90" y="100" width="40" height="60" rx="3" fill="#90caf9"/>
+              <rect x="150" y="80" width="40" height="80" rx="3" fill="#64b5f6"/>
+              <rect x="210" y="60" width="40" height="100" rx="3" fill="#42a5f5"/>
+              <rect x="270" y="40" width="40" height="120" rx="3" fill="#1e88e5"/>
+              <rect x="330" y="20" width="40" height="140" rx="3" fill="#1967d2"/>
+              <text x="50" y="175" font-size="9" fill="#888" text-anchor="middle">1월</text>
+              <text x="110" y="175" font-size="9" fill="#888" text-anchor="middle">2월</text>
+              <text x="170" y="175" font-size="9" fill="#888" text-anchor="middle">3월</text>
+              <text x="230" y="175" font-size="9" fill="#888" text-anchor="middle">4월</text>
+              <text x="290" y="175" font-size="9" fill="#888" text-anchor="middle">5월</text>
+              <text x="350" y="175" font-size="9" fill="#888" text-anchor="middle">6월</text>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-title">🍩 API 유형별 호출 비율</div>
+            <div class="donut-chart">
+              <svg viewBox="0 0 42 42">
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#e0e0e0" stroke-width="5"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#1967d2" stroke-width="5" stroke-dasharray="35 65" stroke-dashoffset="25"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#4caf50" stroke-width="5" stroke-dasharray="42 58" stroke-dashoffset="90"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#ff9800" stroke-width="5" stroke-dasharray="10 90" stroke-dashoffset="48"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#9c27b0" stroke-width="5" stroke-dasharray="5 95" stroke-dashoffset="38"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#607d8b" stroke-width="5" stroke-dasharray="8 92" stroke-dashoffset="33"/>
+              </svg>
+              <div class="donut-center"><div class="dc-total">910K</div><div class="dc-label">일간 총호출</div></div>
+            </div>
+            <div class="donut-legend">
+              <span style="--c:#1967d2;"><span style="background:#1967d2; width:8px; height:8px; border-radius:2px; display:inline-block;"></span> REST API</span>
+              <span><span style="background:#4caf50; width:8px; height:8px; border-radius:2px; display:inline-block;"></span> Kafka</span>
+              <span><span style="background:#ff9800; width:8px; height:8px; border-radius:2px; display:inline-block;"></span> MCP</span>
+              <span><span style="background:#9c27b0; width:8px; height:8px; border-radius:2px; display:inline-block;"></span> NGSI-LD</span>
+              <span><span style="background:#607d8b; width:8px; height:8px; border-radius:2px; display:inline-block;"></span> GIS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Top 5 -->
+      <div class="card">
+        <div class="card-title">🏆 Top 5 Data Product (월간 호출 기준)</div>
+        <div class="rank-list">
+          <div class="rank-item">
+            <span class="rank-num">1</span>
+            <span class="rank-name">원격검침 사용량분석</span>
+            <span class="rank-calls">892K</span>
+            <span class="rank-users">42명</span>
+            <span class="rank-trend up">▲ 15%</span>
+          </div>
+          <div class="rank-item">
+            <span class="rank-num">2</span>
+            <span class="rank-name">댐수위·방류량종합</span>
+            <span class="rank-calls">561K</span>
+            <span class="rank-users">38명</span>
+            <span class="rank-trend up">▲ 22%</span>
+          </div>
+          <div class="rank-item">
+            <span class="rank-num">3</span>
+            <span class="rank-name">광역상수도 유량실시간</span>
+            <span class="rank-calls">372K</span>
+            <span class="rank-users">31명</span>
+            <span class="rank-trend up">▲ 8%</span>
+          </div>
+          <div class="rank-item">
+            <span class="rank-num">4</span>
+            <span class="rank-name">수질측정데이터 (환경부)</span>
+            <span class="rank-calls">174K</span>
+            <span class="rank-users">25명</span>
+            <span class="rank-trend up">▲ 5%</span>
+          </div>
+          <div class="rank-item">
+            <span class="rank-num" style="background:#888;">5</span>
+            <span class="rank-name">수력발전 일간통계</span>
+            <span class="rank-calls">96K</span>
+            <span class="rank-users">18명</span>
+            <span class="rank-trend down">▼ 3%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== META SCREEN 1: 표준용어 및 코드관리 ========== -->
+    <div class="screen" id="screen-meta-glossary">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 메타데이터 관리 &gt; <strong>표준용어 및 코드관리</strong></div>
+      <div class="page-title">표준용어 및 코드관리 (Glossary)</div>
+      <div class="filter-bar">
+        <input type="text" placeholder="용어 검색... (예: 수위, FlowRate)" style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+        <span class="tag-pill active">전체</span>
+        <span class="tag-pill">승인</span>
+        <span class="tag-pill">검토중</span>
+        <button class="btn btn-primary">➕ 용어등록</button>
+      </div>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>표준용어</th><th>영문명</th><th>도메인</th><th>설명</th><th>상태</th><th>액션</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>수위</strong></td><td>WaterLevel</td><td>수자원</td><td>관측지점의 수면높이 (m)</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>승인</span></td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">edit</button></td>
+            </tr>
+            <tr>
+              <td><strong>유량</strong></td><td>FlowRate</td><td>수자원</td><td>단위시간당 흐르는 물의 양 (m³/s)</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>승인</span></td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">edit</button></td>
+            </tr>
+            <tr>
+              <td><strong>탁도</strong></td><td>Turbidity</td><td>수질</td><td>물의 혼탁한 정도 (NTU)</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>승인</span></td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">edit</button></td>
+            </tr>
+            <tr>
+              <td><strong>잔류염소</strong></td><td>ResidualChlorine</td><td>수질</td><td>소독 후 남은 염소농도 (mg/L)</td>
+              <td><span class="glossary-status review"><span class="gs-dot"></span>검토중</span></td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">edit</button></td>
+            </tr>
+            <tr>
+              <td><strong>전력량</strong></td><td>PowerGeneration</td><td>에너지</td><td>수력발전 시간당 발전량 (MWh)</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>승인</span></td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">edit</button></td>
+            </tr>
+            <tr>
+              <td><strong>검침량</strong></td><td>MeterReading</td><td>고객</td><td>원격검침 사용량 누적값 (m³)</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>승인</span></td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">edit</button></td>
+            </tr>
+            <tr>
+              <td><strong>DO</strong></td><td>DissolvedOxygen</td><td>수질</td><td>용존산소 농도 (mg/L)</td>
+              <td><span class="glossary-status review"><span class="gs-dot"></span>검토중</span></td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">edit</button></td>
+            </tr>
+            <tr>
+              <td><strong>pH</strong></td><td>pH</td><td>수질</td><td>수소이온 농도지수 (0~14)</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>승인</span></td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">edit</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px; padding:10px 16px; background:#f5f7fa; border-radius:8px; font-size:12px; color:#666;">
+          🔄 기관표준단어/사전 동기화 &nbsp;|&nbsp; 온톨로지 용어집(Glossary) 자동연동
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== META SCREEN 2: 분류체계 및 태그관리 ========== -->
+    <div class="screen" id="screen-meta-tag">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 메타데이터 관리 &gt; <strong>분류체계 및 태그관리</strong></div>
+      <div class="page-title">분류체계 및 태그관리</div>
+      <!-- 도메인 태그 -->
+      <div class="card">
+        <div class="card-title">🏷️ 도메인 태그</div>
+        <div class="domain-tag-cards">
+          <div class="domain-tag-card"><div class="dtc-name">수자원</div><div class="dtc-count">2,847 자산</div></div>
+          <div class="domain-tag-card"><div class="dtc-name">에너지</div><div class="dtc-count">1,256 자산</div></div>
+          <div class="domain-tag-card"><div class="dtc-name">상수도</div><div class="dtc-count">3,421 자산</div></div>
+          <div class="domain-tag-card"><div class="dtc-name">수질</div><div class="dtc-count">1,892 자산</div></div>
+          <div class="domain-tag-card"><div class="dtc-name">고객</div><div class="dtc-count">986 자산</div></div>
+          <div class="domain-tag-card"><div class="dtc-name">계측</div><div class="dtc-count">4,531 자산</div></div>
+        </div>
+      </div>
+      <!-- 보안등급 태그 -->
+      <div class="card">
+        <div class="card-title">🔒 보안등급 태그</div>
+        <div style="display:flex; gap:16px; margin-bottom:16px;">
+          <div class="security-tag lv1">
+            <span class="st-level">1등급 (비밀)</span>
+            <span class="st-count">47건</span>
+            <span class="st-desc">AES-256 암호화 필수</span>
+          </div>
+          <div class="security-tag lv2">
+            <span class="st-level">2등급 (일반)</span>
+            <span class="st-count">328건</span>
+            <span class="st-desc">TLS 전송암호화</span>
+          </div>
+          <div class="security-tag lv3">
+            <span class="st-level">3등급 (공개)</span>
+            <span class="st-count">1,245건</span>
+            <span class="st-desc">별도 암호화 없음</span>
+          </div>
+        </div>
+      </div>
+      <!-- 업무영역 태그 -->
+      <div class="card">
+        <div class="card-title">🏢 업무영역 태그</div>
+        <div class="tag-pills" style="margin-bottom:8px;">
+          <span class="tag-pill active">계측</span>
+          <span class="tag-pill">행정</span>
+          <span class="tag-pill">재무</span>
+          <span class="tag-pill">기술</span>
+          <span class="tag-pill">운영</span>
+        </div>
+        <div style="font-size:12px; color:#888; margin-bottom:16px;">태그조합: 도메인 + 보안등급 + 업무영역 → 데이터 자산에 자동부여</div>
+      </div>
+      <!-- 태그 할당 현황 -->
+      <div class="card">
+        <div class="card-title">📃 태그 할당 현황 (최근 태그 변경 이력)</div>
+        <table class="data-table">
+          <thead><tr><th>데이터 자산</th><th>도메인</th><th>보안등급</th><th>업무영역</th><th>변경내용</th><th>변경자</th><th>일시</th></tr></thead>
+          <tbody>
+            <tr><td><strong>광역상수도 유량실시간</strong></td><td>상수도</td><td>2등급</td><td>계측</td><td>보안등급 3→2 변경</td><td>김수도</td><td>02-21</td></tr>
+            <tr><td><strong>RWIS 수위센서데이터</strong></td><td>수자원</td><td>3등급</td><td>계측</td><td>업무영역 태그 추가</td><td>박계측</td><td>02-20</td></tr>
+            <tr><td><strong>SAP 재무 일일마감</strong></td><td>고객</td><td style="color:#c62828;">1등급</td><td>재무</td><td>도메인 '행정'→'고객' 이관</td><td>이관리</td><td>02-19</td></tr>
+            <tr><td><strong>수력발전 일간통계</strong></td><td>에너지</td><td>2등급</td><td>운영</td><td>신규 태그 할당</td><td>한에너지</td><td>02-18</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== META SCREEN 3: 데이터모델관리 ========== -->
+    <div class="screen" id="screen-meta-model">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 메타데이터 관리 &gt; <strong>데이터모델관리</strong></div>
+      <div class="page-title">데이터모델 관리 (논리/물리 모델)</div>
+      <div class="filter-bar">
+        <span class="tag-pill active">전체</span>
+        <span class="tag-pill">논리</span>
+        <span class="tag-pill">물리</span>
+        <button class="btn btn-primary" style="margin-left:auto;">➕ 모델 생성</button>
+      </div>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>모델명</th><th>유형</th><th>테이블</th><th>도메인</th><th>상태</th><th>최종수정</th><th>담당자</th><th>액션</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>수자원관리_논리모델</strong></td><td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">논리</span></td><td>24</td><td>수자원</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>승인</span></td><td>02-20</td><td>김수자원</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>수자원관리_물리모델</strong></td><td><span class="ds-tag" style="background:#fff3e0; color:#ef6c00;">물리</span></td><td>87</td><td>수자원</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>승인</span></td><td>02-20</td><td>김수자원</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>상수도관리_논리모델</strong></td><td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">논리</span></td><td>18</td><td>상수도</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>승인</span></td><td>02-18</td><td>박상수</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>고객관리_물리모델</strong></td><td><span class="ds-tag" style="background:#fff3e0; color:#ef6c00;">물리</span></td><td>42</td><td>고객</td>
+              <td><span class="glossary-status review"><span class="gs-dot"></span>검토중</span></td><td>02-21</td><td>이고객</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>발전관리_물리모델</strong></td><td><span class="ds-tag" style="background:#fff3e0; color:#ef6c00;">물리</span></td><td>64</td><td>에너지</td>
+              <td><span class="glossary-status review"><span class="gs-dot"></span>검토중</span></td><td>02-19</td><td>한발전</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>수질관리_논리모델</strong></td><td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">논리</span></td><td>31</td><td>수질</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>승인</span></td><td>02-17</td><td>최수질</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>계측통합_물리모델</strong></td><td><span class="ds-tag" style="background:#fff3e0; color:#ef6c00;">물리</span></td><td>156</td><td>계측</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>승인</span></td><td>02-15</td><td>정계측</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- ERD -->
+      <div class="card">
+        <div class="card-title">🗂️ 모델 상세: 수자원관리_논리모델 (24 테이블)</div>
+        <div class="erd-container">
+          <div class="erd-table">
+            <div class="erd-header">댐_기본정보</div>
+            <div class="erd-cols">
+              <div class="erd-col"><span class="pk">PK</span> dam_id</div>
+              <div class="erd-col">name</div>
+              <div class="erd-col">type</div>
+              <div class="erd-col">capacity</div>
+            </div>
+          </div>
+          <div class="erd-table">
+            <div class="erd-header">수위_관측</div>
+            <div class="erd-cols">
+              <div class="erd-col"><span class="pk">PK</span> obs_id</div>
+              <div class="erd-col"><span class="fk">FK</span> dam_id</div>
+              <div class="erd-col">level</div>
+              <div class="erd-col">ts</div>
+            </div>
+          </div>
+          <div class="erd-table">
+            <div class="erd-header">유량_측정</div>
+            <div class="erd-cols">
+              <div class="erd-col"><span class="pk">PK</span> flow_id</div>
+              <div class="erd-col"><span class="fk">FK</span> dam_id</div>
+              <div class="erd-col">rate</div>
+              <div class="erd-col">ts</div>
+            </div>
+          </div>
+          <div class="erd-table">
+            <div class="erd-header">방류_이력</div>
+            <div class="erd-cols">
+              <div class="erd-col"><span class="pk">PK</span> release_id</div>
+              <div class="erd-col"><span class="fk">FK</span> dam_id</div>
+              <div class="erd-col">volume</div>
+            </div>
+          </div>
+          <div class="erd-table">
+            <div class="erd-header">기상_관측</div>
+            <div class="erd-cols">
+              <div class="erd-col"><span class="pk">PK</span> weather_id</div>
+              <div class="erd-col">station_id</div>
+              <div class="erd-col">temp</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== META SCREEN 4: DQ 검증·프로파일링 ========== -->
+    <div class="screen" id="screen-meta-dq">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 메타데이터 관리 &gt; <strong>DQ 검증 및 프로파일링</strong></div>
+      <div class="page-title">DQ 검증 및 프로파일링</div>
+      <div class="grid-4" style="margin-bottom:20px;">
+        <div class="kpi-card"><div class="kpi-label">등록 규칙</div><div class="kpi-value" style="color:#1967d2;">48개</div></div>
+        <div class="kpi-card"><div class="kpi-label">금일 검증</div><div class="kpi-value">156회</div></div>
+        <div class="kpi-card"><div class="kpi-label">통과율</div><div class="kpi-value" style="color:#4caf50;">94.2%</div></div>
+        <div class="kpi-card">
+          <div class="kpi-label">경고 / 실패</div>
+          <div class="kpi-value"><span style="color:#ff9800;">8</span> / <span style="color:#f44336;">2</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 품질 규칙 실행 결과</div>
+        <table class="data-table">
+          <thead><tr><th>품질규칙</th><th>대상</th><th>결과</th><th>마지막</th><th>위반건수</th><th>임계값</th><th>추이</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>결측치검사 (NULL ≤ 1%)</strong></td><td>RWIS 수위</td>
+              <td><span class="dq-result pass">● 통과</span></td><td>11:42</td><td>0건</td><td>≤ 1%</td>
+              <td><span class="dq-trend down">▼</span></td>
+            </tr>
+            <tr>
+              <td><strong>범위검사 (0~200m)</strong></td><td>RWIS 수위</td>
+              <td><span class="dq-result pass">● 통과</span></td><td>11:42</td><td>0건</td><td>0~200m</td>
+              <td><span class="dq-trend flat">—</span></td>
+            </tr>
+            <tr>
+              <td><strong>유효값검사 (코드일치)</strong></td><td>SAP 재무</td>
+              <td><span class="dq-result pass">● 통과</span></td><td>06:15</td><td>0건</td><td>100%</td>
+              <td><span class="dq-trend flat">—</span></td>
+            </tr>
+            <tr>
+              <td><strong>정합성검사 (FK 참조)</strong></td><td>Oracle 인사</td>
+              <td><span class="dq-result warn">● 경고</span></td><td>02:30</td><td style="color:#ff9800;">3건</td><td>≤ 5건</td>
+              <td><span class="dq-trend up">▲</span></td>
+            </tr>
+            <tr>
+              <td><strong>이상치탐지 (3σ 이탈)</strong></td><td>스마트미터</td>
+              <td><span class="dq-result warn">● 경고</span></td><td>11:40</td><td style="color:#ff9800;">12건</td><td>≤ 10건</td>
+              <td><span class="dq-trend up">▲</span></td>
+            </tr>
+            <tr>
+              <td><strong>적시성검사 (지연 ≤ 5분)</strong></td><td>GIOS 센서</td>
+              <td><span class="dq-result pass">● 통과</span></td><td>11:45</td><td>0건</td><td>≤ 5분</td>
+              <td><span class="dq-trend down">▼</span></td>
+            </tr>
+            <tr>
+              <td><strong>중복검사 (PK 유일성)</strong></td><td>수질측정</td>
+              <td><span class="dq-result fail">● 실패</span></td><td>11:30</td><td style="color:#f44336;">28건</td><td>0건</td>
+              <td><span class="dq-trend up">▲</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px; padding:10px 16px; background:#f5f7fa; border-radius:8px; font-size:12px; color:#666;">
+          🔄 품질규칙(Quality Rule) 온톨로지 클래스와 연동 &nbsp;|&nbsp; 프로파일링 결과 Neo4j 노드속성 기록
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SYS SCREEN 1: 조직 및 사용자관리 ========== -->
+    <div class="screen" id="screen-sys-user">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 시스템관리 &gt; <strong>조직 및 사용자관리</strong></div>
+      <div class="page-title">조직 및 사용자관리</div>
+      <div class="grid-4" style="margin-bottom:20px;">
+        <div class="kpi-card"><div class="kpi-label">전체 사용자</div><div class="kpi-value" style="color:#1967d2;">249명</div></div>
+        <div class="kpi-card"><div class="kpi-label">활성 사용자</div><div class="kpi-value" style="color:#4caf50;">189명</div></div>
+        <div class="kpi-card"><div class="kpi-label">비활성 / 잠김</div><div class="kpi-value" style="color:#ff9800;">12명</div></div>
+        <div class="kpi-card"><div class="kpi-label">신규 대기</div><div class="kpi-value" style="color:#f44336;">4명</div></div>
+      </div>
+      <div class="filter-bar">
+        <input type="text" placeholder="사용자 검색 (이름, 부서, 역할)" style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+        <button class="btn btn-primary">➕ 사용자등록</button>
+      </div>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>이름</th><th>부서</th><th>역할</th><th>데이터접근</th><th>상태</th><th>SSO</th><th>최종로그인</th><th>가입일</th><th>관리</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>관리자 (admin)</strong></td><td>정보화추진단</td><td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">시스템관리자</span></td><td>전체</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>활성</span></td>
+              <td>Y</td><td>11-12 11:42</td><td>2024-01-01</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">⚙</button></td>
+            </tr>
+            <tr>
+              <td><strong>박수원</strong></td><td>수자원관리팀</td><td><span class="ds-tag" style="background:#e3f2fd; color:#1565c0;">데이터관리자</span></td><td>전체</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>활성</span></td>
+              <td>Y</td><td>11-12 10:15</td><td>2024-03-15</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">⚙</button></td>
+            </tr>
+            <tr>
+              <td><strong>김데이터</strong></td><td>데이터분석팀</td><td><span class="ds-tag" style="background:#fff3e0; color:#ef6c00;">데이터엔지니어</span></td><td>할당됨</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>활성</span></td>
+              <td>Y</td><td>11-12 09:30</td><td>2024-05-20</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">⚙</button></td>
+            </tr>
+            <tr>
+              <td><strong>이분석</strong></td><td>경영기획팀</td><td><span class="ds-tag" style="background:#f3e5f5; color:#7b1fa2;">일반사용자</span></td><td>등급별</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>활성</span></td>
+              <td>Y</td><td>11-11 16:45</td><td>2024-07-01</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">⚙</button></td>
+            </tr>
+            <tr>
+              <td><strong>최외부</strong></td><td>외부 (환경부)</td><td><span class="ds-tag" style="background:#fce4ec; color:#c62828;">외부사용자</span></td><td>3등급만</td>
+              <td><span class="glossary-status approved"><span class="gs-dot"></span>활성</span></td>
+              <td>N</td><td>11-10 14:20</td><td>2025-01-10</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">⚙</button></td>
+            </tr>
+            <tr>
+              <td><strong>정탈퇴</strong></td><td>수도사업팀</td><td><span class="ds-tag" style="background:#f3e5f5; color:#7b1fa2;">일반사용자</span></td><td>-</td>
+              <td><span style="color:#999; font-size:11px; font-weight:600;">⊘ 비활성</span></td>
+              <td>Y</td><td>10-01 08:00</td><td>2024-02-01</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">⚙</button></td>
+            </tr>
+            <tr>
+              <td><strong>홍신규</strong></td><td>AI연구팀</td><td><span class="ds-tag" style="background:#fff3e0; color:#ef6c00;">데이터엔지니어</span></td><td>대기</td>
+              <td><span class="glossary-status review"><span class="gs-dot"></span>승인대기</span></td>
+              <td>-</td><td>-</td><td>신청중</td>
+              <td><button class="btn btn-primary" style="padding:3px 8px; font-size:11px;">승인</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== SYS SCREEN 2: 권한 및 역할관리 ========== -->
+    <div class="screen" id="screen-sys-role">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 시스템관리 &gt; <strong>권한 및 역할관리</strong></div>
+      <div class="page-title">권한 및 역할관리 (RBAC)</div>
+      <div class="card">
+        <div class="card-title">🛡️ 역할(Role) 정의 및 권한 매트릭스</div>
+        <table class="rbac-matrix">
+          <thead><tr><th>역할</th><th>사용자수</th><th>데이터접근</th><th>주요권한</th><th>카탈로그</th><th>수집·정제</th><th>유통·활용</th><th>메타관리</th><th>시스템관리</th><th>비고</th></tr></thead>
+          <tbody>
+            <tr><td>시스템관리자</td><td>5</td><td>전체</td><td style="text-align:left;">시스템설정/관리</td><td><span class="rbac-full">●</span></td><td><span class="rbac-full">●</span></td><td><span class="rbac-full">●</span></td><td><span class="rbac-full">●</span></td><td><span class="rbac-full">●</span></td><td>SSO 연동</td></tr>
+            <tr><td>데이터관리자(Steward)</td><td>12</td><td>전체</td><td style="text-align:left;">카탈로그/품질/정제</td><td><span class="rbac-full">●</span></td><td><span class="rbac-full">●</span></td><td><span class="rbac-full">●</span></td><td><span class="rbac-full">●</span></td><td><span class="rbac-none">○</span></td><td>-</td></tr>
+            <tr><td>데이터엔지니어</td><td>28</td><td>할당됨</td><td style="text-align:left;">파이프라인/변환/dbt</td><td><span class="rbac-full">●</span></td><td><span class="rbac-full">●</span></td><td><span class="rbac-none">○</span></td><td><span class="rbac-limited">△</span></td><td><span class="rbac-none">○</span></td><td>-</td></tr>
+            <tr><td>일반사용자(분석가)</td><td>156</td><td>등급별</td><td style="text-align:left;">조회/다운로드/API</td><td><span class="rbac-full">●</span></td><td><span class="rbac-none">○</span></td><td><span class="rbac-limited">△</span></td><td><span class="rbac-none">○</span></td><td><span class="rbac-none">○</span></td><td>-</td></tr>
+            <tr><td>외부사용자</td><td>48</td><td>3등급만</td><td style="text-align:left;">공개데이터 조회</td><td><span class="rbac-limited">△</span></td><td><span class="rbac-none">○</span></td><td><span class="rbac-none">○</span></td><td><span class="rbac-none">○</span></td><td><span class="rbac-none">○</span></td><td>별도승인</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:10px; font-size:11px; color:#888;">● 전체권한 &nbsp; △ 제한적권한 &nbsp; ○ 권한없음</div>
+      </div>
+    </div>
+
+    <!-- ========== SYS SCREEN 3: 데이터등급·보안정책 ========== -->
+    <div class="screen" id="screen-sys-security">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 시스템관리 &gt; <strong>데이터등급·보안정책</strong></div>
+      <div class="page-title">데이터등급 및 보안정책</div>
+      <div class="sec-level-cards">
+        <div class="sec-level-card lv1">
+          <div class="sl-title">🔴 1등급 (비밀)</div>
+          <div class="sl-desc">개인정보, 보안데이터</div>
+          <div class="sl-rule">
+            접근: 시스템관리자 + 별도승인<br>
+            암호화: <strong>AES-256</strong><br>
+            로깅: 전수감사
+          </div>
+        </div>
+        <div class="sec-level-card lv2">
+          <div class="sl-title">🟠 2등급 (일반)</div>
+          <div class="sl-desc">업무데이터, 운영정보</div>
+          <div class="sl-rule">
+            접근: 데이터관리자 이상 + 승인<br>
+            암호화: <strong>전송구간 암호화 (TLS)</strong><br>
+            로깅: 접근로그
+          </div>
+        </div>
+        <div class="sec-level-card lv3">
+          <div class="sl-title">🟢 3등급 (공개)</div>
+          <div class="sl-desc">공개가능 통계, 일반정보</div>
+          <div class="sl-rule">
+            접근: 전체사용자 (외부 포함)<br>
+            암호화: 별도 암호화 없음<br>
+            로깅: 기본접속로그
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 등급별 데이터 자산 현황</div>
+        <table class="data-table">
+          <thead><tr><th>등급</th><th>자산 수</th><th>주요 대상</th><th>접근 가능 역할</th><th>암호화 방식</th></tr></thead>
+          <tbody>
+            <tr><td><span style="color:#c62828; font-weight:700;">1등급 (비밀)</span></td><td>47건</td><td>개인정보 테이블, SAP 인사/급여</td><td>시스템관리자 (별도승인)</td><td>AES-256</td></tr>
+            <tr><td><span style="color:#ef6c00; font-weight:700;">2등급 (일반)</span></td><td>328건</td><td>운영 DB, 수자원 실시간 데이터</td><td>데이터관리자 이상</td><td>TLS 전송구간</td></tr>
+            <tr><td><span style="color:#2e7d32; font-weight:700;">3등급 (공개)</span></td><td>1,245건</td><td>공개 통계, 환경데이터</td><td>전체 (외부 포함)</td><td>-</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">🔒 보안정책 규칙</div>
+        <div style="font-size:13px; line-height:2; color:#555;">
+          ✅ 1등급 데이터 접근 시 2차 인증(MFA) 필수<br>
+          ✅ 외부사용자는 3등급 공개 데이터만 조회 가능<br>
+          ✅ 비활성 계정(90일 미접속) 자동 잠금 처리<br>
+          ✅ 데이터 다운로드 시 보안등급 기반 워터마크 삽입<br>
+          ✅ 비정상 접근 탐지 → 자동 차단 + 관리자 알림
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SYS SCREEN 4: 데이터허브 엔진관리 ========== -->
+    <div class="screen" id="screen-sys-engine">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 시스템관리 &gt; <strong>데이터허브 엔진관리</strong></div>
+      <div class="page-title">데이터허브 엔진관리 (운영콘솔)</div>
+      <div class="engine-cards">
+        <!-- Neo4j -->
+        <div class="engine-card">
+          <div class="ec-header">
+            <span class="ec-name">Neo4j 그래프 DB</span>
+            <span class="ec-status">✅ 정상</span>
+          </div>
+          <div class="ec-info">노드 152,584 &nbsp;|&nbsp; 관계 523,691<br>클러스터 3노드</div>
+          <div class="ec-meters">
+            <div class="ec-meter"><div class="em-label">CPU</div><div class="em-bar"><div class="em-fill" style="width:34%; background:#4caf50;"></div></div><div class="em-val">34%</div></div>
+            <div class="ec-meter"><div class="em-label">MEM</div><div class="em-bar"><div class="em-fill" style="width:62%; background:#ff9800;"></div></div><div class="em-val">62%</div></div>
+            <div class="ec-meter"><div class="em-label">DISK</div><div class="em-bar"><div class="em-fill" style="width:45%; background:#1967d2;"></div></div><div class="em-val">45%</div></div>
+          </div>
+        </div>
+        <!-- MindsDB -->
+        <div class="engine-card">
+          <div class="ec-header">
+            <span class="ec-name">MindsDB</span>
+            <span class="ec-status">✅ 정상</span>
+          </div>
+          <div class="ec-info">DB 연결 5개<br>메타추출 스케줄 정상</div>
+          <div class="ec-meters">
+            <div class="ec-meter"><div class="em-label">CPU</div><div class="em-bar"><div class="em-fill" style="width:12%; background:#4caf50;"></div></div><div class="em-val">12%</div></div>
+            <div class="ec-meter"><div class="em-label">MEM</div><div class="em-bar"><div class="em-fill" style="width:28%; background:#4caf50;"></div></div><div class="em-val">28%</div></div>
+            <div class="ec-meter"><div class="em-label">DISK</div><div class="em-bar"><div class="em-fill" style="width:15%; background:#1967d2;"></div></div><div class="em-val">15%</div></div>
+          </div>
+        </div>
+        <!-- 인메모리 DB -->
+        <div class="engine-card">
+          <div class="ec-header">
+            <span class="ec-name">인메모리 DB (GPU)</span>
+            <span class="ec-status">✅ 정상</span>
+          </div>
+          <div class="ec-info">계측 실시간 처리<br>사용률 34%</div>
+          <div class="ec-meters">
+            <div class="ec-meter"><div class="em-label">CPU</div><div class="em-bar"><div class="em-fill" style="width:34%; background:#4caf50;"></div></div><div class="em-val">34%</div></div>
+            <div class="ec-meter"><div class="em-label">MEM</div><div class="em-bar"><div class="em-fill" style="width:71%; background:#ff9800;"></div></div><div class="em-val">71%</div></div>
+            <div class="ec-meter"><div class="em-label">DISK</div><div class="em-bar"><div class="em-fill" style="width:22%; background:#1967d2;"></div></div><div class="em-val">22%</div></div>
+          </div>
+        </div>
+        <!-- Kafka -->
+        <div class="engine-card">
+          <div class="ec-header">
+            <span class="ec-name">Kafka 클러스터</span>
+            <span class="ec-status">✅ 정상</span>
+          </div>
+          <div class="ec-info">토픽 42개<br>초당 28K 메시지</div>
+          <div class="ec-meters">
+            <div class="ec-meter"><div class="em-label">CPU</div><div class="em-bar"><div class="em-fill" style="width:45%; background:#ff9800;"></div></div><div class="em-val">45%</div></div>
+            <div class="ec-meter"><div class="em-label">MEM</div><div class="em-bar"><div class="em-fill" style="width:58%; background:#ff9800;"></div></div><div class="em-val">58%</div></div>
+            <div class="ec-meter"><div class="em-label">DISK</div><div class="em-bar"><div class="em-fill" style="width:38%; background:#1967d2;"></div></div><div class="em-val">38%</div></div>
+          </div>
+        </div>
+        <!-- dbt Core -->
+        <div class="engine-card">
+          <div class="ec-header">
+            <span class="ec-name">dbt Core</span>
+            <span class="ec-status">✅ 정상</span>
+          </div>
+          <div class="ec-info">모델 86개<br>마지막 실행 11:30</div>
+          <div class="ec-meters">
+            <div class="ec-meter"><div class="em-label">CPU</div><div class="em-bar"><div class="em-fill" style="width:8%; background:#4caf50;"></div></div><div class="em-val">8%</div></div>
+            <div class="ec-meter"><div class="em-label">MEM</div><div class="em-bar"><div class="em-fill" style="width:15%; background:#4caf50;"></div></div><div class="em-val">15%</div></div>
+            <div class="ec-meter"><div class="em-label">DISK</div><div class="em-bar"><div class="em-fill" style="width:12%; background:#1967d2;"></div></div><div class="em-val">12%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SYS SCREEN 5: 연계인터페이스 모니터링 ========== -->
+    <div class="screen" id="screen-sys-interface">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 시스템관리 &gt; <strong>연계인터페이스 모니터링</strong></div>
+      <div class="page-title">연계인터페이스 모니터링</div>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>인터페이스</th><th>유형</th><th>상태</th><th>Latency</th><th>Uptime</th><th>최근 동기화</th><th>관리</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>MCP 연동</strong></td><td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">MCP</span></td>
+              <td><span class="if-status"><span class="if-dot"></span>정상</span></td>
+              <td>120ms</td><td>99.5%</td><td>11:42</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>내부 API 게이트웨이</strong></td><td><span class="ds-tag" style="background:#e8f5e9; color:#2e7d32;">REST</span></td>
+              <td><span class="if-status"><span class="if-dot"></span>정상</span></td>
+              <td>35ms</td><td>99.9%</td><td>11:42</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>외부 API 게이트웨이</strong></td><td><span class="ds-tag" style="background:#e8f5e9; color:#2e7d32;">REST</span></td>
+              <td><span class="if-status"><span class="if-dot"></span>정상</span></td>
+              <td>85ms</td><td>99.8%</td><td>11:42</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>SSO 인증서버</strong></td><td><span class="ds-tag" style="background:#f3e5f5; color:#7b1fa2;">SAML</span></td>
+              <td><span class="if-status"><span class="if-dot"></span>정상</span></td>
+              <td>45ms</td><td>99.99%</td><td>11:42</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>DMZ 프록시</strong></td><td><span class="ds-tag" style="background:#fff3e0; color:#ef6c00;">Proxy</span></td>
+              <td><span class="if-status"><span class="if-dot"></span>정상</span></td>
+              <td>12ms</td><td>99.95%</td><td>11:42</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+            <tr>
+              <td><strong>Kafka Broker</strong></td><td><span class="ds-tag" style="background:#fce4ec; color:#c62828;">Kafka</span></td>
+              <td><span class="if-status"><span class="if-dot"></span>정상</span></td>
+              <td>8ms</td><td>99.99%</td><td>11:42</td>
+              <td><button class="btn btn-outline" style="padding:3px 8px; font-size:11px;">상세</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Latency 차트 -->
+      <div class="card">
+        <div class="card-title">📈 인터페이스 상태추이 (최근 24시간)</div>
+        <div class="latency-chart">
+          <div class="latency-bar"><div class="lb-bar" style="height:35px; background:#1967d2;"></div><div class="lb-label">00h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:40px; background:#1967d2;"></div><div class="lb-label">02h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:30px; background:#1967d2;"></div><div class="lb-label">04h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:25px; background:#4caf50;"></div><div class="lb-label">06h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:45px; background:#1967d2;"></div><div class="lb-label">08h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:80px; background:#ff9800;"></div><div class="lb-label">10h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:120px; background:#f44336;"></div><div class="lb-label">12h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:65px; background:#ff9800;"></div><div class="lb-label">14h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:50px; background:#1967d2;"></div><div class="lb-label">16h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:38px; background:#1967d2;"></div><div class="lb-label">18h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:42px; background:#1967d2;"></div><div class="lb-label">20h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:35px; background:#4caf50;"></div><div class="lb-label">22h</div></div>
+        </div>
+        <div style="display:flex; gap:16px; margin-top:10px; font-size:11px; color:#888; justify-content:center;">
+          <span>🔵 내부 API (ms)</span> <span>🟢 외부 API (ms)</span> <span>🔴 MCP (ms)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SYS SCREEN 6: 접속통계·감사로그 ========== -->
+    <div class="screen" id="screen-sys-audit">
+      <div class="breadcrumb"><a href="#" onclick="navigate('home')">홈</a> &gt; 시스템관리 &gt; <strong>접속통계·감사로그</strong></div>
+      <div class="page-title">접속통계 및 감사로그</div>
+      <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-bottom:20px;">
+        <div class="kpi-card"><div class="kpi-label">금일 접속자</div><div class="kpi-value" style="color:#1967d2;">142명</div></div>
+        <div class="kpi-card"><div class="kpi-label">금월 활성사용자</div><div class="kpi-value">189명</div></div>
+        <div class="kpi-card"><div class="kpi-label">API 호출(금일)</div><div class="kpi-value" style="color:#4caf50;">24.8K</div></div>
+        <div class="kpi-card"><div class="kpi-label">메타데이터 변경</div><div class="kpi-value" style="color:#ff9800;">56건</div></div>
+        <div class="kpi-card"><div class="kpi-label">이상행위 탐지</div><div class="kpi-value" style="color:#4caf50;">0건</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+          📋 감사로그 (최근 활동)
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-outline" style="font-size:11px;">🔍 필터</button>
+            <button class="btn btn-outline" style="font-size:11px;">📥 내보내기</button>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>시간</th><th>사용자</th><th>유형</th><th>활동 내용</th><th>IP 주소</th><th>결과</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>11:42:30</td><td><strong>박수원</strong></td><td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">데이터</span></td>
+              <td>TB_WATER_LEVEL 메타데이터 수정 (설명필드 업데이트)</td><td>10.x.x.42</td>
+              <td><span class="audit-result success">성공</span></td>
+            </tr>
+            <tr>
+              <td>11:41:22</td><td><strong>김데이터</strong></td><td><span class="ds-tag" style="background:#e8f5e9; color:#2e7d32;">수집</span></td>
+              <td>스마트미터 CDC 파이프라인 스케줄 변경 (1초→3초)</td><td>10.x.x.15</td>
+              <td><span class="audit-result success">성공</span></td>
+            </tr>
+            <tr>
+              <td>11:30:00</td><td><strong>이분석</strong></td><td><span class="ds-tag" style="background:#fff3e0; color:#ef6c00;">유통</span></td>
+              <td>수질데이터 API 활용신청 (REQ-042)</td><td>10.x.x.88</td>
+              <td><span class="audit-result success">성공</span></td>
+            </tr>
+            <tr>
+              <td>11:15:45</td><td><strong>최외부</strong></td><td><span class="ds-tag" style="background:#f3e5f5; color:#7b1fa2;">접속</span></td>
+              <td>외부사용자 로그인 (환경부, IP: 211.x.x.55)</td><td>211.x.x.55</td>
+              <td><span class="audit-result success">성공</span></td>
+            </tr>
+            <tr>
+              <td>10:58:12</td><td><strong>admin</strong></td><td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">시스템</span></td>
+              <td>Neo4j 클러스터 메모리캐시 설정변경 (TTL: 1h→30m)</td><td>10.x.x.1</td>
+              <td><span class="audit-result success">성공</span></td>
+            </tr>
+            <tr>
+              <td>10:45:00</td><td><strong>정탈퇴</strong></td><td><span class="ds-tag" style="background:#f3e5f5; color:#7b1fa2;">접속</span></td>
+              <td>비활성 계정 로그인 시도 (차단됨)</td><td>10.x.x.99</td>
+              <td><span class="audit-result blocked">차단</span></td>
+            </tr>
+            <tr>
+              <td>10:30:15</td><td><strong>admin</strong></td><td><span class="ds-tag" style="background:#fce4ec; color:#c62828;">권한</span></td>
+              <td>홍신규 계정생성 요청 검토 → 승인처리</td><td>10.x.x.1</td>
+              <td><span class="audit-result success">성공</span></td>
+            </tr>
+            <tr>
+              <td>09:00:00</td><td><strong>system</strong></td><td><span class="ds-tag" style="background:#e8f5e9; color:#2e7d32;">배치</span></td>
+              <td>SAP 재무 일배치 수집 완료: 48,231건 처리</td><td>system</td>
+              <td><span class="audit-result success">성공</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div> <!-- /main -->
+</div> <!-- /layout -->
+
+<script>
+  // Navigation
+  function navigate(screen) {
+    // Hide all screens
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    // Show target
+    const target = document.getElementById('screen-' + screen);
+    if (target) {
+      target.classList.add('active');
+      target.classList.remove('fade-in');
+      void target.offsetWidth; // trigger reflow
+      target.classList.add('fade-in');
+    }
+    // Update sidebar
+    document.querySelectorAll('.sidebar .menu-item').forEach(m => m.classList.remove('active'));
+    document.querySelectorAll('.sidebar .menu-item').forEach(m => {
+      if (m.dataset.screen === screen) {
+        m.classList.add('active');
+        // Auto-open the parent accordion
+        const body = m.closest('.accordion-body');
+        if (body && !body.classList.contains('open')) {
+          body.classList.add('open');
+          const title = document.querySelector('[data-accordion="' + body.id + '"]');
+          if (title) title.classList.add('open');
+        }
+      }
+    });
+  }
+
+  // Process step highlight
+  function highlightStep(el) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active-step'));
+    el.classList.add('active-step');
+  }
+
+  // Gallery tab switch
+  function switchGalleryTab(el, tab) {
+    document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // Top nav click
+  document.querySelectorAll('.top-nav .nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+      document.querySelectorAll('.top-nav .nav-item').forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+      if (this.dataset.menu === 'dashboard') navigate('home');
+      if (this.dataset.menu === 'catalog') navigate('cat-search');
+      if (this.dataset.menu === 'collect') navigate('col-pipeline');
+      if (this.dataset.menu === 'distribute') navigate('dist-product');
+      if (this.dataset.menu === 'meta') navigate('meta-glossary');
+      if (this.dataset.menu === 'system') navigate('sys-user');
+    });
+  });
+
+  // Update top nav active state based on screen
+  const origNavigate = navigate;
+  navigate = function(screen) {
+    origNavigate(screen);
+    // Highlight correct top nav
+    document.querySelectorAll('.top-nav .nav-item').forEach(i => i.classList.remove('active'));
+    if (screen.startsWith('cat-')) {
+      document.querySelector('.top-nav .nav-item[data-menu="catalog"]').classList.add('active');
+    } else if (screen.startsWith('col-')) {
+      document.querySelector('.top-nav .nav-item[data-menu="collect"]').classList.add('active');
+    } else if (screen.startsWith('dist-')) {
+      document.querySelector('.top-nav .nav-item[data-menu="distribute"]').classList.add('active');
+    } else if (screen.startsWith('meta-')) {
+      document.querySelector('.top-nav .nav-item[data-menu="meta"]').classList.add('active');
+    } else if (screen.startsWith('sys-')) {
+      document.querySelector('.top-nav .nav-item[data-menu="system"]').classList.add('active');
+    } else {
+      document.querySelector('.top-nav .nav-item[data-menu="dashboard"]').classList.add('active');
+    }
+  };
+
+  // Tag pill toggle
+  document.querySelectorAll('.tag-pill').forEach(pill => {
+    pill.addEventListener('click', function() { this.classList.toggle('active'); });
+  });
+
+  // Accordion toggle
+  function toggleAccordion(el) {
+    const bodyId = el.dataset.accordion;
+    const body = document.getElementById(bodyId);
+    el.classList.toggle('open');
+    body.classList.toggle('open');
+  }
+
+  // Graph node select
+  function selectGraphNode(name) {
+    // placeholder for detail panel update
+  }
+</script>
+
+</body>
+</html>

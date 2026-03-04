@@ -1,0 +1,508 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>데이터허브 포털 - 개인 대시보드 / 카탈로그·탐색</title>
+  <!-- daisyUI v5 (CSS-only, must load before Tailwind) -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5/dist/full.min.css" rel="stylesheet">
+  <!-- Tailwind CSS v4 Browser -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <!-- AG Grid Community v31 (pre-Theming API, no conflict) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/styles/ag-grid.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/styles/ag-theme-alpine.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/dist/ag-grid-community.min.js"></script>
+  <!-- Custom CSS (gradually replaced) -->
+  <link rel="stylesheet" href="css/style.css?v=20260303a">
+</head>
+
+<body>
+
+  <!-- ===== LOGIN SCREEN ===== -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="card bg-base-100 shadow-2xl w-[460px] max-w-[95vw] p-8 rounded-2xl">
+      <!-- Logo -->
+      <div class="flex items-center justify-center gap-3 mb-2">
+        <span class="logo-mark logo-mark-lg">
+          <svg class="logo-waves" viewBox="0 0 70 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 15 Q18 15, 28 5 Q38 -2, 55 4 Q62 6, 68 5" fill="none" stroke="#0072CE" stroke-width="2.8"
+              stroke-linecap="round" />
+            <path d="M1 18.5 Q20 18.5, 30 9 Q40 2, 56 7.5 Q63 9.5, 68 8.5" fill="none" stroke="#F7931E"
+              stroke-width="2.2" stroke-linecap="round" />
+          </svg>
+          <span class="logo-text"><span class="logo-k">K</span><span class="logo-w">W</span><span
+              class="logo-dot">·</span><span class="logo-d">D</span><span class="logo-h">H</span></span>
+        </span>
+        <span class="text-base font-semibold text-base-content/60 tracking-wide">DataHub Portal</span>
+      </div>
+      <p class="text-center text-sm text-base-content/50 mb-5">한국수자원공사 데이터허브 통합 포털</p>
+
+      <!-- 로그인 유형 선택 -->
+      <div class="login-type-selector grid grid-cols-4 gap-1.5 mb-5">
+        <div
+          class="login-type-btn active flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 border-transparent cursor-pointer text-center transition-all hover:bg-base-200"
+          data-type="sso" onclick="switchLoginType('sso')">
+          <span class="text-2xl">🏢</span>
+          <span class="text-[11px] leading-tight">수공 직원 (SSO)</span>
+        </div>
+        <div
+          class="login-type-btn flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 border-transparent cursor-pointer text-center transition-all hover:bg-base-200"
+          data-type="partner" onclick="switchLoginType('partner')">
+          <span class="text-2xl">🤝</span>
+          <span class="text-[11px] leading-tight">협력 직원</span>
+        </div>
+        <div
+          class="login-type-btn flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 border-transparent cursor-pointer text-center transition-all hover:bg-base-200"
+          data-type="engineer" onclick="switchLoginType('engineer')">
+          <span class="text-2xl">🔧</span>
+          <span class="text-[11px] leading-tight">데이터 엔지니어</span>
+        </div>
+        <div
+          class="login-type-btn flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 border-transparent cursor-pointer text-center transition-all hover:bg-base-200"
+          data-type="admin" onclick="switchLoginType('admin')">
+          <span class="text-2xl">🛡️</span>
+          <span class="text-[11px] leading-tight">관리자</span>
+        </div>
+      </div>
+
+      <!-- SSO 로그인 -->
+      <div class="login-form" id="login-sso">
+        <div class="alert bg-base-200/60 border border-base-300 mb-4 flex-col items-center text-center py-5">
+          <span class="text-2xl">🔐</span>
+          <span class="font-bold text-sm">SSO 자동 로그인</span>
+          <span class="text-xs text-base-content/60">K-water 통합인증(SSO)을 통해 자동으로 로그인됩니다.</span>
+          <span class="text-[11px] text-base-content/40">사번이 인식되면 별도 입력 없이 접속됩니다.</span>
+        </div>
+        <fieldset class="fieldset mb-3">
+          <legend class="fieldset-legend text-xs font-semibold">권한 선택 (데모용)</legend>
+          <select id="sso-role" class="select select-bordered w-full text-sm">
+            <option value="수공직원|일반사용자">홍길동 — 일반사용자</option>
+            <option value="수공직원|부서관리자">김영희 — 부서관리자</option>
+            <option value="수공직원|데이터스튜어드">이철수 — 데이터 스튜어드</option>
+          </select>
+        </fieldset>
+        <button class="btn btn-primary w-full mt-2" onclick="doLogin('sso')">SSO 자동 로그인</button>
+      </div>
+
+      <!-- 협력직원 로그인 -->
+      <div class="login-form" id="login-partner" style="display:none;">
+        <fieldset class="fieldset mb-2">
+          <legend class="fieldset-legend text-xs font-semibold">아이디</legend>
+          <input type="text" class="input input-bordered w-full text-sm" placeholder="아이디를 입력하세요" value="partner_kim">
+        </fieldset>
+        <fieldset class="fieldset mb-2">
+          <legend class="fieldset-legend text-xs font-semibold">비밀번호</legend>
+          <input type="password" class="input input-bordered w-full text-sm" placeholder="비밀번호를 입력하세요" value="••••••••">
+        </fieldset>
+        <fieldset class="fieldset mb-2">
+          <legend class="fieldset-legend text-xs font-semibold">휴대폰 인증</legend>
+          <div class="flex gap-2">
+            <input type="text" class="input input-bordered flex-1 text-sm" placeholder="010-0000-0000"
+              value="010-1234-5678">
+            <button class="btn btn-outline btn-sm"
+              onclick="this.textContent='✅ 인증완료'; this.classList.add('btn-success');">인증요청</button>
+          </div>
+          <p class="text-[11px] text-base-content/40 mt-1">📱 휴대폰 본인인증 후 로그인이 가능합니다.</p>
+        </fieldset>
+        <fieldset class="fieldset mb-2">
+          <legend class="fieldset-legend text-xs font-semibold">권한 선택 (데모용)</legend>
+          <select id="partner-role" class="select select-bordered w-full text-sm">
+            <option value="협력직원|데이터조회">김협력 — 데이터 조회</option>
+            <option value="협력직원|외부개발자">박외부 — 외부 개발자</option>
+          </select>
+        </fieldset>
+        <button class="btn btn-primary w-full mt-2" onclick="doLogin('partner')">로그인</button>
+      </div>
+
+      <!-- 데이터 엔지니어 로그인 -->
+      <div class="login-form" id="login-engineer" style="display:none;">
+        <fieldset class="fieldset mb-2">
+          <legend class="fieldset-legend text-xs font-semibold">아이디</legend>
+          <input type="text" class="input input-bordered w-full text-sm" placeholder="아이디를 입력하세요" value="eng_lee">
+        </fieldset>
+        <fieldset class="fieldset mb-2">
+          <legend class="fieldset-legend text-xs font-semibold">비밀번호</legend>
+          <input type="password" class="input input-bordered w-full text-sm" placeholder="비밀번호를 입력하세요" value="••••••••">
+        </fieldset>
+        <fieldset class="fieldset mb-2">
+          <legend class="fieldset-legend text-xs font-semibold">권한 선택 (데모용)</legend>
+          <select id="engineer-role" class="select select-bordered w-full text-sm">
+            <option value="데이터엔지니어|파이프라인관리자">이엔지 — 파이프라인 관리자</option>
+            <option value="데이터엔지니어|ETL운영자">최운영 — ETL 운영자</option>
+            <option value="데이터엔지니어|DBA">정디비 — DBA</option>
+          </select>
+        </fieldset>
+        <button class="btn btn-primary w-full mt-2" onclick="doLogin('engineer')">로그인</button>
+      </div>
+
+      <!-- 관리자 로그인 -->
+      <div class="login-form" id="login-admin" style="display:none;">
+        <fieldset class="fieldset mb-2">
+          <legend class="fieldset-legend text-xs font-semibold">관리자 아이디</legend>
+          <input type="text" class="input input-bordered w-full text-sm" placeholder="관리자 아이디" value="admin">
+        </fieldset>
+        <fieldset class="fieldset mb-2">
+          <legend class="fieldset-legend text-xs font-semibold">비밀번호</legend>
+          <input type="password" class="input input-bordered w-full text-sm" placeholder="비밀번호를 입력하세요" value="••••••••">
+        </fieldset>
+        <fieldset class="fieldset mb-2">
+          <legend class="fieldset-legend text-xs font-semibold">권한 선택 (데모용)</legend>
+          <select id="admin-role" class="select select-bordered w-full text-sm">
+            <option value="관리자|시스템관리자">관리자 — 시스템 관리자</option>
+            <option value="관리자|보안관리자">보안팀 — 보안 관리자</option>
+            <option value="관리자|슈퍼관리자">SuperAdmin — 전체 관리자</option>
+          </select>
+        </fieldset>
+        <button class="btn btn-primary w-full mt-2" onclick="doLogin('admin')">관리자 로그인</button>
+      </div>
+
+      <div class="divider my-3"></div>
+      <div class="text-center text-xs text-base-content/40">
+        <span>© 2026 K-water 한국수자원공사</span>
+        <span class="mx-1">|</span>
+        <span>데이터허브 포털 v2.0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOP NAVIGATION ===== -->
+  <div class="top-nav" id="topNav" style="display:none;">
+    <div class="sidebar-toggle" onclick="toggleSidebar()" title="메뉴 접기/펴기">☰</div>
+    <div class="logo" onclick="navigate('home')">
+      <span class="logo-mark">
+        <svg class="logo-waves" viewBox="0 0 70 20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 15 Q18 15, 28 5 Q38 -2, 55 4 Q62 6, 68 5" fill="none" stroke="#0072CE" stroke-width="2.8"
+            stroke-linecap="round" />
+          <path d="M1 18.5 Q20 18.5, 30 9 Q40 2, 56 7.5 Q63 9.5, 68 8.5" fill="none" stroke="#F7931E" stroke-width="2.2"
+            stroke-linecap="round" />
+        </svg>
+        <span class="logo-text"><span class="logo-k">K</span><span class="logo-w">W</span><span
+            class="logo-dot">·</span><span class="logo-d">D</span><span class="logo-h">H</span></span>
+      </span>
+    </div>
+    <div class="right-area flex items-center gap-4 ml-auto text-sm">
+      <div id="theme-toggle" class="cursor-pointer hover:opacity-80 transition-opacity" onclick="toggleTheme()"
+        title="테마 변경"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" style="display:block;">
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg></div>
+      <div class="noti-wrapper" style="position:relative;">
+        <div class="noti-bell" onclick="toggleNotiPanel(event)" title="알림">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" style="display:block;">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          </svg>
+          <span class="noti-count">3</span>
+        </div>
+        <!-- 알림 드롭다운 패널 -->
+        <div class="noti-panel" id="notiPanel">
+          <div class="noti-panel-head">
+            <span style="font-weight:700; font-size:14px;">🔔 알림</span>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span class="noti-unread-badge">3건 읽지 않음</span>
+              <button onclick="markAllRead()"
+                style="background:none; border:none; color:#1677ff; font-size:11px; cursor:pointer;">모두 읽음</button>
+            </div>
+          </div>
+          <div class="noti-panel-body">
+            <div class="noti-item noti-unread" onclick="this.classList.remove('noti-unread')">
+              <div class="noti-icon-box" style="background:#fff2e8; color:#fa8c16;">⏳</div>
+              <div class="noti-content">
+                <div class="noti-title">승인 요청 대기</div>
+                <div class="noti-desc">WF-089 '댐 수위 모니터링' 건이 관리자 승인을 기다리고 있습니다.</div>
+                <div class="noti-time">5분 전</div>
+              </div>
+            </div>
+            <div class="noti-item noti-unread" onclick="this.classList.remove('noti-unread')">
+              <div class="noti-icon-box" style="background:#fff1f0; color:#ff4d4f;">⚠️</div>
+              <div class="noti-content">
+                <div class="noti-title">품질 이슈 발생</div>
+                <div class="noti-desc">TB_WATER_LEVEL 테이블에서 중복 레코드 324건이 감지되었습니다.</div>
+                <div class="noti-time">23분 전</div>
+              </div>
+            </div>
+            <div class="noti-item noti-unread" onclick="this.classList.remove('noti-unread')">
+              <div class="noti-icon-box" style="background:#e6f7ff; color:#1677ff;">📋</div>
+              <div class="noti-content">
+                <div class="noti-title">파이프라인 완료</div>
+                <div class="noti-desc">수질자동측정망 일배치 파이프라인이 정상 완료되었습니다. (23,410건)</div>
+                <div class="noti-time">1시간 전</div>
+              </div>
+            </div>
+            <div class="noti-item" onclick="this.classList.remove('noti-unread')">
+              <div class="noti-icon-box" style="background:#f6ffed; color:#52c41a;">✅</div>
+              <div class="noti-content">
+                <div class="noti-title">신청 승인 완료</div>
+                <div class="noti-desc">WF-087 '광역상수도 유량 분석' 건이 최종 승인되었습니다.</div>
+                <div class="noti-time">3시간 전</div>
+              </div>
+            </div>
+            <div class="noti-item" onclick="this.classList.remove('noti-unread')">
+              <div class="noti-icon-box" style="background:#f9f0ff; color:#722ed1;">🔧</div>
+              <div class="noti-content">
+                <div class="noti-title">시스템 점검 안내</div>
+                <div class="noti-desc">2/27(목) 02:00~04:00 정기 시스템 점검이 예정되어 있습니다.</div>
+                <div class="noti-time">어제</div>
+              </div>
+            </div>
+          </div>
+          <div class="noti-panel-foot">
+            <a href="#" onclick="toggleNotiPanel(event); return false;"
+              style="color:#1677ff; text-decoration:none; font-size:12px;">전체 알림 보기 →</a>
+          </div>
+        </div>
+      </div>
+      <span onclick="navigate('sitemap')" title="사이트맵" style="cursor:pointer; font-size:16px; opacity:0.7; transition:opacity 0.2s;" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.7'">🗺️</span>
+      <span id="userInfo" class="badge badge-ghost badge-sm text-xs">👤 관리자</span>
+      <span class="cursor-pointer hover:opacity-80 transition-opacity" onclick="doLogout()" title="로그아웃">🚪</span>
+    </div>
+  </div>
+
+  <!-- ===== LAYOUT ===== -->
+  <div class="layout" id="mainLayout" style="display:none;">
+
+    <!-- Mobile sidebar overlay -->
+    <div class="sidebar-overlay" onclick="document.body.classList.remove('sidebar-open')"></div>
+    <!-- ===== SIDEBAR (IA v3.0 재설계) ===== -->
+    <div class="sidebar">
+      <!-- 개인 대시보드 -->
+      <div class="section-title" data-accordion="acc-dashboard" onclick="toggleAccordion(this)">개인 대시보드 <span
+          class="arrow">▶</span></div>
+      <div class="accordion-body" id="acc-dashboard">
+        <div class="menu-item" data-screen="home" onclick="navigate('home')">
+          <span class="icon">🏠</span> 개인대시보드
+        </div>
+        <div class="menu-item" data-screen="process" onclick="navigate('process')">
+          <span class="icon">🔀</span> 데이터 워크플로우
+        </div>
+        <div class="menu-item" data-screen="quality" onclick="navigate('quality')">
+          <span class="icon">📏</span> 데이터 품질현황 종합
+        </div>
+        <div class="menu-item" data-screen="ai" onclick="navigate('ai')">
+          <span class="icon">🤖</span> AI 검색 및 질의응답
+        </div>
+        <div class="menu-item" data-screen="gallery" onclick="navigate('gallery')">
+          <span class="icon">📊</span> 시각화·차트 갤러리
+        </div>
+        <div class="menu-item" data-screen="widget-settings" onclick="navigate('widget-settings')">
+          <span class="icon">⚙️</span> 위젯 설정
+        </div>
+        <div class="menu-item" data-screen="dist-chart-content" onclick="navigate('dist-chart-content')">
+          <span class="icon">📈</span> 차트 콘텐츠 관리
+        </div>
+        <div class="menu-item" data-screen="sys-widget-template" onclick="navigate('sys-widget-template')">
+          <span class="icon">🧩</span> 위젯 템플릿 관리
+        </div>
+      </div>
+      <!-- 모니터링 -->
+      <div class="section-title" data-accordion="acc-monitor" onclick="toggleAccordion(this)">모니터링 <span
+          class="arrow">▶</span></div>
+      <div class="accordion-body" id="acc-monitor">
+        <div class="menu-item" data-screen="measurement" onclick="navigate('measurement')">
+          <span class="icon">📡</span> 실시간 계측DB 모니터링
+          <span class="menu-badge red">4</span>
+        </div>
+        <div class="menu-item" data-screen="asset-db" onclick="navigate('asset-db')">
+          <span class="icon">🏢</span> 자산DB 모니터링
+          <span class="menu-badge blue">6</span>
+        </div>
+      </div>
+      <!-- 카탈로그·탐색 -->
+      <div class="section-title" data-accordion="acc-catalog" onclick="toggleAccordion(this)">카탈로그·탐색 <span
+          class="arrow">▶</span></div>
+      <div class="accordion-body" id="acc-catalog">
+        <div class="menu-item" data-screen="cat-search" onclick="navigate('cat-search')">
+          <span class="icon">🔍</span> 통합데이터 검색
+        </div>
+        <div class="menu-item" data-screen="cat-graph" onclick="navigate('cat-graph')">
+          <span class="icon">🕸️</span> 지식그래프·온톨로지
+        </div>
+        <div class="menu-item" data-screen="cat-lineage" onclick="navigate('cat-lineage')">
+          <span class="icon">🔗</span> 데이터 리니지(계보)
+        </div>
+        <div class="menu-item" data-screen="cat-bookmark" onclick="navigate('cat-bookmark')">
+          <span class="icon">⭐</span> 내 보관함
+        </div>
+        <div class="menu-item" data-screen="cat-request" onclick="navigate('cat-request')">
+          <span class="icon">📝</span> 데이터 요청·피드백
+        </div>
+      </div>
+      <!-- 데이터 수집·통합 -->
+      <div class="section-title" data-accordion="acc-collect" onclick="toggleAccordion(this)">데이터 수집·통합 <span
+          class="arrow">▶</span></div>
+      <div class="accordion-body" id="acc-collect">
+        <div class="menu-item" data-screen="col-pipeline" onclick="navigate('col-pipeline')">
+          <span class="icon">⚙️</span> 파이프라인 관리
+        </div>
+        <div class="menu-item" data-screen="col-monitor" onclick="navigate('col-monitor')">
+          <span class="icon">📈</span> 수집현황 모니터링
+        </div>
+        <div class="menu-item" data-screen="col-cdc" onclick="navigate('col-cdc')">
+          <span class="icon">⇄</span> CDC 연계현황
+        </div>
+        <div class="menu-item" data-screen="col-kafka" onclick="navigate('col-kafka')">
+          <span class="icon">🚀</span> Kafka 스트리밍
+        </div>
+        <div class="menu-item" data-screen="col-external" onclick="navigate('col-external')">
+          <span class="icon">🌐</span> 외부연계
+        </div>
+        <div class="menu-item" data-screen="col-arch" onclick="navigate('col-arch')">
+          <span class="icon">🏗️</span> 연계아키텍처 구조도
+        </div>
+        <div class="menu-item" data-screen="col-log" onclick="navigate('col-log')">
+          <span class="icon">📋</span> 실시간 로그·알림
+        </div>
+        <div class="menu-item" data-screen="col-dbt" onclick="navigate('col-dbt')">
+          <span class="icon">🔧</span> 정제·변환 관리(dbt)
+        </div>
+      </div>
+      <!-- 데이터 유통·활용 -->
+      <div class="section-title" data-accordion="acc-distribute" onclick="toggleAccordion(this)">데이터 유통·활용 <span
+          class="arrow">▶</span></div>
+      <div class="accordion-body" id="acc-distribute">
+        <div class="menu-item" data-screen="dist-product" onclick="navigate('dist-product')">
+          <span class="icon">📦</span> Data Product 구성·관리
+        </div>
+        <div class="menu-item" data-screen="dist-deidentify" onclick="navigate('dist-deidentify')">
+          <span class="icon">🔒</span> 비식별화·가명처리
+        </div>
+        <div class="menu-item" data-screen="dist-approval" onclick="navigate('dist-approval')">
+          <span class="icon">📋</span> 데이터 신청·승인
+        </div>
+        <div class="menu-item" data-screen="dist-api" onclick="navigate('dist-api')">
+          <span class="icon">🔌</span> 유통 API 관리
+        </div>
+        <div class="menu-item" data-screen="dist-external" onclick="navigate('dist-external')">
+          <span class="icon">🌍</span> 외부시스템 데이터 제공
+        </div>
+        <div class="menu-item" data-screen="dist-stats" onclick="navigate('dist-stats')">
+          <span class="icon">📉</span> 데이터 유통통계
+        </div>
+      </div>
+      <!-- 메타데이터 관리 -->
+      <div class="section-title" data-accordion="acc-meta" onclick="toggleAccordion(this)">메타데이터 관리 <span
+          class="arrow">▶</span></div>
+      <div class="accordion-body" id="acc-meta">
+        <div class="menu-item" data-screen="meta-glossary" onclick="navigate('meta-glossary')">
+          <span class="icon">📖</span> 표준용어·코드관리
+        </div>
+        <div class="menu-item" data-screen="meta-tag" onclick="navigate('meta-tag')">
+          <span class="icon">🏷️</span> 분류체계·태그관리
+        </div>
+        <div class="menu-item" data-screen="meta-model" onclick="navigate('meta-model')">
+          <span class="icon">🗂️</span> 데이터모델관리
+        </div>
+        <div class="menu-item" data-screen="meta-dq" onclick="navigate('meta-dq')">
+          <span class="icon">🧪</span> DQ 검증·프로파일링
+        </div>
+        <div class="menu-item" data-screen="meta-ontology" onclick="navigate('meta-ontology')">
+          <span class="icon">🌳</span> 온톨로지 관리
+        </div>
+      </div>
+      <!-- 커뮤니티·소통 -->
+      <div class="section-title" data-accordion="acc-community" onclick="toggleAccordion(this)">커뮤니티·소통 <span
+          class="arrow">▶</span></div>
+      <div class="accordion-body" id="acc-community">
+        <div class="menu-item" data-screen="comm-notice" onclick="navigate('comm-notice')">
+          <span class="icon">📢</span> 공지사항
+        </div>
+        <div class="menu-item" data-screen="comm-internal" onclick="navigate('comm-internal')">
+          <span class="icon">💬</span> 내부게시판
+        </div>
+        <div class="menu-item" data-screen="comm-external" onclick="navigate('comm-external')">
+          <span class="icon">🌐</span> 외부게시판
+        </div>
+        <div class="menu-item" data-screen="comm-archive" onclick="navigate('comm-archive')">
+          <span class="icon">📁</span> 자료실
+        </div>
+      </div>
+      <!-- 시스템관리 -->
+      <div class="section-title" data-accordion="acc-system" onclick="toggleAccordion(this)">시스템관리 <span
+          class="arrow">▶</span></div>
+      <div class="accordion-body" id="acc-system">
+        <div class="menu-item" data-screen="sys-user" onclick="navigate('sys-user')">
+          <span class="icon">👥</span> 조직 및 사용자관리
+        </div>
+        <div class="menu-item" data-screen="sys-role" onclick="navigate('sys-role')">
+          <span class="icon">🛡️</span> 권한 및 역할관리
+        </div>
+        <div class="menu-item" data-screen="sys-security" onclick="navigate('sys-security')">
+          <span class="icon">🔐</span> 데이터등급·보안정책
+        </div>
+        <div class="menu-item" data-screen="sys-interface" onclick="navigate('sys-interface')">
+          <span class="icon">⚡</span> 연계인터페이스 모니터링
+        </div>
+        <div class="menu-item" data-screen="sys-audit" onclick="navigate('sys-audit')">
+          <span class="icon">🔎</span> 접속통계·감사로그
+        </div>
+        <div class="menu-item" data-screen="sys-perm" onclick="navigate('sys-perm')">
+          <span class="icon">🔑</span> 화면별 권한설정
+        </div>
+        <div class="menu-item" data-screen="sys-engine" onclick="navigate('sys-engine')">
+          <span class="icon">🖥️</span> 데이터허브 엔진관리
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main" id="page-content">
+      <!-- 페이지 콘텐츠가 동적으로 로드됩니다 -->
+    </div>
+
+  </div> <!-- /layout -->
+
+  <script src="js/main.js?v=20260303a"></script>
+  <script>
+    // 페이지 로드 시 모든 섹션 HTML을 순차적으로 로드 (순서 보장)
+    (async function () {
+      var pages = [
+        'pages/dashboard.html',
+        'pages/catalog.html',
+        'pages/collect.html',
+        'pages/distribute.html',
+        'pages/metadata.html',
+        'pages/community.html',
+        'pages/system.html'
+      ];
+      var container = document.getElementById('page-content');
+
+      for (var i = 0; i < pages.length; i++) {
+        var r = await fetch(pages[i] + '?v=' + Date.now());
+        var html = await r.text();
+        var div = document.createElement('div');
+        div.innerHTML = html;
+        while (div.firstChild) {
+          container.appendChild(div.firstChild);
+        }
+      }
+      // 모든 페이지 로드 완료 후 초기화
+      initAfterLoad();
+    })();
+
+    function initAfterLoad() {
+      // 초기 화면 표시
+      navigate('home');
+
+      // Tag pill toggle
+      document.querySelectorAll('.tag-pill').forEach(function (pill) {
+        pill.addEventListener('click', function () { this.classList.toggle('active'); });
+      });
+
+      // AG Grid 초기화
+      if (typeof initAllGrids === 'function') initAllGrids();
+    }
+  </script>
+
+</body>
+
+</html>

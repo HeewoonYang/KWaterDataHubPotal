@@ -1,0 +1,2205 @@
+﻿<!-- ========== SYS SCREEN 1: 조직 및 사용자관리 ========== -->
+    <div class="screen" id="screen-sys-user">
+      <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>조직 및 사용자관리</strong></div>
+
+  <!-- ===== Row 1: 전문 헤더 + KPI 6개 ===== -->
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+    <div>
+      <div class="page-title" style="margin-bottom:2px;">👥 조직 및 사용자관리</div>
+      <div style="font-size:12px; color:var(--text-secondary);">K-water 전사 조직·사용자·권한을 통합 관리합니다</div>
+    </div>
+    <div style="display:flex; gap:6px; flex-shrink:0;">
+      <button class="btn btn-primary btn-sm" data-perm="write">➕ 사용자등록</button>
+      <button class="btn btn-outline btn-sm" data-perm="admin">📥 일괄등록</button>
+      <button class="btn btn-outline btn-sm">📊 Excel 내보내기</button>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-bottom:14px;">
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #1677ff;">
+      <div style="font-size:11px; color:var(--text-secondary);">전체 사용자</div>
+      <div style="font-size:22px; font-weight:800; color:#1677ff; margin:2px 0;">249<span style="font-size:12px; font-weight:400;">명</span></div>
+      <div style="font-size:10px; color:#52c41a;">▲ 전월 대비 8명</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #52c41a;">
+      <div style="font-size:11px; color:var(--text-secondary);">활성 사용자</div>
+      <div style="font-size:22px; font-weight:800; color:#52c41a; margin:2px 0;">189<span style="font-size:12px; font-weight:400;">명</span></div>
+      <div style="font-size:10px; color:var(--text-secondary);">75.9% 활성률</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #13c2c2;">
+      <div style="font-size:11px; color:var(--text-secondary);">부서 수</div>
+      <div style="font-size:22px; font-weight:800; color:#13c2c2; margin:2px 0;">24<span style="font-size:12px; font-weight:400;">개</span></div>
+      <div style="font-size:10px; color:var(--text-secondary);">6개 본부</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #fa8c16;">
+      <div style="font-size:11px; color:var(--text-secondary);">신규 대기</div>
+      <div style="font-size:22px; font-weight:800; color:#fa8c16; margin:2px 0;">4<span style="font-size:12px; font-weight:400;">명</span></div>
+      <div style="font-size:10px; color:#fa8c16;">금일 1건 접수</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #f5222d;">
+      <div style="font-size:11px; color:var(--text-secondary);">비활성·잠김</div>
+      <div style="font-size:22px; font-weight:800; color:#f5222d; margin:2px 0;">12<span style="font-size:12px; font-weight:400;">명</span></div>
+      <div style="font-size:10px; color:var(--text-secondary);">90일 미접속 8명</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #722ed1;">
+      <div style="font-size:11px; color:var(--text-secondary);">평균 접속</div>
+      <div style="font-size:22px; font-weight:800; color:#722ed1; margin:2px 0;">142<span style="font-size:12px; font-weight:400;">명/일</span></div>
+      <div style="font-size:10px; color:#52c41a;">▲ 5.2%</div>
+    </div>
+  </div>
+
+  <!-- ===== Row 2: AG Grid 사용자 목록 ===== -->
+  <div class="card" style="padding:0; margin-bottom:14px;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div class="card-title">👥 사용자 목록</div>
+      <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option>전체 상태</option><option>활성</option><option>비활성</option><option>승인대기</option><option>잠김</option>
+        </select>
+        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option>전체 부서</option><option>정보화추진단</option><option>수자원관리팀</option><option>데이터분석팀</option><option>경영기획팀</option><option>수도사업팀</option><option>AI연구팀</option>
+        </select>
+        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option>전체 역할</option><option>시스템관리자</option><option>데이터관리자</option><option>데이터엔지니어</option><option>일반사용자</option><option>외부사용자</option>
+        </select>
+        <input type="text" placeholder="사용자 검색..." style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; width:140px;">
+      </div>
+    </div>
+    <div id="ag-grid-sys-user" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+
+  <!-- ===== Row 3: 조직도 트리 + 역할별 분포 ===== -->
+  <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:12px; margin-bottom:14px;">
+    <!-- 좌: 조직 구조 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">🏢 조직 구조</div><span style="font-size:10px; color:var(--text-secondary);">K-water 전사 조직도</span></div>
+      <div class="card-body" style="padding:14px; font-size:12px;">
+        <!-- 본사 -->
+        <div style="padding:6px 10px; background:#e8f0fe; border-radius:6px; font-weight:700; color:#1967d2; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+          🏛️ K-water 본사
+          <span style="background:#1967d2; color:#fff; padding:1px 8px; border-radius:10px; font-size:10px; font-weight:600;">249명</span>
+        </div>
+        <!-- 본부들 -->
+        <div style="margin-left:16px; display:flex; flex-direction:column; gap:4px;">
+          <div style="padding:5px 10px; background:#f8f9fa; border-radius:5px; border-left:3px solid #1677ff; display:flex; justify-content:space-between; align-items:center;">
+            <span>🏢 경영관리본부</span>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <span style="background:#e8f0fe; color:#1967d2; padding:1px 6px; border-radius:8px; font-size:10px;">38명</span>
+            </div>
+          </div>
+          <div style="margin-left:20px; display:flex; flex-wrap:wrap; gap:3px; margin-bottom:2px;">
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 경영기획팀 12</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 인사팀 10</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 재무팀 8</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 법무팀 8</span>
+          </div>
+          <div style="padding:5px 10px; background:#f8f9fa; border-radius:5px; border-left:3px solid #52c41a; display:flex; justify-content:space-between; align-items:center;">
+            <span>🏢 수자원관리본부</span>
+            <span style="background:#e8f5e9; color:#2e7d32; padding:1px 6px; border-radius:8px; font-size:10px;">52명</span>
+          </div>
+          <div style="margin-left:20px; display:flex; flex-wrap:wrap; gap:3px; margin-bottom:2px;">
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 수자원관리팀 18</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 댐관리팀 14</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 하천관리팀 12</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 지하수팀 8</span>
+          </div>
+          <div style="padding:5px 10px; background:#f8f9fa; border-radius:5px; border-left:3px solid #13c2c2; display:flex; justify-content:space-between; align-items:center;">
+            <span>🏢 상수도관리본부</span>
+            <span style="background:#e0f7fa; color:#00838f; padding:1px 6px; border-radius:8px; font-size:10px;">48명</span>
+          </div>
+          <div style="margin-left:20px; display:flex; flex-wrap:wrap; gap:3px; margin-bottom:2px;">
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 수도사업팀 16</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 정수팀 14</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 배수관리팀 10</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 광역관로팀 8</span>
+          </div>
+          <div style="padding:5px 10px; background:#f8f9fa; border-radius:5px; border-left:3px solid #fa8c16; display:flex; justify-content:space-between; align-items:center;">
+            <span>🏢 수질환경본부</span>
+            <span style="background:#fff3e0; color:#ef6c00; padding:1px 6px; border-radius:8px; font-size:10px;">36명</span>
+          </div>
+          <div style="margin-left:20px; display:flex; flex-wrap:wrap; gap:3px; margin-bottom:2px;">
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 수질관리팀 14</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 환경안전팀 12</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 분석팀 10</span>
+          </div>
+          <div style="padding:5px 10px; background:#f8f9fa; border-radius:5px; border-left:3px solid #eb2f96; display:flex; justify-content:space-between; align-items:center;">
+            <span>🏢 에너지본부</span>
+            <span style="background:#fce4ec; color:#c62828; padding:1px 6px; border-radius:8px; font-size:10px;">32명</span>
+          </div>
+          <div style="margin-left:20px; display:flex; flex-wrap:wrap; gap:3px; margin-bottom:2px;">
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 수력발전팀 12</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 신재생팀 10</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 ESS팀 10</span>
+          </div>
+          <div style="padding:5px 10px; background:#f8f9fa; border-radius:5px; border-left:3px solid #722ed1; display:flex; justify-content:space-between; align-items:center;">
+            <span>🏢 디지털혁신본부</span>
+            <span style="background:#f9f0ff; color:#722ed1; padding:1px 6px; border-radius:8px; font-size:10px;">43명</span>
+          </div>
+          <div style="margin-left:20px; display:flex; flex-wrap:wrap; gap:3px;">
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 정보화추진단 14</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 데이터분석팀 12</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 AI연구팀 9</span>
+            <span style="font-size:10px; color:#666; background:#f0f0f0; padding:1px 6px; border-radius:3px;">👥 인프라운영팀 8</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 우: 역할별 사용자 분포 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">📊 역할별 사용자 분포</div></div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px;">
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:3px;"><span style="font-weight:600;">시스템관리자</span><span style="color:#1967d2; font-weight:700;">8명 (3.2%)</span></div>
+            <div style="background:#f0f0f0; border-radius:4px; height:16px; overflow:hidden;"><div style="background:#1677ff; height:100%; width:3.2%; min-width:8px; border-radius:4px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:3px;"><span style="font-weight:600;">데이터관리자</span><span style="color:#00838f; font-weight:700;">24명 (9.6%)</span></div>
+            <div style="background:#f0f0f0; border-radius:4px; height:16px; overflow:hidden;"><div style="background:#13c2c2; height:100%; width:9.6%; border-radius:4px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:3px;"><span style="font-weight:600;">데이터엔지니어</span><span style="color:#ef6c00; font-weight:700;">42명 (16.9%)</span></div>
+            <div style="background:#f0f0f0; border-radius:4px; height:16px; overflow:hidden;"><div style="background:#fa8c16; height:100%; width:16.9%; border-radius:4px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:3px;"><span style="font-weight:600;">일반사용자</span><span style="color:#7b1fa2; font-weight:700;">148명 (59.4%)</span></div>
+            <div style="background:#f0f0f0; border-radius:4px; height:16px; overflow:hidden;"><div style="background:#722ed1; height:100%; width:59.4%; border-radius:4px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:3px;"><span style="font-weight:600;">외부사용자</span><span style="color:#c62828; font-weight:700;">27명 (10.8%)</span></div>
+            <div style="background:#f0f0f0; border-radius:4px; height:16px; overflow:hidden;"><div style="background:#f5222d; height:100%; width:10.8%; border-radius:4px;"></div></div>
+          </div>
+        </div>
+        <!-- 접근등급 분포 도넛 -->
+        <div style="border-top:1px solid var(--border-color); padding-top:12px;">
+          <div style="font-size:11px; font-weight:700; color:var(--text-secondary); margin-bottom:8px;">접근등급 분포</div>
+          <div style="display:flex; align-items:center; gap:16px;">
+            <svg viewBox="0 0 100 100" style="width:80px; height:80px;">
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#52c41a" stroke-width="12" stroke-dasharray="75 164" stroke-dashoffset="-60" />
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#1677ff" stroke-width="12" stroke-dasharray="50 189" stroke-dashoffset="15" />
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#fa8c16" stroke-width="12" stroke-dasharray="45 194" stroke-dashoffset="65" />
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#f5222d" stroke-width="12" stroke-dasharray="30 209" stroke-dashoffset="110" />
+            </svg>
+            <div style="display:flex; flex-direction:column; gap:3px; font-size:10px;">
+              <div style="display:flex; align-items:center; gap:4px;"><span style="width:8px; height:8px; border-radius:2px; background:#52c41a;"></span>전체 접근 <strong>82명</strong></div>
+              <div style="display:flex; align-items:center; gap:4px;"><span style="width:8px; height:8px; border-radius:2px; background:#1677ff;"></span>할당됨 <strong>68명</strong></div>
+              <div style="display:flex; align-items:center; gap:4px;"><span style="width:8px; height:8px; border-radius:2px; background:#fa8c16;"></span>등급별 <strong>72명</strong></div>
+              <div style="display:flex; align-items:center; gap:4px;"><span style="width:8px; height:8px; border-radius:2px; background:#f5222d;"></span>3등급만 <strong>27명</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Row 4: 월별 가입 추이 + 최근 활동 로그 ===== -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+    <!-- 좌: 월별 가입 추이 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">📈 월별 사용자 가입 추이</div><span style="font-size:10px; color:var(--text-secondary);">2025.03 ~ 2026.02</span></div>
+      <div class="card-body" style="padding:14px;">
+        <svg viewBox="0 0 480 160" style="width:100%; font-family:Arial,sans-serif;">
+          <!-- 기준선 -->
+          <line x1="30" y1="130" x2="470" y2="130" stroke="#e8e8e8" stroke-width="1"/>
+          <line x1="30" y1="95" x2="470" y2="95" stroke="#f5f5f5" stroke-width="0.5"/>
+          <line x1="30" y1="60" x2="470" y2="60" stroke="#f5f5f5" stroke-width="0.5"/>
+          <!-- 바 차트 (12개월) -->
+          <rect x="38" y="88" width="28" height="42" rx="3" fill="#1677ff" opacity="0.7"/><text x="52" y="84" text-anchor="middle" font-size="8" fill="#1677ff" font-weight="700">12</text>
+          <rect x="74" y="95" width="28" height="35" rx="3" fill="#1677ff" opacity="0.7"/><text x="88" y="91" text-anchor="middle" font-size="8" fill="#1677ff" font-weight="700">10</text>
+          <rect x="110" y="74" width="28" height="56" rx="3" fill="#1677ff" opacity="0.7"/><text x="124" y="70" text-anchor="middle" font-size="8" fill="#1677ff" font-weight="700">16</text>
+          <rect x="146" y="81" width="28" height="49" rx="3" fill="#1677ff" opacity="0.7"/><text x="160" y="77" text-anchor="middle" font-size="8" fill="#1677ff" font-weight="700">14</text>
+          <rect x="182" y="60" width="28" height="70" rx="3" fill="#1677ff" opacity="0.8"/><text x="196" y="56" text-anchor="middle" font-size="8" fill="#1677ff" font-weight="700">20</text>
+          <rect x="218" y="102" width="28" height="28" rx="3" fill="#1677ff" opacity="0.6"/><text x="232" y="98" text-anchor="middle" font-size="8" fill="#1677ff" font-weight="700">8</text>
+          <rect x="254" y="109" width="28" height="21" rx="3" fill="#1677ff" opacity="0.5"/><text x="268" y="105" text-anchor="middle" font-size="8" fill="#1677ff" font-weight="700">6</text>
+          <rect x="290" y="88" width="28" height="42" rx="3" fill="#1677ff" opacity="0.7"/><text x="304" y="84" text-anchor="middle" font-size="8" fill="#1677ff" font-weight="700">12</text>
+          <rect x="326" y="67" width="28" height="63" rx="3" fill="#1677ff" opacity="0.8"/><text x="340" y="63" text-anchor="middle" font-size="8" fill="#1677ff" font-weight="700">18</text>
+          <rect x="362" y="74" width="28" height="56" rx="3" fill="#1677ff" opacity="0.7"/><text x="376" y="70" text-anchor="middle" font-size="8" fill="#1677ff" font-weight="700">16</text>
+          <rect x="398" y="81" width="28" height="49" rx="3" fill="#1677ff" opacity="0.7"/><text x="412" y="77" text-anchor="middle" font-size="8" fill="#1677ff" font-weight="700">14</text>
+          <rect x="434" y="88" width="28" height="42" rx="3" fill="#52c41a" opacity="0.9"/><text x="448" y="84" text-anchor="middle" font-size="8" fill="#52c41a" font-weight="700">12</text>
+          <!-- 월 라벨 -->
+          <text x="52" y="144" text-anchor="middle" font-size="7" fill="#999">3월</text>
+          <text x="88" y="144" text-anchor="middle" font-size="7" fill="#999">4월</text>
+          <text x="124" y="144" text-anchor="middle" font-size="7" fill="#999">5월</text>
+          <text x="160" y="144" text-anchor="middle" font-size="7" fill="#999">6월</text>
+          <text x="196" y="144" text-anchor="middle" font-size="7" fill="#999">7월</text>
+          <text x="232" y="144" text-anchor="middle" font-size="7" fill="#999">8월</text>
+          <text x="268" y="144" text-anchor="middle" font-size="7" fill="#999">9월</text>
+          <text x="304" y="144" text-anchor="middle" font-size="7" fill="#999">10월</text>
+          <text x="340" y="144" text-anchor="middle" font-size="7" fill="#999">11월</text>
+          <text x="376" y="144" text-anchor="middle" font-size="7" fill="#999">12월</text>
+          <text x="412" y="144" text-anchor="middle" font-size="7" fill="#999">1월</text>
+          <text x="448" y="144" text-anchor="middle" font-size="7" fill="#52c41a" font-weight="700">2월</text>
+          <!-- 누적 라인 -->
+          <polyline points="52,120 88,116 124,108 160,103 196,92 232,89 268,87 304,83 340,74 376,68 412,63 448,59" fill="none" stroke="#fa8c16" stroke-width="2" stroke-dasharray="4 2"/>
+          <text x="458" y="56" font-size="7" fill="#fa8c16" font-weight="700">249</text>
+          <!-- Y축 라벨 -->
+          <text x="24" y="133" text-anchor="end" font-size="7" fill="#999">0</text>
+          <text x="24" y="63" text-anchor="end" font-size="7" fill="#999">20</text>
+        </svg>
+      </div>
+    </div>
+    <!-- 우: 최근 활동 로그 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">🕐 최근 활동 로그</div>
+        <span style="font-size:10px; color:var(--text-secondary);">최근 24시간</span>
+      </div>
+      <div class="card-body" style="padding:10px 14px;">
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #722ed1; background:#f9f0ff; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">11:42</div>
+            <div><div style="font-size:12px; font-weight:600;">관리자 — 홍신규 가입 승인</div><div style="font-size:11px; color:var(--text-secondary);">AI연구팀 · 데이터엔지니어 역할 부여</div></div>
+          </div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #52c41a; background:#f6ffed; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">10:30</div>
+            <div><div style="font-size:12px; font-weight:600;">박수원 — 로그인 성공</div><div style="font-size:11px; color:var(--text-secondary);">수자원관리팀 · SSO 인증</div></div>
+          </div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #1677ff; background:#e6f7ff; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">09:15</div>
+            <div><div style="font-size:12px; font-weight:600;">관리자 — 최외부 접근등급 변경</div><div style="font-size:11px; color:var(--text-secondary);">3등급만 → 등급별 접근으로 상향</div></div>
+          </div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #f5222d; background:#fff1f0; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">08:45</div>
+            <div><div style="font-size:12px; font-weight:600;">시스템 — 정탈퇴 계정 잠김</div><div style="font-size:11px; color:var(--text-secondary);">90일 미접속 자동 잠김 처리</div></div>
+          </div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #52c41a; background:#f6ffed; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">어제</div>
+            <div><div style="font-size:12px; font-weight:600;">김데이터 — 데이터분석팀 로그인</div><div style="font-size:11px; color:var(--text-secondary);">데이터엔지니어 · IP 192.168.1.45</div></div>
+          </div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #722ed1; background:#f9f0ff; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">어제</div>
+            <div><div style="font-size:12px; font-weight:600;">관리자 — 서인프라 사용자 등록</div><div style="font-size:11px; color:var(--text-secondary);">인프라운영팀 · 일반사용자 역할</div></div>
+          </div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #fa8c16; background:#fff7e6; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">어제</div>
+            <div><div style="font-size:12px; font-weight:600;">한에너지 — 비밀번호 재설정</div><div style="font-size:11px; color:var(--text-secondary);">에너지본부 · 셀프서비스 요청</div></div>
+          </div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #999; background:#fafafa; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">2일전</div>
+            <div><div style="font-size:12px; font-weight:600;">이분석 — 로그아웃</div><div style="font-size:11px; color:var(--text-secondary);">경영기획팀 · 세션 만료</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Row 5: 부서별 사용자 현황 히트맵 ===== -->
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-head">
+      <div class="card-title">🏢 부서별 사용자 현황</div>
+      <span style="font-size:11px; color:var(--text-secondary);">본부별 × 역할별 인원 분포</span>
+    </div>
+    <div class="card-body" style="overflow-x:auto;">
+      <svg viewBox="0 0 720 260" style="width:100%; min-width:580px; font-family:Arial,sans-serif;">
+        <!-- 헤더 -->
+        <text x="150" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="#1677ff">시스템관리자</text>
+        <text x="280" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="#13c2c2">데이터관리자</text>
+        <text x="410" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="#fa8c16">데이터엔지니어</text>
+        <text x="540" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="#722ed1">일반사용자</text>
+        <text x="660" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="#f5222d">외부사용자</text>
+
+        <!-- Row labels -->
+        <text x="8" y="58" font-size="11" font-weight="600" fill="#333">경영관리본부</text>
+        <text x="8" y="96" font-size="11" font-weight="600" fill="#333">수자원관리본부</text>
+        <text x="8" y="134" font-size="11" font-weight="600" fill="#333">상수도관리본부</text>
+        <text x="8" y="172" font-size="11" font-weight="600" fill="#333">수질환경본부</text>
+        <text x="8" y="210" font-size="11" font-weight="600" fill="#333">에너지본부</text>
+        <text x="8" y="248" font-size="11" font-weight="600" fill="#333">디지털혁신본부</text>
+
+        <!-- 경영관리 -->
+        <rect x="105" y="38" width="90" height="30" rx="4" fill="#1677ff" opacity="0.2"/><text x="150" y="58" text-anchor="middle" font-size="11" fill="#1677ff">1</text>
+        <rect x="235" y="38" width="90" height="30" rx="4" fill="#13c2c2" opacity="0.3"/><text x="280" y="58" text-anchor="middle" font-size="11" fill="#00838f">3</text>
+        <rect x="365" y="38" width="90" height="30" rx="4" fill="#fa8c16" opacity="0.15"/><text x="410" y="58" text-anchor="middle" font-size="11" fill="#d48806">2</text>
+        <rect x="495" y="38" width="90" height="30" rx="4" fill="#722ed1" opacity="0.7"/><text x="540" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">28</text>
+        <rect x="620" y="38" width="90" height="30" rx="4" fill="#f5222d" opacity="0.25"/><text x="660" y="58" text-anchor="middle" font-size="11" fill="#c62828">4</text>
+
+        <!-- 수자원관리 -->
+        <rect x="105" y="76" width="90" height="30" rx="4" fill="#1677ff" opacity="0.25"/><text x="150" y="96" text-anchor="middle" font-size="11" fill="#1677ff">2</text>
+        <rect x="235" y="76" width="90" height="30" rx="4" fill="#13c2c2" opacity="0.5"/><text x="280" y="96" text-anchor="middle" font-size="11" fill="#00838f">6</text>
+        <rect x="365" y="76" width="90" height="30" rx="4" fill="#fa8c16" opacity="0.55"/><text x="410" y="96" text-anchor="middle" font-size="11" fill="#fff" font-weight="600">10</text>
+        <rect x="495" y="76" width="90" height="30" rx="4" fill="#722ed1" opacity="0.65"/><text x="540" y="96" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">26</text>
+        <rect x="620" y="76" width="90" height="30" rx="4" fill="#f5222d" opacity="0.4"/><text x="660" y="96" text-anchor="middle" font-size="11" fill="#c62828">8</text>
+
+        <!-- 상수도관리 -->
+        <rect x="105" y="114" width="90" height="30" rx="4" fill="#1677ff" opacity="0.2"/><text x="150" y="134" text-anchor="middle" font-size="11" fill="#1677ff">1</text>
+        <rect x="235" y="114" width="90" height="30" rx="4" fill="#13c2c2" opacity="0.45"/><text x="280" y="134" text-anchor="middle" font-size="11" fill="#00838f">5</text>
+        <rect x="365" y="114" width="90" height="30" rx="4" fill="#fa8c16" opacity="0.45"/><text x="410" y="134" text-anchor="middle" font-size="11" fill="#fff" font-weight="600">8</text>
+        <rect x="495" y="114" width="90" height="30" rx="4" fill="#722ed1" opacity="0.6"/><text x="540" y="134" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">28</text>
+        <rect x="620" y="114" width="90" height="30" rx="4" fill="#f5222d" opacity="0.35"/><text x="660" y="134" text-anchor="middle" font-size="11" fill="#c62828">6</text>
+
+        <!-- 수질환경 -->
+        <rect x="105" y="152" width="90" height="30" rx="4" fill="#1677ff" opacity="0.2"/><text x="150" y="172" text-anchor="middle" font-size="11" fill="#1677ff">1</text>
+        <rect x="235" y="152" width="90" height="30" rx="4" fill="#13c2c2" opacity="0.4"/><text x="280" y="172" text-anchor="middle" font-size="11" fill="#00838f">4</text>
+        <rect x="365" y="152" width="90" height="30" rx="4" fill="#fa8c16" opacity="0.4"/><text x="410" y="172" text-anchor="middle" font-size="11" fill="#d48806">7</text>
+        <rect x="495" y="152" width="90" height="30" rx="4" fill="#722ed1" opacity="0.5"/><text x="540" y="172" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">20</text>
+        <rect x="620" y="152" width="90" height="30" rx="4" fill="#f5222d" opacity="0.25"/><text x="660" y="172" text-anchor="middle" font-size="11" fill="#c62828">4</text>
+
+        <!-- 에너지 -->
+        <rect x="105" y="190" width="90" height="30" rx="4" fill="#1677ff" opacity="0.2"/><text x="150" y="210" text-anchor="middle" font-size="11" fill="#1677ff">1</text>
+        <rect x="235" y="190" width="90" height="30" rx="4" fill="#13c2c2" opacity="0.3"/><text x="280" y="210" text-anchor="middle" font-size="11" fill="#00838f">3</text>
+        <rect x="365" y="190" width="90" height="30" rx="4" fill="#fa8c16" opacity="0.35"/><text x="410" y="210" text-anchor="middle" font-size="11" fill="#d48806">6</text>
+        <rect x="495" y="190" width="90" height="30" rx="4" fill="#722ed1" opacity="0.5"/><text x="540" y="210" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">18</text>
+        <rect x="620" y="190" width="90" height="30" rx="4" fill="#f5222d" opacity="0.25"/><text x="660" y="210" text-anchor="middle" font-size="11" fill="#c62828">4</text>
+
+        <!-- 디지털혁신 -->
+        <rect x="105" y="228" width="90" height="30" rx="4" fill="#1677ff" opacity="0.25"/><text x="150" y="248" text-anchor="middle" font-size="11" fill="#1677ff">2</text>
+        <rect x="235" y="228" width="90" height="30" rx="4" fill="#13c2c2" opacity="0.3"/><text x="280" y="248" text-anchor="middle" font-size="11" fill="#00838f">3</text>
+        <rect x="365" y="228" width="90" height="30" rx="4" fill="#fa8c16" opacity="0.5"/><text x="410" y="248" text-anchor="middle" font-size="11" fill="#fff" font-weight="600">9</text>
+        <rect x="495" y="228" width="90" height="30" rx="4" fill="#722ed1" opacity="0.55"/><text x="540" y="248" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">28</text>
+        <rect x="620" y="228" width="90" height="30" rx="4" fill="#f5222d" opacity="0.1"/><text x="660" y="248" text-anchor="middle" font-size="11" fill="#c62828">1</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+    <!-- ========== SYS SCREEN 2: 권한 및 역할관리 ========== -->
+    <div class="screen" id="screen-sys-role">
+      <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>권한 및 역할관리</strong></div>
+      <div class="page-title">
+        권한 및 역할관리 (RBAC)
+        <span style="float:right; display:flex; gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="openRoleModal('roleAuditModal')">감사로그</button>
+          <button class="btn btn-outline btn-sm" data-perm="admin" onclick="openRoleModal('roleBulkModal')">권한 일괄설정</button>
+          <button class="btn btn-primary btn-sm" data-perm="write" onclick="openRoleModal('roleAddModal')">+ 역할 추가</button>
+        </span>
+      </div>
+
+      <!-- ── KPI 요약 ── -->
+      <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:20px;">
+        <div class="kpi-card"><div class="kpi-label">활성 역할</div><div class="kpi-value" style="color:#1967d2;">10</div><div class="kpi-sub">기본 6 + 커스텀 4</div></div>
+        <div class="kpi-card"><div class="kpi-label">총 사용자</div><div class="kpi-value" style="color:#4caf50;">324명</div><div class="kpi-sub">내부 276 · 외부 48</div></div>
+        <div class="kpi-card"><div class="kpi-label">권한 변경 대기</div><div class="kpi-value" style="color:#ff9800;">3건</div><div class="kpi-sub">승인 필요</div></div>
+        <div class="kpi-card"><div class="kpi-label">비활성 역할</div><div class="kpi-value" style="color:#999;">2</div><div class="kpi-sub">임시해제 · 테스트</div></div>
+        <div class="kpi-card"><div class="kpi-label">최근 감사</div><div class="kpi-value" style="color:#7c3aed; font-size:18px;">2시간 전</div><div class="kpi-sub">역할 권한 변경 3건</div></div>
+      </div>
+
+      <!-- ── 역할목록 + 상세 (2-panel) ── -->
+      <div style="display:grid; grid-template-columns:300px 1fr; gap:16px; margin-bottom:20px;">
+        <!-- LEFT: 역할 목록 -->
+        <div class="card" style="padding:0; overflow:hidden;">
+          <div style="padding:14px 16px 10px; border-bottom:1px solid #e5e7eb; background:#f8fafc;">
+            <div style="font-weight:700; font-size:14px; margin-bottom:8px;">역할 목록</div>
+            <input type="text" placeholder="역할 검색..." style="width:100%; padding:7px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; box-sizing:border-box;">
+          </div>
+          <div style="max-height:520px; overflow-y:auto;">
+            <!-- 역할 항목들 -->
+            <div class="role-list-item role-selected" onclick="selectRole(this, 'super')" data-role="super">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="width:32px; height:32px; border-radius:50%; background:#dc2626; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;">SA</span>
+                <div>
+                  <div style="font-weight:600; font-size:13px;">슈퍼관리자</div>
+                  <div style="font-size:11px; color:#888;">ROLE_SUPER_ADMIN</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge badge-error" style="font-size:10px;">2명</span>
+                <div style="font-size:10px; color:#999; margin-top:2px;">Lv.0</div>
+              </div>
+            </div>
+            <div class="role-list-item" onclick="selectRole(this, 'sysadmin')" data-role="sysadmin">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="width:32px; height:32px; border-radius:50%; background:#ea580c; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;">SM</span>
+                <div>
+                  <div style="font-weight:600; font-size:13px;">시스템관리자</div>
+                  <div style="font-size:11px; color:#888;">ROLE_SYS_ADMIN</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge badge-warning" style="font-size:10px;">5명</span>
+                <div style="font-size:10px; color:#999; margin-top:2px;">Lv.1</div>
+              </div>
+            </div>
+            <div class="role-list-item" onclick="selectRole(this, 'steward')" data-role="steward">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="width:32px; height:32px; border-radius:50%; background:#2563eb; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;">DS</span>
+                <div>
+                  <div style="font-weight:600; font-size:13px;">데이터스튜어드</div>
+                  <div style="font-size:11px; color:#888;">ROLE_DATA_STEWARD</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge badge-info" style="font-size:10px;">12명</span>
+                <div style="font-size:10px; color:#999; margin-top:2px;">Lv.2</div>
+              </div>
+            </div>
+            <div class="role-list-item" onclick="selectRole(this, 'deptmgr')" data-role="deptmgr">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="width:32px; height:32px; border-radius:50%; background:#0891b2; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;">DM</span>
+                <div>
+                  <div style="font-weight:600; font-size:13px;">부서관리자</div>
+                  <div style="font-size:11px; color:#888;">ROLE_DEPT_MANAGER</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge badge-info" style="font-size:10px;">18명</span>
+                <div style="font-size:10px; color:#999; margin-top:2px;">Lv.3</div>
+              </div>
+            </div>
+            <div class="role-list-item" onclick="selectRole(this, 'engineer')" data-role="engineer">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="width:32px; height:32px; border-radius:50%; background:#7c3aed; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;">EN</span>
+                <div>
+                  <div style="font-weight:600; font-size:13px;">엔지니어</div>
+                  <div style="font-size:11px; color:#888;">ROLE_ENGINEER</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge badge-info" style="font-size:10px;">28명</span>
+                <div style="font-size:10px; color:#999; margin-top:2px;">Lv.4</div>
+              </div>
+            </div>
+            <div class="role-list-item" onclick="selectRole(this, 'etl')" data-role="etl">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="width:32px; height:32px; border-radius:50%; background:#059669; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;">ET</span>
+                <div>
+                  <div style="font-weight:600; font-size:13px;">ETL운영자</div>
+                  <div style="font-size:11px; color:#888;">ROLE_ETL_OPERATOR</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge badge-success" style="font-size:10px;">8명</span>
+                <div style="font-size:10px; color:#999; margin-top:2px;">Lv.4</div>
+              </div>
+            </div>
+            <div class="role-list-item" onclick="selectRole(this, 'dba')" data-role="dba">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="width:32px; height:32px; border-radius:50%; background:#b45309; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;">DB</span>
+                <div>
+                  <div style="font-weight:600; font-size:13px;">DBA</div>
+                  <div style="font-size:11px; color:#888;">ROLE_DBA</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge badge-success" style="font-size:10px;">6명</span>
+                <div style="font-size:10px; color:#999; margin-top:2px;">Lv.4</div>
+              </div>
+            </div>
+            <div class="role-list-item" onclick="selectRole(this, 'kwater')" data-role="kwater">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="width:32px; height:32px; border-radius:50%; background:#6b7280; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;">KW</span>
+                <div>
+                  <div style="font-weight:600; font-size:13px;">수공직원</div>
+                  <div style="font-size:11px; color:#888;">ROLE_KWATER_USER</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge badge-ghost" style="font-size:10px;">156명</span>
+                <div style="font-size:10px; color:#999; margin-top:2px;">Lv.5</div>
+              </div>
+            </div>
+            <div class="role-list-item" onclick="selectRole(this, 'partner')" data-role="partner">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="width:32px; height:32px; border-radius:50%; background:#9ca3af; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;">PT</span>
+                <div>
+                  <div style="font-weight:600; font-size:13px;">협력직원</div>
+                  <div style="font-size:11px; color:#888;">ROLE_PARTNER</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge badge-ghost" style="font-size:10px;">41명</span>
+                <div style="font-size:10px; color:#999; margin-top:2px;">Lv.6</div>
+              </div>
+            </div>
+            <div class="role-list-item" onclick="selectRole(this, 'external')" data-role="external">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="width:32px; height:32px; border-radius:50%; background:#d1d5db; color:#555; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;">EX</span>
+                <div>
+                  <div style="font-weight:600; font-size:13px;">외부개발자</div>
+                  <div style="font-size:11px; color:#888;">ROLE_EXTERNAL_DEV</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge badge-ghost" style="font-size:10px;">48명</span>
+                <div style="font-size:10px; color:#999; margin-top:2px;">Lv.7</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: 역할 상세 -->
+        <div>
+          <!-- 역할 기본정보 -->
+          <div class="card" style="margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span style="width:44px; height:44px; border-radius:50%; background:#dc2626; color:#fff; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700;">SA</span>
+                <div>
+                  <div style="font-size:18px; font-weight:700;">슈퍼관리자 <span class="badge badge-error" style="font-size:11px; vertical-align:middle;">최고권한</span></div>
+                  <div style="font-size:12px; color:#888; margin-top:2px;">ROLE_SUPER_ADMIN &nbsp;|&nbsp; 우선순위 Level 0 &nbsp;|&nbsp; 생성일 2025-01-15</div>
+                </div>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-outline btn-sm" data-perm="write" onclick="openRoleModal('roleEditModal')">편집</button>
+                <button class="btn btn-outline btn-sm" data-perm="manage" style="color:#ef4444; border-color:#ef4444;">비활성화</button>
+              </div>
+            </div>
+            <div style="margin-top:14px; padding-top:14px; border-top:1px solid #e5e7eb;">
+              <table style="width:100%; font-size:12px; border-collapse:collapse;">
+                <tr>
+                  <td style="padding:6px 10px; color:#888; width:110px;">설명</td>
+                  <td style="padding:6px 10px; font-weight:500;">전체 시스템에 대한 무제한 접근 권한. 모든 역할과 권한을 관리할 수 있는 최상위 관리자.</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 10px; color:#888;">데이터 접근범위</td>
+                  <td style="padding:6px 10px;"><span class="badge badge-error" style="font-size:11px;">전체 (1~3등급)</span></td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 10px; color:#888;">인증 방식</td>
+                  <td style="padding:6px 10px;">SSO + MFA 필수</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 10px; color:#888;">세션 타임아웃</td>
+                  <td style="padding:6px 10px;">30분 (자동 연장 불가)</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 10px; color:#888;">IP 제한</td>
+                  <td style="padding:6px 10px;">내부 네트워크 전용 (10.x.x.x)</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- 메뉴별 접근 권한 -->
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-title" style="margin-bottom:14px;">메뉴별 접근 권한</div>
+            <table class="data-table" style="font-size:12px;">
+              <thead>
+                <tr><th style="width:180px;">메뉴</th><th style="width:60px;">조회</th><th style="width:60px;">등록</th><th style="width:60px;">수정</th><th style="width:60px;">삭제</th><th style="width:60px;">승인</th><th style="width:60px;">다운로드</th><th>비고</th></tr>
+              </thead>
+              <tbody>
+                <tr style="background:#f8fafc; font-weight:600;">
+                  <td style="padding-left:10px;">개인 대시보드</td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="font-size:11px; color:#888;">전체 접근</td>
+                </tr>
+                <tr>
+                  <td style="padding-left:24px; color:#555;">├ 개인대시보드</td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#ccc;">-</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#ccc;">-</span></td>
+                  <td style="text-align:center;"><span style="color:#ccc;">-</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td style="padding-left:24px; color:#555;">├ 관측시스템 모니터링</td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#ccc;">-</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td style="padding-left:24px; color:#555;">└ AI·시각화 서비스</td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#ccc;">-</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td></td>
+                </tr>
+                <tr style="background:#f8fafc; font-weight:600;">
+                  <td style="padding-left:10px;">카탈로그·탐색</td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="font-size:11px; color:#888;">전체 접근</td>
+                </tr>
+                <tr style="background:#f8fafc; font-weight:600;">
+                  <td style="padding-left:10px;">데이터 수집·통합</td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="font-size:11px; color:#888;">전체 접근</td>
+                </tr>
+                <tr style="background:#f8fafc; font-weight:600;">
+                  <td style="padding-left:10px;">데이터 유통·활용</td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="font-size:11px; color:#888;">전체 접근</td>
+                </tr>
+                <tr style="background:#f8fafc; font-weight:600;">
+                  <td style="padding-left:10px;">메타데이터 관리</td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="font-size:11px; color:#888;">전체 접근</td>
+                </tr>
+                <tr style="background:#f8fafc; font-weight:600;">
+                  <td style="padding-left:10px;">시스템관리</td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="text-align:center;"><span style="color:#2563eb;">&#10003;</span></td>
+                  <td style="font-size:11px; color:#888;">전체 접근</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 할당 사용자 목록 -->
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <div class="card-title" style="margin-bottom:0;">할당 사용자 (2명)</div>
+              <button class="btn btn-outline btn-sm" onclick="openRoleModal('roleAssignModal')">+ 사용자 할당</button>
+            </div>
+            <table class="data-table" style="font-size:12px;">
+              <thead>
+                <tr><th>사용자ID</th><th>이름</th><th>부서</th><th>직위</th><th>할당일</th><th>최근 접속</th><th>상태</th><th>관리</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>admin001</td>
+                  <td style="font-weight:600;">홍길동</td>
+                  <td>ICT운영팀</td>
+                  <td>팀장</td>
+                  <td>2025-01-15</td>
+                  <td>2026-02-27 09:12</td>
+                  <td><span class="badge badge-success" style="font-size:10px;">활성</span></td>
+                  <td><button class="btn btn-outline btn-sm" style="font-size:10px; padding:2px 8px; color:#ef4444; border-color:#ef4444;">해제</button></td>
+                </tr>
+                <tr>
+                  <td>admin002</td>
+                  <td style="font-weight:600;">이철수</td>
+                  <td>ICT운영팀</td>
+                  <td>부장</td>
+                  <td>2025-03-20</td>
+                  <td>2026-02-26 17:45</td>
+                  <td><span class="badge badge-success" style="font-size:10px;">활성</span></td>
+                  <td><button class="btn btn-outline btn-sm" style="font-size:10px; padding:2px 8px; color:#ef4444; border-color:#ef4444;">해제</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 전체 역할 × 메뉴 권한 매트릭스 ── -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">전체 역할 × 메뉴 접근 권한 매트릭스</div>
+        <div style="overflow-x:auto;">
+          <table class="data-table" style="font-size:11px; white-space:nowrap;">
+            <thead>
+              <tr style="background:#f1f5f9;">
+                <th style="min-width:140px; position:sticky; left:0; background:#f1f5f9; z-index:1;">메뉴</th>
+                <th style="text-align:center; min-width:62px;">슈퍼<br>관리자</th>
+                <th style="text-align:center; min-width:62px;">시스템<br>관리자</th>
+                <th style="text-align:center; min-width:62px;">데이터<br>스튜어드</th>
+                <th style="text-align:center; min-width:62px;">부서<br>관리자</th>
+                <th style="text-align:center; min-width:62px;">엔지<br>니어</th>
+                <th style="text-align:center; min-width:62px;">ETL<br>운영자</th>
+                <th style="text-align:center; min-width:50px;">DBA</th>
+                <th style="text-align:center; min-width:62px;">수공<br>직원</th>
+                <th style="text-align:center; min-width:62px;">협력<br>직원</th>
+                <th style="text-align:center; min-width:62px;">외부<br>개발자</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 개인 대시보드 -->
+              <tr style="background:#eef2ff; font-weight:600;">
+                <td style="position:sticky; left:0; background:#eef2ff; z-index:1;">개인 대시보드</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-limited">&#9651;</span></td>
+                <td style="text-align:center;"><span class="rbac-limited">&#9651;</span></td>
+              </tr>
+              <tr>
+                <td style="padding-left:18px; position:sticky; left:0; background:#fff; z-index:1; color:#666;">개인대시보드</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+              </tr>
+              <tr>
+                <td style="padding-left:18px; position:sticky; left:0; background:#fff; z-index:1; color:#666;">관측시스템 모니터링</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+              </tr>
+              <tr>
+                <td style="padding-left:18px; position:sticky; left:0; background:#fff; z-index:1; color:#666;">AI 검색 · 시각화</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+              </tr>
+              <!-- 카탈로그·탐색 -->
+              <tr style="background:#eef2ff; font-weight:600;">
+                <td style="position:sticky; left:0; background:#eef2ff; z-index:1;">카탈로그·탐색</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+              </tr>
+              <!-- 데이터 수집·통합 -->
+              <tr style="background:#eef2ff; font-weight:600;">
+                <td style="position:sticky; left:0; background:#eef2ff; z-index:1;">데이터 수집·통합</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-limited">&#9651;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-limited">&#9651;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+              </tr>
+              <tr>
+                <td style="padding-left:18px; position:sticky; left:0; background:#fff; z-index:1; color:#666;">파이프라인 관리</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+              </tr>
+              <tr>
+                <td style="padding-left:18px; position:sticky; left:0; background:#fff; z-index:1; color:#666;">수집 모니터링</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+              </tr>
+              <!-- 데이터 유통·활용 -->
+              <tr style="background:#eef2ff; font-weight:600;">
+                <td style="position:sticky; left:0; background:#eef2ff; z-index:1;">데이터 유통·활용</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-limited">&#9651;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-limited">&#9651;</span></td>
+                <td style="text-align:center;"><span class="rbac-limited">&#9651;</span></td>
+              </tr>
+              <tr>
+                <td style="padding-left:18px; position:sticky; left:0; background:#fff; z-index:1; color:#666;">Data Product 관리</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+              </tr>
+              <tr>
+                <td style="padding-left:18px; position:sticky; left:0; background:#fff; z-index:1; color:#666;">유통 API 관리</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+              </tr>
+              <!-- 메타데이터 관리 -->
+              <tr style="background:#eef2ff; font-weight:600;">
+                <td style="position:sticky; left:0; background:#eef2ff; z-index:1;">메타데이터 관리</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-limited">&#9651;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+              </tr>
+              <tr>
+                <td style="padding-left:18px; position:sticky; left:0; background:#fff; z-index:1; color:#666;">표준용어·코드관리</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+              </tr>
+              <tr>
+                <td style="padding-left:18px; position:sticky; left:0; background:#fff; z-index:1; color:#666;">온톨로지 관리</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+              </tr>
+              <!-- 시스템관리 -->
+              <tr style="background:#eef2ff; font-weight:600;">
+                <td style="position:sticky; left:0; background:#eef2ff; z-index:1;">시스템관리</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-limited">&#9651;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-limited">&#9651;</span></td>
+                <td style="text-align:center;"><span class="rbac-limited">&#9651;</span></td>
+                <td style="text-align:center;"><span class="rbac-limited">&#9651;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+              </tr>
+              <tr>
+                <td style="padding-left:18px; position:sticky; left:0; background:#fff; z-index:1; color:#666;">사용자·권한</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+              </tr>
+              <tr>
+                <td style="padding-left:18px; position:sticky; left:0; background:#fff; z-index:1; color:#666;">인프라·AI 엔진</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+              </tr>
+              <tr>
+                <td style="padding-left:18px; position:sticky; left:0; background:#fff; z-index:1; color:#666;">감사로그·통계</td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-full">&#9679;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+                <td style="text-align:center;"><span class="rbac-none">&#9675;</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:10px; font-size:11px; color:#888; display:flex; gap:20px;">
+          <span><span class="rbac-full">&#9679;</span> 전체 권한</span>
+          <span><span class="rbac-limited">&#9651;</span> 제한적 권한</span>
+          <span><span class="rbac-none">&#9675;</span> 접근 불가</span>
+        </div>
+      </div>
+
+      <!-- ── 권한 변경 이력 (타임라인) ── -->
+      <div class="card">
+        <div class="card-title">최근 권한 변경 이력</div>
+        <div style="display:flex; flex-direction:column; gap:10px; font-size:12px;">
+          <div style="display:flex; gap:12px; padding:10px 14px; background:#fef3c7; border-radius:8px; border-left:3px solid #f59e0b;">
+            <div style="min-width:120px; color:#92400e; font-weight:600;">2026-02-27 14:22</div>
+            <div>
+              <span class="badge badge-warning" style="font-size:10px;">변경 대기</span>&nbsp;
+              <strong>김데이터</strong> - ETL운영자 역할에 <em>메타데이터 관리 &gt; DQ 검증</em> 읽기 권한 추가 요청
+              <span style="color:#888; margin-left:6px;">요청자: 박관리</span>
+            </div>
+          </div>
+          <div style="display:flex; gap:12px; padding:10px 14px; background:#fef3c7; border-radius:8px; border-left:3px solid #f59e0b;">
+            <div style="min-width:120px; color:#92400e; font-weight:600;">2026-02-27 11:05</div>
+            <div>
+              <span class="badge badge-warning" style="font-size:10px;">변경 대기</span>&nbsp;
+              <strong>최신입</strong> - 데이터스튜어드 역할 할당 요청
+              <span style="color:#888; margin-left:6px;">요청자: 이부장</span>
+            </div>
+          </div>
+          <div style="display:flex; gap:12px; padding:10px 14px; background:#f0fdf4; border-radius:8px; border-left:3px solid #22c55e;">
+            <div style="min-width:120px; color:#166534; font-weight:600;">2026-02-26 16:30</div>
+            <div>
+              <span class="badge badge-success" style="font-size:10px;">승인 완료</span>&nbsp;
+              <strong>이엔지</strong> - 엔지니어 역할에 <em>데이터 수집·통합 &gt; Kafka 스트리밍</em> 쓰기 권한 승인
+              <span style="color:#888; margin-left:6px;">승인자: 홍길동</span>
+            </div>
+          </div>
+          <div style="display:flex; gap:12px; padding:10px 14px; background:#f0fdf4; border-radius:8px; border-left:3px solid #22c55e;">
+            <div style="min-width:120px; color:#166534; font-weight:600;">2026-02-26 09:15</div>
+            <div>
+              <span class="badge badge-success" style="font-size:10px;">승인 완료</span>&nbsp;
+              <strong>정파트너</strong> - 협력직원 역할 할당 승인 (데이터 유통·활용 &gt; 데이터 신청 읽기)
+              <span style="color:#888; margin-left:6px;">승인자: 이철수</span>
+            </div>
+          </div>
+          <div style="display:flex; gap:12px; padding:10px 14px; background:#fef2f2; border-radius:8px; border-left:3px solid #ef4444;">
+            <div style="min-width:120px; color:#991b1b; font-weight:600;">2026-02-25 17:00</div>
+            <div>
+              <span class="badge badge-error" style="font-size:10px;">역할 해제</span>&nbsp;
+              <strong>퇴직자A</strong> - 시스템관리자 역할 해제 (인사연동 자동처리)
+              <span style="color:#888; margin-left:6px;">시스템 자동</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 역할관리 모달: 역할 추가 ── -->
+    <div class="modal-overlay" id="roleAddModal" style="display:none;">
+      <div class="modal-card" style="width:520px;">
+        <div class="modal-header"><h3>새 역할 추가</h3><button class="modal-close" onclick="closeRoleModal('roleAddModal')">&times;</button></div>
+        <div class="modal-body">
+          <div style="display:grid; gap:14px;">
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">역할명 (한글)</label>
+              <input type="text" placeholder="예: 데이터분석가" style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box;">
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">역할 코드</label>
+              <input type="text" placeholder="예: ROLE_DATA_ANALYST" style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box; font-family:monospace;">
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">우선순위 레벨</label>
+              <select style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+                <option>Level 3 - 부서 관리자급</option>
+                <option>Level 4 - 실무 운영자급</option>
+                <option selected>Level 5 - 일반 사용자급</option>
+                <option>Level 6 - 협력/외부급</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">데이터 접근범위</label>
+              <select style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+                <option>3등급 (공개) 데이터만</option>
+                <option selected>2~3등급 (일반+공개) 데이터</option>
+                <option>전체 등급 (승인 필요)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">권한 템플릿 복제</label>
+              <select style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+                <option>빈 역할 (권한 없음)</option>
+                <option>수공직원 권한 복제</option>
+                <option>엔지니어 권한 복제</option>
+                <option>데이터스튜어드 권한 복제</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">설명</label>
+              <textarea rows="2" placeholder="역할에 대한 설명을 입력하세요" style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box; resize:vertical;"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline btn-sm" onclick="closeRoleModal('roleAddModal')">취소</button>
+          <button class="btn btn-primary btn-sm" data-perm="write" onclick="roleAddAction()">역할 생성</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 역할관리 모달: 역할 편집 ── -->
+    <div class="modal-overlay" id="roleEditModal" style="display:none;">
+      <div class="modal-card" style="width:520px;">
+        <div class="modal-header"><h3>역할 편집 - 슈퍼관리자</h3><button class="modal-close" onclick="closeRoleModal('roleEditModal')">&times;</button></div>
+        <div class="modal-body">
+          <div style="display:grid; gap:14px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div>
+                <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">역할명</label>
+                <input type="text" value="슈퍼관리자" style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box;">
+              </div>
+              <div>
+                <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">역할 코드</label>
+                <input type="text" value="ROLE_SUPER_ADMIN" disabled style="width:100%; padding:8px 12px; border:1px solid #eee; border-radius:6px; font-size:13px; box-sizing:border-box; background:#f5f5f5; font-family:monospace;">
+              </div>
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">설명</label>
+              <textarea rows="2" style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box; resize:vertical;">전체 시스템에 대한 무제한 접근 권한. 모든 역할과 권한을 관리할 수 있는 최상위 관리자.</textarea>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div>
+                <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">세션 타임아웃 (분)</label>
+                <input type="number" value="30" style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box;">
+              </div>
+              <div>
+                <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">IP 제한</label>
+                <input type="text" value="10.0.0.0/8" style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box; font-family:monospace;">
+              </div>
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:6px;">보안 정책</label>
+              <div style="display:flex; flex-wrap:wrap; gap:12px; font-size:12px;">
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" checked disabled> MFA 필수</label>
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" checked> 자동 잠금 (5회 실패)</label>
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" checked> 비밀번호 90일 변경</label>
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"> 자동 세션 연장 허용</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline btn-sm" onclick="closeRoleModal('roleEditModal')">취소</button>
+          <button class="btn btn-primary btn-sm" data-perm="write" onclick="roleEditAction()">저장</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 역할관리 모달: 사용자 할당 ── -->
+    <div class="modal-overlay" id="roleAssignModal" style="display:none;">
+      <div class="modal-card" style="width:560px;">
+        <div class="modal-header"><h3>사용자 할당 - 슈퍼관리자</h3><button class="modal-close" onclick="closeRoleModal('roleAssignModal')">&times;</button></div>
+        <div class="modal-body">
+          <div style="margin-bottom:14px;">
+            <input type="text" placeholder="사용자 검색 (이름, ID, 부서)" style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box;">
+          </div>
+          <div style="max-height:280px; overflow-y:auto; border:1px solid #e5e7eb; border-radius:8px;">
+            <table class="data-table" style="font-size:12px; margin:0;">
+              <thead><tr><th style="width:36px;"></th><th>사용자ID</th><th>이름</th><th>부서</th><th>현재 역할</th></tr></thead>
+              <tbody>
+                <tr style="background:#eff6ff;"><td style="text-align:center;"><input type="checkbox" checked></td><td>admin001</td><td style="font-weight:600;">홍길동</td><td>ICT운영팀</td><td><span class="badge badge-error" style="font-size:10px;">슈퍼관리자</span></td></tr>
+                <tr style="background:#eff6ff;"><td style="text-align:center;"><input type="checkbox" checked></td><td>admin002</td><td style="font-weight:600;">이철수</td><td>ICT운영팀</td><td><span class="badge badge-error" style="font-size:10px;">슈퍼관리자</span></td></tr>
+                <tr><td style="text-align:center;"><input type="checkbox"></td><td>sys001</td><td>박시스템</td><td>ICT운영팀</td><td><span class="badge badge-warning" style="font-size:10px;">시스템관리자</span></td></tr>
+                <tr><td style="text-align:center;"><input type="checkbox"></td><td>mgr003</td><td>김관리</td><td>데이터관리부</td><td><span class="badge badge-info" style="font-size:10px;">부서관리자</span></td></tr>
+                <tr><td style="text-align:center;"><input type="checkbox"></td><td>eng005</td><td>최엔지</td><td>데이터플랫폼팀</td><td><span class="badge badge-info" style="font-size:10px;">엔지니어</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top:10px; font-size:11px; color:#888;">선택된 사용자: <strong>2명</strong> (기존 할당 유지, 신규 추가 가능)</div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline btn-sm" onclick="closeRoleModal('roleAssignModal')">취소</button>
+          <button class="btn btn-primary btn-sm" data-perm="write" onclick="roleAssignAction()">할당 적용</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 역할관리 모달: 권한 일괄설정 ── -->
+    <div class="modal-overlay" id="roleBulkModal" style="display:none;">
+      <div class="modal-card" style="width:480px;">
+        <div class="modal-header"><h3>권한 일괄 설정</h3><button class="modal-close" onclick="closeRoleModal('roleBulkModal')">&times;</button></div>
+        <div class="modal-body">
+          <div style="display:grid; gap:14px;">
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">대상 역할</label>
+              <select style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+                <option>전체 역할</option>
+                <option selected>수공직원, 협력직원, 외부개발자</option>
+                <option>엔지니어, ETL운영자, DBA</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">대상 메뉴</label>
+              <select style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+                <option>개인 대시보드 (전체 하위 메뉴)</option>
+                <option>카탈로그·탐색</option>
+                <option>데이터 수집·통합 (전체 하위 메뉴)</option>
+                <option>데이터 유통·활용 (전체 하위 메뉴)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">적용 권한</label>
+              <div style="display:flex; gap:12px; font-size:12px; flex-wrap:wrap;">
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" checked> 조회</label>
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"> 등록</label>
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"> 수정</label>
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"> 삭제</label>
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"> 승인</label>
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" checked> 다운로드</label>
+              </div>
+            </div>
+            <div style="padding:10px 14px; background:#fef3c7; border-radius:8px; font-size:12px; color:#92400e;">
+              <strong>영향범위:</strong> 3개 역할 × 8개 하위메뉴 = 24개 권한 항목이 변경됩니다.
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline btn-sm" onclick="closeRoleModal('roleBulkModal')">취소</button>
+          <button class="btn btn-primary btn-sm" data-perm="admin" onclick="roleBulkAction()">일괄 적용</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 역할관리 모달: 감사로그 ── -->
+    <div class="modal-overlay" id="roleAuditModal" style="display:none;">
+      <div class="modal-card" style="width:680px;">
+        <div class="modal-header"><h3>권한 변경 감사로그</h3><button class="modal-close" onclick="closeRoleModal('roleAuditModal')">&times;</button></div>
+        <div class="modal-body" style="max-height:420px; overflow-y:auto;">
+          <div style="display:flex; gap:8px; margin-bottom:14px;">
+            <input type="date" value="2026-02-01" style="padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px;">
+            <span style="line-height:32px;">~</span>
+            <input type="date" value="2026-02-27" style="padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px;">
+            <select style="padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px;">
+              <option>전체 유형</option><option>역할 생성</option><option>역할 변경</option><option>사용자 할당</option><option>역할 해제</option>
+            </select>
+            <button class="btn btn-outline btn-sm">조회</button>
+          </div>
+          <table class="data-table" style="font-size:11px;">
+            <thead><tr><th>일시</th><th>유형</th><th>대상</th><th>변경내용</th><th>수행자</th><th>IP</th></tr></thead>
+            <tbody>
+              <tr><td>2026-02-27 14:22</td><td><span class="badge badge-warning" style="font-size:10px;">권한 변경</span></td><td>ETL운영자</td><td>DQ 검증 읽기 추가 요청</td><td>박관리</td><td>10.2.1.45</td></tr>
+              <tr><td>2026-02-26 16:30</td><td><span class="badge badge-success" style="font-size:10px;">권한 승인</span></td><td>엔지니어</td><td>Kafka 쓰기 권한 승인</td><td>홍길동</td><td>10.1.2.10</td></tr>
+              <tr><td>2026-02-26 09:15</td><td><span class="badge badge-info" style="font-size:10px;">사용자 할당</span></td><td>협력직원</td><td>정파트너 역할 할당</td><td>이철수</td><td>10.1.2.11</td></tr>
+              <tr><td>2026-02-25 17:00</td><td><span class="badge badge-error" style="font-size:10px;">역할 해제</span></td><td>시스템관리자</td><td>퇴직자A 자동 해제</td><td>SYSTEM</td><td>-</td></tr>
+              <tr><td>2026-02-24 10:30</td><td><span class="badge badge-ghost" style="font-size:10px;">역할 생성</span></td><td>데이터분석가</td><td>커스텀 역할 신규 생성</td><td>홍길동</td><td>10.1.2.10</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline btn-sm">CSV 다운로드</button>
+          <button class="btn btn-primary btn-sm" onclick="closeRoleModal('roleAuditModal')">닫기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SYS SCREEN 3: 데이터등급·보안정책 ========== -->
+    <div class="screen" id="screen-sys-security">
+      <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>데이터등급·보안정책</strong></div>
+
+  <!-- ===== Row 1: 전문 헤더 + KPI 6개 ===== -->
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+    <div>
+      <div class="page-title" style="margin-bottom:2px;">🛡️ 데이터등급 및 보안정책</div>
+      <div style="font-size:12px; color:var(--text-secondary);">K-water 데이터 보안등급 분류 및 접근제어 정책을 관리합니다</div>
+    </div>
+    <div style="display:flex; gap:6px; flex-shrink:0;">
+      <button class="btn btn-primary btn-sm" data-perm="write">✏️ 정책수정</button>
+      <button class="btn btn-outline btn-sm">📄 감사보고서</button>
+      <button class="btn btn-outline btn-sm" data-perm="write">🔍 보안점검</button>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-bottom:14px;">
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #1677ff;">
+      <div style="font-size:11px; color:var(--text-secondary);">전체 자산</div>
+      <div style="font-size:22px; font-weight:800; color:#1677ff; margin:2px 0;">1,620<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:var(--text-secondary);">3개 등급 분류</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #f5222d;">
+      <div style="font-size:11px; color:var(--text-secondary);">1등급 비밀</div>
+      <div style="font-size:22px; font-weight:800; color:#f5222d; margin:2px 0;">47<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:var(--text-secondary);">2.9% 비율</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #fa8c16;">
+      <div style="font-size:11px; color:var(--text-secondary);">2등급 일반</div>
+      <div style="font-size:22px; font-weight:800; color:#fa8c16; margin:2px 0;">328<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:var(--text-secondary);">20.2% 비율</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #52c41a;">
+      <div style="font-size:11px; color:var(--text-secondary);">3등급 공개</div>
+      <div style="font-size:22px; font-weight:800; color:#52c41a; margin:2px 0;">1,245<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:var(--text-secondary);">76.9% 비율</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #722ed1;">
+      <div style="font-size:11px; color:var(--text-secondary);">보안위반</div>
+      <div style="font-size:22px; font-weight:800; color:#722ed1; margin:2px 0;">3<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:#f5222d;">금월 탐지</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #13c2c2;">
+      <div style="font-size:11px; color:var(--text-secondary);">MFA 적용률</div>
+      <div style="font-size:22px; font-weight:800; color:#13c2c2; margin:2px 0;">98.2<span style="font-size:12px; font-weight:400;">%</span></div>
+      <div style="font-size:10px; color:#52c41a;">▲ 2.1%p</div>
+    </div>
+  </div>
+
+  <!-- ===== Row 2: 보안등급 카드 3개 (확장) ===== -->
+  <div class="sec-level-cards" style="margin-bottom:14px;">
+    <div class="sec-level-card lv1" style="flex:1;">
+      <div class="sl-title">🔴 1등급 (비밀)</div>
+      <div style="font-size:28px; font-weight:800; color:#c62828; margin:4px 0;">47<span style="font-size:13px; font-weight:400;"> 건</span></div>
+      <div class="sl-desc" style="margin-bottom:8px;">개인정보 · 보안데이터 · 인사급여</div>
+      <div style="display:flex; flex-direction:column; gap:5px; font-size:11px; margin-bottom:8px;">
+        <div style="display:flex; justify-content:space-between;"><span style="color:#999;">접근 권한</span><span style="background:#ffebee;color:#c62828;padding:1px 6px;border-radius:3px;font-weight:600;">시스템관리자 + 별도승인</span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:#999;">암호화</span><span style="background:#ffebee;color:#c62828;padding:1px 6px;border-radius:3px;font-weight:700;">AES-256</span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:#999;">감사</span><span style="background:#ffebee;color:#c62828;padding:1px 6px;border-radius:3px;">전수감사</span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:#999;">최근 접근</span><span style="font-weight:600;">12건 / 오늘</span></div>
+      </div>
+      <div style="background:#e8a0a0; border-radius:4px; height:6px; overflow:hidden;"><div style="background:#c62828; height:100%; width:2.9%; min-width:4px; border-radius:4px;"></div></div>
+      <div style="font-size:9px; color:#c62828; text-align:right; margin-top:2px;">2.9%</div>
+    </div>
+    <div class="sec-level-card lv2" style="flex:1;">
+      <div class="sl-title">🟠 2등급 (일반)</div>
+      <div style="font-size:28px; font-weight:800; color:#ef6c00; margin:4px 0;">328<span style="font-size:13px; font-weight:400;"> 건</span></div>
+      <div class="sl-desc" style="margin-bottom:8px;">업무데이터 · 운영정보 · 수자원 실시간</div>
+      <div style="display:flex; flex-direction:column; gap:5px; font-size:11px; margin-bottom:8px;">
+        <div style="display:flex; justify-content:space-between;"><span style="color:#999;">접근 권한</span><span style="background:#fff3e0;color:#ef6c00;padding:1px 6px;border-radius:3px;font-weight:600;">데이터관리자 이상 + 승인</span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:#999;">암호화</span><span style="background:#fff3e0;color:#ef6c00;padding:1px 6px;border-radius:3px;font-weight:700;">TLS 전송구간</span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:#999;">감사</span><span style="background:#fff3e0;color:#ef6c00;padding:1px 6px;border-radius:3px;">접근로그</span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:#999;">최근 접근</span><span style="font-weight:600;">284건 / 오늘</span></div>
+      </div>
+      <div style="background:#f5cb96; border-radius:4px; height:6px; overflow:hidden;"><div style="background:#ef6c00; height:100%; width:20.2%; border-radius:4px;"></div></div>
+      <div style="font-size:9px; color:#ef6c00; text-align:right; margin-top:2px;">20.2%</div>
+    </div>
+    <div class="sec-level-card lv3" style="flex:1;">
+      <div class="sl-title">🟢 3등급 (공개)</div>
+      <div style="font-size:28px; font-weight:800; color:#2e7d32; margin:4px 0;">1,245<span style="font-size:13px; font-weight:400;"> 건</span></div>
+      <div class="sl-desc" style="margin-bottom:8px;">공개 통계 · 환경데이터 · 일반정보</div>
+      <div style="display:flex; flex-direction:column; gap:5px; font-size:11px; margin-bottom:8px;">
+        <div style="display:flex; justify-content:space-between;"><span style="color:#999;">접근 권한</span><span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:3px;font-weight:600;">전체사용자 (외부 포함)</span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:#999;">암호화</span><span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:3px;">별도 없음</span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:#999;">감사</span><span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:3px;">기본접속로그</span></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:#999;">최근 접근</span><span style="font-weight:600;">1,420건 / 오늘</span></div>
+      </div>
+      <div style="background:#a5d6a7; border-radius:4px; height:6px; overflow:hidden;"><div style="background:#2e7d32; height:100%; width:76.9%; border-radius:4px;"></div></div>
+      <div style="font-size:9px; color:#2e7d32; text-align:right; margin-top:2px;">76.9%</div>
+    </div>
+  </div>
+
+  <!-- ===== Row 3: AG Grid 보안 자산 상세 목록 ===== -->
+  <div class="card" style="padding:0; margin-bottom:14px;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div class="card-title">📋 등급별 데이터 자산 현황</div>
+      <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option>전체 등급</option><option>1등급 (비밀)</option><option>2등급 (일반)</option><option>3등급 (공개)</option>
+        </select>
+        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option>전체 분류</option><option>테이블</option><option>API</option><option>파일</option><option>스트림</option>
+        </select>
+        <input type="text" placeholder="자산 검색..." style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; width:140px;">
+      </div>
+    </div>
+    <div id="ag-grid-sys-security" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+
+  <!-- ===== Row 4: 보안정책 규칙 + 접근 이상 탐지 ===== -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+    <!-- 좌: 보안정책 규칙 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">🔒 보안정책 규칙</div><span style="font-size:10px; color:var(--text-secondary);">8개 정책 적용중</span></div>
+      <div class="card-body" style="padding:10px 14px;">
+        <div style="display:flex; flex-direction:column; gap:5px;">
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #f5222d; background:#fff1f0; border-radius:0 6px 6px 0;">
+            <span style="font-size:12px;">🔐</span>
+            <div style="flex:1; font-size:12px;">1등급 데이터 접근 시 2차 인증(MFA) 필수</div>
+            <span style="background:#ffebee;color:#c62828;padding:1px 6px;border-radius:3px;font-size:10px;">1등급</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #f5222d; background:#fff1f0; border-radius:0 6px 6px 0;">
+            <span style="font-size:12px;">🚫</span>
+            <div style="flex:1; font-size:12px;">외부사용자는 3등급 공개 데이터만 조회 가능</div>
+            <span style="background:#fce4ec;color:#c62828;padding:1px 6px;border-radius:3px;font-size:10px;">외부</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #1677ff; background:#e6f7ff; border-radius:0 6px 6px 0;">
+            <span style="font-size:12px;">🔑</span>
+            <div style="flex:1; font-size:12px;">1·2등급 데이터 전송 시 암호화(AES/TLS) 필수</div>
+            <span style="background:#e8f0fe;color:#1967d2;padding:1px 6px;border-radius:3px;font-size:10px;">1·2등급</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #fa8c16; background:#fff7e6; border-radius:0 6px 6px 0;">
+            <span style="font-size:12px;">⏸️</span>
+            <div style="flex:1; font-size:12px;">비활성 계정(90일 미접속) 자동 잠금 처리</div>
+            <span style="background:#fff3e0;color:#ef6c00;padding:1px 6px;border-radius:3px;font-size:10px;">전체</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #1677ff; background:#e6f7ff; border-radius:0 6px 6px 0;">
+            <span style="font-size:12px;">💧</span>
+            <div style="flex:1; font-size:12px;">데이터 다운로드 시 보안등급 기반 워터마크 삽입</div>
+            <span style="background:#e8f0fe;color:#1967d2;padding:1px 6px;border-radius:3px;font-size:10px;">전체</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #f5222d; background:#fff1f0; border-radius:0 6px 6px 0;">
+            <span style="font-size:12px;">🚨</span>
+            <div style="flex:1; font-size:12px;">비정상 접근 탐지 → 자동 차단 + 관리자 알림</div>
+            <span style="background:#ffebee;color:#c62828;padding:1px 6px;border-radius:3px;font-size:10px;">전체</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #52c41a; background:#f6ffed; border-radius:0 6px 6px 0;">
+            <span style="font-size:12px;">📝</span>
+            <div style="flex:1; font-size:12px;">1등급 접근 전수감사 로그 90일 보관</div>
+            <span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:3px;font-size:10px;">1등급</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #52c41a; background:#f6ffed; border-radius:0 6px 6px 0;">
+            <span style="font-size:12px;">🔄</span>
+            <div style="flex:1; font-size:12px;">비밀번호 90일 주기 변경 + 이전 5회 재사용 금지</div>
+            <span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:3px;font-size:10px;">전체</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 우: 접근 이상 탐지 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">⚠️ 접근 이상 탐지 현황</div>
+        <span style="font-size:10px; color:var(--text-secondary);">최근 7일</span>
+      </div>
+      <div class="card-body" style="padding:10px 14px;">
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #f5222d; background:#fff1f0; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">14:20</div>
+            <div style="flex:1;"><div style="font-size:12px; font-weight:600;">비인가 IP 접근 시도 차단</div><div style="font-size:11px; color:var(--text-secondary);">1등급 SAP 인사테이블 · IP 203.xx.xx.45</div></div>
+            <span style="background:#ffebee;color:#c62828;padding:1px 6px;border-radius:3px;font-size:10px;height:fit-content;">차단</span>
+          </div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #fa8c16; background:#fff7e6; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">11:05</div>
+            <div style="flex:1;"><div style="font-size:12px; font-weight:600;">MFA 미인증 접근 경고</div><div style="font-size:11px; color:var(--text-secondary);">2등급 수자원관측DB · 외부사용자 최OO</div></div>
+            <span style="background:#fff3e0;color:#ef6c00;padding:1px 6px;border-radius:3px;font-size:10px;height:fit-content;">경고</span>
+          </div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #f5222d; background:#fff1f0; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">어제</div>
+            <div style="flex:1;"><div style="font-size:12px; font-weight:600;">대량 다운로드 탐지 차단</div><div style="font-size:11px; color:var(--text-secondary);">2등급 운영DB 1,200건 다운로드 시도</div></div>
+            <span style="background:#ffebee;color:#c62828;padding:1px 6px;border-radius:3px;font-size:10px;height:fit-content;">차단</span>
+          </div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #1677ff; background:#e6f7ff; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">어제</div>
+            <div style="flex:1;"><div style="font-size:12px; font-weight:600;">비정상 시간대 접근 모니터링</div><div style="font-size:11px; color:var(--text-secondary);">02:30 1등급 접근 · 김데이터 · 정상확인</div></div>
+            <span style="background:#e8f0fe;color:#1967d2;padding:1px 6px;border-radius:3px;font-size:10px;height:fit-content;">모니터링</span>
+          </div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #52c41a; background:#f6ffed; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">2일전</div>
+            <div style="flex:1;"><div style="font-size:12px; font-weight:600;">접근등급 초과 요청 자동 거부</div><div style="font-size:11px; color:var(--text-secondary);">일반사용자 → 1등급 시도 · 정책적용 정상</div></div>
+            <span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:3px;font-size:10px;height:fit-content;">정상</span>
+          </div>
+          <div style="display:flex; gap:10px; padding:6px 10px; border-left:3px solid #fa8c16; background:#fff7e6; border-radius:0 6px 6px 0;">
+            <div style="font-size:10px; color:#8c8c8c; white-space:nowrap; min-width:42px;">3일전</div>
+            <div style="flex:1;"><div style="font-size:12px; font-weight:600;">동시 세션 초과 경고</div><div style="font-size:11px; color:var(--text-secondary);">관리자 계정 3개 세션 동시 접속</div></div>
+            <span style="background:#fff3e0;color:#ef6c00;padding:1px 6px;border-radius:3px;font-size:10px;height:fit-content;">경고</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Row 5: 등급별 접근 추이 + 보안 점수 게이지 ===== -->
+  <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:12px; margin-bottom:14px;">
+    <!-- 좌: 등급별 일간 접근 추이 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">📈 등급별 일간 접근 추이</div><span style="font-size:10px; color:var(--text-secondary);">최근 7일</span></div>
+      <div class="card-body" style="padding:14px;">
+        <svg viewBox="0 0 460 170" style="width:100%; font-family:Arial,sans-serif;">
+          <!-- 기준선 -->
+          <line x1="40" y1="140" x2="440" y2="140" stroke="#e8e8e8" stroke-width="1"/>
+          <line x1="40" y1="105" x2="440" y2="105" stroke="#f5f5f5" stroke-width="0.5"/>
+          <line x1="40" y1="70" x2="440" y2="70" stroke="#f5f5f5" stroke-width="0.5"/>
+          <line x1="40" y1="35" x2="440" y2="35" stroke="#f5f5f5" stroke-width="0.5"/>
+          <!-- 스택 바: 02-22 -->
+          <rect x="52" y="42" width="40" height="8" rx="2" fill="#f5222d"/><rect x="52" y="52" width="40" height="28" rx="2" fill="#fa8c16"/><rect x="52" y="82" width="40" height="58" rx="2" fill="#52c41a"/>
+          <!-- 02-23 -->
+          <rect x="108" y="44" width="40" height="7" rx="2" fill="#f5222d"/><rect x="108" y="53" width="40" height="30" rx="2" fill="#fa8c16"/><rect x="108" y="85" width="40" height="55" rx="2" fill="#52c41a"/>
+          <!-- 02-24 -->
+          <rect x="164" y="48" width="40" height="5" rx="2" fill="#f5222d"/><rect x="164" y="55" width="40" height="20" rx="2" fill="#fa8c16"/><rect x="164" y="77" width="40" height="63" rx="2" fill="#52c41a"/>
+          <!-- 02-25 -->
+          <rect x="220" y="40" width="40" height="9" rx="2" fill="#f5222d"/><rect x="220" y="51" width="40" height="32" rx="2" fill="#fa8c16"/><rect x="220" y="85" width="40" height="55" rx="2" fill="#52c41a"/>
+          <!-- 02-26 -->
+          <rect x="276" y="43" width="40" height="8" rx="2" fill="#f5222d"/><rect x="276" y="53" width="40" height="29" rx="2" fill="#fa8c16"/><rect x="276" y="84" width="40" height="56" rx="2" fill="#52c41a"/>
+          <!-- 02-27 -->
+          <rect x="332" y="38" width="40" height="10" rx="2" fill="#f5222d"/><rect x="332" y="50" width="40" height="34" rx="2" fill="#fa8c16"/><rect x="332" y="86" width="40" height="54" rx="2" fill="#52c41a"/>
+          <!-- 02-28 (오늘) -->
+          <rect x="388" y="36" width="40" height="11" rx="2" fill="#f5222d" opacity="0.9"/><rect x="388" y="49" width="40" height="36" rx="2" fill="#fa8c16" opacity="0.9"/><rect x="388" y="87" width="40" height="53" rx="2" fill="#52c41a" opacity="0.9"/>
+          <!-- 날짜 라벨 -->
+          <text x="72" y="155" text-anchor="middle" font-size="8" fill="#999">02-22</text>
+          <text x="128" y="155" text-anchor="middle" font-size="8" fill="#999">02-23</text>
+          <text x="184" y="155" text-anchor="middle" font-size="8" fill="#999">02-24</text>
+          <text x="240" y="155" text-anchor="middle" font-size="8" fill="#999">02-25</text>
+          <text x="296" y="155" text-anchor="middle" font-size="8" fill="#999">02-26</text>
+          <text x="352" y="155" text-anchor="middle" font-size="8" fill="#999">02-27</text>
+          <text x="408" y="155" text-anchor="middle" font-size="8" fill="#1677ff" font-weight="700">오늘</text>
+          <!-- Y축 -->
+          <text x="34" y="143" text-anchor="end" font-size="7" fill="#999">0</text>
+          <text x="34" y="73" text-anchor="end" font-size="7" fill="#999">1K</text>
+          <text x="34" y="38" text-anchor="end" font-size="7" fill="#999">2K</text>
+          <!-- 범례 -->
+          <rect x="120" y="163" width="10" height="6" rx="2" fill="#f5222d"/><text x="134" y="169" font-size="7" fill="#666">1등급</text>
+          <rect x="180" y="163" width="10" height="6" rx="2" fill="#fa8c16"/><text x="194" y="169" font-size="7" fill="#666">2등급</text>
+          <rect x="240" y="163" width="10" height="6" rx="2" fill="#52c41a"/><text x="254" y="169" font-size="7" fill="#666">3등급</text>
+        </svg>
+      </div>
+    </div>
+    <!-- 우: 보안 준수 점수 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">🏆 보안 준수 점수</div></div>
+      <div class="card-body" style="padding:14px;">
+        <div style="text-align:center; margin-bottom:12px;">
+          <div style="font-size:11px; color:var(--text-secondary);">종합 보안 점수</div>
+          <div style="font-size:40px; font-weight:900; color:#52c41a;">97.2<span style="font-size:16px; font-weight:400;">점</span></div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px;">
+          <div style="text-align:center;">
+            <svg viewBox="0 0 80 80" style="width:56px; height:56px;">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#f0f0f0" stroke-width="6"/>
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#52c41a" stroke-width="6" stroke-dasharray="197 4" stroke-dashoffset="50" stroke-linecap="round" transform="rotate(-90 40 40)"/>
+              <text x="40" y="38" text-anchor="middle" style="font-size:11px; font-weight:700; fill:#52c41a;">98.2</text>
+              <text x="40" y="48" text-anchor="middle" style="font-size:6px; fill:#999;">%</text>
+            </svg>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:2px;">MFA 적용률</div>
+          </div>
+          <div style="text-align:center;">
+            <svg viewBox="0 0 80 80" style="width:56px; height:56px;">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#f0f0f0" stroke-width="6"/>
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#fa8c16" stroke-width="6" stroke-dasharray="190 11" stroke-dashoffset="50" stroke-linecap="round" transform="rotate(-90 40 40)"/>
+              <text x="40" y="38" text-anchor="middle" style="font-size:11px; font-weight:700; fill:#fa8c16;">94.5</text>
+              <text x="40" y="48" text-anchor="middle" style="font-size:6px; fill:#999;">%</text>
+            </svg>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:2px;">암호화 커버리지</div>
+          </div>
+          <div style="text-align:center;">
+            <svg viewBox="0 0 80 80" style="width:56px; height:56px;">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#f0f0f0" stroke-width="6"/>
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#52c41a" stroke-width="6" stroke-dasharray="194 7" stroke-dashoffset="50" stroke-linecap="round" transform="rotate(-90 40 40)"/>
+              <text x="40" y="38" text-anchor="middle" style="font-size:11px; font-weight:700; fill:#52c41a;">96.8</text>
+              <text x="40" y="48" text-anchor="middle" style="font-size:6px; fill:#999;">%</text>
+            </svg>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:2px;">접근제어 준수</div>
+          </div>
+          <div style="text-align:center;">
+            <svg viewBox="0 0 80 80" style="width:56px; height:56px;">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#f0f0f0" stroke-width="6"/>
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#52c41a" stroke-width="6" stroke-dasharray="199 2" stroke-dashoffset="50" stroke-linecap="round" transform="rotate(-90 40 40)"/>
+              <text x="40" y="38" text-anchor="middle" style="font-size:11px; font-weight:700; fill:#52c41a;">99.1</text>
+              <text x="40" y="48" text-anchor="middle" style="font-size:6px; fill:#999;">%</text>
+            </svg>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:2px;">로깅 완성도</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- ========== SYS SCREEN 4: 데이터허브 엔진관리 ========== -->
+    <div class="screen" id="screen-sys-engine">
+      <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>데이터허브 엔진관리</strong></div>
+      <div class="page-title">데이터허브 엔진관리 (운영콘솔)</div>
+      <div class="engine-cards">
+        <!-- Neo4j -->
+        <div class="engine-card">
+          <div class="ec-header">
+            <span class="ec-name">Neo4j 그래프 DB</span>
+            <span class="ec-status">✅ 정상</span>
+          </div>
+          <div class="ec-info">노드 152,584 &nbsp;|&nbsp; 관계 523,691<br>클러스터 3노드</div>
+          <div class="ec-meters">
+            <div class="ec-meter"><div class="em-label">CPU</div><div class="em-bar"><div class="em-fill" style="width:34%; background:#4caf50;"></div></div><div class="em-val">34%</div></div>
+            <div class="ec-meter"><div class="em-label">MEM</div><div class="em-bar"><div class="em-fill" style="width:62%; background:#ff9800;"></div></div><div class="em-val">62%</div></div>
+            <div class="ec-meter"><div class="em-label">DISK</div><div class="em-bar"><div class="em-fill" style="width:45%; background:#1967d2;"></div></div><div class="em-val">45%</div></div>
+          </div>
+        </div>
+        <!-- MindsDB -->
+        <div class="engine-card">
+          <div class="ec-header">
+            <span class="ec-name">MindsDB</span>
+            <span class="ec-status">✅ 정상</span>
+          </div>
+          <div class="ec-info">DB 연결 5개<br>메타추출 스케줄 정상</div>
+          <div class="ec-meters">
+            <div class="ec-meter"><div class="em-label">CPU</div><div class="em-bar"><div class="em-fill" style="width:12%; background:#4caf50;"></div></div><div class="em-val">12%</div></div>
+            <div class="ec-meter"><div class="em-label">MEM</div><div class="em-bar"><div class="em-fill" style="width:28%; background:#4caf50;"></div></div><div class="em-val">28%</div></div>
+            <div class="ec-meter"><div class="em-label">DISK</div><div class="em-bar"><div class="em-fill" style="width:15%; background:#1967d2;"></div></div><div class="em-val">15%</div></div>
+          </div>
+        </div>
+        <!-- 인메모리 DB -->
+        <div class="engine-card">
+          <div class="ec-header">
+            <span class="ec-name">인메모리 DB (GPU)</span>
+            <span class="ec-status">✅ 정상</span>
+          </div>
+          <div class="ec-info">계측 실시간 처리<br>사용률 34%</div>
+          <div class="ec-meters">
+            <div class="ec-meter"><div class="em-label">CPU</div><div class="em-bar"><div class="em-fill" style="width:34%; background:#4caf50;"></div></div><div class="em-val">34%</div></div>
+            <div class="ec-meter"><div class="em-label">MEM</div><div class="em-bar"><div class="em-fill" style="width:71%; background:#ff9800;"></div></div><div class="em-val">71%</div></div>
+            <div class="ec-meter"><div class="em-label">DISK</div><div class="em-bar"><div class="em-fill" style="width:22%; background:#1967d2;"></div></div><div class="em-val">22%</div></div>
+          </div>
+        </div>
+        <!-- Kafka -->
+        <div class="engine-card">
+          <div class="ec-header">
+            <span class="ec-name">Kafka 클러스터</span>
+            <span class="ec-status">✅ 정상</span>
+          </div>
+          <div class="ec-info">토픽 42개<br>초당 28K 메시지</div>
+          <div class="ec-meters">
+            <div class="ec-meter"><div class="em-label">CPU</div><div class="em-bar"><div class="em-fill" style="width:45%; background:#ff9800;"></div></div><div class="em-val">45%</div></div>
+            <div class="ec-meter"><div class="em-label">MEM</div><div class="em-bar"><div class="em-fill" style="width:58%; background:#ff9800;"></div></div><div class="em-val">58%</div></div>
+            <div class="ec-meter"><div class="em-label">DISK</div><div class="em-bar"><div class="em-fill" style="width:38%; background:#1967d2;"></div></div><div class="em-val">38%</div></div>
+          </div>
+        </div>
+        <!-- dbt Core -->
+        <div class="engine-card">
+          <div class="ec-header">
+            <span class="ec-name">dbt Core</span>
+            <span class="ec-status">✅ 정상</span>
+          </div>
+          <div class="ec-info">모델 86개<br>마지막 실행 11:30</div>
+          <div class="ec-meters">
+            <div class="ec-meter"><div class="em-label">CPU</div><div class="em-bar"><div class="em-fill" style="width:8%; background:#4caf50;"></div></div><div class="em-val">8%</div></div>
+            <div class="ec-meter"><div class="em-label">MEM</div><div class="em-bar"><div class="em-fill" style="width:15%; background:#4caf50;"></div></div><div class="em-val">15%</div></div>
+            <div class="ec-meter"><div class="em-label">DISK</div><div class="em-bar"><div class="em-fill" style="width:12%; background:#1967d2;"></div></div><div class="em-val">12%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SYS SCREEN 5: 연계인터페이스 모니터링 ========== -->
+    <div class="screen" id="screen-sys-interface">
+      <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>연계인터페이스 모니터링</strong></div>
+      <div class="page-title">연계인터페이스 모니터링</div>
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div id="ag-grid-sys-interface" class="ag-theme-alpine" style="width:100%;"></div>
+      </div>
+      <!-- Latency 차트 -->
+      <div class="card">
+        <div class="card-title">📈 인터페이스 상태추이 (최근 24시간)</div>
+        <div class="latency-chart">
+          <div class="latency-bar"><div class="lb-bar" style="height:35px; background:#1967d2;"></div><div class="lb-label">00h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:40px; background:#1967d2;"></div><div class="lb-label">02h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:30px; background:#1967d2;"></div><div class="lb-label">04h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:25px; background:#4caf50;"></div><div class="lb-label">06h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:45px; background:#1967d2;"></div><div class="lb-label">08h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:80px; background:#ff9800;"></div><div class="lb-label">10h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:120px; background:#f44336;"></div><div class="lb-label">12h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:65px; background:#ff9800;"></div><div class="lb-label">14h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:50px; background:#1967d2;"></div><div class="lb-label">16h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:38px; background:#1967d2;"></div><div class="lb-label">18h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:42px; background:#1967d2;"></div><div class="lb-label">20h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:35px; background:#4caf50;"></div><div class="lb-label">22h</div></div>
+        </div>
+        <div style="display:flex; gap:16px; margin-top:10px; font-size:11px; color:#888; justify-content:center;">
+          <span>🔵 내부 API (ms)</span> <span>🟢 외부 API (ms)</span> <span>🔴 MCP (ms)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SYS SCREEN 5-1: 연계인터페이스 상세 ========== -->
+    <div class="screen" id="screen-sys-interface-detail">
+      <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <a href="#" onclick="navigate('sys-interface')">연계인터페이스 모니터링</a> &gt; <strong>MCP 연동 상세</strong></div>
+      <div class="page-title">연계인터페이스 상세 — MCP 연동</div>
+
+      <!-- 기본 정보 -->
+      <div class="card">
+        <div class="card-title">📋 기본 정보</div>
+        <div class="detail-info-grid">
+          <div class="detail-info-item"><div class="dil">인터페이스명</div><div class="div">MCP 연동</div></div>
+          <div class="detail-info-item"><div class="dil">유형</div><div class="div"><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">MCP</span></div></div>
+          <div class="detail-info-item"><div class="dil">상태</div><div class="div" style="color:#4caf50;"><span class="if-status"><span class="if-dot"></span>정상</span></div></div>
+          <div class="detail-info-item"><div class="dil">엔드포인트</div><div class="div" style="font-family:monospace;">https://mcp.kwater.or.kr/api/v2</div></div>
+          <div class="detail-info-item"><div class="dil">인증방식</div><div class="div">OAuth 2.0 (Client Credentials)</div></div>
+          <div class="detail-info-item"><div class="dil">담당자</div><div class="div">김인프라 (시스템운영팀)</div></div>
+          <div class="detail-info-item"><div class="dil">등록일</div><div class="div">2025-06-10</div></div>
+          <div class="detail-info-item"><div class="dil">SLA 목표</div><div class="div">Uptime 99.5% / Latency &lt; 200ms</div></div>
+          <div class="detail-info-item"><div class="dil">최근 갱신</div><div class="div">2026-02-24 11:42</div></div>
+        </div>
+      </div>
+
+      <!-- 성능 지표 -->
+      <div class="card">
+        <div class="card-title">📊 성능 지표 요약</div>
+        <div class="grid-4" style="margin-bottom:16px;">
+          <div class="kpi-card">
+            <div class="kpi-label">현재 Latency</div>
+            <div class="kpi-value" style="color:#1967d2;">120ms</div>
+            <div class="kpi-sub">평균 95ms</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Uptime (30일)</div>
+            <div class="kpi-value" style="color:#4caf50;">99.5%</div>
+            <div class="kpi-sub">SLA 목표: 99.5%</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">금일 호출 수</div>
+            <div class="kpi-value" style="color:#1967d2;">12,847</div>
+            <div class="kpi-sub kpi-up">▲ 8.3% vs 어제</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">오류율 (24h)</div>
+            <div class="kpi-value" style="color:#4caf50;">0.12%</div>
+            <div class="kpi-sub kpi-down">▼ 0.05%p</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Latency 추이 -->
+      <div class="card">
+        <div class="card-title">📈 Latency 추이 (최근 24시간)</div>
+        <div class="latency-chart">
+          <div class="latency-bar"><div class="lb-bar" style="height:55px; background:#1967d2;"></div><div class="lb-label">00h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:48px; background:#1967d2;"></div><div class="lb-label">02h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:42px; background:#4caf50;"></div><div class="lb-label">04h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:50px; background:#1967d2;"></div><div class="lb-label">06h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:65px; background:#1967d2;"></div><div class="lb-label">08h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:110px; background:#ff9800;"></div><div class="lb-label">10h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:140px; background:#f44336;"></div><div class="lb-label">12h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:95px; background:#ff9800;"></div><div class="lb-label">14h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:60px; background:#1967d2;"></div><div class="lb-label">16h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:52px; background:#1967d2;"></div><div class="lb-label">18h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:58px; background:#1967d2;"></div><div class="lb-label">20h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:45px; background:#4caf50;"></div><div class="lb-label">22h</div></div>
+        </div>
+        <div style="display:flex; gap:16px; margin-top:10px; font-size:11px; color:#888; justify-content:center;">
+          <span>🟢 &lt;50ms</span> <span>🔵 50~100ms</span> <span>🟠 100~150ms</span> <span>🔴 &gt;150ms</span>
+        </div>
+      </div>
+
+      <!-- 최근 호출 이력 -->
+      <div class="card">
+        <div class="card-title">🗓️ 최근 호출 이력 <span class="badge">최근 8건</span></div>
+        <div id="ag-grid-sys-api-log" class="ag-theme-alpine" style="width:100%;"></div>
+      </div>
+
+      <!-- 연결 설정 & 알림 설정 -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">⚙️ 연결 설정</div>
+          <div class="detail-info-grid" style="grid-template-columns:1fr 1fr;">
+            <div class="detail-info-item"><div class="dil">타임아웃</div><div class="div">30초</div></div>
+            <div class="detail-info-item"><div class="dil">재시도 횟수</div><div class="div">3회 (간격 5초)</div></div>
+            <div class="detail-info-item"><div class="dil">Connection Pool</div><div class="div">Min 5 / Max 20</div></div>
+            <div class="detail-info-item"><div class="dil">Rate Limit</div><div class="div">1,000 req/min</div></div>
+            <div class="detail-info-item"><div class="dil">Circuit Breaker</div><div class="div" style="color:#4caf50;">CLOSED (정상)</div></div>
+            <div class="detail-info-item"><div class="dil">실패 임계치</div><div class="div">5회 연속 → OPEN</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚠️ 알림 설정</div>
+          <div class="detail-info-grid" style="grid-template-columns:1fr 1fr;">
+            <div class="detail-info-item"><div class="dil">Latency 임계치</div><div class="div">≥ 200ms → 경고</div></div>
+            <div class="detail-info-item"><div class="dil">오류율 임계치</div><div class="div">≥ 1% → 알림</div></div>
+            <div class="detail-info-item"><div class="dil">알림 대상</div><div class="div">김인프라, 박운영 (Slack/이메일)</div></div>
+            <div class="detail-info-item"><div class="dil">최근 알림</div><div class="div" style="color:#ff9800;">02-24 11:40 타임아웃 발생</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 최근 오류 로그 -->
+      <div class="card">
+        <div class="card-title">🚨 최근 오류 로그</div>
+        <div class="alert-card alert-error" style="margin-bottom:8px;">
+          <span class="alert-time">02-24 11:40:55</span>
+          <strong>[504 Gateway Timeout]</strong> POST /api/v2/tools/execute — 요청 타임아웃 (30,012ms). 원격 MCP 서버 응답 지연. 자동 재시도 3회 후 성공.
+        </div>
+        <div class="alert-card alert-warn" style="margin-bottom:8px;">
+          <span class="alert-time">02-23 15:22:10</span>
+          <strong>[Latency Warning]</strong> GET /api/v2/resources/list — 응답시간 285ms, 임계치(200ms) 초과. 원인: MCP 서버 부하 증가.
+        </div>
+        <div class="alert-card alert-ok" style="margin-bottom:8px;">
+          <span class="alert-time">02-22 09:00:00</span>
+          <strong>[Recovery]</strong> MCP 연동 Circuit Breaker CLOSED 복구. 정상 운영 재개.
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:16px;">
+        <button class="btn btn-primary" onclick="navigate('sys-interface')">← 목록으로</button>
+        <button class="btn btn-outline">연결 테스트</button>
+        <button class="btn btn-outline" data-perm="write">설정 수정</button>
+        <button class="btn btn-outline" data-perm="manage" style="color:#f44336; border-color:#f44336;">연결 중지</button>
+      </div>
+    </div>
+
+    <!-- ========== SYS SCREEN 6: 접속통계·감사로그 ========== -->
+    <div class="screen" id="screen-sys-audit">
+      <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>접속통계·감사로그</strong></div>
+
+      <!-- Row 1: Header + KPI 6개 -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        <div>
+          <div class="page-title" style="margin-bottom:2px;">접속통계 및 감사로그</div>
+          <div style="font-size:13px; color:#888;">사용자 접속 현황 · 활동 감사 · 이상행위 탐지 · API 모니터링</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-outline" style="font-size:12px;">📥 내보내기</button>
+          <button class="btn btn-outline" style="font-size:12px;">🔍 상세 필터</button>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:20px;">
+        <div class="kpi-card" style="border-left:3px solid #1967d2;"><div class="kpi-label">금일 접속자</div><div class="kpi-value" style="color:#1967d2;">142명</div><div class="kpi-sub">전일 대비 +8</div></div>
+        <div class="kpi-card" style="border-left:3px solid #4caf50;"><div class="kpi-label">금월 활성사용자</div><div class="kpi-value" style="color:#4caf50;">189명</div><div class="kpi-sub">전체 계정 대비 78%</div></div>
+        <div class="kpi-card" style="border-left:3px solid #00897b;"><div class="kpi-label">API 호출(금일)</div><div class="kpi-value" style="color:#00897b;">24.8K</div><div class="kpi-sub">초당 평균 4.6건</div></div>
+        <div class="kpi-card" style="border-left:3px solid #ff9800;"><div class="kpi-label">메타데이터 변경</div><div class="kpi-value" style="color:#ff9800;">56건</div><div class="kpi-sub">승인 48 · 대기 8</div></div>
+        <div class="kpi-card" style="border-left:3px solid #4caf50;"><div class="kpi-label">이상행위 탐지</div><div class="kpi-value" style="color:#4caf50;">0건</div><div class="kpi-sub">최근 30일 정상</div></div>
+        <div class="kpi-card" style="border-left:3px solid #7b1fa2;"><div class="kpi-label">평균 응답시간</div><div class="kpi-value" style="color:#7b1fa2;">128ms</div><div class="kpi-sub">SLA 200ms 이내</div></div>
+      </div>
+
+      <!-- Row 2: AG Grid -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+          <span>📋 감사로그 (최근 활동)</span>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <select style="font-size:12px; padding:4px 8px; border:1px solid #ddd; border-radius:4px; background:#fff;">
+              <option>전체 유형</option><option>데이터</option><option>수집</option><option>유통</option><option>접속</option><option>시스템</option><option>권한</option><option>배치</option>
+            </select>
+            <select style="font-size:12px; padding:4px 8px; border:1px solid #ddd; border-radius:4px; background:#fff;">
+              <option>전체 위험도</option><option>높음</option><option>보통</option><option>낮음</option>
+            </select>
+            <input type="text" placeholder="사용자·활동 검색..." style="font-size:12px; padding:4px 10px; border:1px solid #ddd; border-radius:4px; width:160px;">
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div id="ag-grid-sys-audit" class="ag-theme-alpine" style="width:100%;"></div>
+        </div>
+      </div>
+
+      <!-- Row 3: 시간대별 접속 히트맵 + 유형별 활동 분포 -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+        <div class="card">
+          <div class="card-head">🕐 시간대별 접속 히트맵 (최근 7일)</div>
+          <div class="card-body">
+            <svg viewBox="0 0 420 200" style="width:100%;">
+              <text x="45" y="42" text-anchor="end" font-size="9" fill="#666">월</text>
+              <text x="45" y="64" text-anchor="end" font-size="9" fill="#666">화</text>
+              <text x="45" y="86" text-anchor="end" font-size="9" fill="#666">수</text>
+              <text x="45" y="108" text-anchor="end" font-size="9" fill="#666">목</text>
+              <text x="45" y="130" text-anchor="end" font-size="9" fill="#666">금</text>
+              <text x="45" y="152" text-anchor="end" font-size="9" fill="#666">토</text>
+              <text x="45" y="174" text-anchor="end" font-size="9" fill="#666">일</text>
+              <text x="62" y="22" text-anchor="middle" font-size="8" fill="#999">0</text>
+              <text x="92" y="22" text-anchor="middle" font-size="8" fill="#999">3</text>
+              <text x="122" y="22" text-anchor="middle" font-size="8" fill="#999">6</text>
+              <text x="152" y="22" text-anchor="middle" font-size="8" fill="#999">9</text>
+              <text x="182" y="22" text-anchor="middle" font-size="8" fill="#999">12</text>
+              <text x="212" y="22" text-anchor="middle" font-size="8" fill="#999">15</text>
+              <text x="242" y="22" text-anchor="middle" font-size="8" fill="#999">18</text>
+              <text x="272" y="22" text-anchor="middle" font-size="8" fill="#999">21</text>
+              <!-- 월 -->
+              <rect x="52" y="30" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="72" y="30" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <rect x="92" y="30" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="112" y="30" width="18" height="16" rx="2" fill="#bbdefb"/>
+              <rect x="132" y="30" width="18" height="16" rx="2" fill="#64b5f6"/><rect x="152" y="30" width="18" height="16" rx="2" fill="#1967d2"/>
+              <rect x="172" y="30" width="18" height="16" rx="2" fill="#1967d2"/><rect x="192" y="30" width="18" height="16" rx="2" fill="#0d47a1"/>
+              <rect x="212" y="30" width="18" height="16" rx="2" fill="#1967d2"/><rect x="232" y="30" width="18" height="16" rx="2" fill="#64b5f6"/>
+              <rect x="252" y="30" width="18" height="16" rx="2" fill="#bbdefb"/><rect x="272" y="30" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <!-- 화 -->
+              <rect x="52" y="52" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="72" y="52" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <rect x="92" y="52" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="112" y="52" width="18" height="16" rx="2" fill="#bbdefb"/>
+              <rect x="132" y="52" width="18" height="16" rx="2" fill="#64b5f6"/><rect x="152" y="52" width="18" height="16" rx="2" fill="#0d47a1"/>
+              <rect x="172" y="52" width="18" height="16" rx="2" fill="#1967d2"/><rect x="192" y="52" width="18" height="16" rx="2" fill="#1967d2"/>
+              <rect x="212" y="52" width="18" height="16" rx="2" fill="#64b5f6"/><rect x="232" y="52" width="18" height="16" rx="2" fill="#64b5f6"/>
+              <rect x="252" y="52" width="18" height="16" rx="2" fill="#bbdefb"/><rect x="272" y="52" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <!-- 수 -->
+              <rect x="52" y="74" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="72" y="74" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <rect x="92" y="74" width="18" height="16" rx="2" fill="#bbdefb"/><rect x="112" y="74" width="18" height="16" rx="2" fill="#64b5f6"/>
+              <rect x="132" y="74" width="18" height="16" rx="2" fill="#1967d2"/><rect x="152" y="74" width="18" height="16" rx="2" fill="#0d47a1"/>
+              <rect x="172" y="74" width="18" height="16" rx="2" fill="#0d47a1"/><rect x="192" y="74" width="18" height="16" rx="2" fill="#1967d2"/>
+              <rect x="212" y="74" width="18" height="16" rx="2" fill="#1967d2"/><rect x="232" y="74" width="18" height="16" rx="2" fill="#64b5f6"/>
+              <rect x="252" y="74" width="18" height="16" rx="2" fill="#bbdefb"/><rect x="272" y="74" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <!-- 목 -->
+              <rect x="52" y="96" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="72" y="96" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <rect x="92" y="96" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="112" y="96" width="18" height="16" rx="2" fill="#bbdefb"/>
+              <rect x="132" y="96" width="18" height="16" rx="2" fill="#64b5f6"/><rect x="152" y="96" width="18" height="16" rx="2" fill="#1967d2"/>
+              <rect x="172" y="96" width="18" height="16" rx="2" fill="#1967d2"/><rect x="192" y="96" width="18" height="16" rx="2" fill="#0d47a1"/>
+              <rect x="212" y="96" width="18" height="16" rx="2" fill="#1967d2"/><rect x="232" y="96" width="18" height="16" rx="2" fill="#64b5f6"/>
+              <rect x="252" y="96" width="18" height="16" rx="2" fill="#bbdefb"/><rect x="272" y="96" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <!-- 금 (today) -->
+              <rect x="52" y="118" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="72" y="118" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <rect x="92" y="118" width="18" height="16" rx="2" fill="#bbdefb"/><rect x="112" y="118" width="18" height="16" rx="2" fill="#64b5f6"/>
+              <rect x="132" y="118" width="18" height="16" rx="2" fill="#1967d2"/><rect x="152" y="118" width="18" height="16" rx="2" fill="#0d47a1" stroke="#f44336" stroke-width="1.5"/>
+              <rect x="172" y="118" width="18" height="16" rx="2" fill="#e0e0e0"/><rect x="192" y="118" width="18" height="16" rx="2" fill="#e0e0e0"/>
+              <rect x="212" y="118" width="18" height="16" rx="2" fill="#e0e0e0"/><rect x="232" y="118" width="18" height="16" rx="2" fill="#e0e0e0"/>
+              <rect x="252" y="118" width="18" height="16" rx="2" fill="#e0e0e0"/><rect x="272" y="118" width="18" height="16" rx="2" fill="#e0e0e0"/>
+              <!-- 토 -->
+              <rect x="52" y="140" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="72" y="140" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <rect x="92" y="140" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="112" y="140" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <rect x="132" y="140" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="152" y="140" width="18" height="16" rx="2" fill="#bbdefb"/>
+              <rect x="172" y="140" width="18" height="16" rx="2" fill="#bbdefb"/><rect x="192" y="140" width="18" height="16" rx="2" fill="#bbdefb"/>
+              <rect x="212" y="140" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="232" y="140" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <rect x="252" y="140" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="272" y="140" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <!-- 일 -->
+              <rect x="52" y="162" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="72" y="162" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <rect x="92" y="162" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="112" y="162" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <rect x="132" y="162" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="152" y="162" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <rect x="172" y="162" width="18" height="16" rx="2" fill="#bbdefb"/><rect x="192" y="162" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <rect x="212" y="162" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="232" y="162" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <rect x="252" y="162" width="18" height="16" rx="2" fill="#e8f0fe"/><rect x="272" y="162" width="18" height="16" rx="2" fill="#e8f0fe"/>
+              <!-- 범례 -->
+              <rect x="300" y="60" width="14" height="14" rx="2" fill="#e8f0fe"/><text x="320" y="71" font-size="9" fill="#666">1-5명</text>
+              <rect x="300" y="80" width="14" height="14" rx="2" fill="#bbdefb"/><text x="320" y="91" font-size="9" fill="#666">6-15명</text>
+              <rect x="300" y="100" width="14" height="14" rx="2" fill="#64b5f6"/><text x="320" y="111" font-size="9" fill="#666">16-30명</text>
+              <rect x="300" y="120" width="14" height="14" rx="2" fill="#1967d2"/><text x="320" y="131" font-size="9" fill="#666">31-50명</text>
+              <rect x="300" y="140" width="14" height="14" rx="2" fill="#0d47a1"/><text x="320" y="151" font-size="9" fill="#666">50명+</text>
+            </svg>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">📊 유형별 활동 분포</div>
+          <div class="card-body" style="text-align:center;">
+            <svg viewBox="0 0 300 200" style="width:100%;max-width:300px;display:inline-block;">
+              <circle cx="120" cy="100" r="70" fill="none" stroke="#e0e0e0" stroke-width="25"/>
+              <circle cx="120" cy="100" r="70" fill="none" stroke="#1967d2" stroke-width="25" stroke-dasharray="132 308" stroke-dashoffset="110" transform="rotate(-90 120 100)"/>
+              <circle cx="120" cy="100" r="70" fill="none" stroke="#4caf50" stroke-width="25" stroke-dasharray="88 352" stroke-dashoffset="-22" transform="rotate(-90 120 100)"/>
+              <circle cx="120" cy="100" r="70" fill="none" stroke="#ff9800" stroke-width="25" stroke-dasharray="55 385" stroke-dashoffset="-110" transform="rotate(-90 120 100)"/>
+              <circle cx="120" cy="100" r="70" fill="none" stroke="#7b1fa2" stroke-width="25" stroke-dasharray="33 407" stroke-dashoffset="-165" transform="rotate(-90 120 100)"/>
+              <circle cx="120" cy="100" r="70" fill="none" stroke="#f44336" stroke-width="25" stroke-dasharray="18 422" stroke-dashoffset="-198" transform="rotate(-90 120 100)"/>
+              <text x="120" y="95" text-anchor="middle" font-size="16" font-weight="700" fill="#333">486</text>
+              <text x="120" y="112" text-anchor="middle" font-size="9" fill="#999">총 활동</text>
+              <rect x="210" y="40" width="8" height="8" rx="2" fill="#1967d2"/><text x="224" y="48" font-size="10" fill="#666">데이터 30%</text>
+              <rect x="210" y="60" width="8" height="8" rx="2" fill="#4caf50"/><text x="224" y="68" font-size="10" fill="#666">수집 20%</text>
+              <rect x="210" y="80" width="8" height="8" rx="2" fill="#ff9800"/><text x="224" y="88" font-size="10" fill="#666">유통 12.5%</text>
+              <rect x="210" y="100" width="8" height="8" rx="2" fill="#7b1fa2"/><text x="224" y="108" font-size="10" fill="#666">접속 7.5%</text>
+              <rect x="210" y="120" width="8" height="8" rx="2" fill="#f44336"/><text x="224" y="128" font-size="10" fill="#666">권한 4%</text>
+              <rect x="210" y="140" width="8" height="8" rx="2" fill="#e0e0e0"/><text x="224" y="148" font-size="10" fill="#666">기타 26%</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4: 엔티티별 변경이력 + 보안 이벤트 타임라인 -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+        <div class="card">
+          <div class="card-head">🌳 엔티티별 변경이력 (금일 주요)</div>
+          <div class="card-body">
+            <div style="font-size:12px;">
+              <div style="margin-bottom:14px;">
+                <div style="font-weight:600; color:#1967d2; margin-bottom:6px;">📦 TB_WATER_LEVEL <span style="background:#e8f0fe;color:#1967d2;padding:1px 6px;border-radius:4px;font-size:10px;margin-left:4px;">8건 변경</span></div>
+                <div style="margin-left:20px; border-left:2px solid #e0e0e0; padding-left:12px;">
+                  <div style="margin-bottom:4px;"><span style="color:#999;font-size:11px;">11:42</span> 설명필드 업데이트 — <span style="color:#666;">박수원</span></div>
+                  <div style="margin-bottom:4px;"><span style="color:#999;font-size:11px;">10:15</span> 컬럼 3개 추가 (WARN_LV, ALT_LV, CHK_DT) — <span style="color:#666;">김데이터</span></div>
+                  <div><span style="color:#999;font-size:11px;">09:30</span> 인덱스 재구성 — <span style="color:#666;">admin</span></div>
+                </div>
+              </div>
+              <div style="margin-bottom:14px;">
+                <div style="font-weight:600; color:#ff9800; margin-bottom:6px;">📦 TB_SAP_FI_DOC <span style="background:#fff3e0;color:#ef6c00;padding:1px 6px;border-radius:4px;font-size:10px;margin-left:4px;">5건 변경</span></div>
+                <div style="margin-left:20px; border-left:2px solid #e0e0e0; padding-left:12px;">
+                  <div style="margin-bottom:4px;"><span style="color:#999;font-size:11px;">06:15</span> DQ 규칙 적용 (NULL 검사) — <span style="color:#666;">이분석</span></div>
+                  <div><span style="color:#999;font-size:11px;">06:00</span> 배치 수집 스케줄 변경 — <span style="color:#666;">system</span></div>
+                </div>
+              </div>
+              <div>
+                <div style="font-weight:600; color:#4caf50; margin-bottom:6px;">📦 TB_METER_READ <span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:4px;font-size:10px;margin-left:4px;">3건 변경</span></div>
+                <div style="margin-left:20px; border-left:2px solid #e0e0e0; padding-left:12px;">
+                  <div style="margin-bottom:4px;"><span style="color:#999;font-size:11px;">11:40</span> 이상치 탐지 규칙 업데이트 — <span style="color:#666;">박수원</span></div>
+                  <div><span style="color:#999;font-size:11px;">09:00</span> CDC 파이프라인 재시작 — <span style="color:#666;">김데이터</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">🛡️ 보안 이벤트 타임라인</div>
+          <div class="card-body">
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div style="display:flex; align-items:flex-start; gap:10px;">
+                <div style="width:8px;height:8px;border-radius:50%;background:#4caf50;margin-top:5px;flex-shrink:0;"></div>
+                <div><div style="font-size:12px;font-weight:600;color:#2e7d32;">정상 — 전체 보안 상태 양호</div><div style="font-size:11px;color:#999;">현재 · 이상행위 0건 · 비정상 접근 0건</div></div>
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:10px;">
+                <div style="width:8px;height:8px;border-radius:50%;background:#4caf50;margin-top:5px;flex-shrink:0;"></div>
+                <div><div style="font-size:12px;font-weight:600;color:#2e7d32;">계정 승인 — 홍신규 계정 활성화</div><div style="font-size:11px;color:#999;">10:30 · admin 승인 · 역할: 수공직원</div></div>
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:10px;">
+                <div style="width:8px;height:8px;border-radius:50%;background:#f44336;margin-top:5px;flex-shrink:0;"></div>
+                <div><div style="font-size:12px;font-weight:600;color:#c62828;">접속 차단 — 비활성 계정 로그인 시도</div><div style="font-size:11px;color:#999;">10:45 · 정탈퇴(10.x.x.99) · 자동차단</div></div>
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:10px;">
+                <div style="width:8px;height:8px;border-radius:50%;background:#ff9800;margin-top:5px;flex-shrink:0;"></div>
+                <div><div style="font-size:12px;font-weight:600;color:#e65100;">권한 변경 — 이분석 역할 승격</div><div style="font-size:11px;color:#999;">어제 16:20 · 수공직원→데이터엔지니어 · admin 승인</div></div>
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:10px;">
+                <div style="width:8px;height:8px;border-radius:50%;background:#1967d2;margin-top:5px;flex-shrink:0;"></div>
+                <div><div style="font-size:12px;font-weight:600;color:#1967d2;">SSL 인증서 갱신 완료</div><div style="font-size:11px;color:#999;">어제 02:00 · 자동갱신 · 유효기한 2027-02-28</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 5: 일별 접속·API 추이 라인차트 -->
+      <div class="card">
+        <div class="card-head">📈 일별 접속·API 호출 추이 (최근 14일)</div>
+        <div class="card-body">
+          <svg viewBox="0 0 700 200" style="width:100%;">
+            <line x1="40" y1="20" x2="40" y2="170" stroke="#e0e0e0" stroke-width="0.5"/>
+            <line x1="40" y1="170" x2="680" y2="170" stroke="#e0e0e0" stroke-width="0.5"/>
+            <line x1="40" y1="120" x2="680" y2="120" stroke="#f0f0f0" stroke-width="0.5" stroke-dasharray="3"/>
+            <line x1="40" y1="70" x2="680" y2="70" stroke="#f0f0f0" stroke-width="0.5" stroke-dasharray="3"/>
+            <line x1="40" y1="20" x2="680" y2="20" stroke="#f0f0f0" stroke-width="0.5" stroke-dasharray="3"/>
+            <text x="35" y="173" text-anchor="end" font-size="9" fill="#1967d2">0</text>
+            <text x="35" y="123" text-anchor="end" font-size="9" fill="#1967d2">80</text>
+            <text x="35" y="73" text-anchor="end" font-size="9" fill="#1967d2">130</text>
+            <text x="35" y="23" text-anchor="end" font-size="9" fill="#1967d2">180</text>
+            <text x="690" y="173" font-size="9" fill="#4caf50">0K</text>
+            <text x="690" y="123" font-size="9" fill="#4caf50">15K</text>
+            <text x="690" y="73" font-size="9" fill="#4caf50">25K</text>
+            <text x="690" y="23" font-size="9" fill="#4caf50">35K</text>
+            <polyline points="86,68 132,72 178,60 224,75 270,80 316,65 362,58 408,52 454,70 500,62 546,55 592,60 638,56 680,50" fill="none" stroke="#1967d2" stroke-width="2.5"/>
+            <circle cx="86" cy="68" r="3" fill="#1967d2"/><circle cx="132" cy="72" r="3" fill="#1967d2"/><circle cx="178" cy="60" r="3" fill="#1967d2"/>
+            <circle cx="224" cy="75" r="3" fill="#1967d2"/><circle cx="270" cy="80" r="3" fill="#1967d2"/><circle cx="316" cy="65" r="3" fill="#1967d2"/>
+            <circle cx="362" cy="58" r="3" fill="#1967d2"/><circle cx="408" cy="52" r="3" fill="#1967d2"/><circle cx="454" cy="70" r="3" fill="#1967d2"/>
+            <circle cx="500" cy="62" r="3" fill="#1967d2"/><circle cx="546" cy="55" r="3" fill="#1967d2"/><circle cx="592" cy="60" r="3" fill="#1967d2"/>
+            <circle cx="638" cy="56" r="3" fill="#1967d2"/><circle cx="680" cy="50" r="3" fill="#1967d2"/>
+            <polyline points="86,85 132,80 178,70 224,88 270,92 316,75 362,68 408,62 454,78 500,72 546,58 592,65 638,60 680,55" fill="none" stroke="#4caf50" stroke-width="2" stroke-dasharray="6,2"/>
+            <circle cx="86" cy="85" r="2.5" fill="#4caf50"/><circle cx="132" cy="80" r="2.5" fill="#4caf50"/><circle cx="178" cy="70" r="2.5" fill="#4caf50"/>
+            <circle cx="224" cy="88" r="2.5" fill="#4caf50"/><circle cx="270" cy="92" r="2.5" fill="#4caf50"/><circle cx="316" cy="75" r="2.5" fill="#4caf50"/>
+            <circle cx="362" cy="68" r="2.5" fill="#4caf50"/><circle cx="408" cy="62" r="2.5" fill="#4caf50"/><circle cx="454" cy="78" r="2.5" fill="#4caf50"/>
+            <circle cx="500" cy="72" r="2.5" fill="#4caf50"/><circle cx="546" cy="58" r="2.5" fill="#4caf50"/><circle cx="592" cy="65" r="2.5" fill="#4caf50"/>
+            <circle cx="638" cy="60" r="2.5" fill="#4caf50"/><circle cx="680" cy="55" r="2.5" fill="#4caf50"/>
+            <text x="86" y="186" text-anchor="middle" font-size="8" fill="#999">2/15</text>
+            <text x="178" y="186" text-anchor="middle" font-size="8" fill="#999">2/17</text>
+            <text x="270" y="186" text-anchor="middle" font-size="8" fill="#999">2/19</text>
+            <text x="362" y="186" text-anchor="middle" font-size="8" fill="#999">2/21</text>
+            <text x="454" y="186" text-anchor="middle" font-size="8" fill="#999">2/23</text>
+            <text x="546" y="186" text-anchor="middle" font-size="8" fill="#999">2/25</text>
+            <text x="638" y="186" text-anchor="middle" font-size="8" fill="#999">2/27</text>
+            <text x="680" y="186" text-anchor="middle" font-size="8" fill="#4caf50" font-weight="600">오늘</text>
+            <line x1="200" y1="196" x2="215" y2="196" stroke="#1967d2" stroke-width="2.5"/><text x="220" y="199" font-size="9" fill="#666">접속자 수</text>
+            <line x1="300" y1="196" x2="315" y2="196" stroke="#4caf50" stroke-width="2" stroke-dasharray="6,2"/><text x="320" y="199" font-size="9" fill="#666">API 호출량</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+<!-- ========== SYS SCREEN 8: 위젯 템플릿 관리 ========== -->
+<div class="screen" id="screen-sys-widget-template">
+  <div class="breadcrumb"><a href="#" onclick="navigate('home')">개인 대시보드</a> &gt; <strong>위젯 템플릿 관리</strong></div>
+  <div class="page-title">위젯 템플릿 관리</div>
+  <div class="grid-4" style="margin-bottom:20px;">
+    <div class="kpi-card"><div class="kpi-label">전체 위젯</div><div class="kpi-value" style="color:#1967d2;">19개</div></div>
+    <div class="kpi-card"><div class="kpi-label">KPI 위젯</div><div class="kpi-value" style="color:#4caf50;">6개</div></div>
+    <div class="kpi-card"><div class="kpi-label">카드/리스트</div><div class="kpi-value" style="color:#fa8c16;">9개</div></div>
+    <div class="kpi-card"><div class="kpi-label">차트 위젯</div><div class="kpi-value" style="color:#7c3aed;">4개</div></div>
+  </div>
+  <div class="filter-bar">
+    <input type="text" id="wt-search" placeholder="위젯명, 설명 검색" style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+    <select id="wt-cat-filter" style="padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+      <option value="">카테고리 전체</option>
+      <option value="kpi">KPI</option>
+      <option value="card">카드</option>
+      <option value="list">리스트</option>
+      <option value="chart">차트</option>
+    </select>
+    <select id="wt-level-filter" style="padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+      <option value="">데이터등급 전체</option>
+      <option value="public">공개</option>
+      <option value="internal">내부일반</option>
+      <option value="restricted">내부중요</option>
+      <option value="confidential">기밀</option>
+    </select>
+    <button class="btn btn-primary" data-perm="write" onclick="navigate('sys-widget-template-register')">➕ 위젯 추가</button>
+  </div>
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div id="ag-grid-sys-widget-template" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
+<!-- ========== SYS SCREEN 8-1: 위젯 템플릿 등록 ========== -->
+<div class="screen" id="screen-sys-widget-template-register">
+  <div class="breadcrumb"><a href="#" onclick="navigate('home')">개인 대시보드</a> &gt; <a href="#" onclick="navigate('sys-widget-template')">위젯 템플릿 관리</a> &gt; <strong>위젯 등록</strong></div>
+  <div class="page-title">위젯 템플릿 등록</div>
+
+  <div class="card">
+    <div class="card-title">📋 기본 정보</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">위젯 ID <span class="required">*</span></label>
+        <input type="text" class="form-control" placeholder="예: w-new-widget (영문+하이픈)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">위젯명 <span class="required">*</span></label>
+        <input type="text" class="form-control" placeholder="위젯 표시 이름">
+      </div>
+      <div class="form-group">
+        <label class="form-label">아이콘</label>
+        <input type="text" class="form-control" placeholder="이모지 입력 (예: 📊)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">카테고리 <span class="required">*</span></label>
+        <select class="form-control">
+          <option value="">선택</option>
+          <option value="kpi">KPI</option>
+          <option value="card">카드</option>
+          <option value="list">리스트</option>
+          <option value="chart">차트</option>
+        </select>
+      </div>
+      <div class="form-group" style="grid-column: span 2;">
+        <label class="form-label">설명</label>
+        <textarea class="form-control" style="min-height:60px; resize:vertical;" placeholder="위젯에 대한 설명을 입력하세요"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">색상</label>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <input type="color" value="#1677ff" style="width:40px; height:34px; border:1px solid #ddd; border-radius:6px; cursor:pointer;">
+          <input type="text" class="form-control" value="#1677ff" style="flex:1;" placeholder="#HEX">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔐 접근 정책</div>
+    <div class="form-grid">
+      <div class="form-group" style="grid-column: span 2;">
+        <label class="form-label">접근 역할 <span class="required">*</span></label>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:4px;">
+          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+            <input type="checkbox" id="wt-role-all"> <span>전체 (all)</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+            <input type="checkbox"> <span>수공직원 (employee)</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+            <input type="checkbox"> <span>협력직원 (partner)</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+            <input type="checkbox"> <span>엔지니어 (engineer)</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+            <input type="checkbox"> <span>관리자 (admin)</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">데이터등급 <span class="required">*</span></label>
+        <select class="form-control">
+          <option value="">선택</option>
+          <option value="public">공개</option>
+          <option value="internal">내부일반</option>
+          <option value="restricted">내부중요</option>
+          <option value="confidential">기밀</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; justify-content:space-between; margin-top:20px;">
+    <button class="btn btn-outline" onclick="navigate('sys-widget-template')">← 취소</button>
+    <button class="btn btn-primary" data-perm="write" onclick="alert('위젯이 등록되었습니다.'); navigate('sys-widget-template')">등록 완료</button>
+  </div>
+</div>
+
+<!-- ========== SYS SCREEN 8-2: 위젯 템플릿 상세 ========== -->
+<div class="screen" id="screen-sys-widget-template-detail">
+  <div class="breadcrumb"><a href="#" onclick="navigate('home')">개인 대시보드</a> &gt; <a href="#" onclick="navigate('sys-widget-template')">위젯 템플릿 관리</a> &gt; <strong>위젯 상세</strong></div>
+  <div class="page-title" id="widget-detail-title">위젯 상세 정보</div>
+  <div class="card">
+    <div class="card-title">📋 속성 정보</div>
+    <div class="detail-info-grid" id="widget-detail-content">
+      <!-- 동적으로 채워짐 (showWidgetDetail) -->
+    </div>
+  </div>
+  <div style="display:flex; gap:8px; margin-top:16px;">
+    <button class="btn btn-outline" onclick="navigate('sys-widget-template')">← 목록으로</button>
+    <button class="btn btn-outline" id="widget-detail-edit-btn" data-perm="write">수정</button>
+    <button class="btn btn-outline" style="color:#f44336; border-color:#f44336;" id="widget-detail-delete-btn" data-perm="manage">삭제</button>
+  </div>
+</div>
+
+<!-- ========== SYS SCREEN 9: 화면별 권한설정 ========== -->
+<div class="screen" id="screen-sys-perm">
+  <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>화면별 권한설정</strong></div>
+  <div class="page-title">화면별 CRUD 권한 설정</div>
+
+  <!-- KPI Cards -->
+  <div class="grid-4" style="margin-bottom:20px;">
+    <div class="kpi-card">
+      <div class="kpi-label">전체 역할 수</div>
+      <div class="kpi-value" id="perm-kpi-roles" style="color:#1967d2;">-</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">접근 가능 화면</div>
+      <div class="kpi-value" id="perm-kpi-screens" style="color:#4caf50;">-</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">커스텀 설정 수</div>
+      <div class="kpi-value" id="perm-kpi-custom" style="color:#fa8c16;">없음</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">마지막 수정일</div>
+      <div class="kpi-value" id="perm-kpi-lastmod" style="color:#7c3aed; font-size:14px;">-</div>
+    </div>
+  </div>
+
+  <!-- 역할 선택 + 버튼 -->
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <label style="font-weight:600; font-size:14px; white-space:nowrap;">🛡️ 역할 선택</label>
+      <select id="perm-role-select" onchange="initPermGrid()" style="flex:1; min-width:250px; max-width:400px; padding:8px 12px; border:1px solid #d0d0d0; border-radius:6px; font-size:13px; background:#fff;">
+        <option value="">— 역할을 선택하세요 —</option>
+      </select>
+      <div style="display:flex; gap:8px; margin-left:auto;">
+        <button class="btn btn-primary" onclick="savePermChanges()" data-perm="admin">💾 저장</button>
+        <button class="btn btn-outline" onclick="resetPermChanges()" data-perm="admin">↩️ 선택역할 초기화</button>
+        <button class="btn btn-outline" style="color:#f44336; border-color:#f44336;" onclick="resetAllPermChanges()" data-perm="admin">🗑️ 전체 초기화</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 권한 매트릭스 설명 -->
+  <div class="card" style="margin-bottom:16px; padding:12px 16px; background:linear-gradient(135deg, #e3f2fd, #f3e5f5);">
+    <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; font-size:12px;">
+      <span style="font-weight:600; color:#333;">권한 레벨:</span>
+      <span style="display:inline-flex; align-items:center; gap:4px;"><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#f5f5f5; border:1px solid #e0e0e0;"></span> 조회(Read) — 목록/상세 조회만 가능</span>
+      <span style="display:inline-flex; align-items:center; gap:4px;"><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#e3f2fd; border:1px solid #90caf9;"></span> 조회+등록(Write) — 신규 등록까지 가능</span>
+      <span style="display:inline-flex; align-items:center; gap:4px;"><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#fff3e0; border:1px solid #ffcc80;"></span> CRUD(Manage) — 등록+수정+삭제 가능</span>
+      <span style="display:inline-flex; align-items:center; gap:4px;"><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#fce4ec; border:1px solid #ef9a9a;"></span> 전체(Admin) — 승인·관리자 기능 포함</span>
+    </div>
+  </div>
+
+  <!-- AG Grid: 화면별 권한 매트릭스 -->
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-title">📋 화면별 CRUD 권한 매트릭스</div>
+    <div id="ag-grid-sys-perm" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+
+  <!-- 변경 이력 -->
+  <div class="card">
+    <div class="card-title">📝 최근 변경 이력</div>
+    <div id="perm-history-list">
+      <div style="text-align:center; padding:20px; color:#bbb;">변경 이력이 없습니다</div>
+    </div>
+  </div>
+</div>
