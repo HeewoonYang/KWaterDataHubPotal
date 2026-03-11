@@ -1819,6 +1819,7 @@
           <th>API / 연동</th>
           <th>유형</th>
           <th>엔드포인트</th>
+          <th>마스킹 레벨</th>
           <th>상태</th>
           <th>일간호출</th>
           <th>Avg Latency</th>
@@ -1831,6 +1832,7 @@
           <td><strong>유통데이터 REST API</strong></td>
           <td>OpenAPI</td>
           <td style="font-family:monospace; font-size:11px;">/api/v1/*</td>
+          <td><span style="background:#e8f5e9; color:#2e7d32; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:600;">L3 동적마스킹</span></td>
           <td><span class="status-dot green"></span>정상</td>
           <td>12.4K</td>
           <td style="color:#4caf50;">45ms</td>
@@ -1841,6 +1843,7 @@
           <td><strong>실시간 스트리밍 API</strong></td>
           <td>Kafka</td>
           <td style="font-family:monospace; font-size:11px;">kafka://stream.*</td>
+          <td><span style="background:#e8f0fe; color:#1967d2; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:600;">L2 필드마스킹</span></td>
           <td><span class="status-dot green"></span>정상</td>
           <td>892K</td>
           <td style="color:#4caf50;">8ms</td>
@@ -1851,6 +1854,7 @@
           <td><strong>MCP 디지털트윈 연동</strong></td>
           <td>MCP</td>
           <td style="font-family:monospace; font-size:11px;">/mcp/v1/twin</td>
+          <td><span style="background:#f5f5f5; color:#999; padding:1px 6px; border-radius:3px; font-size:10px;">해당없음</span></td>
           <td><span class="status-dot green"></span>정상</td>
           <td>4.8K</td>
           <td>120ms</td>
@@ -1861,6 +1865,7 @@
           <td><strong>데이터융합모델 API</strong></td>
           <td>NGSI-LD</td>
           <td style="font-family:monospace; font-size:11px;">/ngsi-ld/v1/entities</td>
+          <td><span style="background:#fff7e6; color:#d48806; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:600;">L1 미적용</span></td>
           <td><span class="status-dot orange"></span>시범</td>
           <td>256</td>
           <td style="color:#ff9800;">350ms</td>
@@ -1871,6 +1876,7 @@
           <td><strong>수질모니터링 API</strong></td>
           <td>OpenAPI</td>
           <td style="font-family:monospace; font-size:11px;">/api/v1/water-qual</td>
+          <td><span style="background:#e8f5e9; color:#2e7d32; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:600;">L3 동적마스킹</span></td>
           <td><span class="status-dot green"></span>정상</td>
           <td>5.8K</td>
           <td style="color:#4caf50;">38ms</td>
@@ -1881,6 +1887,7 @@
           <td><strong>GIS 공간정보 API</strong></td>
           <td>WFS/WMS</td>
           <td style="font-family:monospace; font-size:11px;">/gis/wfs?service=*</td>
+          <td><span style="background:#e8f0fe; color:#1967d2; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:600;">L2 좌표일반화</span></td>
           <td><span class="status-dot green"></span>정상</td>
           <td>3.2K</td>
           <td>180ms</td>
@@ -1889,6 +1896,113 @@
         </tr>
       </tbody>
     </table>
+    <div style="margin-top:10px; padding:8px 12px; background:#e6f7ff; border-radius:6px; border-left:3px solid #1677ff; font-size:11px;">
+      <strong style="color:#0958d9;">마스킹 레벨:</strong>
+      <span style="color:#555; margin-left:6px;">L1 미적용</span> →
+      <span style="color:#555;">L2 필드 마스킹 (고정)</span> →
+      <span style="color:#555;">L3 동적 마스킹 (호출자 권한별 자동 적용)</span>
+    </div>
+  </div>
+
+  <!-- 외부사용자 API 접근 현황 -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
+    <!-- 외부 API 호출 통계 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">🌐 외부사용자 API 접근 현황</div></div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:12px;">
+          <div style="padding:10px; background:#f0f7ff; border-radius:8px; text-align:center;">
+            <div style="font-size:10px; color:var(--text-secondary);">외부 호출 (금일)</div>
+            <div style="font-size:20px; font-weight:700; color:#1677ff;">4,820</div>
+            <div style="font-size:10px; color:#52c41a;">▲ 8.5%</div>
+          </div>
+          <div style="padding:10px; background:#f6ffed; border-radius:8px; text-align:center;">
+            <div style="font-size:10px; color:var(--text-secondary);">인증 성공률</div>
+            <div style="font-size:20px; font-weight:700; color:#52c41a;">99.2%</div>
+            <div style="font-size:10px; color:var(--text-secondary);">실패 38건</div>
+          </div>
+          <div style="padding:10px; background:#fff7e6; border-radius:8px; text-align:center;">
+            <div style="font-size:10px; color:var(--text-secondary);">외부 사용자</div>
+            <div style="font-size:20px; font-weight:700; color:#fa8c16;">12</div>
+            <div style="font-size:10px; color:var(--text-secondary);">기관/업체</div>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:12px;">
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; background:var(--bg-secondary); border-radius:6px;">
+            <span style="min-width:120px; font-weight:600;">환경부</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:35%; height:100%; background:#1677ff; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:11px; min-width:60px; text-align:right;">1,687건</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; background:var(--bg-secondary); border-radius:6px;">
+            <span style="min-width:120px; font-weight:600;">기상청</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:28%; height:100%; background:#52c41a; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:11px; min-width:60px; text-align:right;">1,350건</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; background:var(--bg-secondary); border-radius:6px;">
+            <span style="min-width:120px; font-weight:600;">지자체 (광역)</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:18%; height:100%; background:#722ed1; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:11px; min-width:60px; text-align:right;">868건</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; background:var(--bg-secondary); border-radius:6px;">
+            <span style="min-width:120px; font-weight:600;">연구기관</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:12%; height:100%; background:#fa8c16; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:11px; min-width:60px; text-align:right;">542건</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; background:var(--bg-secondary); border-radius:6px;">
+            <span style="min-width:120px; font-weight:600;">기타 외부</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:8%; height:100%; background:#13c2c2; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:11px; min-width:60px; text-align:right;">373건</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- API 게이트웨이 인증 모니터링 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">🔐 API 게이트웨이 인증·트래픽</div></div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#fff1f0; border-radius:6px; border-left:3px solid #ff4d4f;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:70px;">11:42:30</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#ff4d4f; margin-bottom:2px;">인증 실패 (Rate Limit)</div>
+              <div style="font-size:11px; color:var(--text-secondary);">외부IP 203.xxx.xx.12 — API Key 만료, 연속 5회 실패</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#f6ffed; border-radius:6px; border-left:3px solid #52c41a;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:70px;">11:30:15</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#52c41a; margin-bottom:2px;">환경부 API Key 갱신 완료</div>
+              <div style="font-size:11px; color:var(--text-secondary);">새 키 발급 완료 (만료일: 2026-06-30)</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#f0f7ff; border-radius:6px; border-left:3px solid #1677ff;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:70px;">10:15:00</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#1677ff; margin-bottom:2px;">트래픽 피크 감지</div>
+              <div style="font-size:11px; color:var(--text-secondary);">기상청 API 호출 급증 (평시 대비 2.3배) — 정상 처리</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#fff7e6; border-radius:6px; border-left:3px solid #fa8c16;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:70px;">09:00:00</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#fa8c16; margin-bottom:2px;">Rate Limit 임계치 경고</div>
+              <div style="font-size:11px; color:var(--text-secondary);">지자체(광역) — 일일 할당량 80% 도달 (6,800/8,500)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2709,118 +2823,276 @@
 <!-- ========== DIST SCREEN 7-1: 시각화 차트 등록 ========== -->
 <div class="screen" id="screen-dist-chart-content-register">
   <div class="breadcrumb"><a href="#" onclick="navigate('home')">개인 대시보드</a> &gt; <a href="#" onclick="navigate('dist-chart-content')">차트 콘텐츠 관리</a> &gt; <strong>차트 등록</strong></div>
-  <div class="page-title">시각화 차트 콘텐츠 등록</div>
+  <div class="page-title" style="margin-bottom:12px;">시각화 차트 콘텐츠 등록</div>
 
-  <div class="card">
-    <div class="card-title">📋 기본 정보</div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">차트 ID <span class="required">*</span></label>
-        <input type="text" class="form-control" placeholder="예: g-new-chart (영문+하이픈)">
-      </div>
-      <div class="form-group">
-        <label class="form-label">차트명 <span class="required">*</span></label>
-        <input type="text" class="form-control" placeholder="차트 표시 이름">
-      </div>
-      <div class="form-group">
-        <label class="form-label">아이콘</label>
-        <input type="text" class="form-control" placeholder="이모지 입력 (예: 🌊)">
-      </div>
-      <div class="form-group">
-        <label class="form-label">도메인 <span class="required">*</span></label>
-        <select class="form-control">
-          <option value="">선택</option>
-          <option value="water">수질·수량</option>
-          <option value="dam">댐·저수지</option>
-          <option value="supply">광역상수도</option>
-          <option value="energy">에너지·발전</option>
-          <option value="env">환경·기상</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">차트 유형 <span class="required">*</span></label>
-        <select class="form-control">
-          <option value="">선택</option>
-          <option value="line">라인</option>
-          <option value="bar">바</option>
-          <option value="area">영역</option>
-          <option value="pie">파이</option>
-          <option value="gauge">게이지</option>
-          <option value="heatmap">히트맵</option>
-          <option value="table">테이블</option>
-          <option value="donut">도넛</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">작성자</label>
-        <input type="text" class="form-control" placeholder="작성자명">
-      </div>
-      <div class="form-group" style="grid-column: span 2;">
-        <label class="form-label">설명</label>
-        <textarea class="form-control" style="min-height:60px; resize:vertical;" placeholder="차트에 대한 설명을 입력하세요"></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">색상</label>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <input type="color" value="#1677ff" style="width:40px; height:34px; border:1px solid #ddd; border-radius:6px; cursor:pointer;">
-          <input type="text" class="form-control" value="#1677ff" style="flex:1;" placeholder="#HEX">
-        </div>
+  <!-- ══════ 상단: 차트 유형 선택 바 ══════ -->
+  <div class="card" style="padding:12px 16px; margin-bottom:14px;">
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <span style="font-weight:700; font-size:13px; color:var(--text-color); white-space:nowrap;">차트 유형</span>
+      <div class="chart-type-picker" id="chartTypePicker">
+        <button type="button" class="chart-type-btn active" data-type="line" onclick="chartRegSelectType(this)">📈 라인</button>
+        <button type="button" class="chart-type-btn" data-type="bar" onclick="chartRegSelectType(this)">📊 바</button>
+        <button type="button" class="chart-type-btn" data-type="area" onclick="chartRegSelectType(this)">📉 영역</button>
+        <button type="button" class="chart-type-btn" data-type="pie" onclick="chartRegSelectType(this)">🥧 파이</button>
+        <button type="button" class="chart-type-btn" data-type="donut" onclick="chartRegSelectType(this)">🍩 도넛</button>
+        <button type="button" class="chart-type-btn" data-type="gauge" onclick="chartRegSelectType(this)">🎯 게이지</button>
+        <button type="button" class="chart-type-btn" data-type="heatmap" onclick="chartRegSelectType(this)">🟧 히트맵</button>
+        <button type="button" class="chart-type-btn" data-type="scatter" onclick="chartRegSelectType(this)">⚬ 산점도</button>
       </div>
     </div>
   </div>
 
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-title">🔐 접근 정책</div>
-      <div class="form-group" style="margin-bottom:12px;">
-        <label class="form-label">접근 역할 <span class="required">*</span></label>
-        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:4px;">
-          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
-            <input type="checkbox"> <span>전체</span>
-          </label>
-          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
-            <input type="checkbox"> <span>수공직원</span>
-          </label>
-          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
-            <input type="checkbox"> <span>협력직원</span>
-          </label>
-          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
-            <input type="checkbox"> <span>엔지니어</span>
-          </label>
-          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
-            <input type="checkbox"> <span>관리자</span>
-          </label>
+  <!-- ══════ 3-Column 본문: 좌 | 중앙 | 우 ══════ -->
+  <div class="chart-builder-layout">
+
+    <!-- ──── 좌측 패널: 데이터 소스 + 그래프 옵션 ──── -->
+    <div class="chart-builder-left">
+
+      <!-- 데이터 소스 -->
+      <div class="chart-builder-section">
+        <div class="chart-builder-section-title">🗄️ 데이터 소스</div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <label class="form-label">스키마</label>
+          <select class="form-control" id="chartSrcSchema" onchange="chartRegLoadTables()" style="font-size:12px;">
+            <option value="">스키마 선택</option>
+            <option value="DW_WATER">DW_WATER (수질·수량)</option>
+            <option value="DW_DAM">DW_DAM (댐·저수지)</option>
+            <option value="DW_SUPPLY">DW_SUPPLY (광역상수도)</option>
+            <option value="DW_ENERGY">DW_ENERGY (에너지·발전)</option>
+            <option value="DW_ENV">DW_ENV (환경·기상)</option>
+            <option value="DM_ANALYTICS">DM_ANALYTICS (분석마트)</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <label class="form-label">테이블 / 뷰</label>
+          <select class="form-control" id="chartSrcTable" onchange="chartRegLoadColumns()" style="font-size:12px;">
+            <option value="">테이블 선택</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <input type="text" class="form-control" id="chartSrcSearch" placeholder="테이블명 검색..." style="font-size:12px;" oninput="chartRegFilterTables()">
+        </div>
+
+        <!-- 컬럼 선택 -->
+        <div id="chartSrcColumnArea" style="display:none;">
+          <label class="form-label" style="font-weight:600; margin-bottom:4px;">컬럼 선택 <span id="chartSelColCount" style="font-size:11px; color:var(--text-secondary);">(0개)</span></label>
+          <div id="chartSrcColumns" style="border:1px solid var(--border-color); border-radius:6px; padding:6px; max-height:140px; overflow-y:auto; background:var(--card-bg); margin-bottom:8px;"></div>
+          <div id="chartSelectedColumns" style="border:1px solid var(--primary-color); border-radius:6px; padding:6px; min-height:32px; max-height:100px; overflow-y:auto; background:rgba(22,119,255,0.03); margin-bottom:8px;">
+            <div style="color:var(--text-secondary); font-size:11px; text-align:center; padding:8px 0;">컬럼을 클릭하여 추가</div>
+          </div>
+          <div class="form-group" style="margin-bottom:6px;">
+            <label class="form-label">WHERE 조건</label>
+            <input type="text" class="form-control" id="chartSrcWhere" placeholder="MEASURE_DATE >= '2025-01-01'" style="font-size:11px;">
+          </div>
+          <div style="display:flex; gap:6px; margin-bottom:8px;">
+            <div style="flex:1;">
+              <label class="form-label">정렬</label>
+              <select class="form-control" id="chartSrcOrderBy" style="font-size:11px;"><option value="">없음</option></select>
+            </div>
+            <div style="width:60px;">
+              <label class="form-label">방향</label>
+              <select class="form-control" id="chartSrcOrderDir" style="font-size:11px;">
+                <option value="ASC">ASC</option><option value="DESC">DESC</option>
+              </select>
+            </div>
+            <div style="width:70px;">
+              <label class="form-label">LIMIT</label>
+              <input type="number" class="form-control" id="chartSrcLimit" value="1000" min="1" max="50000" style="font-size:11px;">
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="chartRegExecuteQuery()" style="width:100%;">조회 실행</button>
+        <div id="chartSrcRowCount" style="font-size:11px; color:var(--text-secondary); margin-top:4px; text-align:center;"></div>
+      </div>
+
+      <!-- 축 매핑 -->
+      <div class="chart-builder-section">
+        <div class="chart-builder-section-title">📐 축 매핑</div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <label class="form-label">X축 (카테고리/시간) <span class="required">*</span></label>
+          <select class="form-control" id="chartRegXAxis" onchange="chartRegUpdatePreview()" style="font-size:12px;">
+            <option value="">컬럼 선택</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <label class="form-label">Y축 (측정값) <span class="required">*</span></label>
+          <select class="form-control" id="chartRegYAxis" onchange="chartRegUpdatePreview()" multiple style="min-height:56px; font-size:12px;"></select>
+          <div style="font-size:10px; color:var(--text-secondary); margin-top:1px;">Ctrl+Click 복수 선택</div>
+        </div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <label class="form-label">그룹핑 (시리즈 분리)</label>
+          <select class="form-control" id="chartRegGroupBy" onchange="chartRegUpdatePreview()" style="font-size:12px;">
+            <option value="">없음</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">집계 함수</label>
+          <select class="form-control" id="chartRegAggFunc" onchange="chartRegUpdatePreview()" style="font-size:12px;">
+            <option value="none">원본 그대로</option>
+            <option value="sum">합계 (SUM)</option>
+            <option value="avg">평균 (AVG)</option>
+            <option value="max">최대 (MAX)</option>
+            <option value="min">최소 (MIN)</option>
+            <option value="count">건수 (COUNT)</option>
+          </select>
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">데이터등급 <span class="required">*</span></label>
-        <select class="form-control">
-          <option value="">선택</option>
-          <option value="public">공개</option>
-          <option value="internal">내부일반</option>
-          <option value="restricted">내부중요</option>
-          <option value="confidential">기밀</option>
-        </select>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">📊 표시 옵션</div>
-      <div class="form-group" style="margin-bottom:12px;">
-        <label style="display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer;">
-          <input type="checkbox"> <span>추천 차트로 표시 (recommend)</span>
-        </label>
-      </div>
-      <div class="form-group">
-        <label style="display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer;">
-          <input type="checkbox"> <span>인기 차트로 표시 (popular)</span>
-        </label>
-      </div>
-    </div>
-  </div>
 
-  <div style="display:flex; justify-content:space-between; margin-top:20px;">
+      <!-- 시각화 옵션 -->
+      <div class="chart-builder-section">
+        <div class="chart-builder-section-title">🎨 시각화 옵션</div>
+        <div style="display:flex; gap:6px; margin-bottom:8px;">
+          <div style="flex:1;">
+            <label class="form-label">색상</label>
+            <div style="display:flex; align-items:center; gap:4px;">
+              <input type="color" id="chartRegColor" value="#1677ff" style="width:28px; height:26px; border:1px solid #ddd; border-radius:4px; cursor:pointer;" onchange="chartRegUpdatePreview()">
+              <input type="text" class="form-control" id="chartRegColorHex" value="#1677ff" style="flex:1; font-size:11px;" oninput="document.getElementById('chartRegColor').value=this.value; chartRegUpdatePreview()">
+            </div>
+          </div>
+          <div style="flex:1;">
+            <label class="form-label">팔레트</label>
+            <select class="form-control" id="chartRegPalette" onchange="chartRegUpdatePreview()" style="font-size:11px;">
+              <option value="default">기본 Blue</option>
+              <option value="warm">Warm</option>
+              <option value="cool">Cool</option>
+              <option value="earth">Earth</option>
+              <option value="vivid">Vivid</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px; margin-bottom:8px;">
+          <label class="chart-opt-toggle"><input type="checkbox" id="chartRegShowLegend" checked onchange="chartRegUpdatePreview()"> 범례</label>
+          <label class="chart-opt-toggle"><input type="checkbox" id="chartRegShowGrid" checked onchange="chartRegUpdatePreview()"> 그리드 라인</label>
+          <label class="chart-opt-toggle"><input type="checkbox" id="chartRegShowTooltip" checked onchange="chartRegUpdatePreview()"> 툴팁</label>
+          <label class="chart-opt-toggle"><input type="checkbox" id="chartRegShowDataLabel" onchange="chartRegUpdatePreview()"> 데이터 라벨</label>
+          <label class="chart-opt-toggle"><input type="checkbox" id="chartRegSmooth" onchange="chartRegUpdatePreview()"> 곡선 처리</label>
+          <label class="chart-opt-toggle"><input type="checkbox" id="chartRegStacked" onchange="chartRegUpdatePreview()"> 스택(누적)</label>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">Y축 최소</label>
+            <input type="number" class="form-control" id="chartRegYMin" placeholder="auto" style="font-size:11px;" onchange="chartRegUpdatePreview()">
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">Y축 최대</label>
+            <input type="number" class="form-control" id="chartRegYMax" placeholder="auto" style="font-size:11px;" onchange="chartRegUpdatePreview()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── 중앙 패널: 차트 미리보기 ──── -->
+    <div class="chart-builder-center">
+      <div class="chart-builder-section" style="flex:1; display:flex; flex-direction:column;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div class="chart-builder-section-title" style="margin-bottom:0;">📊 차트 미리보기</div>
+          <button class="btn btn-outline btn-sm" onclick="chartRegUpdatePreview()" style="font-size:11px; padding:3px 10px;">🔄 새로고침</button>
+        </div>
+        <div id="chartRegPreview" style="flex:1; min-height:340px; display:flex; align-items:center; justify-content:center; border:1px dashed var(--border-color); border-radius:8px; background:var(--card-bg);">
+          <div style="text-align:center; color:var(--text-secondary);">
+            <div style="font-size:48px; margin-bottom:8px; opacity:.5;">📊</div>
+            <div style="font-size:13px;">데이터를 조회하고 축을 설정하면<br>차트가 표시됩니다</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 데이터 미리보기 테이블 (접을 수 있는 영역) -->
+      <div id="chartSrcPreviewCard" style="display:none;">
+        <div class="chart-builder-section" style="margin-top:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <div class="chart-builder-section-title" style="margin-bottom:0;">📋 데이터 미리보기</div>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('chartSrcGridWrap').style.display = document.getElementById('chartSrcGridWrap').style.display==='none'?'':'none'" style="font-size:10px; padding:2px 8px;">접기/펼치기</button>
+          </div>
+          <div id="chartSrcGridWrap">
+            <div id="ag-grid-chart-src-preview" class="ag-theme-alpine" style="width:100%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── 우측 패널: 기본 정보 + 접근 정책 ──── -->
+    <div class="chart-builder-right">
+
+      <!-- 기본 정보 -->
+      <div class="chart-builder-section">
+        <div class="chart-builder-section-title">📋 기본 정보</div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <label class="form-label">차트 ID <span class="required">*</span></label>
+          <input type="text" class="form-control" id="chartRegId" placeholder="g-new-chart" style="font-size:12px;">
+        </div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <label class="form-label">차트명 <span class="required">*</span></label>
+          <input type="text" class="form-control" id="chartRegName" placeholder="차트 표시 이름" style="font-size:12px;" oninput="chartRegUpdatePreview()">
+        </div>
+        <div style="display:flex; gap:6px; margin-bottom:8px;">
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">아이콘</label>
+            <input type="text" class="form-control" id="chartRegIcon" placeholder="🌊" style="font-size:12px;">
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">작성자</label>
+            <input type="text" class="form-control" id="chartRegAuthor" placeholder="작성자명" style="font-size:12px;">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">설명</label>
+          <textarea class="form-control" id="chartRegDesc" style="min-height:44px; resize:vertical; font-size:12px;" placeholder="차트 설명"></textarea>
+        </div>
+      </div>
+
+      <!-- 도메인 및 접근 정책 -->
+      <div class="chart-builder-section">
+        <div class="chart-builder-section-title">🔐 접근 정책</div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <label class="form-label">도메인 <span class="required">*</span></label>
+          <select class="form-control" id="chartRegDomain" style="font-size:12px;">
+            <option value="">선택</option>
+            <option value="water">수질·수량</option>
+            <option value="dam">댐·저수지</option>
+            <option value="supply">광역상수도</option>
+            <option value="energy">에너지·발전</option>
+            <option value="env">환경·기상</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <label class="form-label">접근 역할 <span class="required">*</span></label>
+          <div style="display:flex; flex-direction:column; gap:3px; margin-top:2px;">
+            <label class="chart-opt-toggle"><input type="checkbox"> 전체</label>
+            <label class="chart-opt-toggle"><input type="checkbox"> 수공직원</label>
+            <label class="chart-opt-toggle"><input type="checkbox"> 협력직원</label>
+            <label class="chart-opt-toggle"><input type="checkbox"> 엔지니어</label>
+            <label class="chart-opt-toggle"><input type="checkbox"> 관리자</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">데이터등급 <span class="required">*</span></label>
+          <select class="form-control" id="chartRegGrade" style="font-size:12px;">
+            <option value="">선택</option>
+            <option value="public">공개</option>
+            <option value="internal">내부일반</option>
+            <option value="restricted">내부중요</option>
+            <option value="confidential">기밀</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 표시 옵션 -->
+      <div class="chart-builder-section">
+        <div class="chart-builder-section-title">⭐ 표시 옵션</div>
+        <label class="chart-opt-toggle"><input type="checkbox" id="chartRegRecommend"> 추천 차트</label>
+        <label class="chart-opt-toggle"><input type="checkbox" id="chartRegPopular"> 인기 차트</label>
+      </div>
+    </div>
+
+  </div><!-- /chart-builder-layout -->
+
+  <!-- ══════ 하단 액션 바 ══════ -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:14px; border-top:1px solid var(--border-color);">
     <button class="btn btn-outline" onclick="navigate('dist-chart-content')">← 취소</button>
-    <button class="btn btn-primary" data-perm="write" onclick="alert('차트가 등록되었습니다.'); navigate('dist-chart-content')">등록 완료</button>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-outline" onclick="chartRegUpdatePreview()">미리보기 갱신</button>
+      <button class="btn btn-primary" data-perm="write" onclick="chartRegSubmit()">등록 완료</button>
+    </div>
   </div>
 </div>
 

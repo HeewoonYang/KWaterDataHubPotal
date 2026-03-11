@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/styles/ag-theme-alpine.min.css">
   <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/dist/ag-grid-community.min.js"></script>
   <!-- Custom CSS (gradually replaced) -->
-  <link rel="stylesheet" href="css/style.css?v=20260303a">
+  <link rel="stylesheet" href="css/style.css?v=20260306a">
 </head>
 
 <body>
@@ -162,6 +162,120 @@
         <span>© 2026 K-water 한국수자원공사</span>
         <span class="mx-1">|</span>
         <span>데이터허브 포털 v2.0</span>
+      </div>
+      <div class="text-center mt-3">
+        <a href="#" onclick="showExtRegisterForm(); return false;" class="text-xs text-primary hover:underline" style="color:var(--primary-color);">외부 사용자 사용신청 →</a>
+      </div>
+    </div>
+
+    <!-- 외부 사용자 사용신청 폼 -->
+    <div class="card bg-base-100 shadow-2xl w-[520px] max-w-[95vw] p-8 rounded-2xl" id="extRegisterForm" style="display:none;">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-lg font-bold" style="color:var(--text-color);">외부 사용자 사용신청</h2>
+          <p class="text-xs" style="color:var(--text-secondary);">K-water 데이터허브 포털 이용을 위한 신청서입니다</p>
+        </div>
+        <button onclick="hideExtRegisterForm()" class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:16px; line-height:1;">&times;</button>
+      </div>
+
+      <div style="max-height:60vh; overflow-y:auto; padding-right:4px;">
+        <!-- 기본정보 -->
+        <div style="font-size:12px; font-weight:700; color:var(--primary-color); margin-bottom:6px; border-bottom:1px solid var(--border-color); padding-bottom:4px;">기본정보</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend text-xs font-semibold">성명 <span style="color:#f5222d;">*</span></legend>
+            <input type="text" id="ext-name" class="input input-bordered w-full text-sm" placeholder="홍길동">
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend text-xs font-semibold">소속기관 <span style="color:#f5222d;">*</span></legend>
+            <input type="text" id="ext-org" class="input input-bordered w-full text-sm" placeholder="OO연구원">
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend text-xs font-semibold">부서/팀 <span style="color:#f5222d;">*</span></legend>
+            <input type="text" id="ext-dept" class="input input-bordered w-full text-sm" placeholder="데이터분석팀">
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend text-xs font-semibold">직위/직급</legend>
+            <input type="text" id="ext-position" class="input input-bordered w-full text-sm" placeholder="연구원">
+          </fieldset>
+        </div>
+
+        <!-- 연락처 -->
+        <div style="font-size:12px; font-weight:700; color:var(--primary-color); margin-bottom:6px; border-bottom:1px solid var(--border-color); padding-bottom:4px;">연락처</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend text-xs font-semibold">이메일 <span style="color:#f5222d;">*</span></legend>
+            <input type="email" id="ext-email" class="input input-bordered w-full text-sm" placeholder="user@example.com">
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend text-xs font-semibold">휴대폰번호 <span style="color:#f5222d;">*</span></legend>
+            <input type="tel" id="ext-phone" class="input input-bordered w-full text-sm" placeholder="010-1234-5678">
+          </fieldset>
+        </div>
+
+        <!-- 신청정보 -->
+        <div style="font-size:12px; font-weight:700; color:var(--primary-color); margin-bottom:6px; border-bottom:1px solid var(--border-color); padding-bottom:4px;">신청정보</div>
+        <fieldset class="fieldset mb-2">
+          <legend class="fieldset-legend text-xs font-semibold">사용목적 <span style="color:#f5222d;">*</span></legend>
+          <select id="ext-purpose" class="select select-bordered w-full text-sm">
+            <option value="">선택하세요</option>
+            <option value="데이터 조회">데이터 조회</option>
+            <option value="API 연동">API 연동</option>
+            <option value="공동 연구">공동 연구</option>
+            <option value="기타">기타</option>
+          </select>
+        </fieldset>
+        <fieldset class="fieldset mb-2">
+          <legend class="fieldset-legend text-xs font-semibold">상세 사용목적 <span style="color:#f5222d;">*</span></legend>
+          <textarea id="ext-purpose-detail" class="textarea textarea-bordered w-full text-sm" rows="2" placeholder="데이터 활용 목적을 구체적으로 입력하세요" style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:6px; font-size:13px; resize:vertical;"></textarea>
+        </fieldset>
+        <fieldset class="fieldset mb-2">
+          <legend class="fieldset-legend text-xs font-semibold">희망 접근 데이터</legend>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; padding:4px 0;">
+            <label style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer;"><input type="checkbox" value="수문" style="accent-color:var(--primary-color);"> 수문</label>
+            <label style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer;"><input type="checkbox" value="수질" style="accent-color:var(--primary-color);"> 수질</label>
+            <label style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer;"><input type="checkbox" value="댐" style="accent-color:var(--primary-color);"> 댐</label>
+            <label style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer;"><input type="checkbox" value="수도" style="accent-color:var(--primary-color);"> 수도</label>
+            <label style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer;"><input type="checkbox" value="기상" style="accent-color:var(--primary-color);"> 기상</label>
+            <label style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer;"><input type="checkbox" value="에너지" style="accent-color:var(--primary-color);"> 에너지</label>
+          </div>
+        </fieldset>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend text-xs font-semibold">사용 시작일</legend>
+            <input type="date" id="ext-start-date" class="input input-bordered w-full text-sm">
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend text-xs font-semibold">사용 종료일</legend>
+            <input type="date" id="ext-end-date" class="input input-bordered w-full text-sm">
+          </fieldset>
+        </div>
+
+        <!-- 첨부 -->
+        <div style="font-size:12px; font-weight:700; color:var(--primary-color); margin-bottom:6px; border-bottom:1px solid var(--border-color); padding-bottom:4px;">첨부서류</div>
+        <div style="border:2px dashed var(--border-color); border-radius:8px; padding:16px; text-align:center; margin-bottom:12px; cursor:pointer; transition:border-color 0.2s;" onmouseenter="this.style.borderColor='var(--primary-color)'" onmouseleave="this.style.borderColor='var(--border-color)'">
+          <div style="font-size:24px; margin-bottom:4px;">📎</div>
+          <div style="font-size:12px; color:var(--text-secondary);">사업자등록증 또는 재직증명서를 첨부하세요</div>
+          <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">PDF, JPG, PNG (최대 10MB)</div>
+        </div>
+
+        <!-- 동의 -->
+        <div style="font-size:12px; font-weight:700; color:var(--primary-color); margin-bottom:6px; border-bottom:1px solid var(--border-color); padding-bottom:4px;">약관 동의</div>
+        <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:8px;">
+          <label style="display:flex; align-items:center; gap:6px; font-size:12px; cursor:pointer;">
+            <input type="checkbox" id="ext-agree-privacy" style="accent-color:var(--primary-color);">
+            <span>[필수] 개인정보 수집·이용에 동의합니다</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:12px; cursor:pointer;">
+            <input type="checkbox" id="ext-agree-terms" style="accent-color:var(--primary-color);">
+            <span>[필수] 데이터 활용 약관에 동의합니다</span>
+          </label>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <button class="btn btn-outline" style="flex:1;" onclick="hideExtRegisterForm()">취소</button>
+        <button class="btn btn-primary" style="flex:1;" onclick="submitExtRegister()">신청서 제출</button>
       </div>
     </div>
   </div>
@@ -316,6 +430,10 @@
           <span class="icon">🏢</span> 자산DB 모니터링
           <span class="menu-badge blue">6</span>
         </div>
+        <div class="menu-item" data-screen="digital-twin" onclick="navigate('digital-twin')">
+          <span class="icon">🔗</span> 디지털 트윈 연계
+          <span class="menu-badge red">1</span>
+        </div>
       </div>
       <!-- 카탈로그·탐색 -->
       <div class="section-title" data-accordion="acc-catalog" onclick="toggleAccordion(this)">카탈로그·탐색 <span
@@ -396,6 +514,26 @@
         <div class="menu-item" data-screen="meta-glossary" onclick="navigate('meta-glossary')">
           <span class="icon">📖</span> 표준용어·코드관리
         </div>
+        <!-- 표준사전 관리 (메타데이터 시스템 연동) -->
+        <div class="sub-label" style="padding: 6px 18px 2px; font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">표준사전</div>
+        <div class="menu-item" data-screen="meta-std-dashboard" onclick="navigate('meta-std-dashboard')">
+          <span class="icon">📊</span> 표준사전 대시보드
+        </div>
+        <div class="menu-item" data-screen="meta-std-words" onclick="navigate('meta-std-words')">
+          <span class="icon">📝</span> 단어사전
+        </div>
+        <div class="menu-item" data-screen="meta-std-domains" onclick="navigate('meta-std-domains')">
+          <span class="icon">🔗</span> 도메인사전
+        </div>
+        <div class="menu-item" data-screen="meta-std-terms" onclick="navigate('meta-std-terms')">
+          <span class="icon">📋</span> 용어사전
+        </div>
+        <div class="menu-item" data-screen="meta-std-codes" onclick="navigate('meta-std-codes')">
+          <span class="icon">🔢</span> 코드사전
+        </div>
+        <div class="menu-item" data-screen="meta-std-import" onclick="navigate('meta-std-import')">
+          <span class="icon">📥</span> 임포트/엑스포트
+        </div>
         <div class="menu-item" data-screen="meta-tag" onclick="navigate('meta-tag')">
           <span class="icon">🏷️</span> 분류체계·태그관리
         </div>
@@ -433,6 +571,9 @@
         <div class="menu-item" data-screen="sys-user" onclick="navigate('sys-user')">
           <span class="icon">👥</span> 조직 및 사용자관리
         </div>
+        <div class="menu-item" data-screen="sys-erp-sync" onclick="navigate('sys-erp-sync')">
+          <span class="icon">🔄</span> ERP 인사정보 동기화
+        </div>
         <div class="menu-item" data-screen="sys-role" onclick="navigate('sys-role')">
           <span class="icon">🛡️</span> 권한 및 역할관리
         </div>
@@ -451,6 +592,15 @@
         <div class="menu-item" data-screen="sys-engine" onclick="navigate('sys-engine')">
           <span class="icon">🖥️</span> 데이터허브 엔진관리
         </div>
+        <div class="menu-item" data-screen="sys-k8s" onclick="navigate('sys-k8s')">
+          <span class="icon">☸️</span> K8S 인프라 모니터링
+        </div>
+        <div class="menu-item" data-screen="llmops" onclick="navigate('llmops')">
+          <span class="icon">🧠</span> LLMOps 관리
+        </div>
+        <div class="menu-item" data-screen="sys-ext-register" onclick="navigate('sys-ext-register')">
+          <span class="icon">📋</span> 외부사용자 신청관리
+        </div>
       </div>
     </div>
 
@@ -461,7 +611,7 @@
 
   </div> <!-- /layout -->
 
-  <script src="js/main.js?v=20260303a"></script>
+  <script src="js/main.js?v=20260306a"></script>
   <script>
     // 페이지 로드 시 모든 섹션 HTML을 순차적으로 로드 (순서 보장)
     (async function () {

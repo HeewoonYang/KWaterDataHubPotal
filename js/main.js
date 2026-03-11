@@ -82,6 +82,7 @@ var RBAC_MATRIX = {
       'col-arch', 'col-monitor',
       'dist-product', 'dist-deidentify', 'dist-approval', 'dist-api', 'dist-external', 'dist-stats',
       'meta-glossary', 'meta-tag', 'meta-model', 'meta-dq',
+      'meta-std-dashboard', 'meta-std-words', 'meta-std-domains', 'meta-std-terms', 'meta-std-codes', 'meta-std-import',
       'comm-notice', 'comm-internal', 'comm-archive'],
     topNav: ['dashboard', 'catalog', 'collect', 'distribute', 'meta', 'community']
   },
@@ -91,6 +92,7 @@ var RBAC_MATRIX = {
       'col-pipeline', 'col-register', 'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-dbt',
       'dist-product', 'dist-deidentify', 'dist-approval', 'dist-api', 'dist-external', 'dist-stats', 'dist-chart-content',
       'meta-glossary', 'meta-tag', 'meta-model', 'meta-dq', 'meta-ontology',
+      'meta-std-dashboard', 'meta-std-words', 'meta-std-domains', 'meta-std-terms', 'meta-std-codes', 'meta-std-import',
       'sys-security',
       'comm-notice', 'comm-internal', 'comm-archive'],
     topNav: ['dashboard', 'catalog', 'collect', 'distribute', 'meta', 'community', 'system']
@@ -110,17 +112,17 @@ var RBAC_MATRIX = {
     topNav: ['dashboard', 'catalog', 'distribute', 'community']
   },
   '데이터엔지니어|파이프라인관리자': {
-    screens: ['home', 'process', 'quality', 'measurement', 'asset-db', 'ai', 'gallery', 'widget-settings', 'sitemap',
+    screens: ['home', 'process', 'quality', 'measurement', 'asset-db', 'digital-twin', 'ai', 'llmops', 'gallery', 'widget-settings', 'sitemap',
       'cat-search', 'cat-detail', 'cat-graph', 'cat-lineage', 'cat-bookmark', 'cat-request',
       'col-pipeline', 'col-register', 'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt',
       'meta-dq',
       'dist-product', 'dist-approval', 'dist-stats',
-      'sys-interface',
+      'sys-interface', 'sys-k8s',
       'comm-notice', 'comm-internal', 'comm-archive'],
     topNav: ['dashboard', 'catalog', 'collect', 'distribute', 'meta', 'community', 'system']
   },
   '데이터엔지니어|ETL운영자': {
-    screens: ['home', 'process', 'quality', 'measurement', 'asset-db', 'ai', 'gallery', 'widget-settings', 'sitemap',
+    screens: ['home', 'process', 'quality', 'measurement', 'asset-db', 'digital-twin', 'ai', 'gallery', 'widget-settings', 'sitemap',
       'cat-search', 'cat-detail', 'cat-graph', 'cat-lineage', 'cat-bookmark', 'cat-request',
       'col-pipeline', 'col-register', 'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt',
       'meta-dq',
@@ -130,29 +132,30 @@ var RBAC_MATRIX = {
     topNav: ['dashboard', 'catalog', 'collect', 'distribute', 'meta', 'community', 'system']
   },
   '데이터엔지니어|DBA': {
-    screens: ['home', 'process', 'quality', 'measurement', 'asset-db', 'ai', 'gallery', 'widget-settings', 'sitemap',
+    screens: ['home', 'process', 'quality', 'measurement', 'asset-db', 'digital-twin', 'ai', 'gallery', 'widget-settings', 'sitemap',
       'cat-search', 'cat-detail', 'cat-graph', 'cat-lineage', 'cat-bookmark', 'cat-request',
       'col-pipeline', 'col-register', 'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt',
       'meta-glossary', 'meta-tag', 'meta-model', 'meta-dq', 'meta-ontology',
+      'meta-std-dashboard', 'meta-std-words', 'meta-std-domains', 'meta-std-terms', 'meta-std-codes', 'meta-std-import',
       'dist-product', 'dist-approval', 'dist-stats',
       'comm-notice', 'comm-internal', 'comm-archive'],
     topNav: ['dashboard', 'catalog', 'collect', 'distribute', 'meta', 'community', 'system']
   },
   '관리자|시스템관리자': {
-    screens: ['home', 'process', 'quality', 'measurement', 'asset-db', 'ai', 'gallery', 'widget-settings', 'sitemap',
+    screens: ['home', 'process', 'quality', 'measurement', 'asset-db', 'digital-twin', 'ai', 'llmops', 'gallery', 'widget-settings', 'sitemap',
       'cat-search', 'cat-detail', 'cat-graph', 'cat-lineage', 'cat-bookmark', 'cat-request',
       'col-pipeline', 'col-register', 'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt',
       'dist-product', 'dist-approval', 'dist-stats', 'dist-chart-content',
-      'sys-user', 'sys-role', 'sys-security', 'sys-interface', 'sys-audit', 'sys-widget-template', 'sys-perm', 'sys-engine',
+      'sys-user', 'sys-role', 'sys-security', 'sys-interface', 'sys-audit', 'sys-widget-template', 'sys-perm', 'sys-engine', 'sys-k8s', 'sys-erp-sync', 'sys-ext-register',
       'comm-notice', 'comm-internal', 'comm-external', 'comm-archive'],
     topNav: ['dashboard', 'catalog', 'collect', 'distribute', 'community', 'system']
   },
   '관리자|보안관리자': {
-    screens: ['home', 'process', 'quality', 'measurement', 'asset-db', 'ai', 'gallery', 'widget-settings', 'sitemap',
+    screens: ['home', 'process', 'quality', 'measurement', 'asset-db', 'digital-twin', 'ai', 'gallery', 'widget-settings', 'sitemap',
       'cat-search', 'cat-detail', 'cat-graph', 'cat-lineage', 'cat-bookmark', 'cat-request',
       'col-arch', 'col-log',
       'dist-deidentify', 'dist-approval', 'dist-stats', 'dist-chart-content',
-      'sys-user', 'sys-role', 'sys-security', 'sys-audit', 'sys-widget-template', 'sys-perm', 'sys-engine',
+      'sys-user', 'sys-role', 'sys-security', 'sys-audit', 'sys-widget-template', 'sys-perm', 'sys-engine', 'sys-k8s', 'sys-erp-sync', 'sys-ext-register',
       'comm-notice', 'comm-archive'],
     topNav: ['dashboard', 'catalog', 'collect', 'distribute', 'community', 'system']
   },
@@ -195,8 +198,8 @@ var RBAC_SCREEN_PERMS = {
   '데이터엔지니어|파이프라인관리자': { _default: 'manage' },
   '데이터엔지니어|ETL운영자':      { _default: 'manage' },
   '데이터엔지니어|DBA':            { _default: 'manage' },
-  '관리자|시스템관리자':           { _default: 'manage', 'sys-user': 'admin', 'sys-role': 'admin', 'sys-security': 'admin', 'sys-perm': 'admin', 'dist-approval': 'read' },
-  '관리자|보안관리자':             { _default: 'manage', 'sys-security': 'admin', 'sys-audit': 'admin', 'dist-approval': 'read', 'dist-stats': 'read' },
+  '관리자|시스템관리자':           { _default: 'manage', 'sys-user': 'admin', 'sys-role': 'admin', 'sys-security': 'admin', 'sys-perm': 'admin', 'sys-erp-sync': 'admin', 'sys-ext-register': 'admin', 'dist-approval': 'read' },
+  '관리자|보안관리자':             { _default: 'manage', 'sys-security': 'admin', 'sys-audit': 'admin', 'sys-ext-register': 'admin', 'dist-approval': 'read', 'dist-stats': 'read' },
   '관리자|슈퍼관리자':             { _default: 'admin' }
 };
 
@@ -212,7 +215,9 @@ var SCREEN_PARENT_MAP = {
   'new-request': 'process',
   'sys-widget-template-register': 'sys-widget-template', 'sys-widget-template-detail': 'sys-widget-template',
   'dist-chart-content-register': 'dist-chart-content', 'dist-chart-content-detail': 'dist-chart-content',
-  'cat-detail': 'cat-search', 'col-register': 'col-pipeline'
+  'cat-detail': 'cat-search', 'col-register': 'col-pipeline',
+  'sys-user-detail': 'sys-user',
+  'sys-ext-register-detail': 'sys-ext-register'
 };
 
 function getScreenPerm(screenId) {
@@ -399,6 +404,21 @@ function doLogout() {
 
 // Navigation (통합: 화면전환 + 사이드바 + TopNav + Drawer + DnD + Lineage)
 function navigate(screen) {
+  // ★ 메타데이터 표준사전 시스템 연동 — Vue 앱으로 리다이렉트
+  if (screen.startsWith('meta-std-')) {
+    var metaRouteMap = {
+      'meta-std-dashboard': '/',
+      'meta-std-words': '/words',
+      'meta-std-domains': '/domain-groups',
+      'meta-std-terms': '/terms',
+      'meta-std-codes': '/code-groups',
+      'meta-std-import': '/import-export'
+    };
+    var metaPath = metaRouteMap[screen] || '/';
+    window.open('http://localhost:5174' + metaPath, '_blank');
+    return;
+  }
+
   // 0) RBAC 화면 접근 검증 — 허용되지 않은 화면 차단
   if (window.currentRoleKey) {
     var perm = RBAC_MATRIX[window.currentRoleKey];
@@ -1336,6 +1356,190 @@ function closeProcessDrawer() {
   var drawer = document.getElementById('process-detail-drawer');
   if (drawer) {
     drawer.style.display = 'none';
+  }
+}
+
+// ── 데이터셋 검색·추가 모달 ──────────────────────────────────────
+var _dsModalSelected = {}; // { id: dataset } 선택 상태
+
+function openDatasetSearchModal() {
+  _dsModalSelected = {};
+  var modal = document.getElementById('dataset-search-modal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  // 필터 초기화
+  var kw = document.getElementById('dsSearchKeyword'); if (kw) kw.value = '';
+  var dom = document.getElementById('dsSearchDomain'); if (dom) dom.value = 'all';
+  var sec = document.getElementById('dsSearchSecurity'); if (sec) sec.value = 'all';
+  var typ = document.getElementById('dsSearchType'); if (typ) typ.value = 'all';
+  searchDatasetsInModal();
+}
+
+function closeDatasetSearchModal() {
+  var modal = document.getElementById('dataset-search-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function searchDatasetsInModal() {
+  var keyword = (document.getElementById('dsSearchKeyword')?.value || '').trim().toLowerCase();
+  var domain = document.getElementById('dsSearchDomain')?.value || 'all';
+  var security = document.getElementById('dsSearchSecurity')?.value || 'all';
+  var dataType = document.getElementById('dsSearchType')?.value || 'all';
+
+  var domainLabels = { water:'수자원', quality:'수질', energy:'에너지', infra:'인프라', customer:'고객', system:'시스템' };
+  var secLabels = { 1:'공개', 2:'내부일반', 3:'내부중요', 4:'기밀' };
+  var secColors = { 1:'#52c41a', 2:'#1677ff', 3:'#fa8c16', 4:'#ff4d4f' };
+  var secIcons = { 1:'🟢', 2:'🔵', 3:'🟠', 4:'🔴' };
+  var domainBadge = { water:'badge-info', quality:'badge-success', energy:'badge-warning', infra:'badge-ghost', customer:'badge-secondary' };
+
+  var results = (typeof CATALOG_DATASETS !== 'undefined' ? CATALOG_DATASETS : []).filter(function(d) {
+    if (domain !== 'all' && d.domain !== domain) return false;
+    if (security !== 'all' && d.securityLevel !== parseInt(security)) return false;
+    if (dataType !== 'all' && d.dataType !== dataType) return false;
+    if (keyword) {
+      var hay = (d.name + ' ' + d.tableName + ' ' + d.desc + ' ' + (d.tags || []).join(' ')).toLowerCase();
+      if (hay.indexOf(keyword) === -1) return false;
+    }
+    return true;
+  });
+
+  var tbody = document.getElementById('dsSearchResultBody');
+  var emptyEl = document.getElementById('dsSearchEmpty');
+  var tableEl = document.getElementById('dsSearchTable');
+  var countEl = document.getElementById('dsSearchCount');
+
+  if (countEl) countEl.textContent = '검색결과 ' + results.length + '건';
+
+  if (results.length === 0) {
+    if (tbody) tbody.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+    if (tableEl) tableEl.style.display = 'none';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+  if (tableEl) tableEl.style.display = '';
+
+  var html = '';
+  results.forEach(function(d) {
+    var checked = _dsModalSelected[d.id] ? ' checked' : '';
+    var rowCount = d.rowCount >= 10000000 ? (d.rowCount / 10000000).toFixed(0) + ',000만건'
+      : d.rowCount >= 10000 ? Math.round(d.rowCount / 10000) + '만건'
+      : d.rowCount.toLocaleString() + '건';
+    html += '<tr style="cursor:pointer;" onclick="toggleDsSelect(\'' + d.id + '\')">'
+      + '<td style="text-align:center;"><input type="checkbox" id="dsCk_' + d.id + '"' + checked
+      + ' onclick="event.stopPropagation(); toggleDsSelect(\'' + d.id + '\')" style="cursor:pointer; width:16px; height:16px;"></td>'
+      + '<td><strong>' + d.name + '</strong>'
+      + '<div style="font-size:10px; color:#8c8c8c;">' + d.tableName + ' | ' + d.system + '</div></td>'
+      + '<td><span class="badge ' + (domainBadge[d.domain] || 'badge-ghost') + '">' + (domainLabels[d.domain] || d.domain) + '</span></td>'
+      + '<td><span style="color:' + (secColors[d.securityLevel] || '#888') + '; font-size:12px;">'
+      + (secIcons[d.securityLevel] || '') + ' ' + (secLabels[d.securityLevel] || '') + '</span></td>'
+      + '<td><span style="font-size:12px; font-weight:600; color:' + (d.quality >= 95 ? '#52c41a' : d.quality >= 90 ? '#1677ff' : '#fa8c16') + ';">'
+      + d.quality + '%</span></td>'
+      + '<td style="font-size:12px;">' + rowCount + '</td>'
+      + '<td style="font-size:11px; color:#888;">' + d.updateCycle + '</td>'
+      + '</tr>';
+  });
+  if (tbody) tbody.innerHTML = html;
+  updateDsSelectedSummary();
+}
+
+function toggleDsSelect(id) {
+  var ds = (typeof CATALOG_DATASETS !== 'undefined' ? CATALOG_DATASETS : []).find(function(d) { return d.id === id; });
+  if (!ds) return;
+  if (_dsModalSelected[id]) {
+    delete _dsModalSelected[id];
+  } else {
+    _dsModalSelected[id] = ds;
+  }
+  var ck = document.getElementById('dsCk_' + id);
+  if (ck) ck.checked = !!_dsModalSelected[id];
+  updateDsSelectedSummary();
+}
+
+function updateDsSelectedSummary() {
+  var keys = Object.keys(_dsModalSelected);
+  var countEl = document.getElementById('dsSelectedCount');
+  var namesEl = document.getElementById('dsSelectedNames');
+  if (countEl) countEl.textContent = keys.length;
+  if (namesEl) {
+    var names = keys.map(function(k) { return _dsModalSelected[k].name; });
+    namesEl.textContent = names.length > 0 ? names.join(', ') : '';
+  }
+}
+
+function addSelectedDatasets() {
+  var keys = Object.keys(_dsModalSelected);
+  if (keys.length === 0) {
+    alert('추가할 데이터셋을 선택해 주세요.');
+    return;
+  }
+  var domainLabels = { water:'수자원', quality:'수질', energy:'에너지', infra:'인프라', customer:'고객' };
+  var secLabels = { 1:'공개', 2:'내부일반', 3:'내부중요', 4:'기밀' };
+  var secColors = { 1:'#52c41a', 2:'#1677ff', 3:'#fa8c16', 4:'#ff4d4f' };
+  var secIcons = { 1:'🟢', 2:'🔵', 3:'🟠', 4:'🔴' };
+
+  // 기존 테이블에 행 추가
+  var tbody = document.querySelector('#screen-new-request .data-table tbody');
+  if (!tbody) { closeDatasetSearchModal(); return; }
+
+  var existingCount = tbody.querySelectorAll('tr').length;
+
+  keys.forEach(function(k, i) {
+    var d = _dsModalSelected[k];
+    // 중복 체크 (테이블명 기준)
+    var dup = false;
+    tbody.querySelectorAll('tr td:nth-child(2) div').forEach(function(div) {
+      if (div.textContent.indexOf(d.tableName) !== -1) dup = true;
+    });
+    if (dup) return;
+
+    var rowCount = d.rowCount >= 10000000 ? (d.rowCount / 10000000).toFixed(0) + ',000만건'
+      : d.rowCount >= 10000 ? Math.round(d.rowCount / 10000) + '만건'
+      : d.rowCount.toLocaleString() + '건';
+    var num = existingCount + i + 1;
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td style="text-align:center;">' + num + '</td>'
+      + '<td><strong>' + d.name + '</strong>'
+      + '<div style="font-size:10px; color:#8c8c8c;">' + d.tableName + ' | ' + d.updateCycle + '</div></td>'
+      + '<td><span class="badge badge-info">' + (domainLabels[d.domain] || d.domain) + '</span></td>'
+      + '<td><span style="color:' + (secColors[d.securityLevel] || '#888') + '; font-size:12px;">'
+      + (secIcons[d.securityLevel] || '') + ' ' + (secLabels[d.securityLevel] || '') + '</span></td>'
+      + '<td style="font-size:12px;">' + rowCount + '</td>'
+      + '<td style="text-align:center;"><button style="background:none; border:none; color:#ff4d4f; cursor:pointer; font-size:14px;" onclick="this.closest(\'tr\').remove(); updateNewRequestSummary();">✕</button></td>';
+    tbody.appendChild(tr);
+  });
+
+  updateNewRequestSummary();
+  closeDatasetSearchModal();
+}
+
+function updateNewRequestSummary() {
+  var tbody = document.querySelector('#screen-new-request .data-table tbody');
+  if (!tbody) return;
+  var rows = tbody.querySelectorAll('tr');
+  var totalCount = 0;
+  rows.forEach(function(row, idx) {
+    // 번호 재정렬
+    var numTd = row.querySelector('td:first-child');
+    if (numTd) numTd.textContent = idx + 1;
+    // 건수 합산 (텍스트에서 숫자 추출)
+    var countTd = row.querySelector('td:nth-child(5)');
+    if (countTd) {
+      var txt = countTd.textContent;
+      var m = txt.match(/([\d,]+)\s*만건/);
+      if (m) totalCount += parseInt(m[1].replace(/,/g, '')) * 10000;
+      else {
+        var m2 = txt.match(/([\d,]+)\s*건/);
+        if (m2) totalCount += parseInt(m2[1].replace(/,/g, ''));
+      }
+    }
+  });
+  // 요약 정보 업데이트
+  var summaryDiv = document.querySelector('#screen-new-request .card-body > div[style*="background:#f6ffed"]');
+  if (summaryDiv) {
+    var countStr = totalCount >= 10000 ? '약 ' + (totalCount / 10000).toLocaleString() + '만건' : totalCount.toLocaleString() + '건';
+    var sizeGB = (totalCount / 2700000).toFixed(1);
+    summaryDiv.innerHTML = '💡 선택된 데이터셋: <strong>' + rows.length + '건</strong> | 총 데이터 건수: <strong>' + countStr + '</strong> | 예상 용량: <strong>~' + sizeGB + 'GB</strong>';
   }
 }
 
@@ -2556,6 +2760,90 @@ function initAllGrids() {
   initDistributeGrids();
   initMetadataGrids();
   initWidgetSettingsGrid();
+  initMonitoringGrids();
+  initExtRegisterGrid();
+}
+
+function initMonitoringGrids() {
+  // 디지털 트윈 연계 상세
+  initAGGrid('ag-grid-digital-twin', [
+    { field: 'dtSystem', headerName: 'DT 시스템', width: 110, cellRenderer: function(p) {
+      var icons = { '정수장':'🏭', '관로':'🔧', '댐':'🏔️', '발전':'⚡', '스마트':'📡' };
+      return '<strong>' + (icons[p.value]||'') + ' ' + p.value + ' DT</strong>';
+    }},
+    { field: 'dataset', headerName: '데이터셋', flex: 1 },
+    { field: 'type', headerName: '연계방식', width: 90, cellRenderer: function(p) {
+      var m = { '실시간': { bg:'#e6f7ff', c:'#1677ff' }, '배치': { bg:'#f6ffed', c:'#52c41a' }, 'CDC': { bg:'#f3e8ff', c:'#722ed1' } };
+      var s = m[p.value] || { bg:'#f5f5f5', c:'#666' };
+      return '<span style="background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:11px;">'+p.value+'</span>';
+    }},
+    { field: 'cycle', headerName: '수신주기', width: 80 },
+    { field: 'lastSync', headerName: '최근 동기화', width: 100 },
+    { field: 'todayCount', headerName: '금일 수신', width: 90, type:'numericColumn', cellRenderer: function(p) { return '<span style="font-weight:600; color:#1677ff;">'+p.value+'</span>'; } },
+    { field: 'status', headerName: '상태', width: 80, cellRenderer: function(p) {
+      var m = { '정상': { bg:'#e8f5e9', c:'#2e7d32', dot:'#52c41a' }, '지연': { bg:'#fff8e1', c:'#d48806', dot:'#faad14' }, '오류': { bg:'#ffebee', c:'#c62828', dot:'#ff4d4f' } };
+      var s = m[p.value] || { bg:'#f5f5f5', c:'#666', dot:'#999' };
+      return '<span style="display:inline-flex;align-items:center;gap:4px;background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:11px;"><span style="width:6px;height:6px;border-radius:50%;background:'+s.dot+';"></span>'+p.value+'</span>';
+    }},
+    { field: 'availability', headerName: '가용률', width: 80, cellRenderer: function(p) {
+      var v = parseFloat(p.value);
+      var c = v >= 99 ? '#52c41a' : v >= 97 ? '#fa8c16' : '#ff4d4f';
+      return '<span style="color:'+c+'; font-weight:600;">'+p.value+'</span>';
+    }}
+  ], [
+    { dtSystem:'정수장', dataset:'수질자동측정 (pH/탁도/잔류염소)', type:'실시간', cycle:'5분', lastSync:'11:45:02', todayCount:'312,540', status:'정상', availability:'99.2%' },
+    { dtSystem:'정수장', dataset:'유량계측 (원수/정수/배수)', type:'실시간', cycle:'5분', lastSync:'11:45:02', todayCount:'285,120', status:'정상', availability:'99.4%' },
+    { dtSystem:'정수장', dataset:'약품투입량 (PAC/NaOH/Cl2)', type:'배치', cycle:'1시간', lastSync:'11:00:00', todayCount:'244,340', status:'정상', availability:'99.1%' },
+    { dtSystem:'관로', dataset:'관망 압력센서 데이터', type:'실시간', cycle:'10분', lastSync:'11:32:18', todayCount:'124,200', status:'지연', availability:'96.8%' },
+    { dtSystem:'관로', dataset:'유량·누수감지 데이터', type:'실시간', cycle:'10분', lastSync:'11:32:18', todayCount:'98,450', status:'지연', availability:'97.2%' },
+    { dtSystem:'관로', dataset:'관로 GIS 속성정보', type:'배치', cycle:'일1회', lastSync:'06:00:00', todayCount:'89,350', status:'정상', availability:'99.5%' },
+    { dtSystem:'댐', dataset:'수위·저수율 실시간 데이터', type:'실시간', cycle:'5분', lastSync:'11:46:30', todayCount:'245,680', status:'정상', availability:'99.8%' },
+    { dtSystem:'댐', dataset:'방류량·유입량 데이터', type:'실시간', cycle:'5분', lastSync:'11:46:30', todayCount:'198,400', status:'정상', availability:'99.7%' },
+    { dtSystem:'댐', dataset:'댐체 계측(변위/침하/양압력)', type:'CDC', cycle:'10분', lastSync:'11:40:15', todayCount:'184,332', status:'정상', availability:'99.9%' },
+    { dtSystem:'발전', dataset:'발전량·출력 실시간', type:'실시간', cycle:'3분', lastSync:'11:47:55', todayCount:'204,500', status:'정상', availability:'99.5%' },
+    { dtSystem:'발전', dataset:'터빈 진동·온도 센서', type:'실시간', cycle:'3분', lastSync:'11:47:55', todayCount:'186,200', status:'정상', availability:'99.3%' },
+    { dtSystem:'발전', dataset:'발전설비 가동이력', type:'배치', cycle:'1시간', lastSync:'11:00:00', todayCount:'133,300', status:'정상', availability:'99.6%' },
+    { dtSystem:'스마트', dataset:'스마트미터링 (광역TM)', type:'실시간', cycle:'1분', lastSync:'11:48:10', todayCount:'284,600', status:'정상', availability:'99.1%' },
+    { dtSystem:'스마트', dataset:'IoT센서 통합 데이터', type:'실시간', cycle:'1분', lastSync:'11:48:10', todayCount:'209,400', status:'정상', availability:'99.0%' }
+  ], {
+    getRowStyle: function(p) {
+      if (p.data.status === '지연') return { background: '#fffbe6' };
+      if (p.data.status === '오류') return { background: '#fff5f5' };
+    }
+  });
+
+  // LLMOps 배포·학습 이력
+  initAGGrid('ag-grid-llmops', [
+    { field: 'date', headerName: '일시', width: 110 },
+    { field: 'model', headerName: '모델', width: 130, cellRenderer: function(p) { return '<strong>'+p.value+'</strong>'; } },
+    { field: 'action', headerName: '작업', width: 100, cellRenderer: function(p) {
+      var m = { '배포': { bg:'#e8f5e9', c:'#2e7d32' }, '학습': { bg:'#e8f0fe', c:'#1967d2' }, '롤백': { bg:'#fff3e0', c:'#ef6c00' }, '테스트': { bg:'#f3e8ff', c:'#722ed1' } };
+      var s = m[p.value] || { bg:'#f5f5f5', c:'#666' };
+      return '<span style="background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:11px;">'+p.value+'</span>';
+    }},
+    { field: 'env', headerName: '환경', width: 90 },
+    { field: 'metrics', headerName: '성능 지표', flex: 1 },
+    { field: 'duration', headerName: '소요시간', width: 90 },
+    { field: 'status', headerName: '상태', width: 80, cellRenderer: function(p) {
+      var m = { '성공': '#52c41a', '실패': '#ff4d4f', '진행중': '#1677ff' };
+      var c = m[p.value] || '#666';
+      return '<span style="color:'+c+'; font-weight:600;">'+p.value+'</span>';
+    }},
+    { field: 'operator', headerName: '담당자', width: 80 }
+  ], [
+    { date:'2026-03-03 09:20', model:'DH-Chat v3.3-rc1', action:'테스트', env:'Staging', metrics:'정확도 94.1% / F1 0.91', duration:'2h 15m', status:'진행중', operator:'이AI' },
+    { date:'2026-02-28 14:00', model:'DH-Chat v3.2', action:'배포', env:'Production', metrics:'정확도 92.4% / F1 0.89', duration:'45m', status:'성공', operator:'이AI' },
+    { date:'2026-02-25 10:00', model:'DH-Predict v1.5', action:'학습', env:'GPU서버', metrics:'RMSE 0.034 / MAE 0.021', duration:'6h 30m', status:'성공', operator:'김분석' },
+    { date:'2026-02-20 16:30', model:'DH-Chat v3.2-rc2', action:'테스트', env:'Staging', metrics:'정확도 91.8% / F1 0.88', duration:'1h 50m', status:'성공', operator:'이AI' },
+    { date:'2026-02-15 09:00', model:'DH-Embed v2.1', action:'배포', env:'Production', metrics:'검색정확도 89.1% / MRR 0.82', duration:'30m', status:'성공', operator:'박검색' },
+    { date:'2026-02-10 11:00', model:'DH-Chat v3.1', action:'롤백', env:'Production', metrics:'정확도 저하 감지 → v3.0 롤백', duration:'15m', status:'성공', operator:'이AI' },
+    { date:'2026-02-08 08:00', model:'DH-Predict v1.4', action:'학습', env:'GPU서버', metrics:'RMSE 0.042 / MAE 0.028', duration:'8h 10m', status:'실패', operator:'김분석' }
+  ], {
+    getRowStyle: function(p) {
+      if (p.data.status === '실패') return { background: '#fff5f5' };
+      if (p.data.status === '진행중') return { background: '#f0f7ff' };
+    }
+  });
 }
 
 function initCommunityGrids() {
@@ -2883,16 +3171,21 @@ function initCollectGrids() {
       }
     },
     { field: 'throughput', headerName: '처리량', width: 84 },
+    { field: 'pii', headerName: 'PII', width: 70, cellRenderer: function (p) {
+        if (!p.value || p.value === '-') return '<span style="color:#ccc; font-size:11px;">—</span>';
+        return '<span style="background:#fff1f0; color:#cf1322; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:600;">🔒 ' + p.value + '</span>';
+      }
+    },
     { field: 'lastRun', headerName: '최근실행', width: 96 },
     { field: 'action', headerName: '관리', width: 70, sortable: false, filter: false, cellRenderer: function () { return '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;">상세</button>'; } }
   ], [
-    { name: 'SAP 재무수집', source: 'SAP HANA', method: '배치(ETL)', schedule: '매일 06:00', status: '정상', throughput: '48.2K/일', lastRun: '06:02:15' },
-    { name: 'RWIS 실시간수위', source: 'RWIS DB (FA)', method: '실시간(CDC)', schedule: '상시', status: '정상', throughput: '12K/분', lastRun: '실시간' },
-    { name: '환경부수질연계', source: '환경부 API', method: 'API 호출', schedule: '매30분', status: '정상', throughput: '2.4K/회', lastRun: '11:30:00' },
-    { name: '스마트미터 검침', source: '계측 DB', method: '실시간(CDC)', schedule: '상시', status: '지연', throughput: '28K/분', lastRun: '11:41:22' },
-    { name: 'Oracle 인사데이터', source: 'Oracle ERP', method: '배치(ETL)', schedule: '매일 02:00', status: '정상', throughput: '8.7K/일', lastRun: '02:05:33' },
-    { name: 'GIS 공간정보 수집', source: 'arcGIS Server', method: '배치(ETL)', schedule: '매주월', status: '정상', throughput: '1.2K/회', lastRun: '월 03:00' },
-    { name: '기상청날씨 API', source: '기상청 API', method: 'API 호출', schedule: '매시간', status: '오류', throughput: '0/회', lastRun: '09:00:00' }
+    { name: 'SAP 재무수집', source: 'SAP HANA', method: '배치(ETL)', schedule: '매일 06:00', status: '정상', throughput: '48.2K/일', pii: '-', lastRun: '06:02:15' },
+    { name: 'RWIS 실시간수위', source: 'RWIS DB (FA)', method: '실시간(CDC)', schedule: '상시', status: '정상', throughput: '12K/분', pii: '-', lastRun: '실시간' },
+    { name: '환경부수질연계', source: '환경부 API', method: 'API 호출', schedule: '매30분', status: '정상', throughput: '2.4K/회', pii: '-', lastRun: '11:30:00' },
+    { name: '스마트미터 검침', source: '계측 DB', method: '실시간(CDC)', schedule: '상시', status: '지연', throughput: '28K/분', pii: '3컬럼', lastRun: '11:41:22' },
+    { name: 'Oracle 인사데이터', source: 'Oracle ERP', method: '배치(ETL)', schedule: '매일 02:00', status: '정상', throughput: '8.7K/일', pii: '4컬럼', lastRun: '02:05:33' },
+    { name: 'GIS 공간정보 수집', source: 'arcGIS Server', method: '배치(ETL)', schedule: '매주월', status: '정상', throughput: '1.2K/회', pii: '-', lastRun: '월 03:00' },
+    { name: '기상청날씨 API', source: '기상청 API', method: 'API 호출', schedule: '매시간', status: '오류', throughput: '0/회', pii: '-', lastRun: '09:00:00' }
   ], {
     getRowStyle: function (p) {
       if (p.data.status === '오류') return { background: '#fff5f5' };
@@ -3138,9 +3431,9 @@ function initCollectGrids() {
       return '<span style="color:' + (m[p.value] || '#666') + '; font-weight:600;">' + p.value + '</span>';
     }},
     { field: 'type', headerName: '유형', width: 80, cellRenderer: function (p) {
-      var m = { 'VM': { bg: '#e3f2fd', c: '#1565c0' }, 'PM': { bg: '#f3e5f5', c: '#7b1fa2' }, 'GM': { bg: '#fff3e0', c: '#e65100' } };
-      var s = m[p.value] || { bg: '#f5f5f5', c: '#666' };
-      return '<span style="background:' + s.bg + ';color:' + s.c + ';padding:2px 10px;border-radius:4px;font-size:11px;font-weight:600;">' + p.value + '</span>';
+      var m = { 'K8S': { bg: '#e3f2fd', c: '#1565c0', bdr: '#2196f3' }, 'VM': { bg: '#e3f2fd', c: '#1565c0', bdr: '' }, 'PM': { bg: '#f3e5f5', c: '#7b1fa2', bdr: '' }, 'GPU': { bg: '#fff3e0', c: '#e65100', bdr: '' } };
+      var s = m[p.value] || { bg: '#f5f5f5', c: '#666', bdr: '' };
+      return '<span style="background:' + s.bg + ';color:' + s.c + ';padding:2px 10px;border-radius:4px;font-size:11px;font-weight:600;' + (s.bdr ? 'border:1px solid ' + s.bdr + ';' : '') + '">' + p.value + '</span>';
     }},
     { field: 'instances', headerName: '인스턴스', width: 102, type: 'numericColumn' },
     { field: 'cpu', headerName: 'CPU', width: 90 },
@@ -3153,24 +3446,26 @@ function initCollectGrids() {
     }},
     { field: 'action', headerName: '관리', width: 80, sortable: false, filter: false, cellRenderer: function () { return '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;" onclick="openArchModal(\'archDetailModal\')">상세</button>'; } }
   ], [
+    { name: 'Portal Server', layer: '서비스/모니터링', type: 'VM', instances: '8대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '정상' },
+    { name: 'Platform Server', layer: '서비스/모니터링', type: 'K8S', instances: '-', cpu: 'Auto', mem: 'Auto', disk: 'PVC', gpu: '-', status: '정상' },
     { name: '모니터링서버', layer: '서비스/모니터링', type: 'VM', instances: '4대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '정상' },
-    { name: 'WAS서버', layer: '서비스/모니터링', type: 'VM', instances: '4대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '정상' },
-    { name: 'WEB서버', layer: '서비스/모니터링', type: 'VM', instances: '4대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '정상' },
-    { name: '분석DB', layer: '분석계', type: 'PM', instances: '4대', cpu: '64 Core', mem: '1TB', disk: '3x30TB NVMe + 3x30TB SSD', gpu: '-', status: '정상' },
-    { name: 'ODSDB', layer: '분석계', type: 'PM', instances: '3대', cpu: '64 Core', mem: '1TB', disk: '3x30TB NVMe + 3x30TB SSD', gpu: '-', status: '정상' },
-    { name: 'LLM서버', layer: '온톨로지/메타데이터', type: 'GM', instances: '1대', cpu: '64 Core', mem: '1TB', disk: '3x30TB NVMe + 3x30TB SSD', gpu: 'B300', status: '정상' },
-    { name: '그래프DB', layer: '온톨로지/메타데이터', type: 'PM', instances: '1대', cpu: '64 Core', mem: '1TB', disk: '3x30TB NVMe + 3x30TB SSD', gpu: '-', status: '정상' },
-    { name: '마인즈DB', layer: '온톨로지/메타데이터', type: 'VM', instances: '4대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '정상' },
-    { name: 'MCP서버', layer: '연계', type: 'VM', instances: '4대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '정상' },
-    { name: 'API서버', layer: '연계', type: 'VM', instances: '4대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '정상' },
-    { name: '수집DB', layer: '수집계', type: 'PM', instances: '3대', cpu: '64 Core', mem: '1TB', disk: '3x30TB NVMe + 3x30TB SSD', gpu: '-', status: '정상' },
-    { name: '수집Agent', layer: '수집계', type: 'VM', instances: '5대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '정상' },
-    { name: 'CDC서버', layer: '수집계', type: 'VM', instances: '4대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '점검' },
+    { name: 'Analysis Server', layer: '분석/AI', type: 'GPU', instances: '1대', cpu: '64 Core', mem: '1TB', disk: '3x30TB NVMe + 3x30TB SSD', gpu: 'B300', status: '정상' },
+    { name: 'Ontology Server', layer: '분석/AI', type: 'K8S', instances: '-', cpu: 'Auto', mem: 'Auto', disk: 'PVC', gpu: '-', status: '정상' },
+    { name: 'Analysis DB', layer: '분석/AI', type: 'PM', instances: '4대', cpu: '64 Core', mem: '1TB', disk: '3x30TB NVMe + 3x30TB SSD', gpu: '-', status: '정상' },
+    { name: 'ODS DB', layer: '분석/AI', type: 'PM', instances: '3대', cpu: '64 Core', mem: '1TB', disk: '3x30TB NVMe + 3x30TB SSD', gpu: '-', status: '정상' },
+    { name: '마인즈DB', layer: '분석/AI', type: 'VM', instances: '4대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '정상' },
+    { name: '그래프DB', layer: '분석/AI', type: 'PM', instances: '1대', cpu: '64 Core', mem: '1TB', disk: '3x30TB NVMe + 3x30TB SSD', gpu: '-', status: '정상' },
+    { name: 'Integration Server', layer: '연계', type: 'VM', instances: '8대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '정상' },
+    { name: 'Agent Server', layer: '수집계', type: 'K8S', instances: '-', cpu: 'Auto', mem: 'Auto', disk: 'PVC', gpu: '-', status: '정상' },
+    { name: 'Collection DB', layer: '수집계', type: 'PM', instances: '3대', cpu: '64 Core', mem: '1TB', disk: '3x30TB NVMe + 3x30TB SSD', gpu: '-', status: '정상' },
+    { name: 'CDC Server', layer: '수집계', type: 'VM', instances: '4대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '점검' },
+    { name: 'ETL Server', layer: '수집계', type: 'VM', instances: '4대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '정상' },
     { name: '프로듀서', layer: '수집계', type: 'VM', instances: '4대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '정상' },
-    { name: '카프카서버', layer: '카프카', type: 'VM', instances: '6대', cpu: '4 Core', mem: '8GB', disk: 'SSD', gpu: '-', status: '정상' }
+    { name: 'Data Highway', layer: '수집계', type: 'PM', instances: '6대', cpu: '64 Core', mem: '1TB', disk: '3x30TB NVMe + 3x30TB SSD', gpu: '-', status: '정상' }
   ], {
     getRowStyle: function (p) {
-      if (p.data.type === 'GM') return { background: '#fff8e1' };
+      if (p.data.type === 'GPU') return { background: '#fff8e1' };
+      if (p.data.type === 'K8S') return { background: '#e8f4fd' };
       if (p.data.type === 'PM') return { background: '#faf5ff' };
       if (p.data.status === '점검') return { background: '#fffbe6' };
     }
@@ -3197,17 +3492,24 @@ function initDistributeGrids() {
       }
     },
     { field: 'api', headerName: 'API', width: 80 },
+    { field: 'deident', headerName: '비식별', width: 90, cellRenderer: function (p) {
+        if (!p.value || p.value === '-') return '<span style="color:#ccc; font-size:11px;">—</span>';
+        var m = { '적용':'#2e7d32', '부분':'#ef6c00', '미적용':'#cf1322' };
+        var bg = { '적용':'#e8f5e9', '부분':'#fff3e0', '미적용':'#fff1f0' };
+        return '<span style="background:'+(bg[p.value]||'#f5f5f5')+';color:'+(m[p.value]||'#666')+';padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">'+p.value+'</span>';
+      }
+    },
     { field: 'dailyCalls', headerName: '일간호출', width: 96 },
     { field: 'lastUpdate', headerName: '최종갱신', width: 96 },
     { field: 'action', headerName: '관리', width: 70, sortable: false, filter: false, cellRenderer: function () { return '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;" onclick="navigate(\'dist-detail\')">상세</button>'; } }
   ], [
-    { name: '광역상수도 유량실시간', domain: '상수도', format: 'JSON/CSV', grade: '2등급', status: '활성', api: 'REST', dailyCalls: '12.4K', lastUpdate: '실시간' },
-    { name: '수력발전 일간통계', domain: '에너지', format: 'CSV/엑셀', grade: '2등급', status: '활성', api: 'REST', dailyCalls: '3.2K', lastUpdate: '매일 06시' },
-    { name: '원격검침 사용량분석', domain: '고객', format: 'JSON', grade: '3등급', status: '활성', api: 'Kafka', dailyCalls: '892K', lastUpdate: '실시간' },
-    { name: '정수장운영실적', domain: '정수', format: 'CSV/엑셀', grade: '2등급', status: '준비중', api: '-', dailyCalls: '-', lastUpdate: '준비중' },
-    { name: 'IoT 센서원시데이터', domain: '계측', format: 'Parquet', grade: '1등급', status: '제한', api: '내부전용', dailyCalls: '내부', lastUpdate: '실시간' },
-    { name: '수질측정데이터 (환경부)', domain: '수질', format: 'JSON/CSV', grade: '2등급', status: '활성', api: 'REST', dailyCalls: '5.8K', lastUpdate: '30분주기' },
-    { name: '댐수위·방류량종합', domain: '수자원', format: 'JSON', grade: '2등급', status: '활성', api: 'REST/Kafka', dailyCalls: '18.7K', lastUpdate: '실시간' }
+    { name: '광역상수도 유량실시간', domain: '상수도', format: 'JSON/CSV', grade: '2등급', status: '활성', api: 'REST', deident: '-', dailyCalls: '12.4K', lastUpdate: '실시간' },
+    { name: '수력발전 일간통계', domain: '에너지', format: 'CSV/엑셀', grade: '2등급', status: '활성', api: 'REST', deident: '-', dailyCalls: '3.2K', lastUpdate: '매일 06시' },
+    { name: '원격검침 사용량분석', domain: '고객', format: 'JSON', grade: '3등급', status: '활성', api: 'Kafka', deident: '적용', dailyCalls: '892K', lastUpdate: '실시간' },
+    { name: '정수장운영실적', domain: '정수', format: 'CSV/엑셀', grade: '2등급', status: '준비중', api: '-', deident: '-', dailyCalls: '-', lastUpdate: '준비중' },
+    { name: 'IoT 센서원시데이터', domain: '계측', format: 'Parquet', grade: '1등급', status: '제한', api: '내부전용', deident: '부분', dailyCalls: '내부', lastUpdate: '실시간' },
+    { name: '수질측정데이터 (환경부)', domain: '수질', format: 'JSON/CSV', grade: '2등급', status: '활성', api: 'REST', deident: '적용', dailyCalls: '5.8K', lastUpdate: '30분주기' },
+    { name: '댐수위·방류량종합', domain: '수자원', format: 'JSON', grade: '2등급', status: '활성', api: 'REST/Kafka', deident: '-', dailyCalls: '18.7K', lastUpdate: '실시간' }
   ]);
 
   // 비식별화 정책 (dist-deidentify) — 10컬럼×10행
@@ -3384,6 +3686,11 @@ function initMetadataGrids() {
     },
     { field: 'tables', headerName: '테이블수', width: 90, type: 'numericColumn', cellStyle: { fontWeight: '600', fontFamily: 'monospace' } },
     { field: 'columns', headerName: '컬럼수', width: 85, type: 'numericColumn', cellStyle: { fontWeight: '600', fontFamily: 'monospace' } },
+    { field: 'piiCols', headerName: 'PII', width: 60, cellRenderer: function (p) {
+        if (!p.value || p.value === 0) return '<span style="color:#ccc; font-size:11px;">—</span>';
+        return '<span style="background:#fff1f0; color:#cf1322; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:600;">🔒 ' + p.value + '</span>';
+      }
+    },
     { field: 'pkfk', headerName: 'PK/FK', width: 80, cellStyle: { fontFamily: 'monospace', textAlign: 'center' } },
     {
       field: 'compliance', headerName: '표준준수율', width: 100, cellRenderer: function (p) {
@@ -3403,16 +3710,16 @@ function initMetadataGrids() {
     { field: 'lastMod', headerName: '최종수정', width: 96 },
     { field: 'manager', headerName: '담당자', width: 80 }
   ], [
-    { name: '수자원관리_논리모델', type: '논리', domain: '수자원', tables: 48, columns: 412, pkfk: '48/96', compliance: '95.2', status: '승인', lastMod: '2026-02-28', manager: '김수자원' },
-    { name: '수자원관리_물리모델', type: '물리', domain: '수자원', tables: 52, columns: 468, pkfk: '52/104', compliance: '93.8', status: '승인', lastMod: '2026-02-27', manager: '김수자원' },
-    { name: '상수도관리_논리모델', type: '논리', domain: '상수도', tables: 38, columns: 324, pkfk: '38/72', compliance: '96.1', status: '승인', lastMod: '2026-02-26', manager: '김수도' },
-    { name: '상수도관리_물리모델', type: '물리', domain: '상수도', tables: 42, columns: 378, pkfk: '42/86', compliance: '91.5', status: '검토중', lastMod: '2026-02-25', manager: '김수도' },
-    { name: '고객관리_물리모델', type: '물리', domain: '고객', tables: 28, columns: 256, pkfk: '28/52', compliance: '94.3', status: '승인', lastMod: '2026-02-24', manager: '이관리' },
-    { name: '발전관리_논리모델', type: '논리', domain: '에너지', tables: 32, columns: 284, pkfk: '32/64', compliance: '92.7', status: '승인', lastMod: '2026-02-23', manager: '한에너지' },
-    { name: '수질관리_물리모델', type: '물리', domain: '수질', tables: 44, columns: 396, pkfk: '44/92', compliance: '89.4', status: '초안', lastMod: '2026-02-22', manager: '최수질' },
-    { name: '계측통합_물리모델', type: '물리', domain: '계측', tables: 56, columns: 512, pkfk: '56/118', compliance: '90.6', status: '검토중', lastMod: '2026-02-21', manager: '박계측' },
-    { name: 'GIS공간_논리모델', type: '논리', domain: '수자원', tables: 36, columns: 298, pkfk: '36/68', compliance: '97.2', status: '승인', lastMod: '2026-02-20', manager: '김수자원' },
-    { name: 'IoT센서_물리모델', type: '물리', domain: '계측', tables: 46, columns: 519, pkfk: '46/98', compliance: '87.1', status: '반려', lastMod: '2026-02-19', manager: '박계측' }
+    { name: '수자원관리_논리모델', type: '논리', domain: '수자원', tables: 48, columns: 412, piiCols: 0, pkfk: '48/96', compliance: '95.2', status: '승인', lastMod: '2026-02-28', manager: '김수자원' },
+    { name: '수자원관리_물리모델', type: '물리', domain: '수자원', tables: 52, columns: 468, piiCols: 0, pkfk: '52/104', compliance: '93.8', status: '승인', lastMod: '2026-02-27', manager: '김수자원' },
+    { name: '상수도관리_논리모델', type: '논리', domain: '상수도', tables: 38, columns: 324, piiCols: 0, pkfk: '38/72', compliance: '96.1', status: '승인', lastMod: '2026-02-26', manager: '김수도' },
+    { name: '상수도관리_물리모델', type: '물리', domain: '상수도', tables: 42, columns: 378, piiCols: 6, pkfk: '42/86', compliance: '91.5', status: '검토중', lastMod: '2026-02-25', manager: '김수도' },
+    { name: '고객관리_물리모델', type: '물리', domain: '고객', tables: 28, columns: 256, piiCols: 12, pkfk: '28/52', compliance: '94.3', status: '승인', lastMod: '2026-02-24', manager: '이관리' },
+    { name: '발전관리_논리모델', type: '논리', domain: '에너지', tables: 32, columns: 284, piiCols: 0, pkfk: '32/64', compliance: '92.7', status: '승인', lastMod: '2026-02-23', manager: '한에너지' },
+    { name: '수질관리_물리모델', type: '물리', domain: '수질', tables: 44, columns: 396, piiCols: 4, pkfk: '44/92', compliance: '89.4', status: '초안', lastMod: '2026-02-22', manager: '최수질' },
+    { name: '계측통합_물리모델', type: '물리', domain: '계측', tables: 56, columns: 512, piiCols: 3, pkfk: '56/118', compliance: '90.6', status: '검토중', lastMod: '2026-02-21', manager: '박계측' },
+    { name: 'GIS공간_논리모델', type: '논리', domain: '수자원', tables: 36, columns: 298, piiCols: 0, pkfk: '36/68', compliance: '97.2', status: '승인', lastMod: '2026-02-20', manager: '김수자원' },
+    { name: 'IoT센서_물리모델', type: '물리', domain: '계측', tables: 46, columns: 519, piiCols: 2, pkfk: '46/98', compliance: '87.1', status: '반려', lastMod: '2026-02-19', manager: '박계측' }
   ], {
     domLayout: 'autoHeight',
     getRowStyle: function (params) {
@@ -3676,6 +3983,49 @@ function showChartDetail(id) {
   navigate('dist-chart-content-detail');
 }
 
+function openUserDetail(data) {
+  var roleColors = {
+    '시스템관리자': { bg: '#e8f0fe', c: '#1967d2' }, '데이터관리자': { bg: '#e0f7fa', c: '#00838f' },
+    '데이터엔지니어': { bg: '#fff3e0', c: '#ef6c00' }, '일반사용자': { bg: '#f3e5f5', c: '#7b1fa2' },
+    '외부사용자': { bg: '#fce4ec', c: '#c62828' }
+  };
+  var rc = roleColors[data.role] || { bg: '#f5f5f5', c: '#666' };
+  var statusMap = { '활성': 'badge-success', '비활성': 'badge-ghost', '잠김': 'badge-error' };
+  var statusCls = statusMap[data.status] || 'badge-ghost';
+  var ssoLabel = data.sso === 'Y' ? '<span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">연동완료</span>' : '<span style="background:#ffebee;color:#c62828;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">미연동</span>';
+  var firstChar = data.name.charAt(0);
+
+  var el = function(id) { return document.getElementById(id); };
+  el('ud-name').textContent = data.name;
+  el('ud-empNo').textContent = data.empNo;
+  el('ud-dept').textContent = data.dept;
+  el('ud-grade').textContent = data.grade;
+  el('ud-email').textContent = data.empNo.toLowerCase() + '@kwater.or.kr';
+  el('ud-joinDate').textContent = data.joinDate;
+  el('ud-sso').innerHTML = ssoLabel;
+  el('ud-name2').textContent = data.name;
+  el('ud-dept2').textContent = data.dept + ' · ' + data.grade;
+  el('ud-statusBadge').className = 'badge ' + statusCls;
+  el('ud-statusBadge').style.fontSize = '11px';
+  el('ud-statusBadge').textContent = data.status;
+  el('ud-lastLogin').textContent = data.lastLogin === '-' ? '-' : '2026-' + data.lastLogin;
+
+  // 아바타 첫글자
+  var avatar = document.querySelector('#screen-sys-user-detail [style*="border-radius:50%"][style*="64px"]');
+  if (avatar) avatar.textContent = firstChar;
+
+  // 역할 테이블
+  el('ud-roles').innerHTML =
+    '<tr><td><span style="background:' + rc.bg + ';color:' + rc.c + ';padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">' + data.role + '</span></td>' +
+    '<td>Level ' + (data.role === '시스템관리자' ? '5' : data.role === '데이터관리자' ? '4' : data.role === '데이터엔지니어' ? '3' : data.role === '외부사용자' ? '1' : '2') + '</td>' +
+    '<td>' + data.joinDate + '</td><td>관리자</td>' +
+    '<td><button class="btn btn-outline btn-sm" style="font-size:10px;padding:1px 6px;color:#ef4444;border-color:#ef4444;" data-perm="admin">해제</button></td></tr>' +
+    '<tr><td><span style="background:#f3e5f5;color:#7b1fa2;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">일반사용자</span></td>' +
+    '<td>Level 1</td><td>' + data.joinDate + '</td><td>SYSTEM</td><td><span style="font-size:10px;color:#999;">기본역할</span></td></tr>';
+
+  navigate('sys-user-detail');
+}
+
 function initSystemGrids() {
   // 사용자관리
   initAGGrid('ag-grid-sys-user', [
@@ -3738,6 +4088,11 @@ function initSystemGrids() {
       if (params.data.status === '승인대기') return { background: '#fffbe6' };
       if (params.data.status === '비활성' || params.data.status === '잠김') return { background: '#fafafa' };
       return null;
+    },
+    onCellClicked: function (e) {
+      if (e.colDef.field === 'action' && e.data.status !== '승인대기') {
+        openUserDetail(e.data);
+      }
     }
   });
 
@@ -3920,6 +4275,170 @@ function initSystemGrids() {
       if (p.data.risk === '높음') return { background: '#fff5f5' };
     }
   });
+
+  // K8S 인프라 모니터링
+  initAGGrid('ag-grid-sys-k8s', [
+    { field: 'pod', headerName: 'Pod 이름', flex: 1.5, cellRenderer: function(p) { return '<span style="font-family:monospace; font-size:11px; font-weight:600;">' + p.value + '</span>'; } },
+    { field: 'namespace', headerName: 'Namespace', width: 130, cellRenderer: function(p) {
+      var m = { 'datahub-agent': { bg:'#e8f0fe', c:'#1967d2' }, 'datahub-platform': { bg:'#e8f5e9', c:'#2e7d32' }, 'datahub-ontology': { bg:'#fff3e0', c:'#ef6c00' } };
+      var s = m[p.value] || { bg:'#f5f5f5', c:'#666' };
+      return '<span style="background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:11px;">'+p.value+'</span>';
+    }},
+    { field: 'status', headerName: '상태', width: 110, cellRenderer: function(p) {
+      var m = { 'Running': { bg:'#e8f5e9', c:'#2e7d32', dot:'#52c41a' }, 'Pending': { bg:'#fff8e1', c:'#d48806', dot:'#faad14' }, 'CrashLoopBackOff': { bg:'#ffebee', c:'#c62828', dot:'#ff4d4f' }, 'Completed': { bg:'#f5f5f5', c:'#666', dot:'#bbb' } };
+      var s = m[p.value] || { bg:'#f5f5f5', c:'#666', dot:'#999' };
+      return '<span style="display:inline-flex;align-items:center;gap:4px;background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:11px;"><span style="width:6px;height:6px;border-radius:50%;background:'+s.dot+';"></span>'+p.value+'</span>';
+    }},
+    { field: 'cpu', headerName: 'CPU', width: 75, cellRenderer: function(p) {
+      var c = parseInt(p.value) > 70 ? '#ff4d4f' : parseInt(p.value) > 50 ? '#fa8c16' : '#52c41a';
+      return '<span style="color:'+c+';font-weight:600;">'+p.value+'</span>';
+    }},
+    { field: 'mem', headerName: 'Memory', width: 80, cellRenderer: function(p) {
+      var c = parseInt(p.value) > 70 ? '#ff4d4f' : parseInt(p.value) > 50 ? '#fa8c16' : '#52c41a';
+      return '<span style="color:'+c+';font-weight:600;">'+p.value+'</span>';
+    }},
+    { field: 'restarts', headerName: 'Restarts', width: 80, cellRenderer: function(p) {
+      return p.value > 0 ? '<span style="color:#fa8c16; font-weight:600;">'+p.value+'</span>' : '<span style="color:#52c41a;">0</span>';
+    }},
+    { field: 'age', headerName: 'Age', width: 80 },
+    { field: 'node', headerName: 'Node', width: 100, cellStyle: { fontSize:'11px', color:'#888' } }
+  ], [
+    { pod: 'agent-api-6f8d4b-xk2m1', namespace: 'datahub-agent', status: 'Running', cpu: '35%', mem: '52%', restarts: 0, age: '12h', node: 'k8s-node-01' },
+    { pod: 'agent-api-6f8d4b-np3q2', namespace: 'datahub-agent', status: 'Running', cpu: '41%', mem: '58%', restarts: 0, age: '12h', node: 'k8s-node-02' },
+    { pod: 'agent-worker-7a9e3c-jt4r5', namespace: 'datahub-agent', status: 'Running', cpu: '28%', mem: '44%', restarts: 0, age: '12h', node: 'k8s-node-03' },
+    { pod: 'platform-api-5d2c1a-mv8k3', namespace: 'datahub-platform', status: 'Running', cpu: '55%', mem: '68%', restarts: 0, age: '1d', node: 'k8s-node-01' },
+    { pod: 'platform-api-5d2c1a-bw6n4', namespace: 'datahub-platform', status: 'Running', cpu: '48%', mem: '65%', restarts: 0, age: '1d', node: 'k8s-node-02' },
+    { pod: 'platform-api-5d2c1a-qs9p7', namespace: 'datahub-platform', status: 'Running', cpu: '52%', mem: '71%', restarts: 1, age: '1d', node: 'k8s-node-03' },
+    { pod: 'platform-worker-8b4f2e-ht5m6', namespace: 'datahub-platform', status: 'Running', cpu: '44%', mem: '59%', restarts: 0, age: '1d', node: 'k8s-node-04' },
+    { pod: 'platform-scheduler-3c7a1d-lr2k8', namespace: 'datahub-platform', status: 'Running', cpu: '18%', mem: '32%', restarts: 0, age: '1d', node: 'k8s-node-04' },
+    { pod: 'ontology-api-9e6b3f-wm4j1', namespace: 'datahub-ontology', status: 'Running', cpu: '32%', mem: '68%', restarts: 0, age: '4d', node: 'k8s-node-05' },
+    { pod: 'ontology-api-9e6b3f-dx7h2', namespace: 'datahub-ontology', status: 'Running', cpu: '38%', mem: '74%', restarts: 0, age: '4d', node: 'k8s-node-06' },
+    { pod: 'ontology-worker-2c8a5g-fy3n9', namespace: 'datahub-ontology', status: 'CrashLoopBackOff', cpu: '0%', mem: '0%', restarts: 3, age: '4d', node: 'k8s-node-05' },
+    { pod: 'ontology-indexer-4d1e7h-zp6m3', namespace: 'datahub-ontology', status: 'Pending', cpu: '0%', mem: '0%', restarts: 0, age: '2m', node: '-' }
+  ], {
+    getRowStyle: function(p) {
+      if (p.data.status === 'CrashLoopBackOff') return { background: '#fff5f5' };
+      if (p.data.status === 'Pending') return { background: '#fffbe6' };
+    }
+  });
+
+  // ===== ERP 인사정보 동기화 - 동기화 이력 =====
+  initAGGrid('ag-grid-sys-erp-sync', [
+    { field: 'syncId', headerName: '동기화ID', width: 110, cellStyle: { fontFamily: 'monospace', color: '#666' } },
+    { field: 'execTime', headerName: '실행시각', width: 130 },
+    { field: 'syncType', headerName: '유형', width: 90, cellRenderer: function(p) {
+        var m = { '전체': { bg:'#e8f0fe', c:'#1967d2' }, '증분': { bg:'#e0f7fa', c:'#00838f' }, 'CDC': { bg:'#f9f0ff', c:'#722ed1' } };
+        var s = m[p.value] || { bg:'#f5f5f5', c:'#666' };
+        return '<span style="background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">'+p.value+'</span>';
+      }
+    },
+    { field: 'target', headerName: '대상', width: 80, cellRenderer: function(p) {
+        var m = { '인사': { bg:'#e8f5e9', c:'#2e7d32' }, '조직': { bg:'#fff3e0', c:'#ef6c00' }, '겸직': { bg:'#fce4ec', c:'#c62828' } };
+        var s = m[p.value] || { bg:'#f5f5f5', c:'#666' };
+        return '<span style="background:'+s.bg+';color:'+s.c+';padding:2px 6px;border-radius:4px;font-size:11px;">'+p.value+'</span>';
+      }
+    },
+    { field: 'totalCount', headerName: '처리건수', width: 80, type: 'numericColumn', cellStyle: { fontWeight: '600' } },
+    { field: 'newCount', headerName: '신규', width: 60, type: 'numericColumn', cellRenderer: function(p) {
+        return p.value > 0 ? '<span style="color:#1677ff;font-weight:600;">+'+p.value+'</span>' : '<span style="color:#ccc;">0</span>';
+      }
+    },
+    { field: 'changeCount', headerName: '변경', width: 60, type: 'numericColumn', cellRenderer: function(p) {
+        return p.value > 0 ? '<span style="color:#fa8c16;font-weight:600;">'+p.value+'</span>' : '<span style="color:#ccc;">0</span>';
+      }
+    },
+    { field: 'retireCount', headerName: '퇴직', width: 60, type: 'numericColumn', cellRenderer: function(p) {
+        return p.value > 0 ? '<span style="color:#f5222d;font-weight:600;">'+p.value+'</span>' : '<span style="color:#ccc;">0</span>';
+      }
+    },
+    { field: 'duration', headerName: '소요시간', width: 85 },
+    { field: 'status', headerName: '상태', width: 85, cellRenderer: function(p) {
+        var m = { '성공': { bg:'#e8f5e9', c:'#2e7d32', dot:'#52c41a' }, '부분성공': { bg:'#fff8e1', c:'#d48806', dot:'#faad14' }, '실패': { bg:'#ffebee', c:'#c62828', dot:'#ff4d4f' } };
+        var s = m[p.value] || { bg:'#f5f5f5', c:'#666', dot:'#999' };
+        return '<span style="display:inline-flex;align-items:center;gap:4px;background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:11px;"><span style="width:6px;height:6px;border-radius:50%;background:'+s.dot+';"></span>'+p.value+'</span>';
+      }
+    },
+    { field: 'detail', headerName: '상세', width: 60, sortable: false, filter: false, cellRenderer: function() {
+        return '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;">상세</button>';
+      }
+    }
+  ], [
+    { syncId: 'SYNC-0305-01', execTime: '2026-03-05 02:00', syncType: '전체', target: '인사', totalCount: 249, newCount: 0, changeCount: 2, retireCount: 0, duration: '2분 34초', status: '성공' },
+    { syncId: 'SYNC-0305-02', execTime: '2026-03-05 02:01', syncType: '전체', target: '조직', totalCount: 24, newCount: 1, changeCount: 0, retireCount: 0, duration: '18초', status: '성공' },
+    { syncId: 'SYNC-0305-03', execTime: '2026-03-05 02:01', syncType: '전체', target: '겸직', totalCount: 12, newCount: 0, changeCount: 1, retireCount: 0, duration: '8초', status: '성공' },
+    { syncId: 'SYNC-0304-01', execTime: '2026-03-04 14:00', syncType: '증분', target: '인사', totalCount: 3, newCount: 0, changeCount: 2, retireCount: 1, duration: '12초', status: '성공' },
+    { syncId: 'SYNC-0304-02', execTime: '2026-03-04 14:00', syncType: '증분', target: '겸직', totalCount: 1, newCount: 0, changeCount: 1, retireCount: 0, duration: '4초', status: '부분성공' },
+    { syncId: 'SYNC-0304-03', execTime: '2026-03-04 02:00', syncType: '전체', target: '인사', totalCount: 249, newCount: 1, changeCount: 1, retireCount: 1, duration: '2분 41초', status: '성공' },
+    { syncId: 'SYNC-0304-04', execTime: '2026-03-04 02:01', syncType: '전체', target: '조직', totalCount: 24, newCount: 0, changeCount: 0, retireCount: 0, duration: '15초', status: '성공' },
+    { syncId: 'SYNC-0303-01', execTime: '2026-03-03 14:00', syncType: '증분', target: '인사', totalCount: 2, newCount: 1, changeCount: 1, retireCount: 0, duration: '9초', status: '성공' },
+    { syncId: 'SYNC-0303-02', execTime: '2026-03-03 02:00', syncType: '전체', target: '인사', totalCount: 248, newCount: 0, changeCount: 0, retireCount: 0, duration: '2분 18초', status: '성공' },
+    { syncId: 'SYNC-0301-01', execTime: '2026-03-01 14:00', syncType: '증분', target: '인사', totalCount: 0, newCount: 0, changeCount: 0, retireCount: 0, duration: '-', status: '실패' }
+  ], {
+    domLayout: 'autoHeight',
+    getRowStyle: function(params) {
+      if (params.data.status === '실패') return { background: '#fff5f5' };
+      if (params.data.status === '부분성공') return { background: '#fffbe6' };
+      return null;
+    }
+  });
+
+  // ===== ERP 인사정보 동기화 - 금일 인사변동 내역 =====
+  initAGGrid('ag-grid-sys-erp-changes', [
+    { field: 'empNo', headerName: '사번', width: 80, cellStyle: { fontFamily: 'monospace', color: '#666' } },
+    { field: 'name', headerName: '이름', width: 80, cellRenderer: function(p) { return '<strong>'+p.value+'</strong>'; } },
+    { field: 'changeType', headerName: '변동유형', width: 90, cellRenderer: function(p) {
+        var m = { '신규입사': { bg:'#e8f0fe', c:'#1967d2' }, '부서이동': { bg:'#fff3e0', c:'#ef6c00' }, '직급변경': { bg:'#f9f0ff', c:'#722ed1' }, '퇴직': { bg:'#ffebee', c:'#c62828' } };
+        var s = m[p.value] || { bg:'#f5f5f5', c:'#666' };
+        return '<span style="background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">'+p.value+'</span>';
+      }
+    },
+    { field: 'before', headerName: '변동전', flex: 1 },
+    { field: 'after', headerName: '변동후', flex: 1, cellStyle: { fontWeight: '600', color: '#1967d2' } },
+    { field: 'processTime', headerName: '처리시각', width: 75 },
+    { field: 'status', headerName: '상태', width: 70, cellRenderer: function(p) {
+        var m = { '완료': { bg:'#e8f5e9', c:'#2e7d32' }, '처리중': { bg:'#fff8e1', c:'#d48806' }, '검토필요': { bg:'#ffebee', c:'#c62828' } };
+        var s = m[p.value] || { bg:'#f5f5f5', c:'#666' };
+        return '<span style="background:'+s.bg+';color:'+s.c+';padding:2px 6px;border-radius:4px;font-size:11px;">'+p.value+'</span>';
+      }
+    }
+  ], [
+    { empNo: 'KW2048', name: '김데이터', changeType: '부서이동', before: '데이터분석팀', after: 'AI연구팀', processTime: '02:00', status: '완료' },
+    { empNo: 'KW1792', name: '윤상수', changeType: '직급변경', before: '과장', after: '차장', processTime: '02:00', status: '완료' },
+    { empNo: 'KW3072', name: '한에너지', changeType: '부서이동', before: '수력발전팀', after: '신재생팀(겸직)', processTime: '14:00', status: '완료' }
+  ], { domLayout: 'autoHeight' });
+
+  // ===== ERP 인사정보 동기화 - 필드 매핑 설정 =====
+  initAGGrid('ag-grid-sys-erp-mapping', [
+    { field: 'erpTable', headerName: 'ERP 테이블', width: 140, cellStyle: { fontFamily: 'monospace', fontSize: '11px' } },
+    { field: 'erpColumn', headerName: 'ERP 컬럼', width: 130, cellStyle: { fontFamily: 'monospace', fontSize: '11px' } },
+    { field: 'dhField', headerName: 'DataHub 필드', width: 140, cellRenderer: function(p) { return '<strong style="font-family:monospace;font-size:11px;">'+p.value+'</strong>'; } },
+    { field: 'transform', headerName: '변환규칙', flex: 1, cellRenderer: function(p) {
+        if (!p.value || p.value === '-') return '<span style="color:#ccc;">직접매핑</span>';
+        return '<span style="background:#f0f7ff;color:#1967d2;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace;">'+p.value+'</span>';
+      }
+    },
+    { field: 'mappingStatus', headerName: '상태', width: 80, cellRenderer: function(p) {
+        var m = { '활성': { bg:'#e8f5e9', c:'#2e7d32', dot:'#52c41a' }, '비활성': { bg:'#f5f5f5', c:'#999', dot:'#bbb' }, '신규': { bg:'#e8f0fe', c:'#1967d2', dot:'#1677ff' } };
+        var s = m[p.value] || { bg:'#f5f5f5', c:'#666', dot:'#999' };
+        return '<span style="display:inline-flex;align-items:center;gap:4px;background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:11px;"><span style="width:6px;height:6px;border-radius:50%;background:'+s.dot+';"></span>'+p.value+'</span>';
+      }
+    }
+  ], [
+    { erpTable: 'HR.PER_ALL_PEOPLE', erpColumn: 'EMPLOYEE_NUMBER', dhField: 'emp_no', transform: 'PREFIX("KW")', mappingStatus: '활성' },
+    { erpTable: 'HR.PER_ALL_PEOPLE', erpColumn: 'FULL_NAME', dhField: 'user_name', transform: '-', mappingStatus: '활성' },
+    { erpTable: 'HR.PER_ALL_PEOPLE', erpColumn: 'EMAIL_ADDRESS', dhField: 'email', transform: 'LOWER()', mappingStatus: '활성' },
+    { erpTable: 'HR.PER_ASSIGNMENTS', erpColumn: 'ORGANIZATION_ID', dhField: 'dept_code', transform: 'LOOKUP(ORG_MAP)', mappingStatus: '활성' },
+    { erpTable: 'HR.PER_ASSIGNMENTS', erpColumn: 'JOB_ID', dhField: 'grade', transform: 'LOOKUP(JOB_MAP)', mappingStatus: '활성' },
+    { erpTable: 'HR.PER_ASSIGNMENTS', erpColumn: 'ASSIGNMENT_STATUS', dhField: 'status', transform: 'MAP(A→활성,T→퇴직)', mappingStatus: '활성' },
+    { erpTable: 'HR.PER_PHONES', erpColumn: 'PHONE_NUMBER', dhField: 'phone', transform: 'FORMAT(###-####-####)', mappingStatus: '활성' },
+    { erpTable: 'HR.HR_ORGANIZATIONS', erpColumn: 'ORG_ID', dhField: 'org_code', transform: '-', mappingStatus: '활성' },
+    { erpTable: 'HR.HR_ORGANIZATIONS', erpColumn: 'ORG_NAME', dhField: 'org_name', transform: '-', mappingStatus: '활성' },
+    { erpTable: 'HR.HR_ORGANIZATIONS', erpColumn: 'PARENT_ORG_ID', dhField: 'parent_org_code', transform: 'LOOKUP(ORG_MAP)', mappingStatus: '활성' },
+    { erpTable: 'HR.PER_ASSIGNMENTS', erpColumn: 'SECONDARY_ASG', dhField: 'concurrent_dept', transform: 'LOOKUP(ORG_MAP)', mappingStatus: '활성' },
+    { erpTable: 'HR.PER_ALL_PEOPLE', erpColumn: 'HIRE_DATE', dhField: 'join_date', transform: 'DATE(YYYY-MM-DD)', mappingStatus: '활성' },
+    { erpTable: 'HR.PER_ALL_PEOPLE', erpColumn: 'TERMINATION_DATE', dhField: 'retire_date', transform: 'DATE(YYYY-MM-DD)', mappingStatus: '활성' },
+    { erpTable: 'HR.PER_ALL_PEOPLE', erpColumn: 'SSO_ACCOUNT', dhField: 'sso_linked', transform: 'BOOL(Y/N)', mappingStatus: '신규' }
+  ], { domLayout: 'autoHeight' });
 }
 
 // ===== 역할별 홈 대시보드 =====
@@ -4242,6 +4761,27 @@ function roleBulkAction() {
 }
 function roleAuditAction() {
   closeRoleModal('roleAuditModal');
+}
+
+// ===== 비밀번호 변경 모달 (셀프서비스) =====
+function openPasswordChangeModal() {
+  document.getElementById('pwChangeModal').style.display = 'flex';
+}
+function closePasswordChangeModal() {
+  document.getElementById('pwChangeModal').style.display = 'none';
+  const ids = ['pwc-current', 'pwc-new', 'pwc-confirm'];
+  ids.forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
+  var m = document.getElementById('pwc-match'); if (m) m.textContent = '';
+}
+function passwordChangeAction() {
+  var cur = document.getElementById('pwc-current').value;
+  var nw = document.getElementById('pwc-new').value;
+  var cf = document.getElementById('pwc-confirm').value;
+  if (!cur || !nw || !cf) { alert('모든 항목을 입력해주세요.'); return; }
+  if (nw.length < 8) { alert('새 비밀번호는 8자 이상이어야 합니다.'); return; }
+  if (nw !== cf) { alert('새 비밀번호가 일치하지 않습니다.'); return; }
+  alert('비밀번호가 성공적으로 변경되었습니다.\n\n다음 로그인 시 새 비밀번호를 사용해주세요.');
+  closePasswordChangeModal();
 }
 
 // ===== Kafka 모달 =====
@@ -5137,7 +5677,7 @@ var SCREEN_GROUP_MAP = {
   'meta-glossary': '메타데이터', 'meta-tag': '메타데이터', 'meta-model': '메타데이터',
   'meta-dq': '메타데이터', 'meta-ontology': '메타데이터',
   'sys-user': '시스템관리', 'sys-role': '시스템관리', 'sys-security': '시스템관리',
-  'sys-interface': '시스템관리', 'sys-audit': '시스템관리', 'sys-perm': '시스템관리', 'sys-engine': '시스템관리',
+  'sys-interface': '시스템관리', 'sys-audit': '시스템관리', 'sys-perm': '시스템관리', 'sys-engine': '시스템관리', 'sys-erp-sync': '시스템관리', 'llmops': '시스템관리',
   'sys-widget-template': '대시보드',
   'comm-notice': '커뮤니티', 'comm-internal': '커뮤니티', 'comm-external': '커뮤니티', 'comm-archive': '커뮤니티'
 };
@@ -5157,7 +5697,7 @@ var SCREEN_LABEL_MAP = {
   'meta-dq': '데이터 품질', 'meta-ontology': '온톨로지',
   'sys-user': '조직 및 사용자관리', 'sys-role': '권한 및 역할관리', 'sys-security': '데이터등급·보안정책',
   'sys-interface': '연계인터페이스 모니터링', 'sys-audit': '접속통계·감사로그',
-  'sys-widget-template': '위젯 템플릿 관리', 'sys-perm': '화면별 권한설정', 'sys-engine': '데이터허브 엔진관리',
+  'sys-widget-template': '위젯 템플릿 관리', 'sys-perm': '화면별 권한설정', 'sys-engine': '데이터허브 엔진관리', 'sys-erp-sync': 'ERP 인사정보 동기화', 'llmops': 'LLMOps 관리',
   'comm-notice': '공지사항', 'comm-internal': '내부게시판', 'comm-external': '외부협력게시판', 'comm-archive': '자료실'
 };
 
@@ -5433,4 +5973,988 @@ function resetAllPermChanges() {
   if (roleKey) renderPermGrid(roleKey);
   else updatePermKPIs(null);
   alert('✅ 모든 커스텀 권한 설정이 초기화되었습니다.');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   시각화 차트 콘텐츠 등록 – Step Workflow & Preview
+   ═══════════════════════════════════════════════════════════════ */
+var _chartRegState = {
+  step: 1,
+  schema: '',
+  table: '',
+  columns: [],      // selected column objects [{name, type}]
+  allColumns: [],    // all available columns
+  queryData: [],     // fetched row data
+  chartType: 'line'
+};
+
+// ── Mock 테이블 / 컬럼 데이터 (분석 DB 시뮬레이션) ──
+var _chartDbMeta = {
+  DW_WATER: {
+    tables: ['TB_WATER_QUALITY_DAILY', 'TB_WATER_LEVEL_HOURLY', 'TB_WATER_FLOW_MONTHLY', 'VW_WATER_QUALITY_STATS'],
+    cols: {
+      TB_WATER_QUALITY_DAILY: [
+        {name:'MEASURE_DATE', type:'DATE'}, {name:'SITE_CODE', type:'VARCHAR'}, {name:'SITE_NAME', type:'VARCHAR'},
+        {name:'PH', type:'NUMERIC'}, {name:'BOD', type:'NUMERIC'}, {name:'COD', type:'NUMERIC'},
+        {name:'SS', type:'NUMERIC'}, {name:'DO_VAL', type:'NUMERIC'}, {name:'TN', type:'NUMERIC'}, {name:'TP', type:'NUMERIC'},
+        {name:'TEMP', type:'NUMERIC'}, {name:'TURBIDITY', type:'NUMERIC'}
+      ],
+      TB_WATER_LEVEL_HOURLY: [
+        {name:'MEASURE_DT', type:'TIMESTAMP'}, {name:'STATION_ID', type:'VARCHAR'}, {name:'STATION_NAME', type:'VARCHAR'},
+        {name:'WATER_LEVEL', type:'NUMERIC'}, {name:'FLOW_RATE', type:'NUMERIC'}, {name:'RAINFALL', type:'NUMERIC'}
+      ],
+      TB_WATER_FLOW_MONTHLY: [
+        {name:'YEAR_MONTH', type:'VARCHAR'}, {name:'STATION_ID', type:'VARCHAR'}, {name:'AVG_FLOW', type:'NUMERIC'},
+        {name:'MAX_FLOW', type:'NUMERIC'}, {name:'MIN_FLOW', type:'NUMERIC'}, {name:'TOTAL_VOLUME', type:'NUMERIC'}
+      ],
+      VW_WATER_QUALITY_STATS: [
+        {name:'YEAR', type:'VARCHAR'}, {name:'REGION', type:'VARCHAR'}, {name:'AVG_PH', type:'NUMERIC'},
+        {name:'AVG_BOD', type:'NUMERIC'}, {name:'AVG_COD', type:'NUMERIC'}, {name:'SAMPLE_COUNT', type:'INTEGER'}
+      ]
+    }
+  },
+  DW_DAM: {
+    tables: ['TB_DAM_WATER_LEVEL', 'TB_DAM_DISCHARGE', 'VW_DAM_STORAGE_RATE'],
+    cols: {
+      TB_DAM_WATER_LEVEL: [
+        {name:'MEASURE_DATE', type:'DATE'}, {name:'DAM_CODE', type:'VARCHAR'}, {name:'DAM_NAME', type:'VARCHAR'},
+        {name:'WATER_LEVEL', type:'NUMERIC'}, {name:'STORAGE_VOLUME', type:'NUMERIC'}, {name:'STORAGE_RATE', type:'NUMERIC'},
+        {name:'INFLOW', type:'NUMERIC'}, {name:'OUTFLOW', type:'NUMERIC'}
+      ],
+      TB_DAM_DISCHARGE: [
+        {name:'DISCHARGE_DT', type:'TIMESTAMP'}, {name:'DAM_CODE', type:'VARCHAR'}, {name:'GATE_NO', type:'INTEGER'},
+        {name:'DISCHARGE_RATE', type:'NUMERIC'}, {name:'DURATION_MIN', type:'INTEGER'}
+      ],
+      VW_DAM_STORAGE_RATE: [
+        {name:'MEASURE_DATE', type:'DATE'}, {name:'DAM_NAME', type:'VARCHAR'}, {name:'STORAGE_RATE', type:'NUMERIC'},
+        {name:'PREV_YEAR_RATE', type:'NUMERIC'}, {name:'AVG_RATE', type:'NUMERIC'}
+      ]
+    }
+  },
+  DW_SUPPLY: {
+    tables: ['TB_SUPPLY_DAILY', 'TB_SUPPLY_PRESSURE', 'VW_SUPPLY_REGION_SUMMARY'],
+    cols: {
+      TB_SUPPLY_DAILY: [
+        {name:'SUPPLY_DATE', type:'DATE'}, {name:'PLANT_CODE', type:'VARCHAR'}, {name:'PLANT_NAME', type:'VARCHAR'},
+        {name:'SUPPLY_VOLUME', type:'NUMERIC'}, {name:'DEMAND_VOLUME', type:'NUMERIC'}, {name:'LOSS_RATE', type:'NUMERIC'}
+      ],
+      TB_SUPPLY_PRESSURE: [
+        {name:'MEASURE_DT', type:'TIMESTAMP'}, {name:'POINT_ID', type:'VARCHAR'}, {name:'PRESSURE', type:'NUMERIC'},
+        {name:'FLOW_RATE', type:'NUMERIC'}
+      ],
+      VW_SUPPLY_REGION_SUMMARY: [
+        {name:'YEAR_MONTH', type:'VARCHAR'}, {name:'REGION', type:'VARCHAR'}, {name:'TOTAL_SUPPLY', type:'NUMERIC'},
+        {name:'AVG_PRESSURE', type:'NUMERIC'}, {name:'LOSS_RATE', type:'NUMERIC'}
+      ]
+    }
+  },
+  DW_ENERGY: {
+    tables: ['TB_POWER_GENERATION', 'TB_ENERGY_CONSUMPTION', 'VW_ENERGY_MONTHLY'],
+    cols: {
+      TB_POWER_GENERATION: [
+        {name:'GEN_DATE', type:'DATE'}, {name:'PLANT_CODE', type:'VARCHAR'}, {name:'PLANT_NAME', type:'VARCHAR'},
+        {name:'GENERATION_MWH', type:'NUMERIC'}, {name:'CAPACITY_MW', type:'NUMERIC'}, {name:'UTILIZATION_RATE', type:'NUMERIC'}
+      ],
+      TB_ENERGY_CONSUMPTION: [
+        {name:'CONSUME_DATE', type:'DATE'}, {name:'FACILITY_CODE', type:'VARCHAR'}, {name:'ELECTRIC_KWH', type:'NUMERIC'},
+        {name:'GAS_M3', type:'NUMERIC'}, {name:'COST_KRW', type:'INTEGER'}
+      ],
+      VW_ENERGY_MONTHLY: [
+        {name:'YEAR_MONTH', type:'VARCHAR'}, {name:'PLANT_NAME', type:'VARCHAR'}, {name:'TOTAL_GEN', type:'NUMERIC'},
+        {name:'AVG_UTIL', type:'NUMERIC'}, {name:'PEAK_MW', type:'NUMERIC'}
+      ]
+    }
+  },
+  DW_ENV: {
+    tables: ['TB_WEATHER_DAILY', 'TB_AIR_QUALITY', 'VW_ENV_COMPOSITE'],
+    cols: {
+      TB_WEATHER_DAILY: [
+        {name:'OBS_DATE', type:'DATE'}, {name:'STATION_ID', type:'VARCHAR'}, {name:'TEMP_AVG', type:'NUMERIC'},
+        {name:'TEMP_MAX', type:'NUMERIC'}, {name:'TEMP_MIN', type:'NUMERIC'}, {name:'RAINFALL_MM', type:'NUMERIC'},
+        {name:'HUMIDITY', type:'NUMERIC'}, {name:'WIND_SPEED', type:'NUMERIC'}
+      ],
+      TB_AIR_QUALITY: [
+        {name:'MEASURE_DT', type:'TIMESTAMP'}, {name:'STATION_NAME', type:'VARCHAR'}, {name:'PM10', type:'NUMERIC'},
+        {name:'PM25', type:'NUMERIC'}, {name:'O3', type:'NUMERIC'}, {name:'NO2', type:'NUMERIC'}
+      ],
+      VW_ENV_COMPOSITE: [
+        {name:'OBS_DATE', type:'DATE'}, {name:'REGION', type:'VARCHAR'}, {name:'TEMP', type:'NUMERIC'},
+        {name:'RAINFALL', type:'NUMERIC'}, {name:'WATER_LEVEL', type:'NUMERIC'}, {name:'CORRELATION', type:'NUMERIC'}
+      ]
+    }
+  },
+  DM_ANALYTICS: {
+    tables: ['DM_FLOOD_RISK_INDEX', 'DM_DROUGHT_FORECAST', 'DM_WATER_DEMAND_PRED'],
+    cols: {
+      DM_FLOOD_RISK_INDEX: [
+        {name:'CALC_DATE', type:'DATE'}, {name:'REGION', type:'VARCHAR'}, {name:'RISK_INDEX', type:'NUMERIC'},
+        {name:'RAIN_PROB', type:'NUMERIC'}, {name:'DAM_STORAGE', type:'NUMERIC'}, {name:'ALERT_LEVEL', type:'VARCHAR'}
+      ],
+      DM_DROUGHT_FORECAST: [
+        {name:'FORECAST_DATE', type:'DATE'}, {name:'REGION', type:'VARCHAR'}, {name:'SPI_INDEX', type:'NUMERIC'},
+        {name:'DROUGHT_LEVEL', type:'VARCHAR'}, {name:'CONFIDENCE', type:'NUMERIC'}
+      ],
+      DM_WATER_DEMAND_PRED: [
+        {name:'PRED_DATE', type:'DATE'}, {name:'PLANT_CODE', type:'VARCHAR'}, {name:'PRED_DEMAND', type:'NUMERIC'},
+        {name:'ACTUAL_DEMAND', type:'NUMERIC'}, {name:'ERROR_RATE', type:'NUMERIC'}
+      ]
+    }
+  }
+};
+
+/* ── (레거시 스텝 함수 – 단일 페이지에서는 미사용, 호환성 유지) ── */
+function chartRegGoStep() { /* no-op in single-page layout */ }
+
+/* ── Load tables for selected schema ── */
+function chartRegLoadTables() {
+  var schema = document.getElementById('chartSrcSchema').value;
+  var tableSel = document.getElementById('chartSrcTable');
+  tableSel.innerHTML = '<option value="">테이블/뷰 선택</option>';
+  _chartRegState.schema = schema;
+  _chartRegState.table = '';
+  _chartRegState.allColumns = [];
+  _chartRegState.columns = [];
+  document.getElementById('chartSrcColumnArea').style.display = 'none';
+  document.getElementById('chartSrcPreviewCard').style.display = 'none';
+
+  if (!schema || !_chartDbMeta[schema]) return;
+  _chartDbMeta[schema].tables.forEach(function(t) {
+    var opt = document.createElement('option');
+    opt.value = t; opt.textContent = t;
+    tableSel.appendChild(opt);
+  });
+}
+
+function chartRegFilterTables() {
+  var keyword = (document.getElementById('chartSrcSearch').value || '').toUpperCase();
+  var tableSel = document.getElementById('chartSrcTable');
+  var schema = document.getElementById('chartSrcSchema').value;
+  if (!schema || !_chartDbMeta[schema]) return;
+  tableSel.innerHTML = '<option value="">테이블/뷰 선택</option>';
+  _chartDbMeta[schema].tables.forEach(function(t) {
+    if (!keyword || t.toUpperCase().indexOf(keyword) >= 0) {
+      var opt = document.createElement('option');
+      opt.value = t; opt.textContent = t;
+      tableSel.appendChild(opt);
+    }
+  });
+}
+
+/* ── Load columns for selected table ── */
+function chartRegLoadColumns() {
+  var schema = document.getElementById('chartSrcSchema').value;
+  var table = document.getElementById('chartSrcTable').value;
+  _chartRegState.table = table;
+  _chartRegState.columns = [];
+
+  var colArea = document.getElementById('chartSrcColumnArea');
+  var colContainer = document.getElementById('chartSrcColumns');
+  var selContainer = document.getElementById('chartSelectedColumns');
+  var orderSel = document.getElementById('chartSrcOrderBy');
+
+  if (!table || !_chartDbMeta[schema] || !_chartDbMeta[schema].cols[table]) {
+    colArea.style.display = 'none';
+    return;
+  }
+
+  var cols = _chartDbMeta[schema].cols[table];
+  _chartRegState.allColumns = cols;
+  colArea.style.display = '';
+
+  // Render available columns
+  colContainer.innerHTML = '';
+  cols.forEach(function(c) {
+    var tag = document.createElement('span');
+    tag.className = 'col-tag';
+    tag.setAttribute('data-col', c.name);
+    tag.innerHTML = c.name + ' <span class="col-type">' + c.type + '</span>';
+    tag.onclick = function() { chartRegToggleColumn(c); };
+    colContainer.appendChild(tag);
+  });
+
+  // Reset selected
+  selContainer.innerHTML = '<div style="color:var(--text-secondary); font-size:12px; text-align:center; padding:16px 0;">왼쪽에서 컬럼을 클릭하여 추가하세요</div>';
+  document.getElementById('chartSelColCount').textContent = '(0개)';
+
+  // Populate order by
+  orderSel.innerHTML = '<option value="">정렬 없음</option>';
+  cols.forEach(function(c) {
+    var opt = document.createElement('option');
+    opt.value = c.name; opt.textContent = c.name;
+    orderSel.appendChild(opt);
+  });
+}
+
+function chartRegToggleColumn(col) {
+  var idx = -1;
+  _chartRegState.columns.forEach(function(c, i) {
+    if (c.name === col.name) idx = i;
+  });
+
+  if (idx >= 0) {
+    _chartRegState.columns.splice(idx, 1);
+  } else {
+    _chartRegState.columns.push(col);
+  }
+  chartRegRenderSelectedColumns();
+
+  // Update tag highlight
+  var tags = document.querySelectorAll('#chartSrcColumns .col-tag');
+  tags.forEach(function(tag) {
+    var colName = tag.getAttribute('data-col');
+    var isSelected = _chartRegState.columns.some(function(c) { return c.name === colName; });
+    tag.classList.toggle('selected', isSelected);
+  });
+}
+
+function chartRegRenderSelectedColumns() {
+  var container = document.getElementById('chartSelectedColumns');
+  var countEl = document.getElementById('chartSelColCount');
+  var cols = _chartRegState.columns;
+  countEl.textContent = '(' + cols.length + '개)';
+
+  if (cols.length === 0) {
+    container.innerHTML = '<div style="color:var(--text-secondary); font-size:12px; text-align:center; padding:16px 0;">왼쪽에서 컬럼을 클릭하여 추가하세요</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+  cols.forEach(function(c) {
+    var tag = document.createElement('span');
+    tag.className = 'col-tag selected';
+    tag.innerHTML = c.name + ' <span class="col-type">' + c.type + '</span> <span class="col-remove" onclick="event.stopPropagation(); chartRegToggleColumn({name:\'' + c.name + '\', type:\'' + c.type + '\'})">×</span>';
+    container.appendChild(tag);
+  });
+}
+
+/* ── Execute Query (mock) ── */
+function chartRegExecuteQuery() {
+  var schema = _chartRegState.schema;
+  var table = _chartRegState.table;
+  if (!schema || !table) { alert('스키마와 테이블을 선택해주세요.'); return; }
+
+  var selCols = _chartRegState.columns;
+  if (selCols.length === 0) {
+    // Auto-select all columns
+    _chartRegState.columns = _chartRegState.allColumns.slice();
+    selCols = _chartRegState.columns;
+    chartRegRenderSelectedColumns();
+    var tags = document.querySelectorAll('#chartSrcColumns .col-tag');
+    tags.forEach(function(tag) { tag.classList.add('selected'); });
+  }
+
+  var limit = parseInt(document.getElementById('chartSrcLimit').value) || 1000;
+  if (limit > 50000) limit = 50000;
+
+  // Generate mock data
+  var rows = [];
+  var numRows = Math.min(limit, 50 + Math.floor(Math.random() * 100));
+  for (var i = 0; i < numRows; i++) {
+    var row = {};
+    selCols.forEach(function(c) {
+      if (c.type === 'DATE') {
+        var d = new Date(2025, 0, 1 + i);
+        row[c.name] = d.toISOString().slice(0, 10);
+      } else if (c.type === 'TIMESTAMP') {
+        var d2 = new Date(2025, 0, 1, i % 24, 0, 0);
+        d2.setDate(d2.getDate() + Math.floor(i / 24));
+        row[c.name] = d2.toISOString().slice(0, 19).replace('T', ' ');
+      } else if (c.type === 'NUMERIC') {
+        row[c.name] = parseFloat((Math.random() * 100 + 10).toFixed(2));
+      } else if (c.type === 'INTEGER') {
+        row[c.name] = Math.floor(Math.random() * 1000);
+      } else {
+        // VARCHAR – generate meaningful codes/names
+        var prefixes = ['S', 'D', 'P', 'R', 'A'];
+        row[c.name] = prefixes[i % prefixes.length] + String(100 + (i % 20));
+      }
+    });
+    rows.push(row);
+  }
+
+  _chartRegState.queryData = rows;
+
+  // Show in AG Grid
+  var colDefs = selCols.map(function(c) {
+    var def = { headerName: c.name, field: c.name };
+    if (c.type === 'NUMERIC') def.valueFormatter = function(p) { return p.value != null ? p.value.toLocaleString() : ''; };
+    return def;
+  });
+
+  document.getElementById('chartSrcPreviewCard').style.display = '';
+  document.getElementById('chartSrcRowCount').textContent = rows.length.toLocaleString() + '건 조회됨 (' + schema + '.' + table + ')';
+
+  initAGGrid('ag-grid-chart-src-preview', colDefs, rows, {
+    paginationPageSize: 10,
+    pagination: rows.length > 10
+  });
+
+  // Auto-populate axis dropdowns and render preview
+  chartRegPopulateAxisSelects();
+  chartRegUpdatePreview();
+}
+
+/* ── Populate axis selects from selected columns ── */
+function chartRegPopulateAxisSelects() {
+  var xSel = document.getElementById('chartRegXAxis');
+  var ySel = document.getElementById('chartRegYAxis');
+  var gSel = document.getElementById('chartRegGroupBy');
+  var cols = _chartRegState.columns;
+
+  xSel.innerHTML = '<option value="">컬럼 선택</option>';
+  ySel.innerHTML = '';
+  gSel.innerHTML = '<option value="">없음</option>';
+
+  cols.forEach(function(c) {
+    var ox = document.createElement('option');
+    ox.value = c.name; ox.textContent = c.name + ' (' + c.type + ')';
+    xSel.appendChild(ox);
+
+    if (c.type === 'NUMERIC' || c.type === 'INTEGER') {
+      var oy = document.createElement('option');
+      oy.value = c.name; oy.textContent = c.name;
+      ySel.appendChild(oy);
+    }
+
+    if (c.type === 'VARCHAR') {
+      var og = document.createElement('option');
+      og.value = c.name; og.textContent = c.name;
+      gSel.appendChild(og);
+    }
+  });
+
+  // Auto-select first date/time for X, first numeric for Y
+  cols.forEach(function(c) {
+    if ((c.type === 'DATE' || c.type === 'TIMESTAMP' || c.type === 'VARCHAR') && !xSel.value) {
+      xSel.value = c.name;
+    }
+  });
+  if (ySel.options.length > 0) ySel.options[0].selected = true;
+}
+
+/* ── Chart Type Picker ── */
+function chartRegSelectType(btn) {
+  document.querySelectorAll('.chart-type-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  _chartRegState.chartType = btn.getAttribute('data-type');
+  chartRegUpdatePreview();
+}
+
+/* ── Resize Preview ── */
+function chartRegResizePreview() {
+  var h = parseInt(document.getElementById('chartPreviewSize').value) || 400;
+  document.getElementById('chartRegPreview').style.height = h + 'px';
+  chartRegUpdatePreview();
+}
+
+/* ── Update Chart Preview (Canvas-based) ── */
+function chartRegUpdatePreview() {
+  var container = document.getElementById('chartRegPreview');
+  if (!container) return;
+
+  var xField = document.getElementById('chartRegXAxis') ? document.getElementById('chartRegXAxis').value : '';
+  var ySelect = document.getElementById('chartRegYAxis');
+  var yFields = [];
+  if (ySelect) {
+    for (var i = 0; i < ySelect.selectedOptions.length; i++) {
+      yFields.push(ySelect.selectedOptions[i].value);
+    }
+  }
+
+  if (!xField || yFields.length === 0 || _chartRegState.queryData.length === 0) {
+    container.innerHTML = '<div style="text-align:center; color:var(--text-secondary);"><div style="font-size:48px; margin-bottom:8px;">📊</div><div>X축, Y축 컬럼을 선택하면 미리보기가 표시됩니다</div></div>';
+    return;
+  }
+
+  var data = _chartRegState.queryData;
+  var chartType = _chartRegState.chartType;
+  var showLegend = document.getElementById('chartRegShowLegend') ? document.getElementById('chartRegShowLegend').checked : true;
+  var showGrid = document.getElementById('chartRegShowGrid') ? document.getElementById('chartRegShowGrid').checked : true;
+  var showDataLabel = document.getElementById('chartRegShowDataLabel') ? document.getElementById('chartRegShowDataLabel').checked : false;
+  var smooth = document.getElementById('chartRegSmooth') ? document.getElementById('chartRegSmooth').checked : false;
+  var stacked = document.getElementById('chartRegStacked') ? document.getElementById('chartRegStacked').checked : false;
+  var mainColor = document.getElementById('chartRegColor') ? document.getElementById('chartRegColor').value : '#1677ff';
+
+  var palette = _chartGetPalette(mainColor);
+
+  // Canvas drawing
+  var w = container.clientWidth || 600;
+  var h = parseInt(container.style.height) || 400;
+  container.innerHTML = '<canvas id="chartRegCanvas" width="' + w + '" height="' + h + '"></canvas>';
+  var canvas = document.getElementById('chartRegCanvas');
+  var ctx = canvas.getContext('2d');
+
+  // Chart area
+  var pad = { top: 40, right: 20, bottom: 50, left: 60 };
+  if (showLegend) pad.top = 60;
+  var cw = w - pad.left - pad.right;
+  var ch = h - pad.top - pad.bottom;
+
+  // Determine if dark mode
+  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  var bgColor = isDark ? '#1f1f1f' : '#ffffff';
+  var textColor = isDark ? 'rgba(255,255,255,0.7)' : '#666';
+  var gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  var labelColor = isDark ? 'rgba(255,255,255,0.85)' : '#333';
+
+  // Background
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, 0, w, h);
+
+  // Limit data points for rendering
+  var maxPts = 40;
+  var step = Math.max(1, Math.floor(data.length / maxPts));
+  var sampled = [];
+  for (var si = 0; si < data.length; si += step) { sampled.push(data[si]); }
+  if (sampled.length > maxPts) sampled = sampled.slice(0, maxPts);
+
+  var labels = sampled.map(function(r) {
+    var v = r[xField];
+    return v != null ? String(v).slice(0, 10) : '';
+  });
+
+  if (chartType === 'pie' || chartType === 'donut') {
+    _chartDrawPie(ctx, w, h, sampled, xField, yFields[0], palette, chartType === 'donut', showLegend, showDataLabel, textColor, labelColor, isDark);
+    return;
+  }
+
+  if (chartType === 'gauge') {
+    var gaugeVal = 0;
+    if (sampled.length > 0 && yFields[0]) gaugeVal = sampled[sampled.length - 1][yFields[0]] || 0;
+    _chartDrawGauge(ctx, w, h, gaugeVal, yFields[0], mainColor, textColor, labelColor, isDark);
+    return;
+  }
+
+  // Get Y range
+  var yMin = Infinity, yMax = -Infinity;
+  sampled.forEach(function(r) {
+    yFields.forEach(function(yf) {
+      var v = parseFloat(r[yf]);
+      if (!isNaN(v)) {
+        if (stacked) { /* simplified */ }
+        if (v < yMin) yMin = v;
+        if (v > yMax) yMax = v;
+      }
+    });
+  });
+
+  var userMin = document.getElementById('chartRegYMin') ? parseFloat(document.getElementById('chartRegYMin').value) : NaN;
+  var userMax = document.getElementById('chartRegYMax') ? parseFloat(document.getElementById('chartRegYMax').value) : NaN;
+  if (!isNaN(userMin)) yMin = userMin;
+  if (!isNaN(userMax)) yMax = userMax;
+
+  if (yMin === yMax) { yMin -= 1; yMax += 1; }
+  var yRange = yMax - yMin;
+  yMin -= yRange * 0.05;
+  yMax += yRange * 0.05;
+  yRange = yMax - yMin;
+
+  // Draw grid
+  if (showGrid) {
+    ctx.strokeStyle = gridColor;
+    ctx.lineWidth = 1;
+    for (var gi = 0; gi <= 5; gi++) {
+      var gy = pad.top + ch - (ch * gi / 5);
+      ctx.beginPath(); ctx.moveTo(pad.left, gy); ctx.lineTo(pad.left + cw, gy); ctx.stroke();
+    }
+  }
+
+  // Y axis labels
+  ctx.fillStyle = textColor;
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'right';
+  for (var yi = 0; yi <= 5; yi++) {
+    var yv = yMin + yRange * yi / 5;
+    var yy = pad.top + ch - (ch * yi / 5);
+    ctx.fillText(yv.toFixed(1), pad.left - 8, yy + 3);
+  }
+
+  // X axis labels
+  ctx.textAlign = 'center';
+  var xStep2 = Math.max(1, Math.floor(labels.length / 8));
+  labels.forEach(function(lb, idx) {
+    if (idx % xStep2 !== 0 && idx !== labels.length - 1) return;
+    var xx = pad.left + (idx / (labels.length - 1 || 1)) * cw;
+    ctx.save();
+    ctx.translate(xx, pad.top + ch + 14);
+    ctx.rotate(-0.4);
+    ctx.fillText(lb, 0, 0);
+    ctx.restore();
+  });
+
+  // Draw series
+  yFields.forEach(function(yf, sIdx) {
+    var color = palette[sIdx % palette.length];
+    var pts = sampled.map(function(r, idx) {
+      var v = parseFloat(r[yf]);
+      if (isNaN(v)) v = 0;
+      return {
+        x: pad.left + (idx / (sampled.length - 1 || 1)) * cw,
+        y: pad.top + ch - ((v - yMin) / yRange) * ch
+      };
+    });
+
+    if (chartType === 'bar') {
+      var barW = Math.max(2, (cw / sampled.length / yFields.length) - 2);
+      ctx.fillStyle = color;
+      pts.forEach(function(p, idx) {
+        var bx = p.x - barW * yFields.length / 2 + sIdx * barW;
+        var by = p.y;
+        var bh = pad.top + ch - by;
+        ctx.fillRect(bx, by, barW, bh);
+        if (showDataLabel) {
+          ctx.fillStyle = labelColor;
+          ctx.font = '10px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(sampled[idx][yf], bx + barW / 2, by - 4);
+          ctx.fillStyle = color;
+        }
+      });
+    } else if (chartType === 'area') {
+      // Fill area
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pad.top + ch);
+      pts.forEach(function(p) {
+        if (smooth && pts.length > 2) ctx.lineTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      });
+      ctx.lineTo(pts[pts.length - 1].x, pad.top + ch);
+      ctx.closePath();
+      ctx.fillStyle = color + '33';
+      ctx.fill();
+      // Line
+      ctx.beginPath();
+      pts.forEach(function(p, i) { i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y); });
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    } else if (chartType === 'scatter') {
+      pts.forEach(function(p, idx) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+      });
+    } else if (chartType === 'heatmap') {
+      var cellW = cw / sampled.length;
+      var cellH = ch / yFields.length;
+      var maxVal = 0;
+      sampled.forEach(function(r) { var v = parseFloat(r[yf]) || 0; if (v > maxVal) maxVal = v; });
+      pts.forEach(function(p, idx) {
+        var v = parseFloat(sampled[idx][yf]) || 0;
+        var intensity = maxVal > 0 ? v / maxVal : 0;
+        ctx.fillStyle = _heatColor(intensity, color);
+        ctx.fillRect(pad.left + idx * cellW, pad.top + sIdx * cellH, cellW - 1, cellH - 1);
+      });
+    } else {
+      // Line chart (default)
+      ctx.beginPath();
+      pts.forEach(function(p, i) { i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y); });
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      // Dots
+      pts.forEach(function(p, idx) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        if (showDataLabel && idx % Math.max(1, Math.floor(pts.length / 8)) === 0) {
+          ctx.fillStyle = labelColor;
+          ctx.font = '10px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(sampled[idx][yf], p.x, p.y - 8);
+        }
+      });
+    }
+  });
+
+  // Legend
+  if (showLegend && yFields.length > 0) {
+    ctx.font = '12px sans-serif';
+    var lx = pad.left;
+    yFields.forEach(function(yf, i) {
+      var color = palette[i % palette.length];
+      ctx.fillStyle = color;
+      ctx.fillRect(lx, 12, 14, 14);
+      ctx.fillStyle = labelColor;
+      ctx.fillText(yf, lx + 18, 23);
+      lx += ctx.measureText(yf).width + 36;
+    });
+  }
+
+  // Title
+  var chartName = document.getElementById('chartRegName') ? document.getElementById('chartRegName').value : '';
+  if (chartName) {
+    ctx.fillStyle = labelColor;
+    ctx.font = 'bold 14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(chartName, w / 2, showLegend ? 46 : 22);
+  }
+}
+
+function _chartGetPalette(mainColor) {
+  var paletteSel = document.getElementById('chartRegPalette');
+  var paletteName = paletteSel ? paletteSel.value : 'default';
+  var palettes = {
+    'default': [mainColor, '#52c41a', '#faad14', '#722ed1', '#13c2c2', '#eb2f96'],
+    'warm':    ['#f5222d', '#fa541c', '#fa8c16', '#faad14', '#fadb14', '#a0d911'],
+    'cool':    ['#13c2c2', '#1890ff', '#2f54eb', '#722ed1', '#36cfc9', '#597ef7'],
+    'earth':   ['#8b6914', '#52c41a', '#389e0d', '#a0d911', '#d4b106', '#7cb305'],
+    'vivid':   ['#f5222d', '#fa8c16', '#fadb14', '#52c41a', '#1890ff', '#722ed1']
+  };
+  return palettes[paletteName] || palettes['default'];
+}
+
+function _heatColor(intensity, baseColor) {
+  var r = parseInt(baseColor.slice(1, 3), 16);
+  var g = parseInt(baseColor.slice(3, 5), 16);
+  var b = parseInt(baseColor.slice(5, 7), 16);
+  var a = 0.1 + intensity * 0.8;
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + a.toFixed(2) + ')';
+}
+
+function _chartDrawPie(ctx, w, h, data, xField, yField, palette, isDonut, showLegend, showLabel, textColor, labelColor, isDark) {
+  var cx = w / 2;
+  var cy = h / 2 + (showLegend ? 10 : 0);
+  var radius = Math.min(w, h) / 2 - 60;
+
+  var total = 0;
+  var slices = [];
+  var maxSlices = Math.min(data.length, 10);
+  for (var i = 0; i < maxSlices; i++) {
+    var v = parseFloat(data[i][yField]) || 0;
+    total += v;
+    slices.push({ label: String(data[i][xField] || '').slice(0, 12), value: v });
+  }
+
+  var startAngle = -Math.PI / 2;
+  slices.forEach(function(s, idx) {
+    var angle = total > 0 ? (s.value / total) * Math.PI * 2 : 0;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, startAngle, startAngle + angle);
+    ctx.fillStyle = palette[idx % palette.length];
+    ctx.fill();
+
+    if (showLabel && angle > 0.15) {
+      var mid = startAngle + angle / 2;
+      var lx = cx + Math.cos(mid) * radius * 0.65;
+      var ly = cy + Math.sin(mid) * radius * 0.65;
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText((s.value / total * 100).toFixed(1) + '%', lx, ly + 4);
+    }
+
+    startAngle += angle;
+  });
+
+  if (isDonut) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius * 0.55, 0, Math.PI * 2);
+    ctx.fillStyle = isDark ? '#1f1f1f' : '#fff';
+    ctx.fill();
+  }
+
+  // Legend
+  if (showLegend) {
+    var ly2 = 14;
+    var lx2 = 12;
+    ctx.font = '11px sans-serif';
+    slices.forEach(function(s, idx) {
+      ctx.fillStyle = palette[idx % palette.length];
+      ctx.fillRect(lx2, ly2, 12, 12);
+      ctx.fillStyle = labelColor;
+      ctx.fillText(s.label + ' (' + s.value.toFixed(1) + ')', lx2 + 16, ly2 + 10);
+      lx2 += ctx.measureText(s.label + ' (' + s.value.toFixed(1) + ')').width + 32;
+      if (lx2 > w - 80) { lx2 = 12; ly2 += 18; }
+    });
+  }
+}
+
+function _chartDrawGauge(ctx, w, h, value, label, color, textColor, labelColor, isDark) {
+  var cx = w / 2;
+  var cy = h / 2 + 30;
+  var radius = Math.min(w, h) / 2 - 50;
+
+  // Background arc
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, Math.PI, 0);
+  ctx.lineWidth = 24;
+  ctx.strokeStyle = isDark ? '#333' : '#eee';
+  ctx.stroke();
+
+  // Value arc
+  var pct = Math.min(1, Math.max(0, value / 100));
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, Math.PI, Math.PI + Math.PI * pct);
+  ctx.lineWidth = 24;
+  ctx.strokeStyle = color;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Value text
+  ctx.fillStyle = labelColor;
+  ctx.font = 'bold 32px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(value.toFixed(1), cx, cy - 10);
+
+  ctx.font = '14px sans-serif';
+  ctx.fillStyle = textColor;
+  ctx.fillText(label || 'Value', cx, cy + 16);
+}
+
+/* ── Summary Update ── */
+function chartRegUpdateSummary() {
+  var setTxt = function(id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '-'; };
+  setTxt('sumSource', _chartRegState.schema + '.' + _chartRegState.table);
+  setTxt('sumName', document.getElementById('chartRegName') ? document.getElementById('chartRegName').value : '-');
+
+  var activeType = document.querySelector('.chart-type-btn.active');
+  setTxt('sumType', activeType ? activeType.textContent.trim() : '-');
+
+  setTxt('sumXAxis', document.getElementById('chartRegXAxis') ? document.getElementById('chartRegXAxis').value : '-');
+
+  var ySel = document.getElementById('chartRegYAxis');
+  var yNames = [];
+  if (ySel) { for (var i = 0; i < ySel.selectedOptions.length; i++) yNames.push(ySel.selectedOptions[i].value); }
+  setTxt('sumYAxis', yNames.join(', ') || '-');
+
+  var domSel = document.getElementById('chartRegDomain');
+  setTxt('sumDomain', domSel && domSel.selectedOptions[0] ? domSel.selectedOptions[0].textContent : '-');
+
+  var gradeSel = document.getElementById('chartRegGrade');
+  setTxt('sumGrade', gradeSel && gradeSel.selectedOptions[0] ? gradeSel.selectedOptions[0].textContent : '-');
+
+  setTxt('sumRowCount', _chartRegState.queryData.length.toLocaleString() + '건');
+}
+
+/* ── Submit ── */
+function chartRegSubmit() {
+  // Validate required fields
+  if (_chartRegState.queryData.length === 0) { alert('데이터를 먼저 조회해주세요.'); return; }
+  var name = document.getElementById('chartRegName');
+  if (!name || !name.value.trim()) { alert('차트명을 입력해주세요.'); return; }
+  var xSel = document.getElementById('chartRegXAxis');
+  if (!xSel || !xSel.value) { alert('X축 컬럼을 선택해주세요.'); return; }
+  var ySel = document.getElementById('chartRegYAxis');
+  if (!ySel || ySel.selectedOptions.length === 0) { alert('Y축 컬럼을 선택해주세요.'); return; }
+  alert('차트가 등록되었습니다.');
+  navigate('dist-chart-content');
+}
+
+// ===== 외부 사용자 사용신청 폼 (로그인 화면) =====
+function showExtRegisterForm() {
+  document.querySelector('#loginOverlay > .card').style.display = 'none';
+  document.getElementById('extRegisterForm').style.display = '';
+}
+
+function hideExtRegisterForm() {
+  document.getElementById('extRegisterForm').style.display = 'none';
+  document.querySelector('#loginOverlay > .card').style.display = '';
+}
+
+function submitExtRegister() {
+  var name = document.getElementById('ext-name').value.trim();
+  var org = document.getElementById('ext-org').value.trim();
+  var dept = document.getElementById('ext-dept').value.trim();
+  var email = document.getElementById('ext-email').value.trim();
+  var phone = document.getElementById('ext-phone').value.trim();
+  var purpose = document.getElementById('ext-purpose').value;
+  var purposeDetail = document.getElementById('ext-purpose-detail').value.trim();
+  var agreePrivacy = document.getElementById('ext-agree-privacy').checked;
+  var agreeTerms = document.getElementById('ext-agree-terms').checked;
+
+  if (!name || !org || !dept || !email || !phone) {
+    showToast('필수 항목을 모두 입력해주세요.', 'error');
+    return;
+  }
+  if (!purpose) { showToast('사용목적을 선택해주세요.', 'error'); return; }
+  if (!purposeDetail) { showToast('상세 사용목적을 입력해주세요.', 'error'); return; }
+  if (!agreePrivacy || !agreeTerms) {
+    showToast('필수 약관에 동의해주세요.', 'error');
+    return;
+  }
+
+  var receiptNo = 'EXT-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 9000) + 1000);
+  showToast('신청이 접수되었습니다. 접수번호: ' + receiptNo, 'success');
+  hideExtRegisterForm();
+}
+
+// ===== 외부사용자 신청관리 (관리자) =====
+var extRegisterData = [
+  { id: 'EXT-2026-0047', date: '2026-03-06', name: '박연구', org: '국립환경과학원', dept: '수질연구팀', position: '연구원', email: 'park@nier.go.kr', phone: '010-9876-5432', purpose: '공동 연구', purposeDetail: '한강 수계 수질 빅데이터 공동 분석 연구', dataAccess: '수질, 수문', period: '2026-04 ~ 2026-12', attachment: '재직증명서.pdf', status: '승인대기', processDate: '-' },
+  { id: 'EXT-2026-0046', date: '2026-03-06', name: '이분석', org: '서울대학교', dept: '환경공학부', position: '교수', email: 'lee@snu.ac.kr', phone: '010-5555-1234', purpose: '데이터 조회', purposeDetail: '댐 수위 및 유량 데이터 분석을 통한 기후변화 영향 연구', dataAccess: '댐, 수문, 기상', period: '2026-03 ~ 2027-02', attachment: '연구계획서.pdf', status: '승인대기', processDate: '-' },
+  { id: 'EXT-2026-0045', date: '2026-03-05', name: '김개발', org: '(주)워터테크', dept: '개발팀', position: '과장', email: 'kim@watertech.co.kr', phone: '010-1111-2222', purpose: 'API 연동', purposeDetail: '스마트 수도계량기 연동을 위한 실시간 데이터 API 활용', dataAccess: '수도', period: '2026-04 ~ 2026-09', attachment: '사업자등록증.pdf', status: '승인대기', processDate: '-' },
+  { id: 'EXT-2026-0044', date: '2026-03-04', name: '정수질', org: '환경부', dept: '수질정책과', position: '사무관', email: 'jung@me.go.kr', phone: '010-3333-4444', purpose: '데이터 조회', purposeDetail: '전국 수질 모니터링 현황 파악 및 정책 수립 자료', dataAccess: '수질, 수문', period: '2026-03 ~ 2026-12', attachment: '재직증명서.pdf', status: '승인대기', processDate: '-' },
+  { id: 'EXT-2026-0043', date: '2026-03-03', name: '최에너지', org: '한국에너지공단', dept: '신재생에너지팀', position: '대리', email: 'choi@energy.or.kr', phone: '010-7777-8888', purpose: '공동 연구', purposeDetail: '소수력 발전 효율 분석을 위한 수력 데이터 활용', dataAccess: '에너지, 댐', period: '2026-04 ~ 2026-10', attachment: '재직증명서.pdf', status: '승인대기', processDate: '-' },
+  { id: 'EXT-2026-0040', date: '2026-02-28', name: '한수자원', org: '(주)그린워터', dept: 'R&D센터', position: '팀장', email: 'han@greenwater.kr', phone: '010-2222-3333', purpose: 'API 연동', purposeDetail: '정수장 운영 최적화 AI 모델 개발을 위한 수질/수량 데이터', dataAccess: '수질, 수도', period: '2026-03 ~ 2026-08', attachment: '사업자등록증.pdf', status: '승인완료', processDate: '2026-03-01' },
+  { id: 'EXT-2026-0038', date: '2026-02-25', name: '오기상', org: '기상청', dept: '기후변화감시과', position: '연구관', email: 'oh@kma.go.kr', phone: '010-4444-5555', purpose: '데이터 조회', purposeDetail: '기후변화 영향 분석을 위한 수문·기상 데이터 교차 검증', dataAccess: '기상, 수문', period: '2026-03 ~ 2027-02', attachment: '재직증명서.pdf', status: '승인완료', processDate: '2026-02-27' },
+  { id: 'EXT-2026-0035', date: '2026-02-20', name: '강환경', org: '환경정책평가연구원', dept: '물환경연구실', position: '부연구위원', email: 'kang@kei.re.kr', phone: '010-6666-7777', purpose: '공동 연구', purposeDetail: '하천 생태 건강성 평가를 위한 수질·수문 통합 분석', dataAccess: '수질, 수문, 댐', period: '2026-03 ~ 2026-11', attachment: '연구계획서.pdf', status: '승인완료', processDate: '2026-02-22' },
+  { id: 'EXT-2026-0030', date: '2026-02-15', name: '임데이터', org: '(주)데이터솔루션', dept: '분석팀', position: '사원', email: 'lim@datasol.com', phone: '010-8888-9999', purpose: '기타', purposeDetail: '서류 미비 - 사업자등록증 미제출', dataAccess: '수문', period: '2026-03 ~ 2026-06', attachment: '-', status: '반려', processDate: '2026-02-17', rejectReason: '필수 첨부서류(사업자등록증) 미제출' },
+  { id: 'EXT-2026-0028', date: '2026-02-10', name: '서외부', org: 'OO대학교', dept: '토목공학과', position: '대학원생', email: 'seo@univ.ac.kr', phone: '010-1234-0000', purpose: '데이터 조회', purposeDetail: '졸업논문용 수문 데이터 분석 (개인 연구 목적 불명확)', dataAccess: '수문', period: '2026-03 ~ 2026-08', attachment: '학생증사본.pdf', status: '반려', processDate: '2026-02-12', rejectReason: '사용목적 불명확 - 지도교수 확인서 필요' }
+];
+
+function initExtRegisterGrid() {
+  initAGGrid('ag-grid-ext-register', [
+    { field: 'id', headerName: '접수번호', width: 130, cellRenderer: function(p) { return '<span style="font-family:monospace; font-weight:600; color:var(--primary-color);">' + p.value + '</span>'; } },
+    { field: 'date', headerName: '신청일', width: 100 },
+    { field: 'name', headerName: '성명', width: 80, cellRenderer: function(p) { return '<strong>' + p.value + '</strong>'; } },
+    { field: 'org', headerName: '소속기관', flex: 1 },
+    { field: 'purpose', headerName: '사용목적', width: 100, cellRenderer: function(p) {
+      var m = { '데이터 조회': { bg:'#e6f7ff', c:'#1677ff' }, 'API 연동': { bg:'#f9f0ff', c:'#722ed1' }, '공동 연구': { bg:'#f6ffed', c:'#52c41a' }, '기타': { bg:'#f5f5f5', c:'#666' } };
+      var s = m[p.value] || { bg:'#f5f5f5', c:'#666' };
+      return '<span style="background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:11px;">'+p.value+'</span>';
+    }},
+    { field: 'status', headerName: '상태', width: 95, cellRenderer: function(p) {
+      var m = { '승인대기': { bg:'#fff8e1', c:'#d48806', dot:'#faad14' }, '승인완료': { bg:'#e8f5e9', c:'#2e7d32', dot:'#52c41a' }, '반려': { bg:'#ffebee', c:'#c62828', dot:'#ff4d4f' } };
+      var s = m[p.value] || { bg:'#f5f5f5', c:'#666', dot:'#999' };
+      return '<span style="display:inline-flex;align-items:center;gap:4px;background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:11px;"><span style="width:6px;height:6px;border-radius:50%;background:'+s.dot+';"></span>'+p.value+'</span>';
+    }},
+    { field: 'processDate', headerName: '처리일', width: 100 },
+    { field: 'action', headerName: '관리', width: 65, sortable: false, filter: false, cellRenderer: function(p) {
+      return '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;">상세</button>';
+    }}
+  ], extRegisterData, {
+    domLayout: 'autoHeight',
+    getRowStyle: function(params) {
+      if (params.data.status === '승인대기') return { background: '#fffbe6' };
+      return null;
+    },
+    onCellClicked: function(e) {
+      if (e.colDef.field === 'action') {
+        openExtRegisterDetail(e.data);
+      }
+    }
+  });
+}
+
+function openExtRegisterDetail(data) {
+  // 신청자 정보 채우기
+  document.getElementById('ext-detail-id').textContent = data.id;
+  document.getElementById('ext-detail-date').textContent = data.date;
+  document.getElementById('ext-detail-name').textContent = data.name;
+  document.getElementById('ext-detail-org').textContent = data.org;
+  document.getElementById('ext-detail-dept').textContent = data.dept;
+  document.getElementById('ext-detail-position').textContent = data.position || '-';
+  document.getElementById('ext-detail-email').textContent = data.email;
+  document.getElementById('ext-detail-phone').textContent = data.phone;
+  document.getElementById('ext-detail-purpose').textContent = data.purpose;
+  document.getElementById('ext-detail-period').textContent = data.period;
+  document.getElementById('ext-detail-purpose-detail').textContent = data.purposeDetail;
+  document.getElementById('ext-detail-data').textContent = data.dataAccess;
+  document.getElementById('ext-detail-attachment').textContent = data.attachment || '-';
+
+  // 상태 배지
+  var statusMap = { '승인대기': { bg:'#fff8e1', c:'#d48806' }, '승인완료': { bg:'#e8f5e9', c:'#2e7d32' }, '반려': { bg:'#ffebee', c:'#c62828' } };
+  var st = statusMap[data.status] || { bg:'#f5f5f5', c:'#666' };
+  document.getElementById('ext-detail-status').innerHTML = '<span style="background:'+st.bg+';color:'+st.c+';padding:2px 10px;border-radius:4px;font-size:12px;font-weight:600;">'+data.status+'</span>';
+
+  // 타임라인
+  var timeline = document.getElementById('ext-detail-timeline');
+  var html = '<div style="border-left:2px solid var(--border-color); padding-left:16px; margin-left:8px;">';
+  html += '<div style="position:relative; margin-bottom:16px;">';
+  html += '<div style="position:absolute; left:-22px; top:2px; width:12px; height:12px; border-radius:50%; background:#1677ff; border:2px solid #fff;"></div>';
+  html += '<div style="font-size:12px; font-weight:600;">신청서 접수</div>';
+  html += '<div style="font-size:11px; color:var(--text-secondary);">' + data.date + ' · ' + data.name + ' (' + data.org + ')</div>';
+  html += '</div>';
+
+  if (data.status === '승인완료') {
+    html += '<div style="position:relative; margin-bottom:16px;">';
+    html += '<div style="position:absolute; left:-22px; top:2px; width:12px; height:12px; border-radius:50%; background:#52c41a; border:2px solid #fff;"></div>';
+    html += '<div style="font-size:12px; font-weight:600; color:#52c41a;">승인 완료</div>';
+    html += '<div style="font-size:11px; color:var(--text-secondary);">' + data.processDate + ' · 관리자 승인 처리</div>';
+    html += '</div>';
+  } else if (data.status === '반려') {
+    html += '<div style="position:relative; margin-bottom:16px;">';
+    html += '<div style="position:absolute; left:-22px; top:2px; width:12px; height:12px; border-radius:50%; background:#f5222d; border:2px solid #fff;"></div>';
+    html += '<div style="font-size:12px; font-weight:600; color:#f5222d;">반려</div>';
+    html += '<div style="font-size:11px; color:var(--text-secondary);">' + data.processDate + ' · 사유: ' + (data.rejectReason || '-') + '</div>';
+    html += '</div>';
+  }
+  html += '</div>';
+  timeline.innerHTML = html;
+
+  // 액션 카드 표시/숨김
+  var actionCard = document.getElementById('ext-detail-action-card');
+  var resultCard = document.getElementById('ext-detail-result-card');
+  if (data.status === '승인대기') {
+    actionCard.style.display = '';
+    resultCard.style.display = 'none';
+    document.getElementById('ext-detail-reject-reason-box').style.display = 'none';
+    document.getElementById('ext-detail-reject-btn').style.display = 'none';
+    document.getElementById('ext-detail-reject-toggle').style.display = '';
+    document.getElementById('ext-detail-approve-btn').style.display = '';
+  } else if (data.status === '승인완료') {
+    actionCard.style.display = 'none';
+    resultCard.style.display = '';
+    var genId = 'EXT_' + data.name.substring(0,1) + String(Math.floor(Math.random() * 9000) + 1000);
+    document.getElementById('ext-detail-result').innerHTML =
+      '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">' +
+      '<div style="font-size:12px;"><span style="color:var(--text-secondary); min-width:80px; display:inline-block;">생성 계정</span> <strong>' + genId + '</strong></div>' +
+      '<div style="font-size:12px;"><span style="color:var(--text-secondary); min-width:80px; display:inline-block;">임시 비밀번호</span> <code style="background:#f5f5f5; padding:2px 6px; border-radius:4px; font-size:11px;">Kw@' + Math.random().toString(36).substring(2, 8) + '</code></div>' +
+      '<div style="font-size:12px;"><span style="color:var(--text-secondary); min-width:80px; display:inline-block;">계정 유효기간</span> ' + data.period + '</div>' +
+      '<div style="font-size:12px;"><span style="color:var(--text-secondary); min-width:80px; display:inline-block;">접근 권한</span> 데이터 조회 (3등급)</div>' +
+      '</div>';
+  } else {
+    actionCard.style.display = 'none';
+    resultCard.style.display = 'none';
+  }
+
+  // 현재 상세 데이터 저장
+  window._extDetailData = data;
+  navigate('sys-ext-register-detail');
+}
+
+function toggleRejectReason() {
+  var box = document.getElementById('ext-detail-reject-reason-box');
+  var rejectBtn = document.getElementById('ext-detail-reject-btn');
+  var toggleBtn = document.getElementById('ext-detail-reject-toggle');
+  if (box.style.display === 'none') {
+    box.style.display = '';
+    rejectBtn.style.display = '';
+    toggleBtn.style.display = 'none';
+  } else {
+    box.style.display = 'none';
+    rejectBtn.style.display = 'none';
+    toggleBtn.style.display = '';
+  }
+}
+
+function approveExtRegister() {
+  if (!window._extDetailData) return;
+  var data = window._extDetailData;
+  data.status = '승인완료';
+  data.processDate = new Date().toISOString().substring(0, 10);
+
+  // 승인 완료 UI 갱신
+  showToast(data.name + '님의 신청이 승인되었습니다. 계정이 생성되었습니다.', 'success');
+
+  // 그리드 새로고침
+  initExtRegisterGrid();
+
+  // 상세 화면 갱신
+  openExtRegisterDetail(data);
+}
+
+function rejectExtRegister() {
+  if (!window._extDetailData) return;
+  var reason = document.getElementById('ext-detail-reject-reason').value.trim();
+  if (!reason) {
+    showToast('반려 사유를 입력해주세요.', 'error');
+    return;
+  }
+  var data = window._extDetailData;
+  data.status = '반려';
+  data.processDate = new Date().toISOString().substring(0, 10);
+  data.rejectReason = reason;
+
+  showToast(data.name + '님의 신청이 반려되었습니다.', 'error');
+
+  // 그리드 새로고침
+  initExtRegisterGrid();
+
+  // 상세 화면 갱신
+  openExtRegisterDetail(data);
 }

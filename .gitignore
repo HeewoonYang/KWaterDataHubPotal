@@ -1,0 +1,31 @@
+# Node.js
+node_modules/
+dist/
+.env
+.env.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# Docker
+pgdata/
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code
+.claude/worktrees/
+.claude/settings.local.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+*.tmp
+*.bak

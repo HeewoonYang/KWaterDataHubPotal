@@ -1121,6 +1121,120 @@
     </div>
   </div>
 
+  <!-- ===== Row 2.5: 저장 단계 개인정보 보안등급 현황 ===== -->
+  <div class="card" style="padding:0; margin-bottom:14px;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="card-title">🔒 저장 데이터 개인정보 현황 (PII 스캔)</div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <span style="font-size:10px; color:var(--text-secondary);">최종 스캔: 2026-03-04 09:00</span>
+        <button class="btn btn-outline" style="padding:2px 8px; font-size:11px;" data-perm="write">🔍 재스캔</button>
+        <button class="btn btn-outline" style="padding:2px 8px; font-size:11px;" onclick="navigate('dist-deidentify')">비식별 정책 →</button>
+      </div>
+    </div>
+    <div class="card-body" style="padding:14px;">
+      <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:14px;">
+        <div style="padding:10px 14px; background:#fff1f0; border-radius:8px; border-left:3px solid #f5222d;">
+          <div style="font-size:11px; color:#8c8c8c;">1등급 (비밀) 컬럼</div>
+          <div style="font-size:20px; font-weight:700; color:#f5222d;">18<span style="font-size:11px; font-weight:400; color:#8c8c8c;">개</span></div>
+          <div style="font-size:10px; color:#cf1322;">AES-256/SHA-256 필수</div>
+        </div>
+        <div style="padding:10px 14px; background:#fff7e6; border-radius:8px; border-left:3px solid #fa8c16;">
+          <div style="font-size:11px; color:#8c8c8c;">2등급 (일반) 컬럼</div>
+          <div style="font-size:20px; font-weight:700; color:#fa8c16;">47<span style="font-size:11px; font-weight:400; color:#8c8c8c;">개</span></div>
+          <div style="font-size:10px; color:#d48806;">마스킹/가명치환 권장</div>
+        </div>
+        <div style="padding:10px 14px; background:#e6f7ff; border-radius:8px; border-left:3px solid #1677ff;">
+          <div style="font-size:11px; color:#8c8c8c;">PII 포함 테이블</div>
+          <div style="font-size:20px; font-weight:700; color:#1677ff;">12<span style="font-size:11px; font-weight:400; color:#8c8c8c;">/422</span></div>
+          <div style="font-size:10px; color:#0958d9;">전체 테이블의 2.8%</div>
+        </div>
+        <div style="padding:10px 14px; background:#f6ffed; border-radius:8px; border-left:3px solid #52c41a;">
+          <div style="font-size:11px; color:#8c8c8c;">비식별 정책 연결</div>
+          <div style="font-size:20px; font-weight:700; color:#52c41a;">10<span style="font-size:11px; font-weight:400; color:#8c8c8c;">/12</span></div>
+          <div style="font-size:10px; color:#389e0d;">83.3% 연결 완료</div>
+        </div>
+        <div style="padding:10px 14px; background:#f9f0ff; border-radius:8px; border-left:3px solid #722ed1;">
+          <div style="font-size:11px; color:#8c8c8c;">암호화 적용률</div>
+          <div style="font-size:20px; font-weight:700; color:#722ed1;">94.2<span style="font-size:11px; font-weight:400; color:#8c8c8c;">%</span></div>
+          <div style="font-size:10px; color:#531dab;">▲ 2.1%p 개선</div>
+        </div>
+      </div>
+      <table class="data-table" style="font-size:12px;">
+        <thead>
+          <tr>
+            <th>테이블</th>
+            <th>모델</th>
+            <th>PII 컬럼</th>
+            <th>보안등급</th>
+            <th>비식별 기법</th>
+            <th>정책 연결</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>TB_CUSTOMER</strong></td>
+            <td>고객관리_물리모델</td>
+            <td>고객명, 전화번호, 주소, 이메일</td>
+            <td><span style="background:#fce4ec; color:#c62828; padding:1px 6px; border-radius:3px; font-size:10px;">1등급</span></td>
+            <td>마스킹 + AES-256</td>
+            <td><span style="color:#52c41a; font-weight:600;">연결됨</span></td>
+            <td><span style="display:inline-flex; align-items:center; gap:4px; background:#e8f5e9; color:#389e0d; padding:2px 8px; border-radius:4px; font-size:11px;"><span style="width:6px; height:6px; background:#52c41a; border-radius:50%;"></span>적용중</span></td>
+          </tr>
+          <tr>
+            <td><strong>TB_HR_EMPLOYEE</strong></td>
+            <td>고객관리_물리모델</td>
+            <td>주민번호, 계좌번호, 급여</td>
+            <td><span style="background:#fce4ec; color:#c62828; padding:1px 6px; border-radius:3px; font-size:10px;">1등급</span></td>
+            <td>SHA-256 해싱</td>
+            <td><span style="color:#52c41a; font-weight:600;">연결됨</span></td>
+            <td><span style="display:inline-flex; align-items:center; gap:4px; background:#e8f5e9; color:#389e0d; padding:2px 8px; border-radius:4px; font-size:11px;"><span style="width:6px; height:6px; background:#52c41a; border-radius:50%;"></span>적용중</span></td>
+          </tr>
+          <tr>
+            <td><strong>TB_METER_USAGE</strong></td>
+            <td>상수도관리_물리모델</td>
+            <td>고객명, 주소, 계량기번호</td>
+            <td><span style="background:#fff3e0; color:#ef6c00; padding:1px 6px; border-radius:3px; font-size:10px;">2등급</span></td>
+            <td>부분 마스킹</td>
+            <td><span style="color:#52c41a; font-weight:600;">연결됨</span></td>
+            <td><span style="display:inline-flex; align-items:center; gap:4px; background:#e8f5e9; color:#389e0d; padding:2px 8px; border-radius:4px; font-size:11px;"><span style="width:6px; height:6px; background:#52c41a; border-radius:50%;"></span>적용중</span></td>
+          </tr>
+          <tr>
+            <td><strong>TB_BILLING</strong></td>
+            <td>고객관리_물리모델</td>
+            <td>계좌번호, 카드번호</td>
+            <td><span style="background:#fce4ec; color:#c62828; padding:1px 6px; border-radius:3px; font-size:10px;">1등급</span></td>
+            <td>AES-256 암호화</td>
+            <td><span style="color:#52c41a; font-weight:600;">연결됨</span></td>
+            <td><span style="display:inline-flex; align-items:center; gap:4px; background:#e8f5e9; color:#389e0d; padding:2px 8px; border-radius:4px; font-size:11px;"><span style="width:6px; height:6px; background:#52c41a; border-radius:50%;"></span>적용중</span></td>
+          </tr>
+          <tr style="background:#fffbe6;">
+            <td><strong>TB_SENSOR_LOG</strong></td>
+            <td>계측통합_물리모델</td>
+            <td>GPS좌표, 설치자ID</td>
+            <td><span style="background:#fff3e0; color:#ef6c00; padding:1px 6px; border-radius:3px; font-size:10px;">2등급</span></td>
+            <td>일반화 (미적용)</td>
+            <td><span style="color:#fa8c16; font-weight:600;">미연결</span></td>
+            <td><span style="display:inline-flex; align-items:center; gap:4px; background:#fff7e6; color:#d48806; padding:2px 8px; border-radius:4px; font-size:11px;"><span style="width:6px; height:6px; background:#faad14; border-radius:50%;"></span>검토중</span></td>
+          </tr>
+          <tr style="background:#fffbe6;">
+            <td><strong>TB_WATER_QUALITY_LOG</strong></td>
+            <td>수질관리_물리모델</td>
+            <td>측정자ID, 위치정보</td>
+            <td><span style="background:#fff3e0; color:#ef6c00; padding:1px 6px; border-radius:3px; font-size:10px;">2등급</span></td>
+            <td>토큰화 (미적용)</td>
+            <td><span style="color:#fa8c16; font-weight:600;">미연결</span></td>
+            <td><span style="display:inline-flex; align-items:center; gap:4px; background:#fff7e6; color:#d48806; padding:2px 8px; border-radius:4px; font-size:11px;"><span style="width:6px; height:6px; background:#faad14; border-radius:50%;"></span>검토중</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px; padding:8px 12px; background:#f9f0ff; border-radius:6px; border-left:3px solid #722ed1;">
+        <div style="font-size:11px; color:#531dab; font-weight:600;">📌 개인정보 보호법 제29조 (안전조치 의무)</div>
+        <div style="font-size:11px; color:#555; margin-top:2px;">개인정보처리자는 개인정보가 분실·도난·유출·위조·변조 또는 훼손되지 않도록 내부 관리계획 수립, 접속기록 보관, 암호화 등 안전성 확보에 필요한 조치를 해야 합니다.</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== Row 3: ERD 미리보기 + 모델 통계 ===== -->
   <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:12px; margin-bottom:14px;">
     <div class="card" style="padding:0; margin-bottom:0;">
@@ -2689,6 +2803,68 @@
             <div style="width:8px;height:8px;border-radius:50%;background:#4caf50;margin-top:5px;flex-shrink:0;"></div>
             <div><div style="font-size:12px;font-weight:600;color:#2e7d32;">범위검사 복구 — RWIS 수위</div><div style="font-size:11px;color:#999;">어제 23:45 · 조치완료 (센서 보정) · 담당: 박수원</div></div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4.5: 저장 데이터 PII 품질 검증 결과 -->
+  <div class="card" style="padding:0; margin-bottom:16px;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="card-title">🔒 개인정보 품질 검증 결과 (PII 패턴 검사)</div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <span style="font-size:10px; color:var(--text-secondary);">저장 데이터 대상 · 최종 실행 09:00</span>
+        <button class="btn btn-outline" style="padding:2px 8px; font-size:11px;" onclick="navigate('dist-deidentify')">비식별 정책 →</button>
+      </div>
+    </div>
+    <div class="card-body" style="padding:14px;">
+      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:12px;">
+        <div style="padding:10px 14px; background:#f6ffed; border-radius:8px; border-left:3px solid #52c41a;">
+          <div style="font-size:11px; color:#8c8c8c;">PII 마스킹 검증</div>
+          <div style="font-size:18px; font-weight:700; color:#52c41a;">통과</div>
+          <div style="font-size:10px; color:#389e0d;">마스킹 패턴 100% 유효</div>
+        </div>
+        <div style="padding:10px 14px; background:#f6ffed; border-radius:8px; border-left:3px solid #52c41a;">
+          <div style="font-size:11px; color:#8c8c8c;">암호화 무결성</div>
+          <div style="font-size:18px; font-weight:700; color:#52c41a;">통과</div>
+          <div style="font-size:10px; color:#389e0d;">AES-256 복호화 검증 OK</div>
+        </div>
+        <div style="padding:10px 14px; background:#fff7e6; border-radius:8px; border-left:3px solid #fa8c16;">
+          <div style="font-size:11px; color:#8c8c8c;">비식별 누락 탐지</div>
+          <div style="font-size:18px; font-weight:700; color:#fa8c16;">경고 2건</div>
+          <div style="font-size:10px; color:#d48806;">센서로그·수질로그 미적용</div>
+        </div>
+        <div style="padding:10px 14px; background:#f6ffed; border-radius:8px; border-left:3px solid #52c41a;">
+          <div style="font-size:11px; color:#8c8c8c;">재식별 위험도</div>
+          <div style="font-size:18px; font-weight:700; color:#52c41a;">낮음</div>
+          <div style="font-size:10px; color:#389e0d;">k-익명성(k=8) 충족</div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:5px;">
+        <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #52c41a; background:#f6ffed; border-radius:0 6px 6px 0;">
+          <span style="font-size:12px;">✅</span>
+          <div style="flex:1; font-size:12px;">TB_CUSTOMER.고객명 — 마스킹 패턴 검증 통과 (홍** 형식 100%)</div>
+          <span style="font-size:10px; color:#389e0d;">09:00</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #52c41a; background:#f6ffed; border-radius:0 6px 6px 0;">
+          <span style="font-size:12px;">✅</span>
+          <div style="flex:1; font-size:12px;">TB_HR_EMPLOYEE.주민번호 — SHA-256 해싱 무결성 검증 통과</div>
+          <span style="font-size:10px; color:#389e0d;">09:00</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #52c41a; background:#f6ffed; border-radius:0 6px 6px 0;">
+          <span style="font-size:12px;">✅</span>
+          <div style="flex:1; font-size:12px;">TB_BILLING.계좌번호 — AES-256 암호화 저장 확인 (평문 노출 0건)</div>
+          <span style="font-size:10px; color:#389e0d;">09:00</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #fa8c16; background:#fff7e6; border-radius:0 6px 6px 0;">
+          <span style="font-size:12px;">⚠️</span>
+          <div style="flex:1; font-size:12px;">TB_SENSOR_LOG.GPS좌표 — 일반화 미적용 (원본 좌표 그대로 저장)</div>
+          <span style="font-size:10px; color:#d48806;">조치 필요</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-left:3px solid #fa8c16; background:#fff7e6; border-radius:0 6px 6px 0;">
+          <span style="font-size:12px;">⚠️</span>
+          <div style="flex:1; font-size:12px;">TB_WATER_QUALITY_LOG.측정자ID — 토큰화 미적용 (식별 가능한 ID 노출)</div>
+          <span style="font-size:10px; color:#d48806;">조치 필요</span>
         </div>
       </div>
     </div>

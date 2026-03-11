@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # PostgreSQL 15 — 메타데이터 표준사전 DB
+  # ============================================================================
+  db:
+    image: postgres:15-alpine
+    container_name: meta-postgres
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: datahub_meta
+      POSTGRES_USER: meta_admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-meta1234}
+      TZ: Asia/Seoul
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../db/meta_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U meta_admin -d datahub_meta"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # FastAPI 백엔드
+  # ============================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: meta-backend
+    restart: unless-stopped
+    ports:
+      - "8010:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://meta_admin:${DB_PASSWORD:-meta1234}@db:5432/datahub_meta
+      CORS_ORIGINS: http://localhost:5174,http://localhost:5173,http://localhost:3000
+      TZ: Asia/Seoul
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend/app:/app/app
+      - ../metadata/metadata_excel:/app/excel_data:ro
+
+  # ============================================================================
+  # Vue 3 프론트엔드 (개발 서버)
+  # ============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: meta-frontend
+    restart: unless-stopped
+    ports:
+      - "5174:5173"
+    environment:
+      VITE_API_BASE_URL: ""
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+
+volumes:
+  pgdata:
+    driver: local

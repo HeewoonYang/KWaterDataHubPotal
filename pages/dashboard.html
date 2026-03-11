@@ -262,7 +262,7 @@
         <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
           <div class="card-title">📂 대상 데이터 선택</div>
           <button class="btn btn-outline" style="font-size:11px; padding:4px 12px;" data-perm="write"
-            onclick="alert('카탈로그 검색 팝업이 열립니다.')">+ 데이터셋 검색·추가</button>
+            onclick="openDatasetSearchModal()">+ 데이터셋 검색·추가</button>
         </div>
         <div class="card-body" style="padding:20px;">
           <!-- 선택된 데이터셋 목록 -->
@@ -1599,6 +1599,171 @@
   </div>
 </div>
 
+<!-- ========== SCREEN 5.5: LLMOps 관리 ========== -->
+<div class="screen" id="screen-llmops" style="padding-top:5px;">
+  <div class="breadcrumb" style="margin-bottom:8px;"><a href="#" onclick="navigate('home')">홈</a> &gt; <a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>LLMOps 관리</strong></div>
+
+  <!-- 헤더 -->
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+    <div>
+      <div class="page-title" style="margin-bottom:2px;">🧠 LLMOps 관리</div>
+      <div style="font-size:12px; color:var(--text-secondary);">LLM 모델 버전·배포·프롬프트·성능 지표를 통합 관리합니다</div>
+    </div>
+    <div style="display:flex; gap:6px;">
+      <button class="btn btn-primary btn-sm" data-perm="write">📤 모델 배포</button>
+      <button class="btn btn-outline btn-sm">📊 성능 리포트</button>
+    </div>
+  </div>
+
+  <!-- KPI 4개 -->
+  <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:14px;">
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #722ed1;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">활성 모델</div>
+      <div style="font-size:22px; font-weight:700; color:#722ed1;">3<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">개</span></div>
+      <div style="font-size:11px; margin-top:4px; color:var(--text-secondary);">Production 배포 중</div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #1677ff;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">금일 API 호출</div>
+      <div style="font-size:22px; font-weight:700; color:#1677ff;">8,420<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">건</span></div>
+      <div style="font-size:11px; margin-top:4px; color:#52c41a; font-weight:600;">▲ 12.3% vs 전일</div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #52c41a;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">평균 응답시간</div>
+      <div style="font-size:22px; font-weight:700; color:#52c41a;">1.8<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">sec</span></div>
+      <div style="font-size:11px; margin-top:4px; color:#52c41a; font-weight:600;">▼ 0.3s 개선</div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #fa8c16;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">사용자 만족도</div>
+      <div style="font-size:22px; font-weight:700; color:#fa8c16;">4.2<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">/5.0</span></div>
+      <div style="font-size:11px; margin-top:4px; color:var(--text-secondary);">최근 30일 피드백</div>
+    </div>
+  </div>
+
+  <!-- 모델 버전 관리 + 프롬프트 관리 -->
+  <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px; margin-bottom:14px;">
+    <!-- 모델 버전 관리 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">📦 모델 버전 관리</div></div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <!-- 모델 1 -->
+          <div style="padding:10px 12px; background:#f9f0ff; border-radius:8px; border-left:3px solid #722ed1;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:13px; font-weight:700;">DH-Chat v3.2</span>
+              <div style="display:flex; gap:4px;">
+                <span class="badge badge-success" style="margin:0; font-size:10px;">Production</span>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; font-size:11px;">
+              <div><span style="color:var(--text-secondary);">기반:</span> <span style="font-weight:600;">Claude 4.0</span></div>
+              <div><span style="color:var(--text-secondary);">배포일:</span> <span style="font-weight:600;">2026-02-28</span></div>
+              <div><span style="color:var(--text-secondary);">정확도:</span> <span style="font-weight:600; color:#52c41a;">92.4%</span></div>
+            </div>
+          </div>
+          <!-- 모델 2 -->
+          <div style="padding:10px 12px; background:#f0f7ff; border-radius:8px; border-left:3px solid #1677ff;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:13px; font-weight:700;">DH-Embed v2.1</span>
+              <div style="display:flex; gap:4px;">
+                <span class="badge badge-success" style="margin:0; font-size:10px;">Production</span>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; font-size:11px;">
+              <div><span style="color:var(--text-secondary);">기반:</span> <span style="font-weight:600;">Custom BERT</span></div>
+              <div><span style="color:var(--text-secondary);">배포일:</span> <span style="font-weight:600;">2026-02-15</span></div>
+              <div><span style="color:var(--text-secondary);">검색 정확도:</span> <span style="font-weight:600; color:#52c41a;">89.1%</span></div>
+            </div>
+          </div>
+          <!-- 모델 3 -->
+          <div style="padding:10px 12px; background:#f6ffed; border-radius:8px; border-left:3px solid #52c41a;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:13px; font-weight:700;">DH-Predict v1.5</span>
+              <div style="display:flex; gap:4px;">
+                <span class="badge badge-success" style="margin:0; font-size:10px;">Production</span>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; font-size:11px;">
+              <div><span style="color:var(--text-secondary);">기반:</span> <span style="font-weight:600;">XGBoost+LSTM</span></div>
+              <div><span style="color:var(--text-secondary);">배포일:</span> <span style="font-weight:600;">2026-01-20</span></div>
+              <div><span style="color:var(--text-secondary);">RMSE:</span> <span style="font-weight:600; color:#52c41a;">0.034</span></div>
+            </div>
+          </div>
+          <!-- Staging -->
+          <div style="padding:10px 12px; background:#fff7e6; border-radius:8px; border-left:3px solid #fa8c16;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:13px; font-weight:700;">DH-Chat v3.3-rc1</span>
+              <span class="badge badge-warning" style="margin:0; font-size:10px;">Staging</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; font-size:11px;">
+              <div><span style="color:var(--text-secondary);">기반:</span> <span style="font-weight:600;">Claude 4.5</span></div>
+              <div><span style="color:var(--text-secondary);">배포일:</span> <span style="font-weight:600;">테스트중</span></div>
+              <div><span style="color:var(--text-secondary);">정확도:</span> <span style="font-weight:600; color:#fa8c16;">94.1% (검증중)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 프롬프트 관리 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">💬 프롬프트 템플릿 관리</div>
+        <button class="btn btn-outline btn-sm" data-perm="write">+ 추가</button>
+      </div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:12px;">
+          <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--bg-secondary); border-radius:6px;">
+            <span style="min-width:24px;">📋</span>
+            <div style="flex:1;">
+              <div style="font-weight:600;">데이터 검색 질의</div>
+              <div style="font-size:10px; color:var(--text-secondary);">v2.4 | 호출 4,210회/일</div>
+            </div>
+            <span class="badge badge-success" style="margin:0; font-size:10px;">활성</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--bg-secondary); border-radius:6px;">
+            <span style="min-width:24px;">📊</span>
+            <div style="flex:1;">
+              <div style="font-weight:600;">품질 분석 요약</div>
+              <div style="font-size:10px; color:var(--text-secondary);">v1.8 | 호출 1,850회/일</div>
+            </div>
+            <span class="badge badge-success" style="margin:0; font-size:10px;">활성</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--bg-secondary); border-radius:6px;">
+            <span style="min-width:24px;">🔍</span>
+            <div style="flex:1;">
+              <div style="font-weight:600;">메타데이터 추천</div>
+              <div style="font-size:10px; color:var(--text-secondary);">v1.3 | 호출 980회/일</div>
+            </div>
+            <span class="badge badge-success" style="margin:0; font-size:10px;">활성</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--bg-secondary); border-radius:6px;">
+            <span style="min-width:24px;">⚠️</span>
+            <div style="flex:1;">
+              <div style="font-weight:600;">이상치 감지 알림</div>
+              <div style="font-size:10px; color:var(--text-secondary);">v2.0 | 호출 1,380회/일</div>
+            </div>
+            <span class="badge badge-success" style="margin:0; font-size:10px;">활성</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--bg-secondary); border-radius:6px;">
+            <span style="min-width:24px;">📝</span>
+            <div style="flex:1;">
+              <div style="font-weight:600;">SQL 생성 보조</div>
+              <div style="font-size:10px; color:var(--text-secondary);">v1.1 | 테스트중</div>
+            </div>
+            <span class="badge badge-warning" style="margin:0; font-size:10px;">Staging</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 배포 이력 AG Grid -->
+  <div class="card" style="padding:0;">
+    <div class="card-head"><div class="card-title">🚀 모델 배포·학습 이력</div></div>
+    <div id="ag-grid-llmops" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
 <!-- ========== SCREEN 6: 시각화 및 차트갤러리 (Ant Design) ========== -->
 <div class="screen" id="screen-gallery" style="padding-top:5px;">
   <div class="breadcrumb" style="margin-bottom:8px;"><a href="#" onclick="navigate('home')">개인 대시보드</a> &gt; <strong>시각화·차트 갤러리</strong></div>
@@ -2118,6 +2283,254 @@
   </div>
 </div>
 
+<!-- ========== 1.8 디지털 트윈 연계 현황 ========== -->
+<div class="screen" id="screen-digital-twin" style="padding-top:5px;">
+  <div class="breadcrumb" style="margin-bottom:8px;"><a href="#" onclick="navigate('home')">모니터링</a> &gt; <strong>디지털 트윈 연계 현황</strong></div>
+
+  <!-- 헤더 -->
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+    <div>
+      <div class="page-title" style="margin-bottom:2px;">🔗 디지털 트윈 연계 현황</div>
+      <div style="font-size:12px; color:var(--text-secondary);">5개 디지털 트윈 시스템(정수장·관로·댐·발전·스마트)의 데이터 연계 상태를 모니터링합니다</div>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <span class="badge badge-info" style="margin:0;">
+        <span style="display:inline-block; width:6px; height:6px; background:#52c41a; border-radius:50%; margin-right:4px; animation:pulse 1.5s infinite;"></span>
+        실시간
+      </span>
+      <span style="font-size:11px; color:var(--text-secondary);">갱신 11:48:15</span>
+    </div>
+  </div>
+
+  <!-- KPI 5개 -->
+  <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:14px;">
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #1677ff;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">연계 DT 시스템</div>
+      <div style="font-size:22px; font-weight:700; color:#1677ff;">5<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">개</span></div>
+      <div style="font-size:11px; margin-top:4px; color:#52c41a; font-weight:600;">전체 연계 완료</div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #52c41a;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">정상 연계</div>
+      <div style="font-size:22px; font-weight:700; color:#52c41a;">4<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">개</span></div>
+      <div style="font-size:11px; margin-top:4px; color:var(--text-secondary);">80% 정상</div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #fa8c16;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">지연·주의</div>
+      <div style="font-size:22px; font-weight:700; color:#fa8c16;">1<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">개</span></div>
+      <div style="font-size:11px; margin-top:4px; color:#fa8c16; font-weight:600;">관로 DT 지연</div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #722ed1;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">금일 수신 데이터</div>
+      <div style="font-size:22px; font-weight:700; color:#722ed1;">2.8M<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">건</span></div>
+      <div style="font-size:11px; margin-top:4px; color:#52c41a; font-weight:600;">▲ 5.1% vs 전일</div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #13c2c2;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">평균 동기화 주기</div>
+      <div style="font-size:22px; font-weight:700; color:#13c2c2;">5<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">min</span></div>
+      <div style="font-size:11px; margin-top:4px; color:var(--text-secondary);">목표 10min 이내</div>
+    </div>
+  </div>
+
+  <!-- DT 시스템별 카드 5개 -->
+  <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:14px;">
+    <!-- 정수장 DT -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:13px; font-weight:700;">🏭 정수장 DT</div>
+        <span class="badge badge-success" style="margin:0; font-size:10px;">정상</span>
+      </div>
+      <div class="card-body" style="padding:10px 14px;">
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:11px;">
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">수신 주기</span><span style="font-weight:600;">5분</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">금일 수신</span><span style="font-weight:600; color:#1677ff;">842K건</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">최근 동기화</span><span style="font-weight:600;">11:45:02</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">연계 항목</span><span style="font-weight:600;">수질·유량·약품</span></div>
+          <div style="margin-top:4px;">
+            <div style="height:4px; background:#f0f0f0; border-radius:2px;">
+              <div style="width:92%; height:100%; background:#52c41a; border-radius:2px;"></div>
+            </div>
+            <div style="font-size:10px; color:#52c41a; margin-top:2px; text-align:right;">가용률 99.2%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 관로 DT -->
+    <div class="card" style="padding:0; margin-bottom:0; border:1px solid #ffe7ba;">
+      <div class="card-head" style="padding:10px 14px; display:flex; justify-content:space-between; align-items:center; background:#fffbe6;">
+        <div style="font-size:13px; font-weight:700;">🔧 관로 DT</div>
+        <span class="badge badge-warning" style="margin:0; font-size:10px;">지연</span>
+      </div>
+      <div class="card-body" style="padding:10px 14px;">
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:11px;">
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">수신 주기</span><span style="font-weight:600;">10분</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">금일 수신</span><span style="font-weight:600; color:#fa8c16;">312K건</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">최근 동기화</span><span style="font-weight:600; color:#fa8c16;">11:32:18</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">연계 항목</span><span style="font-weight:600;">압력·유량·누수</span></div>
+          <div style="margin-top:4px;">
+            <div style="height:4px; background:#f0f0f0; border-radius:2px;">
+              <div style="width:87%; height:100%; background:#fa8c16; border-radius:2px;"></div>
+            </div>
+            <div style="font-size:10px; color:#fa8c16; margin-top:2px; text-align:right;">가용률 96.8% ⚠</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 댐 DT -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:13px; font-weight:700;">🏔️ 댐 DT</div>
+        <span class="badge badge-success" style="margin:0; font-size:10px;">정상</span>
+      </div>
+      <div class="card-body" style="padding:10px 14px;">
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:11px;">
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">수신 주기</span><span style="font-weight:600;">5분</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">금일 수신</span><span style="font-weight:600; color:#1677ff;">628K건</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">최근 동기화</span><span style="font-weight:600;">11:46:30</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">연계 항목</span><span style="font-weight:600;">수위·방류·저수율</span></div>
+          <div style="margin-top:4px;">
+            <div style="height:4px; background:#f0f0f0; border-radius:2px;">
+              <div style="width:99%; height:100%; background:#52c41a; border-radius:2px;"></div>
+            </div>
+            <div style="font-size:10px; color:#52c41a; margin-top:2px; text-align:right;">가용률 99.8%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 발전 DT -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:13px; font-weight:700;">⚡ 발전 DT</div>
+        <span class="badge badge-success" style="margin:0; font-size:10px;">정상</span>
+      </div>
+      <div class="card-body" style="padding:10px 14px;">
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:11px;">
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">수신 주기</span><span style="font-weight:600;">3분</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">금일 수신</span><span style="font-weight:600; color:#1677ff;">524K건</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">최근 동기화</span><span style="font-weight:600;">11:47:55</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">연계 항목</span><span style="font-weight:600;">발전량·터빈·진동</span></div>
+          <div style="margin-top:4px;">
+            <div style="height:4px; background:#f0f0f0; border-radius:2px;">
+              <div style="width:98%; height:100%; background:#52c41a; border-radius:2px;"></div>
+            </div>
+            <div style="font-size:10px; color:#52c41a; margin-top:2px; text-align:right;">가용률 99.5%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 스마트 DT -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:13px; font-weight:700;">📡 스마트 DT</div>
+        <span class="badge badge-success" style="margin:0; font-size:10px;">정상</span>
+      </div>
+      <div class="card-body" style="padding:10px 14px;">
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:11px;">
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">수신 주기</span><span style="font-weight:600;">1분</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">금일 수신</span><span style="font-weight:600; color:#1677ff;">494K건</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">최근 동기화</span><span style="font-weight:600;">11:48:10</span></div>
+          <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">연계 항목</span><span style="font-weight:600;">IoT센서·미터링</span></div>
+          <div style="margin-top:4px;">
+            <div style="height:4px; background:#f0f0f0; border-radius:2px;">
+              <div style="width:97%; height:100%; background:#52c41a; border-radius:2px;"></div>
+            </div>
+            <div style="font-size:10px; color:#52c41a; margin-top:2px; text-align:right;">가용률 99.1%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DT 연계 상세 AG Grid -->
+  <div class="card" style="padding:0; margin-bottom:14px;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div class="card-title">📋 디지털 트윈 데이터셋 연계 상세</div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option>전체 DT</option><option>정수장 DT</option><option>관로 DT</option><option>댐 DT</option><option>발전 DT</option><option>스마트 DT</option>
+        </select>
+        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option>전체 상태</option><option>정상</option><option>지연</option><option>오류</option>
+        </select>
+      </div>
+    </div>
+    <div id="ag-grid-digital-twin" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+
+  <!-- 동기화 추이 + 최근 이벤트 -->
+  <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px;">
+    <!-- 동기화 추이 차트 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">📈 DT별 데이터 수신량 추이 (최근 24시간)</div>
+        <div style="display:flex; gap:12px; font-size:11px; color:var(--text-secondary);">
+          <span><span style="display:inline-block; width:10px; height:3px; background:#1677ff; border-radius:2px; margin-right:3px;"></span>정수장</span>
+          <span><span style="display:inline-block; width:10px; height:3px; background:#fa8c16; border-radius:2px; margin-right:3px;"></span>관로</span>
+          <span><span style="display:inline-block; width:10px; height:3px; background:#52c41a; border-radius:2px; margin-right:3px;"></span>댐</span>
+          <span><span style="display:inline-block; width:10px; height:3px; background:#722ed1; border-radius:2px; margin-right:3px;"></span>발전</span>
+          <span><span style="display:inline-block; width:10px; height:3px; background:#13c2c2; border-radius:2px; margin-right:3px;"></span>스마트</span>
+        </div>
+      </div>
+      <div class="card-body" style="padding:16px;">
+        <div class="latency-chart">
+          <div class="latency-bar"><div class="lb-bar" style="height:45px; background:#1677ff;"></div><div class="lb-label">00h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:38px; background:#1677ff;"></div><div class="lb-label">02h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:30px; background:#4caf50;"></div><div class="lb-label">04h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:42px; background:#1677ff;"></div><div class="lb-label">06h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:65px; background:#1677ff;"></div><div class="lb-label">08h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:85px; background:#ff9800;"></div><div class="lb-label">10h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:70px; background:#1677ff;"></div><div class="lb-label">12h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:78px; background:#ff9800;"></div><div class="lb-label">14h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:60px; background:#1677ff;"></div><div class="lb-label">16h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:55px; background:#1677ff;"></div><div class="lb-label">18h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:48px; background:#1677ff;"></div><div class="lb-label">20h</div></div>
+          <div class="latency-bar"><div class="lb-bar" style="height:40px; background:#4caf50;"></div><div class="lb-label">22h</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 최근 연계 이벤트 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">⚠️ 최근 연계 이벤트</div></div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#fff7e6; border-radius:6px; border-left:3px solid #fa8c16;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:70px;">11:32:18</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#fa8c16; margin-bottom:2px;">관로 DT 동기화 지연</div>
+              <div style="font-size:11px; color:var(--text-secondary);">압력센서 데이터 수신 지연 (평균 15분 → 현재 28분)</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#f6ffed; border-radius:6px; border-left:3px solid #52c41a;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:70px;">10:15:42</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#52c41a; margin-bottom:2px;">댐 DT 일배치 완료</div>
+              <div style="font-size:11px; color:var(--text-secondary);">저수율 데이터 628,412건 정상 동기화</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#f0f7ff; border-radius:6px; border-left:3px solid #1677ff;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:70px;">09:00:05</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#1677ff; margin-bottom:2px;">정수장 DT 스키마 변경 감지</div>
+              <div style="font-size:11px; color:var(--text-secondary);">약품투입량 테이블 컬럼 추가 (auto_dosing_flag)</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#f6ffed; border-radius:6px; border-left:3px solid #52c41a;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:70px;">08:30:10</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#52c41a; margin-bottom:2px;">스마트 DT 연결 복구</div>
+              <div style="font-size:11px; color:var(--text-secondary);">IoT 게이트웨이 재연결 완료 (2분 단절)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ========== 1.7 위젯 설정 [분리] ========== -->
 <div class="screen" id="screen-widget-settings" style="padding-top:5px;">
   <div class="breadcrumb" style="margin-bottom:8px;"><a href="#" onclick="navigate('home')">개인 대시보드</a> &gt; <strong>위젯 설정</strong></div>
@@ -2231,22 +2644,28 @@
       </div>
       <div style="display:flex; flex-direction:column; gap:4px;">
         <a href="#" onclick="navigate('home');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#f0f7ff'" onmouseleave="this.style.background='transparent'">
-          <span style="font-size:14px;">🏠</span> <span>업무중심 홈</span>
+          <span style="font-size:14px;">🏠</span> <span>개인대시보드</span>
         </a>
         <a href="#" onclick="navigate('process');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#f0f7ff'" onmouseleave="this.style.background='transparent'">
           <span style="font-size:14px;">🔀</span> <span>데이터 워크플로우</span>
         </a>
         <a href="#" onclick="navigate('quality');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#f0f7ff'" onmouseleave="this.style.background='transparent'">
-          <span style="font-size:14px;">✅</span> <span>데이터 품질현황 종합</span>
+          <span style="font-size:14px;">📏</span> <span>데이터 품질현황 종합</span>
         </a>
         <a href="#" onclick="navigate('ai');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#f0f7ff'" onmouseleave="this.style.background='transparent'">
           <span style="font-size:14px;">🤖</span> <span>AI 검색 및 질의응답</span>
         </a>
         <a href="#" onclick="navigate('gallery');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#f0f7ff'" onmouseleave="this.style.background='transparent'">
-          <span style="font-size:14px;">🎨</span> <span>시각화·차트 갤러리</span>
+          <span style="font-size:14px;">📊</span> <span>시각화·차트 갤러리</span>
         </a>
         <a href="#" onclick="navigate('widget-settings');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#f0f7ff'" onmouseleave="this.style.background='transparent'">
           <span style="font-size:14px;">⚙️</span> <span>위젯 설정</span>
+        </a>
+        <a href="#" onclick="navigate('dist-chart-content');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#f0f7ff'" onmouseleave="this.style.background='transparent'">
+          <span style="font-size:14px;">📈</span> <span>차트 콘텐츠 관리</span>
+        </a>
+        <a href="#" onclick="navigate('sys-widget-template');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#f0f7ff'" onmouseleave="this.style.background='transparent'">
+          <span style="font-size:14px;">🧩</span> <span>위젯 템플릿 관리</span>
         </a>
       </div>
     </div>
@@ -2266,6 +2685,9 @@
         </a>
         <a href="#" onclick="navigate('asset-db');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#fff8f0'" onmouseleave="this.style.background='transparent'">
           <span style="font-size:14px;">🏢</span> <span>자산DB 모니터링</span>
+        </a>
+        <a href="#" onclick="navigate('digital-twin');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#fff8f0'" onmouseleave="this.style.background='transparent'">
+          <span style="font-size:14px;">🔗</span> <span>디지털 트윈 연계</span>
         </a>
       </div>
     </div>
@@ -2346,24 +2768,22 @@
       </div>
       <div style="display:flex; flex-direction:column; gap:4px;">
         <a href="#" onclick="navigate('dist-product');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#fff8f0'" onmouseleave="this.style.background='transparent'">
-          <span style="font-size:14px;">📦</span> <span>Data Product 관리</span>
+          <span style="font-size:14px;">📦</span> <span>Data Product 구성·관리</span>
         </a>
         <a href="#" onclick="navigate('dist-deidentify');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#fff8f0'" onmouseleave="this.style.background='transparent'">
           <span style="font-size:14px;">🔒</span> <span>비식별화·가명처리</span>
         </a>
         <a href="#" onclick="navigate('dist-approval');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#fff8f0'" onmouseleave="this.style.background='transparent'">
-          <span style="font-size:14px;">✋</span> <span>데이터 신청·승인</span>
+          <span style="font-size:14px;">📋</span> <span>데이터 신청·승인</span>
         </a>
         <a href="#" onclick="navigate('dist-api');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#fff8f0'" onmouseleave="this.style.background='transparent'">
           <span style="font-size:14px;">🔌</span> <span>유통 API 관리</span>
         </a>
         <a href="#" onclick="navigate('dist-external');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#fff8f0'" onmouseleave="this.style.background='transparent'">
-          <span style="font-size:14px;">🌍</span> <span>외부시스템 데이터 제공</span>        </a>
-        <a href="#" onclick="navigate('dist-stats');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#fff8f0'" onmouseleave="this.style.background='transparent'">
-          <span style="font-size:14px;">📊</span> <span>데이터 유통통계</span>
+          <span style="font-size:14px;">🌍</span> <span>외부시스템 데이터 제공</span>
         </a>
-        <a href="#" onclick="navigate('dist-chart-content');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#fff8f0'" onmouseleave="this.style.background='transparent'">
-          <span style="font-size:14px;">📈</span> <span>차트 콘텐츠 관리</span>
+        <a href="#" onclick="navigate('dist-stats');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#fff8f0'" onmouseleave="this.style.background='transparent'">
+          <span style="font-size:14px;">📉</span> <span>데이터 유통통계</span>
         </a>
       </div>
     </div>
@@ -2388,10 +2808,10 @@
           <span style="font-size:14px;">🗂️</span> <span>데이터모델관리</span>
         </a>
         <a href="#" onclick="navigate('meta-dq');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#eef0ff'" onmouseleave="this.style.background='transparent'">
-          <span style="font-size:14px;">🔬</span> <span>DQ 검증·프로파일링</span>
+          <span style="font-size:14px;">🧪</span> <span>DQ 검증·프로파일링</span>
         </a>
         <a href="#" onclick="navigate('meta-ontology');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#eef0ff'" onmouseleave="this.style.background='transparent'">
-          <span style="font-size:14px;">🧠</span> <span>온톨로지 관리</span>        </a>
+          <span style="font-size:14px;">🌳</span> <span>온톨로지 관리</span>        </a>
       </div>
     </div>
 
@@ -2409,7 +2829,7 @@
           <span style="font-size:14px;">📢</span> <span>공지사항</span>
         </a>
         <a href="#" onclick="navigate('comm-internal');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#fff0f5'" onmouseleave="this.style.background='transparent'">
-          <span style="font-size:14px;">🏢</span> <span>내부게시판</span>
+          <span style="font-size:14px;">💬</span> <span>내부게시판</span>
         </a>
         <a href="#" onclick="navigate('comm-external');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#fff0f5'" onmouseleave="this.style.background='transparent'">
           <span style="font-size:14px;">🌐</span> <span>외부게시판</span>
@@ -2445,11 +2865,17 @@
         <a href="#" onclick="navigate('sys-audit');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#f5f7f8'" onmouseleave="this.style.background='transparent'">
           <span style="font-size:14px;">🔎</span> <span>접속통계·감사로그</span>
         </a>
-        <a href="#" onclick="navigate('sys-widget-template');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#f5f7f8'" onmouseleave="this.style.background='transparent'">
-          <span style="font-size:14px;">🧩</span> <span>위젯 템플릿 관리</span>
-        </a>
         <a href="#" onclick="navigate('sys-perm');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#f5f7f8'" onmouseleave="this.style.background='transparent'">
           <span style="font-size:14px;">🔑</span> <span>화면별 권한설정</span>
+        </a>
+        <a href="#" onclick="navigate('sys-engine');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#f5f7f8'" onmouseleave="this.style.background='transparent'">
+          <span style="font-size:14px;">🖥️</span> <span>데이터허브 엔진관리</span>
+        </a>
+        <a href="#" onclick="navigate('sys-k8s');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#f5f7f8'" onmouseleave="this.style.background='transparent'">
+          <span style="font-size:14px;">☸️</span> <span>K8S 인프라 모니터링</span>
+        </a>
+        <a href="#" onclick="navigate('llmops');return false;" class="sitemap-link" style="display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-color); font-size:13px; transition:background 0.15s;" onmouseenter="this.style.background='#f5f7f8'" onmouseleave="this.style.background='transparent'">
+          <span style="font-size:14px;">🧠</span> <span>LLMOps 관리</span>
         </a>
       </div>
     </div>
@@ -2460,5 +2886,98 @@
     <div style="font-size:48px; margin-bottom:12px;">🔍</div>
     <div style="font-size:15px; font-weight:600;">검색 결과가 없습니다</div>
     <div style="font-size:12px; margin-top:4px;">다른 키워드로 검색해 보세요</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 데이터셋 검색·추가 모달 (신규 활용 신청 Step2에서 사용)         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="dataset-search-modal" class="modal-overlay" style="display:none; z-index:9500;">
+  <div class="modal-card" style="width:960px; max-width:95vw; height:85vh; max-height:85vh; display:flex; flex-direction:column;">
+    <!-- 헤더 -->
+    <div class="modal-header">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:20px;">📂</span>
+        <div>
+          <div class="modal-title">데이터셋 검색·추가</div>
+          <div style="font-size:11px; color:#888;">카탈로그에서 데이터셋을 검색하고 활용 신청에 추가합니다</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeDatasetSearchModal()">✕</button>
+    </div>
+
+    <!-- 검색 영역 -->
+    <div style="padding:16px 24px; border-bottom:1px solid #f0f0f0; background:#fafbfc;">
+      <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <input type="text" id="dsSearchKeyword" placeholder="데이터셋명, 테이블명, 태그 등 키워드 검색..."
+          style="flex:1; padding:9px 14px; border:1px solid #d9d9d9; border-radius:8px; font-size:13px;"
+          onkeydown="if(event.key==='Enter') searchDatasetsInModal()">
+        <button class="btn btn-primary" style="padding:8px 20px; font-size:13px; white-space:nowrap;" onclick="searchDatasetsInModal()">검색</button>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <select id="dsSearchDomain" onchange="searchDatasetsInModal()"
+          style="padding:6px 10px; border:1px solid #d9d9d9; border-radius:6px; font-size:12px; background:#fff;">
+          <option value="all">전체 도메인</option>
+          <option value="water">수자원</option>
+          <option value="quality">수질</option>
+          <option value="energy">에너지</option>
+          <option value="infra">인프라</option>
+          <option value="customer">고객</option>
+        </select>
+        <select id="dsSearchSecurity" onchange="searchDatasetsInModal()"
+          style="padding:6px 10px; border:1px solid #d9d9d9; border-radius:6px; font-size:12px; background:#fff;">
+          <option value="all">전체 보안등급</option>
+          <option value="1">공개</option>
+          <option value="2">내부일반</option>
+          <option value="3">내부중요</option>
+          <option value="4">기밀</option>
+        </select>
+        <select id="dsSearchType" onchange="searchDatasetsInModal()"
+          style="padding:6px 10px; border:1px solid #d9d9d9; border-radius:6px; font-size:12px; background:#fff;">
+          <option value="all">전체 유형</option>
+          <option value="table">테이블</option>
+          <option value="view">뷰</option>
+          <option value="api">API</option>
+          <option value="file">파일</option>
+        </select>
+        <div style="margin-left:auto; font-size:12px; color:#888; display:flex; align-items:center;" id="dsSearchCount"></div>
+      </div>
+    </div>
+
+    <!-- 검색 결과 목록 -->
+    <div style="flex:1 1 0; overflow-y:auto; padding:16px 24px; min-height:0;">
+      <table class="data-table" style="margin:0; font-size:12px;" id="dsSearchTable">
+        <thead>
+          <tr>
+            <th style="width:40px; text-align:center;">선택</th>
+            <th>데이터셋명</th>
+            <th style="width:70px;">도메인</th>
+            <th style="width:80px;">보안등급</th>
+            <th style="width:60px;">품질</th>
+            <th style="width:90px;">데이터 건수</th>
+            <th style="width:80px;">갱신주기</th>
+          </tr>
+        </thead>
+        <tbody id="dsSearchResultBody">
+        </tbody>
+      </table>
+      <div id="dsSearchEmpty" style="display:none; text-align:center; padding:48px 0; color:#bbb;">
+        <div style="font-size:36px; margin-bottom:8px;">📭</div>
+        <div style="font-size:13px;">검색 결과가 없습니다</div>
+        <div style="font-size:11px; margin-top:4px;">다른 키워드나 필터를 시도해 보세요</div>
+      </div>
+    </div>
+
+    <!-- 선택 요약 & 액션 -->
+    <div style="padding:14px 24px; border-top:1px solid #f0f0f0; background:#fafbfc; display:flex; justify-content:space-between; align-items:center;">
+      <div style="font-size:12px; color:#555;">
+        선택된 데이터셋: <strong id="dsSelectedCount">0</strong>건
+        <span id="dsSelectedNames" style="margin-left:8px; color:#1967d2;"></span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-outline" style="padding:8px 20px; font-size:13px;" onclick="closeDatasetSearchModal()">취소</button>
+        <button class="btn btn-primary" style="padding:8px 20px; font-size:13px;" onclick="addSelectedDatasets()">선택 추가</button>
+      </div>
+    </div>
   </div>
 </div>

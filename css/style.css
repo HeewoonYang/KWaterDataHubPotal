@@ -5450,3 +5450,185 @@ body {
     flex-wrap: wrap;
   }
 }
+
+/* ═══════ 시각화 차트 등록 – Builder Layout ═══════ */
+.chart-builder-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr 240px;
+  gap: 12px;
+  align-items: start;
+}
+
+.chart-builder-left,
+.chart-builder-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chart-builder-center {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+}
+
+.chart-builder-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.chart-builder-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.chart-builder-section .form-label {
+  font-size: 11px;
+  margin-bottom: 3px;
+}
+
+.chart-builder-section .form-control {
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+/* Option toggle row */
+.chart-opt-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 0;
+  color: var(--text-color);
+}
+
+/* ═══════ 차트 타입 피커 ═══════ */
+.chart-type-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chart-type-btn {
+  padding: 5px 11px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+
+.chart-type-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.chart-type-btn.active {
+  border-color: var(--primary-color);
+  background: rgba(22,119,255,.08);
+  color: var(--primary-color);
+  font-weight: 600;
+  box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+[data-theme="dark"] .chart-type-btn {
+  border-color: #404040;
+}
+
+[data-theme="dark"] .chart-type-btn.active {
+  background: rgba(22,119,255,.18);
+}
+
+/* ═══════ 컬럼 태그 ═══════ */
+.col-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-color);
+  transition: all .15s;
+  margin: 1px;
+}
+
+.col-tag:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.col-tag.selected {
+  border-color: var(--primary-color);
+  background: rgba(22,119,255,.08);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.col-tag .col-type {
+  font-size: 9px;
+  opacity: .6;
+  font-weight: 400;
+}
+
+.col-tag .col-remove {
+  font-size: 13px;
+  margin-left: 1px;
+  opacity: .5;
+  cursor: pointer;
+}
+
+.col-tag .col-remove:hover {
+  opacity: 1;
+  color: #f44336;
+}
+
+/* ═══════ Builder Responsive ═══════ */
+@media (max-width: 1100px) {
+  .chart-builder-layout {
+    grid-template-columns: 240px 1fr;
+  }
+  .chart-builder-right {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .chart-builder-layout {
+    grid-template-columns: 1fr;
+  }
+  .chart-builder-right {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== 외부사용자 신청 폼 ===== */
+#extRegisterForm textarea {
+  background: var(--card-bg);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] #extRegisterForm code {
+  background: #333 !important;
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] #ext-detail-result code {
+  background: #333 !important;
+  color: #e0e0e0 !important;
+}

@@ -352,6 +352,286 @@
   </div>
 </div>
 
+    <!-- ========== SYS SCREEN 1-1: 사용자 상세 (연계화면) ========== -->
+    <div class="screen" id="screen-sys-user-detail">
+      <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <a href="#" onclick="navigate('sys-user')">조직 및 사용자관리</a> &gt; <strong>사용자 상세</strong></div>
+
+      <!-- 헤더 -->
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+        <div>
+          <div class="page-title" style="margin-bottom:2px;">👤 사용자 상세정보</div>
+          <div style="font-size:12px; color:var(--text-secondary);">사용자 계정·권한·활동이력을 통합 조회·관리합니다</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="navigate('sys-user')">← 목록으로</button>
+          <button class="btn btn-primary btn-sm" data-perm="write">💾 저장</button>
+        </div>
+      </div>
+
+      <!-- Row 1: 기본정보 + 계정상태 -->
+      <div style="display:grid; grid-template-columns:1.6fr 1fr; gap:12px; margin-bottom:14px;">
+        <!-- 기본정보 카드 -->
+        <div class="card" style="margin-bottom:0;">
+          <div class="card-title">📋 기본 정보</div>
+          <div class="detail-info-grid">
+            <div class="detail-info-item"><div class="dil">이름</div><div class="div" id="ud-name" style="font-weight:700;">박수원</div></div>
+            <div class="detail-info-item"><div class="dil">사번</div><div class="div" id="ud-empNo" style="font-family:monospace;">KW1024</div></div>
+            <div class="detail-info-item"><div class="dil">부서</div><div class="div" id="ud-dept">수자원관리팀</div></div>
+            <div class="detail-info-item"><div class="dil">직급</div><div class="div" id="ud-grade">차장</div></div>
+            <div class="detail-info-item"><div class="dil">이메일</div><div class="div" id="ud-email">park.sw@kwater.or.kr</div></div>
+            <div class="detail-info-item"><div class="dil">연락처</div><div class="div" id="ud-phone">042-629-XXXX</div></div>
+            <div class="detail-info-item"><div class="dil">가입일</div><div class="div" id="ud-joinDate">2024-03-15</div></div>
+            <div class="detail-info-item"><div class="dil">SSO 연동</div><div class="div" id="ud-sso"><span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">연동완료</span></div></div>
+          </div>
+        </div>
+
+        <!-- 계정 상태 카드 -->
+        <div class="card" style="margin-bottom:0;">
+          <div class="card-title">🔐 계정 상태</div>
+          <div style="text-align:center; padding:12px 0 16px;">
+            <div style="width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg,#1677ff,#4096ff); display:inline-flex; align-items:center; justify-content:center; color:#fff; font-size:24px; font-weight:700; margin-bottom:8px;">박</div>
+            <div style="font-size:15px; font-weight:700;" id="ud-name2">박수원</div>
+            <div style="font-size:12px; color:var(--text-secondary);" id="ud-dept2">수자원관리팀 · 차장</div>
+            <div style="margin-top:8px;">
+              <span id="ud-statusBadge" class="badge badge-success" style="font-size:11px;">활성</span>
+            </div>
+          </div>
+          <div style="border-top:1px solid var(--border-color); padding-top:12px; font-size:12px; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">최종 로그인</span><span style="font-weight:600;" id="ud-lastLogin">2026-02-28 10:15</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">로그인 방식</span><span>SSO (SAML 2.0)</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">비밀번호 변경</span><span>2026-01-15</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">로그인 실패</span><span style="color:#2e7d32;">0회 (최근 30일)</span></div>
+          </div>
+          <div style="margin-top:12px; display:flex; flex-direction:column; gap:6px;">
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-outline btn-sm" data-perm="manage" style="flex:1; font-size:11px;">비밀번호 초기화</button>
+              <button class="btn btn-outline btn-sm" data-perm="admin" style="flex:1; font-size:11px; color:#f5222d; border-color:#f5222d;">계정 잠금</button>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="openPasswordChangeModal()" style="width:100%; font-size:11px; color:#fa8c16; border-color:#fa8c16;">🔑 비밀번호 변경 (셀프서비스)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: 역할·권한 + 데이터 접근등급 -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+        <!-- 역할·권한 -->
+        <div class="card" style="margin-bottom:0;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div class="card-title" style="margin-bottom:0;">🛡️ 역할 및 권한</div>
+            <button class="btn btn-outline btn-sm" data-perm="admin" style="font-size:10px;">+ 역할 추가</button>
+          </div>
+          <table class="data-table" style="font-size:12px;">
+            <thead>
+              <tr><th>역할</th><th>레벨</th><th>할당일</th><th>할당자</th><th>관리</th></tr>
+            </thead>
+            <tbody id="ud-roles">
+              <tr>
+                <td><span style="background:#e0f7fa;color:#00838f;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">데이터관리자</span></td>
+                <td>Level 4</td>
+                <td>2024-03-20</td>
+                <td>관리자</td>
+                <td><button class="btn btn-outline btn-sm" style="font-size:10px; padding:1px 6px; color:#ef4444; border-color:#ef4444;" data-perm="admin">해제</button></td>
+              </tr>
+              <tr>
+                <td><span style="background:#f3e5f5;color:#7b1fa2;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">일반사용자</span></td>
+                <td>Level 1</td>
+                <td>2024-03-15</td>
+                <td>SYSTEM</td>
+                <td><span style="font-size:10px; color:#999;">기본역할</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="margin-top:10px; padding:8px 10px; background:#f0f7ff; border-radius:6px; font-size:11px; color:#1967d2;">
+            ℹ️ 유효 권한: 데이터 수집·유통 관리, 메타데이터 편집, DQ 규칙 설정, 데이터셋 승인
+          </div>
+        </div>
+
+        <!-- 데이터 접근등급 -->
+        <div class="card" style="margin-bottom:0;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div class="card-title" style="margin-bottom:0;">📊 데이터 접근등급</div>
+            <button class="btn btn-outline btn-sm" data-perm="admin" style="font-size:10px;">등급 변경</button>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+            <div style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:#e8f5e9; border-radius:6px; border-left:3px solid #4caf50;">
+              <span style="font-size:18px;">🟢</span>
+              <div>
+                <div style="font-size:12px; font-weight:700; color:#2e7d32;">전체 등급 접근 가능</div>
+                <div style="font-size:11px; color:#666;">1등급(극비) ~ 3등급(일반) 모든 데이터</div>
+              </div>
+            </div>
+          </div>
+          <table class="data-table" style="font-size:12px;">
+            <thead>
+              <tr><th>데이터 등급</th><th>접근 여부</th><th>승인 필요</th><th>만료일</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span style="background:#ffebee;color:#c62828;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600;">1등급 (극비)</span></td>
+                <td style="color:#2e7d32; font-weight:600;">✓ 허용</td>
+                <td>별도 승인</td>
+                <td>2026-12-31</td>
+              </tr>
+              <tr>
+                <td><span style="background:#fff3e0;color:#ef6c00;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600;">2등급 (대외비)</span></td>
+                <td style="color:#2e7d32; font-weight:600;">✓ 허용</td>
+                <td>자동 승인</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><span style="background:#e8f5e9;color:#2e7d32;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600;">3등급 (일반)</span></td>
+                <td style="color:#2e7d32; font-weight:600;">✓ 허용</td>
+                <td>불필요</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Row 3: 할당 데이터셋 -->
+      <div class="card" style="margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div class="card-title" style="margin-bottom:0;">📂 할당 데이터셋 / 파이프라인</div>
+          <span style="font-size:11px; color:var(--text-secondary);">총 6건</span>
+        </div>
+        <table class="data-table" style="font-size:12px;">
+          <thead>
+            <tr><th>구분</th><th>이름</th><th>권한</th><th>할당일</th><th>최근 사용</th><th>상태</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-info" style="font-size:10px;">데이터셋</span></td>
+              <td style="font-weight:600;">댐 수위 관측 데이터</td>
+              <td>읽기/쓰기</td>
+              <td>2024-04-01</td>
+              <td>2026-02-28</td>
+              <td><span class="badge badge-success" style="font-size:10px;">활성</span></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-info" style="font-size:10px;">데이터셋</span></td>
+              <td style="font-weight:600;">수질 모니터링 이력</td>
+              <td>읽기/쓰기</td>
+              <td>2024-05-10</td>
+              <td>2026-02-27</td>
+              <td><span class="badge badge-success" style="font-size:10px;">활성</span></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-info" style="font-size:10px;">데이터셋</span></td>
+              <td style="font-weight:600;">하천 유량 통계</td>
+              <td>읽기전용</td>
+              <td>2024-06-15</td>
+              <td>2026-02-25</td>
+              <td><span class="badge badge-success" style="font-size:10px;">활성</span></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-secondary" style="font-size:10px;">파이프라인</span></td>
+              <td style="font-weight:600;">수자원_일일_수집_ETL</td>
+              <td>실행/모니터링</td>
+              <td>2024-04-01</td>
+              <td>2026-02-28</td>
+              <td><span class="badge badge-success" style="font-size:10px;">운영중</span></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-secondary" style="font-size:10px;">파이프라인</span></td>
+              <td style="font-weight:600;">수질_정합성_검증_DQ</td>
+              <td>실행/모니터링</td>
+              <td>2024-07-20</td>
+              <td>2026-02-28</td>
+              <td><span class="badge badge-success" style="font-size:10px;">운영중</span></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-ghost" style="font-size:10px;">API</span></td>
+              <td style="font-weight:600;">수자원 통합조회 API v2</td>
+              <td>호출</td>
+              <td>2025-01-05</td>
+              <td>2026-02-28</td>
+              <td><span class="badge badge-success" style="font-size:10px;">활성</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Row 4: 최근 활동 이력 + 접속 이력 -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+        <!-- 최근 활동 -->
+        <div class="card" style="margin-bottom:0;">
+          <div class="card-title">📝 최근 활동 이력</div>
+          <div style="display:flex; flex-direction:column; gap:6px; font-size:12px;">
+            <div style="display:flex; gap:8px; align-items:flex-start; padding:6px 8px; background:#f8fafc; border-radius:6px;">
+              <span style="color:#1677ff; font-size:14px; flex-shrink:0;">📊</span>
+              <div style="flex:1;">
+                <div style="font-weight:600;">댐 수위 관측 데이터 조회</div>
+                <div style="color:var(--text-secondary); font-size:11px;">2026-02-28 10:12 · 데이터 수집</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:flex-start; padding:6px 8px; background:#f8fafc; border-radius:6px;">
+              <span style="color:#52c41a; font-size:14px; flex-shrink:0;">✅</span>
+              <div style="flex:1;">
+                <div style="font-weight:600;">수질 DQ 규칙 승인 처리</div>
+                <div style="color:var(--text-secondary); font-size:11px;">2026-02-28 09:45 · 메타데이터</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:flex-start; padding:6px 8px; background:#f8fafc; border-radius:6px;">
+              <span style="color:#fa8c16; font-size:14px; flex-shrink:0;">🔄</span>
+              <div style="flex:1;">
+                <div style="font-weight:600;">수자원_일일_수집_ETL 수동 실행</div>
+                <div style="color:var(--text-secondary); font-size:11px;">2026-02-27 17:30 · 파이프라인</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:flex-start; padding:6px 8px; background:#f8fafc; border-radius:6px;">
+              <span style="color:#722ed1; font-size:14px; flex-shrink:0;">📥</span>
+              <div style="flex:1;">
+                <div style="font-weight:600;">하천 유량 통계 Excel 다운로드</div>
+                <div style="color:var(--text-secondary); font-size:11px;">2026-02-27 16:20 · 데이터 유통</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:flex-start; padding:6px 8px; background:#f8fafc; border-radius:6px;">
+              <span style="color:#1677ff; font-size:14px; flex-shrink:0;">🔗</span>
+              <div style="flex:1;">
+                <div style="font-weight:600;">수자원 통합조회 API 호출 (248회)</div>
+                <div style="color:var(--text-secondary); font-size:11px;">2026-02-27 · API 유통</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 접속 이력 -->
+        <div class="card" style="margin-bottom:0;">
+          <div class="card-title">🕐 접속 이력 (최근 10건)</div>
+          <table class="data-table" style="font-size:11px;">
+            <thead>
+              <tr><th>일시</th><th>IP 주소</th><th>인증</th><th>결과</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>02-28 10:15</td><td style="font-family:monospace;">10.2.1.128</td><td>SSO</td><td style="color:#2e7d32;">성공</td></tr>
+              <tr><td>02-27 08:42</td><td style="font-family:monospace;">10.2.1.128</td><td>SSO</td><td style="color:#2e7d32;">성공</td></tr>
+              <tr><td>02-26 09:10</td><td style="font-family:monospace;">10.2.1.128</td><td>SSO</td><td style="color:#2e7d32;">성공</td></tr>
+              <tr><td>02-25 08:55</td><td style="font-family:monospace;">10.2.1.128</td><td>SSO</td><td style="color:#2e7d32;">성공</td></tr>
+              <tr><td>02-24 09:20</td><td style="font-family:monospace;">10.2.1.128</td><td>SSO</td><td style="color:#2e7d32;">성공</td></tr>
+              <tr><td>02-21 08:30</td><td style="font-family:monospace;">10.2.1.128</td><td>SSO</td><td style="color:#2e7d32;">성공</td></tr>
+              <tr><td>02-20 09:05</td><td style="font-family:monospace;">10.2.1.128</td><td>SSO</td><td style="color:#2e7d32;">성공</td></tr>
+              <tr><td>02-19 08:48</td><td style="font-family:monospace;">172.16.0.55</td><td>SSO</td><td style="color:#2e7d32;">성공</td></tr>
+              <tr><td>02-18 10:22</td><td style="font-family:monospace;">172.16.0.55</td><td>SSO</td><td style="color:#2e7d32;">성공</td></tr>
+              <tr><td>02-17 08:35</td><td style="font-family:monospace;">10.2.1.128</td><td>SSO</td><td style="color:#2e7d32;">성공</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:10px; padding:8px 10px; background:#f0f7ff; border-radius:6px; font-size:11px; display:flex; justify-content:space-between;">
+            <span>📍 주 접속 IP: <strong style="font-family:monospace;">10.2.1.128</strong> (본사)</span>
+            <span>최근 30일 접속: <strong style="color:#1677ff;">22일</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 하단 버튼 -->
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary" onclick="navigate('sys-user')">← 목록으로</button>
+        <button class="btn btn-outline" data-perm="write">수정</button>
+        <button class="btn btn-outline" data-perm="admin">역할 변경</button>
+        <button class="btn btn-outline" data-perm="admin" style="color:#f5222d; border-color:#f5222d;">계정 비활성화</button>
+      </div>
+    </div>
+
     <!-- ========== SYS SCREEN 2: 권한 및 역할관리 ========== -->
     <div class="screen" id="screen-sys-role">
       <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>권한 및 역할관리</strong></div>
@@ -1594,6 +1874,25 @@
             <div class="ec-meter"><div class="em-label">DISK</div><div class="em-bar"><div class="em-fill" style="width:12%; background:#1967d2;"></div></div><div class="em-val">12%</div></div>
           </div>
         </div>
+        <!-- GPU 분석 서버 -->
+        <div class="engine-card" style="border-left:3px solid #722ed1;">
+          <div class="ec-header">
+            <span class="ec-name">GPU 분석 서버</span>
+            <span class="ec-status">✅ 정상</span>
+          </div>
+          <div class="ec-info">NVIDIA A100 x4<br>분석 작업 3건 실행중</div>
+          <div class="ec-meters">
+            <div class="ec-meter"><div class="em-label">GPU</div><div class="em-bar"><div class="em-fill" style="width:67%; background:#ff9800;"></div></div><div class="em-val">67%</div></div>
+            <div class="ec-meter"><div class="em-label">VRAM</div><div class="em-bar"><div class="em-fill" style="width:54%; background:#ff9800;"></div></div><div class="em-val">54%</div></div>
+            <div class="ec-meter"><div class="em-label">CPU</div><div class="em-bar"><div class="em-fill" style="width:42%; background:#4caf50;"></div></div><div class="em-val">42%</div></div>
+            <div class="ec-meter"><div class="em-label">MEM</div><div class="em-bar"><div class="em-fill" style="width:58%; background:#ff9800;"></div></div><div class="em-val">58%</div></div>
+            <div class="ec-meter"><div class="em-label">TEMP</div><div class="em-bar"><div class="em-fill" style="width:62%; background:#ff9800;"></div></div><div class="em-val">62°C</div></div>
+          </div>
+          <div style="margin-top:8px; font-size:10px; color:var(--text-secondary); border-top:1px solid var(--border-color); padding-top:6px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>실행중 작업</span><span style="font-weight:600; color:#722ed1;">수질예측 모델 학습 / 댐수위 분석 / 누수탐지 추론</span></div>
+            <div style="display:flex; justify-content:space-between;"><span>대기 큐</span><span style="font-weight:600;">2건</span></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2200,6 +2499,778 @@
     <div class="card-title">📝 최근 변경 이력</div>
     <div id="perm-history-list">
       <div style="text-align:center; padding:20px; color:#bbb;">변경 이력이 없습니다</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SYS SCREEN: K8S 인프라 모니터링 ========== -->
+<div class="screen" id="screen-sys-k8s">
+  <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>K8S 인프라 모니터링</strong></div>
+
+  <!-- 헤더 -->
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+    <div>
+      <div class="page-title" style="margin-bottom:2px;">☸️ K8S 인프라 모니터링</div>
+      <div style="font-size:12px; color:var(--text-secondary);">Kubernetes 클러스터 기반 서버(에이전트·플랫폼·온톨로지)의 Pod/Container 상태를 통합 모니터링합니다</div>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <select style="padding:4px 10px; border:1px solid #d9d9d9; border-radius:6px; font-size:12px; background:#fff;">
+        <option>전체 클러스터</option>
+        <option>에이전트 서버</option>
+        <option>플랫폼 서버</option>
+        <option>온톨로지 서버</option>
+      </select>
+      <span class="badge badge-info" style="margin:0;">
+        <span style="display:inline-block; width:6px; height:6px; background:#52c41a; border-radius:50%; margin-right:4px; animation:pulse 1.5s infinite;"></span>
+        실시간
+      </span>
+      <span style="font-size:11px; color:var(--text-secondary);">갱신 11:45:32</span>
+    </div>
+  </div>
+
+  <!-- KPI 6개 -->
+  <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-bottom:14px;">
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #326ce5;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">전체 노드</div>
+      <div style="font-size:22px; font-weight:700; color:#326ce5;">12<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">개</span></div>
+      <div style="font-size:11px; margin-top:4px; color:#52c41a; font-weight:600;">전체 Ready</div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #52c41a;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">Running Pods</div>
+      <div style="font-size:22px; font-weight:700; color:#52c41a;">48<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">/52</span></div>
+      <div style="font-size:11px; margin-top:4px; color:var(--text-secondary);">4 Pending</div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #1677ff;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">CPU 사용률 (avg)</div>
+      <div style="font-size:22px; font-weight:700; color:#1677ff;">42<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">%</span></div>
+      <div style="font-size:11px; margin-top:4px;">
+        <div style="height:4px; background:#f0f0f0; border-radius:2px;">
+          <div style="width:42%; height:100%; background:#1677ff; border-radius:2px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #722ed1;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">메모리 사용률 (avg)</div>
+      <div style="font-size:22px; font-weight:700; color:#722ed1;">61<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">%</span></div>
+      <div style="font-size:11px; margin-top:4px;">
+        <div style="height:4px; background:#f0f0f0; border-radius:2px;">
+          <div style="width:61%; height:100%; background:#722ed1; border-radius:2px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #fa8c16;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">Restart 횟수 (24h)</div>
+      <div style="font-size:22px; font-weight:700; color:#fa8c16;">3<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">회</span></div>
+      <div style="font-size:11px; margin-top:4px; color:var(--text-secondary);">임계치 10회 이내</div>
+    </div>
+    <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #ff4d4f;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">알림·이벤트</div>
+      <div style="font-size:22px; font-weight:700; color:#ff4d4f;">2<span style="font-size:12px; font-weight:400; color:var(--text-secondary);">건</span></div>
+      <div style="font-size:11px; margin-top:4px; color:#ff4d4f; font-weight:600;">Warning 2건</div>
+    </div>
+  </div>
+
+  <!-- 클러스터별 서버 현황 카드 -->
+  <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:14px;">
+    <!-- 에이전트 서버 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">🤖 에이전트 서버 [K8S]</div>
+        <span class="badge badge-success" style="margin:0;">정상</span>
+      </div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+          <div style="font-size:11px; color:var(--text-secondary);">Namespace</div>
+          <div style="font-size:11px; font-weight:600; text-align:right;">datahub-agent</div>
+          <div style="font-size:11px; color:var(--text-secondary);">Replica</div>
+          <div style="font-size:11px; font-weight:600; text-align:right; color:#52c41a;">3/3 Ready</div>
+          <div style="font-size:11px; color:var(--text-secondary);">이미지 버전</div>
+          <div style="font-size:11px; font-weight:600; text-align:right;">v2.4.1</div>
+          <div style="font-size:11px; color:var(--text-secondary);">최근 배포</div>
+          <div style="font-size:11px; font-weight:600; text-align:right;">2026-03-03 09:20</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:32px;">CPU</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:38%; height:100%; background:#4caf50; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:10px; font-weight:600; min-width:30px; text-align:right;">38%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:32px;">MEM</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:55%; height:100%; background:#ff9800; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:10px; font-weight:600; min-width:30px; text-align:right;">55%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:32px;">DISK</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:28%; height:100%; background:#1677ff; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:10px; font-weight:600; min-width:30px; text-align:right;">28%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 플랫폼 서버 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">🏗️ 플랫폼 서버 [K8S]</div>
+        <span class="badge badge-success" style="margin:0;">정상</span>
+      </div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+          <div style="font-size:11px; color:var(--text-secondary);">Namespace</div>
+          <div style="font-size:11px; font-weight:600; text-align:right;">datahub-platform</div>
+          <div style="font-size:11px; color:var(--text-secondary);">Replica</div>
+          <div style="font-size:11px; font-weight:600; text-align:right; color:#52c41a;">5/5 Ready</div>
+          <div style="font-size:11px; color:var(--text-secondary);">이미지 버전</div>
+          <div style="font-size:11px; font-weight:600; text-align:right;">v3.1.0</div>
+          <div style="font-size:11px; color:var(--text-secondary);">최근 배포</div>
+          <div style="font-size:11px; font-weight:600; text-align:right;">2026-03-02 14:10</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:32px;">CPU</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:52%; height:100%; background:#ff9800; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:10px; font-weight:600; min-width:30px; text-align:right;">52%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:32px;">MEM</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:68%; height:100%; background:#ff9800; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:10px; font-weight:600; min-width:30px; text-align:right;">68%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:32px;">DISK</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:41%; height:100%; background:#1677ff; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:10px; font-weight:600; min-width:30px; text-align:right;">41%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 온톨로지 서버 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">🌳 온톨로지 서버 [K8S]</div>
+        <span class="badge badge-warning" style="margin:0;">주의</span>
+      </div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+          <div style="font-size:11px; color:var(--text-secondary);">Namespace</div>
+          <div style="font-size:11px; font-weight:600; text-align:right;">datahub-ontology</div>
+          <div style="font-size:11px; color:var(--text-secondary);">Replica</div>
+          <div style="font-size:11px; font-weight:600; text-align:right; color:#fa8c16;">2/3 Ready</div>
+          <div style="font-size:11px; color:var(--text-secondary);">이미지 버전</div>
+          <div style="font-size:11px; font-weight:600; text-align:right;">v1.8.3</div>
+          <div style="font-size:11px; color:var(--text-secondary);">최근 배포</div>
+          <div style="font-size:11px; font-weight:600; text-align:right;">2026-02-28 16:45</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:32px;">CPU</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:35%; height:100%; background:#4caf50; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:10px; font-weight:600; min-width:30px; text-align:right;">35%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:32px;">MEM</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:72%; height:100%; background:#ff9800; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:10px; font-weight:600; min-width:30px; text-align:right;">72%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:32px;">DISK</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:58%; height:100%; background:#ff9800; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:10px; font-weight:600; min-width:30px; text-align:right;">58%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pod 목록 AG Grid -->
+  <div class="card" style="padding:0; margin-bottom:14px;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div class="card-title">📋 Pod 상세 목록</div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option>전체 상태</option><option>Running</option><option>Pending</option><option>CrashLoopBackOff</option><option>Completed</option>
+        </select>
+        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option>전체 Namespace</option><option>datahub-agent</option><option>datahub-platform</option><option>datahub-ontology</option>
+        </select>
+        <input type="text" placeholder="Pod 검색..." style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; width:140px;">
+      </div>
+    </div>
+    <div id="ag-grid-sys-k8s" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+
+  <!-- 배포 이력 + 이벤트/알림 -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+    <!-- 최근 배포 이력 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">🚀 최근 배포 이력</div></div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+          <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; background:#f0f7ff; border-radius:6px;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:110px;">2026-03-03 09:20</span>
+            <span class="badge badge-success" style="margin:0; font-size:10px;">성공</span>
+            <span style="flex:1; font-weight:600;">에이전트 서버 v2.4.1</span>
+            <span style="font-size:10px; color:var(--text-secondary);">Rolling Update</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; background:#f6ffed; border-radius:6px;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:110px;">2026-03-02 14:10</span>
+            <span class="badge badge-success" style="margin:0; font-size:10px;">성공</span>
+            <span style="flex:1; font-weight:600;">플랫폼 서버 v3.1.0</span>
+            <span style="font-size:10px; color:var(--text-secondary);">Blue-Green</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; background:#fff7e6; border-radius:6px;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:110px;">2026-02-28 16:45</span>
+            <span class="badge badge-warning" style="margin:0; font-size:10px;">롤백</span>
+            <span style="flex:1; font-weight:600;">온톨로지 서버 v1.8.3</span>
+            <span style="font-size:10px; color:var(--text-secondary);">v1.8.4 → v1.8.3 롤백</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; background:#f0f7ff; border-radius:6px;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:110px;">2026-02-27 10:30</span>
+            <span class="badge badge-success" style="margin:0; font-size:10px;">성공</span>
+            <span style="flex:1; font-weight:600;">에이전트 서버 v2.4.0</span>
+            <span style="font-size:10px; color:var(--text-secondary);">Rolling Update</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- K8S 이벤트/알림 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">⚠️ K8S 이벤트·알림</div></div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#fff1f0; border-radius:6px; border-left:3px solid #ff4d4f;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:70px;">11:42:15</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#ff4d4f; margin-bottom:2px;">Warning: Pod CrashLoopBackOff</div>
+              <div style="font-size:11px; color:var(--text-secondary);">datahub-ontology/ontology-worker-2 — OOMKilled (메모리 초과)</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#fff7e6; border-radius:6px; border-left:3px solid #fa8c16;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:70px;">11:38:04</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#fa8c16; margin-bottom:2px;">Warning: High Memory Usage</div>
+              <div style="font-size:11px; color:var(--text-secondary);">datahub-ontology — Memory 사용률 72% (임계치 70%)</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#f6ffed; border-radius:6px; border-left:3px solid #52c41a;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:70px;">09:20:45</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#52c41a; margin-bottom:2px;">Normal: Deployment Updated</div>
+              <div style="font-size:11px; color:var(--text-secondary);">datahub-agent v2.4.1 배포 완료 (3/3 Ready)</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#f0f7ff; border-radius:6px; border-left:3px solid #1677ff;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:70px;">08:00:00</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#1677ff; margin-bottom:2px;">Normal: HPA Scaled</div>
+              <div style="font-size:11px; color:var(--text-secondary);">datahub-platform — Replica 3→5 (CPU 부하 증가)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 리소스 사용률 추이 -->
+  <div class="card" style="padding:0;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="card-title">📈 클러스터 리소스 사용률 추이 (최근 24시간)</div>
+      <div style="display:flex; gap:12px; font-size:11px; color:var(--text-secondary);">
+        <span><span style="display:inline-block; width:10px; height:3px; background:#326ce5; border-radius:2px; margin-right:3px;"></span>CPU</span>
+        <span><span style="display:inline-block; width:10px; height:3px; background:#722ed1; border-radius:2px; margin-right:3px;"></span>Memory</span>
+        <span><span style="display:inline-block; width:10px; height:3px; background:#fa8c16; border-radius:2px; margin-right:3px;"></span>Network I/O</span>
+      </div>
+    </div>
+    <div class="card-body" style="padding:16px;">
+      <div class="latency-chart">
+        <div class="latency-bar"><div class="lb-bar" style="height:30px; background:#326ce5;"></div><div class="lb-label">00h</div></div>
+        <div class="latency-bar"><div class="lb-bar" style="height:25px; background:#326ce5;"></div><div class="lb-label">02h</div></div>
+        <div class="latency-bar"><div class="lb-bar" style="height:22px; background:#4caf50;"></div><div class="lb-label">04h</div></div>
+        <div class="latency-bar"><div class="lb-bar" style="height:35px; background:#326ce5;"></div><div class="lb-label">06h</div></div>
+        <div class="latency-bar"><div class="lb-bar" style="height:55px; background:#326ce5;"></div><div class="lb-label">08h</div></div>
+        <div class="latency-bar"><div class="lb-bar" style="height:80px; background:#ff9800;"></div><div class="lb-label">10h</div></div>
+        <div class="latency-bar"><div class="lb-bar" style="height:65px; background:#326ce5;"></div><div class="lb-label">12h</div></div>
+        <div class="latency-bar"><div class="lb-bar" style="height:70px; background:#ff9800;"></div><div class="lb-label">14h</div></div>
+        <div class="latency-bar"><div class="lb-bar" style="height:58px; background:#326ce5;"></div><div class="lb-label">16h</div></div>
+        <div class="latency-bar"><div class="lb-bar" style="height:45px; background:#326ce5;"></div><div class="lb-label">18h</div></div>
+        <div class="latency-bar"><div class="lb-bar" style="height:38px; background:#326ce5;"></div><div class="lb-label">20h</div></div>
+        <div class="latency-bar"><div class="lb-bar" style="height:32px; background:#4caf50;"></div><div class="lb-label">22h</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SYS SCREEN 10: ERP 인사정보/조직도 동기화 ========== -->
+<div class="screen" id="screen-sys-erp-sync">
+  <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>ERP 인사정보 동기화</strong></div>
+
+  <!-- ===== Row 0: 헤더 + 액션 버튼 ===== -->
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+    <div>
+      <div class="page-title" style="margin-bottom:2px;">🔄 ERP 인사정보/조직도 동기화</div>
+      <div style="font-size:12px; color:var(--text-secondary);">Oracle ERP 인사시스템과 포털 사용자/조직 정보를 동기화합니다</div>
+    </div>
+    <div style="display:flex; gap:6px; flex-shrink:0;">
+      <button class="btn btn-primary btn-sm" data-perm="admin" onclick="showToast('수동 동기화를 시작합니다...', 'success')">🔄 수동 동기화 실행</button>
+      <button class="btn btn-outline btn-sm" data-perm="admin">⚙️ 동기화 설정</button>
+      <button class="btn btn-outline btn-sm">📥 이력 다운로드</button>
+    </div>
+  </div>
+
+  <!-- ===== Row 1: KPI 6개 ===== -->
+  <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-bottom:14px;">
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #52c41a;">
+      <div style="font-size:11px; color:var(--text-secondary);">동기화 상태</div>
+      <div style="font-size:22px; font-weight:800; color:#52c41a; margin:2px 0;">정상</div>
+      <div style="font-size:10px; color:#52c41a;">● 연결 활성</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #1677ff;">
+      <div style="font-size:11px; color:var(--text-secondary);">최근 동기화</div>
+      <div style="font-size:16px; font-weight:800; color:#1677ff; margin:2px 0;">02:00</div>
+      <div style="font-size:10px; color:var(--text-secondary);">2026-03-05</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #1677ff;">
+      <div style="font-size:11px; color:var(--text-secondary);">전체 사용자</div>
+      <div style="font-size:22px; font-weight:800; color:#1677ff; margin:2px 0;">249<span style="font-size:12px; font-weight:400;">명</span></div>
+      <div style="font-size:10px; color:#52c41a;">▲ ERP 동기화 완료</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #fa8c16;">
+      <div style="font-size:11px; color:var(--text-secondary);">금일 변경</div>
+      <div style="font-size:22px; font-weight:800; color:#fa8c16; margin:2px 0;">3<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:#fa8c16;">부서이동 2, 직급변경 1</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #722ed1;">
+      <div style="font-size:11px; color:var(--text-secondary);">조직 변경</div>
+      <div style="font-size:22px; font-weight:800; color:#722ed1; margin:2px 0;">1<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:var(--text-secondary);">AI연구팀 신설</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #13c2c2;">
+      <div style="font-size:11px; color:var(--text-secondary);">동기화 성공률</div>
+      <div style="font-size:22px; font-weight:800; color:#13c2c2; margin:2px 0;">99.8<span style="font-size:12px; font-weight:400;">%</span></div>
+      <div style="font-size:10px; color:var(--text-secondary);">최근 30일 기준</div>
+    </div>
+  </div>
+
+  <!-- ===== Row 2: 동기화 연결 정보 + 조직도 매핑 상태 ===== -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+    <!-- 좌: 동기화 연결 정보 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head"><div class="card-title">🔗 동기화 연결 정보</div></div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:flex; flex-direction:column; gap:10px; font-size:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#f0f7ff; border-radius:6px;">
+            <div>
+              <div style="font-size:10px; color:var(--text-secondary);">Source (ERP)</div>
+              <div style="font-weight:700; color:#1967d2;">Oracle ERP HR</div>
+              <div style="font-size:10px; color:var(--text-secondary); font-family:monospace;">10.1.20.51:1521/ERPDB</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="width:8px; height:8px; border-radius:50%; background:#52c41a; display:inline-block; animation:pulse 1.5s infinite;"></span>
+              <span style="font-size:10px; color:#52c41a; font-weight:600;">연결됨</span>
+            </div>
+          </div>
+          <div style="text-align:center; color:var(--text-secondary); font-size:16px;">⬇️</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#f6ffed; border-radius:6px;">
+            <div>
+              <div style="font-size:10px; color:var(--text-secondary);">Target (DataHub)</div>
+              <div style="font-weight:700; color:#2e7d32;">DataHub 사용자DB</div>
+              <div style="font-size:10px; color:var(--text-secondary); font-family:monospace;">PostgreSQL (datahub-user)</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="width:8px; height:8px; border-radius:50%; background:#52c41a; display:inline-block; animation:pulse 1.5s infinite;"></span>
+              <span style="font-size:10px; color:#52c41a; font-weight:600;">연결됨</span>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-top:6px; border-top:1px solid var(--border-color);">
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <span style="font-size:10px; color:var(--text-secondary);">동기화 방식</span>
+              <span style="font-weight:600;">배치(ETL) + CDC 보조</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <span style="font-size:10px; color:var(--text-secondary);">스케줄</span>
+              <span style="font-weight:600;">매일 02:00, 14:00</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <span style="font-size:10px; color:var(--text-secondary);">CDC 커넥터</span>
+              <span style="font-weight:600; font-family:monospace;">cdc-ora-hr</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <span style="font-size:10px; color:var(--text-secondary);">평균 소요시간</span>
+              <span style="font-weight:600;">2분 34초</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 우: 조직도 매핑 상태 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head">
+        <div class="card-title">🏢 조직도 매핑 상태</div>
+        <span style="font-size:10px; color:var(--text-secondary); margin-left:auto;">ERP 조직 → DataHub 매핑</span>
+      </div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:flex; gap:16px; margin-bottom:14px;">
+          <div style="flex:1; text-align:center; padding:10px; background:#f6ffed; border-radius:8px;">
+            <div style="font-size:10px; color:var(--text-secondary);">매핑 완료</div>
+            <div style="font-size:24px; font-weight:800; color:#52c41a;">24</div>
+            <div style="font-size:10px; color:#52c41a;">100%</div>
+          </div>
+          <div style="flex:1; text-align:center; padding:10px; background:#fff7e6; border-radius:8px;">
+            <div style="font-size:10px; color:var(--text-secondary);">미매핑</div>
+            <div style="font-size:24px; font-weight:800; color:#fa8c16;">0</div>
+            <div style="font-size:10px; color:var(--text-secondary);">-</div>
+          </div>
+          <div style="flex:1; text-align:center; padding:10px; background:#f0f7ff; border-radius:8px;">
+            <div style="font-size:10px; color:var(--text-secondary);">신규 감지</div>
+            <div style="font-size:24px; font-weight:800; color:#1677ff;">1</div>
+            <div style="font-size:10px; color:#1677ff;">검토 필요</div>
+          </div>
+        </div>
+        <div style="font-size:11px; display:flex; flex-direction:column; gap:4px;">
+          <div style="padding:5px 10px; background:#f8f9fa; border-radius:5px; border-left:3px solid #1677ff; display:flex; justify-content:space-between; align-items:center;">
+            <span>경영관리본부 (4개 팀)</span>
+            <span class="badge badge-success" style="margin:0; font-size:9px;">매핑완료</span>
+          </div>
+          <div style="padding:5px 10px; background:#f8f9fa; border-radius:5px; border-left:3px solid #52c41a; display:flex; justify-content:space-between; align-items:center;">
+            <span>수자원관리본부 (4개 팀)</span>
+            <span class="badge badge-success" style="margin:0; font-size:9px;">매핑완료</span>
+          </div>
+          <div style="padding:5px 10px; background:#f8f9fa; border-radius:5px; border-left:3px solid #13c2c2; display:flex; justify-content:space-between; align-items:center;">
+            <span>상수도관리본부 (4개 팀)</span>
+            <span class="badge badge-success" style="margin:0; font-size:9px;">매핑완료</span>
+          </div>
+          <div style="padding:5px 10px; background:#f8f9fa; border-radius:5px; border-left:3px solid #fa8c16; display:flex; justify-content:space-between; align-items:center;">
+            <span>수질환경본부 (3개 팀)</span>
+            <span class="badge badge-success" style="margin:0; font-size:9px;">매핑완료</span>
+          </div>
+          <div style="padding:5px 10px; background:#f8f9fa; border-radius:5px; border-left:3px solid #eb2f96; display:flex; justify-content:space-between; align-items:center;">
+            <span>에너지본부 (3개 팀)</span>
+            <span class="badge badge-success" style="margin:0; font-size:9px;">매핑완료</span>
+          </div>
+          <div style="padding:5px 10px; background:#fffbe6; border-radius:5px; border-left:3px solid #722ed1; display:flex; justify-content:space-between; align-items:center;">
+            <span>디지털혁신본부 (4개 팀)</span>
+            <span class="badge badge-info" style="margin:0; font-size:9px;">+1 신규팀</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Row 3: 최근 동기화 이력 AG Grid ===== -->
+  <div class="card" style="padding:0; margin-bottom:14px;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div class="card-title">📋 최근 동기화 이력</div>
+      <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option>전체 유형</option><option>전체동기화</option><option>증분동기화</option><option>CDC실시간</option>
+        </select>
+        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option>전체 대상</option><option>인사정보</option><option>조직정보</option><option>겸직정보</option>
+        </select>
+        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option>전체 상태</option><option>성공</option><option>부분성공</option><option>실패</option>
+        </select>
+      </div>
+    </div>
+    <div id="ag-grid-sys-erp-sync" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+
+  <!-- ===== Row 4: 금일 인사변동 내역 + 동기화 오류/경고 ===== -->
+  <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:12px; margin-bottom:14px;">
+    <!-- 좌: 금일 인사변동 내역 AG Grid -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">👤 금일 인사변동 내역</div>
+        <span style="font-size:10px; color:var(--text-secondary);">2026-03-05 기준</span>
+      </div>
+      <div id="ag-grid-sys-erp-changes" class="ag-theme-alpine" style="width:100%;"></div>
+    </div>
+    <!-- 우: 동기화 오류/경고 -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-title">⚠️ 동기화 오류·경고</div>
+        <span style="font-size:10px; color:var(--text-secondary);">최근 7일</span>
+      </div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#fff7e6; border-radius:6px; border-left:3px solid #fa8c16;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:85px;">03-04 14:02</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#fa8c16; margin-bottom:2px;">Warning: 겸직정보 불일치</div>
+              <div style="font-size:11px; color:var(--text-secondary);">사번 KW3072 한에너지 - ERP 겸직부서 정보와 Portal 불일치 (자동보정됨)</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#f6ffed; border-radius:6px; border-left:3px solid #52c41a;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:85px;">03-03 02:01</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#52c41a; margin-bottom:2px;">Info: 조직코드 신규 감지</div>
+              <div style="font-size:11px; color:var(--text-secondary);">ERP 조직코드 DH-AI-LAB 신규 감지 → 자동 매핑 대기</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#fff1f0; border-radius:6px; border-left:3px solid #ff4d4f;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:85px;">03-01 14:00</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#ff4d4f; margin-bottom:2px;">Error: 연결 타임아웃</div>
+              <div style="font-size:11px; color:var(--text-secondary);">Oracle ERP 서버 연결 타임아웃 (30s 초과) → 14:05 재시도 성공</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#fff7e6; border-radius:6px; border-left:3px solid #fa8c16;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:85px;">02-28 02:00</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#fa8c16; margin-bottom:2px;">Warning: 퇴직자 SSO 연동 해제 지연</div>
+              <div style="font-size:11px; color:var(--text-secondary);">퇴직자A(KW0512) SSO 토큰 즉시 무효화 실패 → 수동처리 완료</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 10px; background:#f6ffed; border-radius:6px; border-left:3px solid #52c41a;">
+            <span style="font-size:10px; color:var(--text-secondary); min-width:85px;">02-27 14:00</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#52c41a; margin-bottom:2px;">Info: 전체 동기화 정상 완료</div>
+              <div style="font-size:11px; color:var(--text-secondary);">248건 처리, 변경 0건, 소요시간 2분 18초</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Row 5: 필드 매핑 설정 AG Grid ===== -->
+  <div class="card" style="padding:0;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div class="card-title">🗂️ ERP ↔ DataHub 필드 매핑 설정</div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-outline btn-sm" data-perm="admin">✏️ 매핑 편집</button>
+        <button class="btn btn-outline btn-sm">📥 매핑정의서 다운로드</button>
+      </div>
+    </div>
+    <div id="ag-grid-sys-erp-mapping" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
+<!-- ── 비밀번호 변경 모달 (셀프서비스) ── -->
+<div class="modal-overlay" id="pwChangeModal" style="display:none;">
+  <div class="modal-card" style="width:480px;">
+    <div class="modal-header"><h3>🔑 비밀번호 변경</h3><button class="modal-close" onclick="closePasswordChangeModal()">&times;</button></div>
+    <div class="modal-body">
+      <div style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:#fff7e6; border:1px solid #ffe58f; border-radius:8px; margin-bottom:16px;">
+        <span style="font-size:16px;">👤</span>
+        <div>
+          <div style="font-size:13px; font-weight:600;" id="pwc-userName">최외부</div>
+          <div style="font-size:11px; color:#8c8c8c;">외부사용자 · 셀프서비스 비밀번호 변경</div>
+        </div>
+      </div>
+      <div style="display:grid; gap:14px;">
+        <div>
+          <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">현재 비밀번호</label>
+          <input type="password" id="pwc-current" placeholder="현재 비밀번호를 입력하세요" style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">새 비밀번호</label>
+          <input type="password" id="pwc-new" placeholder="새 비밀번호를 입력하세요" style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box;">
+          <div id="pwc-strength" style="margin-top:6px; font-size:11px; color:#8c8c8c;">영문 + 숫자 + 특수문자 조합, 8자 이상</div>
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">새 비밀번호 확인</label>
+          <input type="password" id="pwc-confirm" placeholder="새 비밀번호를 다시 입력하세요" style="width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; box-sizing:border-box;">
+          <div id="pwc-match" style="margin-top:4px; font-size:11px;"></div>
+        </div>
+      </div>
+      <div style="margin-top:16px; padding:10px 14px; background:#f6f8fa; border-radius:8px; font-size:11px; color:#666; line-height:1.7;">
+        <div style="font-weight:600; margin-bottom:4px; color:#333;">비밀번호 정책</div>
+        <div>• 영문 대/소문자 + 숫자 + 특수문자 조합 (8자 이상)</div>
+        <div>• 90일 주기 변경 필수</div>
+        <div>• 이전 5회 사용한 비밀번호 재사용 금지</div>
+        <div>• 연속 3자 이상 동일 문자 사용 금지</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closePasswordChangeModal()">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="passwordChangeAction()">비밀번호 변경</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 외부사용자 신청관리 ========== -->
+<div class="screen" id="screen-sys-ext-register">
+  <div class="breadcrumb"><a href="#" onclick="navigate('sys-ext-register')">시스템관리</a> &gt; <strong>외부사용자 신청관리</strong></div>
+
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+    <div>
+      <div class="page-title" style="margin-bottom:2px;">📋 외부사용자 신청관리</div>
+      <div style="font-size:12px; color:var(--text-secondary);">외부 사용자의 포털 이용 신청을 조회하고 승인/반려를 처리합니다</div>
+    </div>
+    <div style="display:flex; gap:6px; flex-shrink:0;">
+      <button class="btn btn-outline btn-sm">📊 Excel 내보내기</button>
+    </div>
+  </div>
+
+  <!-- KPI 카드 -->
+  <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:14px;">
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #1677ff;">
+      <div style="font-size:11px; color:var(--text-secondary);">전체 신청</div>
+      <div style="font-size:22px; font-weight:800; color:#1677ff; margin:2px 0;">47<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:var(--text-secondary);">누적 신청 건수</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #fa8c16;">
+      <div style="font-size:11px; color:var(--text-secondary);">승인대기</div>
+      <div style="font-size:22px; font-weight:800; color:#fa8c16; margin:2px 0;">5<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:#fa8c16;">금일 2건 접수</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #52c41a;">
+      <div style="font-size:11px; color:var(--text-secondary);">승인완료</div>
+      <div style="font-size:22px; font-weight:800; color:#52c41a; margin:2px 0;">38<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:#52c41a;">승인률 80.9%</div>
+    </div>
+    <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; border-left:3px solid #f5222d;">
+      <div style="font-size:11px; color:var(--text-secondary);">반려</div>
+      <div style="font-size:22px; font-weight:800; color:#f5222d; margin:2px 0;">4<span style="font-size:12px; font-weight:400;">건</span></div>
+      <div style="font-size:10px; color:var(--text-secondary);">사유: 서류 미비 등</div>
+    </div>
+  </div>
+
+  <!-- 필터 -->
+  <div class="filter-bar" style="margin-bottom:10px;">
+    <select class="select select-bordered text-sm" style="width:120px; padding:4px 8px; border:1px solid var(--border-color); border-radius:6px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+      <option value="">전체 상태</option>
+      <option value="승인대기">승인대기</option>
+      <option value="승인완료">승인완료</option>
+      <option value="반려">반려</option>
+    </select>
+    <input type="text" placeholder="성명/기관명 검색" style="width:180px; padding:4px 8px; border:1px solid var(--border-color); border-radius:6px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+  </div>
+
+  <!-- AG Grid -->
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div id="ag-grid-ext-register" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
+<!-- ========== 외부사용자 신청 상세 ========== -->
+<div class="screen" id="screen-sys-ext-register-detail">
+  <div class="breadcrumb">
+    <a href="#" onclick="navigate('sys-ext-register')">시스템관리</a> &gt;
+    <a href="#" onclick="navigate('sys-ext-register')">외부사용자 신청관리</a> &gt;
+    <strong>신청 상세</strong>
+  </div>
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+    <div class="page-title" style="margin-bottom:0;">📋 신청 상세 정보</div>
+    <button class="btn btn-outline btn-sm" onclick="navigate('sys-ext-register')">← 목록으로</button>
+  </div>
+
+  <!-- 신청자 정보 -->
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-head" style="font-weight:700; font-size:13px; padding:10px 16px; border-bottom:1px solid var(--border-color);">신청자 정보</div>
+    <div class="card-body" style="padding:16px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px 24px;">
+        <div style="display:flex; gap:8px;">
+          <span style="font-size:12px; color:var(--text-secondary); min-width:80px;">접수번호</span>
+          <span style="font-size:12px; font-weight:600;" id="ext-detail-id">-</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span style="font-size:12px; color:var(--text-secondary); min-width:80px;">신청일</span>
+          <span style="font-size:12px;" id="ext-detail-date">-</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span style="font-size:12px; color:var(--text-secondary); min-width:80px;">성명</span>
+          <span style="font-size:12px; font-weight:600;" id="ext-detail-name">-</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span style="font-size:12px; color:var(--text-secondary); min-width:80px;">소속기관</span>
+          <span style="font-size:12px;" id="ext-detail-org">-</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span style="font-size:12px; color:var(--text-secondary); min-width:80px;">부서/팀</span>
+          <span style="font-size:12px;" id="ext-detail-dept">-</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span style="font-size:12px; color:var(--text-secondary); min-width:80px;">직위</span>
+          <span style="font-size:12px;" id="ext-detail-position">-</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span style="font-size:12px; color:var(--text-secondary); min-width:80px;">이메일</span>
+          <span style="font-size:12px;" id="ext-detail-email">-</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span style="font-size:12px; color:var(--text-secondary); min-width:80px;">휴대폰</span>
+          <span style="font-size:12px;" id="ext-detail-phone">-</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span style="font-size:12px; color:var(--text-secondary); min-width:80px;">사용목적</span>
+          <span style="font-size:12px;" id="ext-detail-purpose">-</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span style="font-size:12px; color:var(--text-secondary); min-width:80px;">사용기간</span>
+          <span style="font-size:12px;" id="ext-detail-period">-</span>
+        </div>
+        <div style="display:flex; gap:8px; grid-column:span 2;">
+          <span style="font-size:12px; color:var(--text-secondary); min-width:80px;">상세목적</span>
+          <span style="font-size:12px;" id="ext-detail-purpose-detail">-</span>
+        </div>
+        <div style="display:flex; gap:8px; grid-column:span 2;">
+          <span style="font-size:12px; color:var(--text-secondary); min-width:80px;">접근 데이터</span>
+          <span style="font-size:12px;" id="ext-detail-data">-</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span style="font-size:12px; color:var(--text-secondary); min-width:80px;">첨부서류</span>
+          <span style="font-size:12px; color:var(--primary-color); cursor:pointer;" id="ext-detail-attachment">-</span>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span style="font-size:12px; color:var(--text-secondary); min-width:80px;">현재 상태</span>
+          <span id="ext-detail-status">-</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 처리 이력 타임라인 -->
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-head" style="font-weight:700; font-size:13px; padding:10px 16px; border-bottom:1px solid var(--border-color);">처리 이력</div>
+    <div class="card-body" style="padding:16px;" id="ext-detail-timeline">
+      <!-- JS로 동적 생성 -->
+    </div>
+  </div>
+
+  <!-- 승인/반려 액션 -->
+  <div class="card" id="ext-detail-action-card" style="margin-bottom:14px;">
+    <div class="card-head" style="font-weight:700; font-size:13px; padding:10px 16px; border-bottom:1px solid var(--border-color);">처리</div>
+    <div class="card-body" style="padding:16px;">
+      <div id="ext-detail-reject-reason-box" style="margin-bottom:12px; display:none;">
+        <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:4px;">반려 사유</label>
+        <textarea id="ext-detail-reject-reason" rows="2" placeholder="반려 사유를 입력하세요" style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:6px; font-size:13px; resize:vertical; background:var(--card-bg); color:var(--text-color);"></textarea>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="approveExtRegister()" id="ext-detail-approve-btn">승인</button>
+        <button class="btn btn-outline btn-sm" onclick="toggleRejectReason()" id="ext-detail-reject-toggle" style="color:#f5222d; border-color:#f5222d;">반려</button>
+        <button class="btn btn-primary btn-sm" onclick="rejectExtRegister()" id="ext-detail-reject-btn" style="display:none; background:#f5222d; border-color:#f5222d;">반려 확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 승인 완료 결과 (승인 시 표시) -->
+  <div class="card" id="ext-detail-result-card" style="margin-bottom:14px; display:none;">
+    <div class="card-head" style="font-weight:700; font-size:13px; padding:10px 16px; border-bottom:1px solid var(--border-color); color:#52c41a;">승인 완료 정보</div>
+    <div class="card-body" style="padding:16px;" id="ext-detail-result">
     </div>
   </div>
 </div>

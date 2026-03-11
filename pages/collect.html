@@ -74,6 +74,7 @@
               <th>소스 컬럼</th>
               <th></th>
               <th>타겟 컬럼</th>
+              <th>PII 탐지</th>
               <th>상태</th>
             </tr>
           </thead>
@@ -82,34 +83,84 @@
               <td>BUKRS</td>
               <td>→</td>
               <td>회사코드</td>
+              <td><span style="color:#999; font-size:11px;">—</span></td>
               <td><span class="pass">✅</span></td>
             </tr>
             <tr>
               <td>BELNR</td>
               <td>→</td>
               <td>전표번호</td>
+              <td><span style="color:#999; font-size:11px;">—</span></td>
               <td><span class="pass">✅</span></td>
             </tr>
             <tr>
               <td>GJAHR</td>
               <td>→</td>
               <td>회계연도</td>
+              <td><span style="color:#999; font-size:11px;">—</span></td>
               <td><span class="pass">✅</span></td>
             </tr>
             <tr>
               <td>DMBTR</td>
               <td>→</td>
               <td>금액(원화)</td>
+              <td><span style="color:#999; font-size:11px;">—</span></td>
               <td><span class="pass">✅</span></td>
             </tr>
             <tr>
               <td>BUDAT</td>
               <td>→</td>
               <td>전기일</td>
+              <td><span style="color:#999; font-size:11px;">—</span></td>
               <td><span class="pass">✅</span></td>
             </tr>
           </tbody>
         </table>
+        <div style="margin-top:8px; padding:6px 10px; background:#f6ffed; border-radius:6px; font-size:11px; color:#389e0d;">
+          ✅ PII 자동탐지 완료 — 본 파이프라인에서 개인정보 항목이 감지되지 않았습니다.
+        </div>
+      </div>
+      <!-- 개인정보 보호 설정 -->
+      <div class="card">
+        <div class="card-title">🔒 수집 시 개인정보 필터링 설정</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:#f8f9fb; border-radius:6px;">
+            <input type="checkbox" checked style="accent-color:#1677ff;">
+            <div style="flex:1;">
+              <div style="font-size:12px; font-weight:600;">PII 자동탐지</div>
+              <div style="font-size:11px; color:#888;">수집 시 컬럼 데이터에서 개인정보 패턴 자동 스캔 (이름, 전화번호, 주민번호, 이메일 등)</div>
+            </div>
+            <span style="background:#e8f5e9; color:#2e7d32; padding:2px 8px; border-radius:4px; font-size:10px;">활성</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:#f8f9fb; border-radius:6px;">
+            <input type="checkbox" style="accent-color:#1677ff;">
+            <div style="flex:1;">
+              <div style="font-size:12px; font-weight:600;">인라인 마스킹</div>
+              <div style="font-size:11px; color:#888;">수집과 동시에 민감 컬럼 실시간 마스킹 적용 (저장 전 처리)</div>
+            </div>
+            <span style="background:#fff7e6; color:#d48806; padding:2px 8px; border-radius:4px; font-size:10px;">비활성</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:#f8f9fb; border-radius:6px;">
+            <input type="checkbox" checked style="accent-color:#1677ff;">
+            <div style="flex:1;">
+              <div style="font-size:12px; font-weight:600;">민감정보 알림</div>
+              <div style="font-size:11px; color:#888;">1등급 개인정보 탐지 시 보안관리자에게 즉시 알림 발송</div>
+            </div>
+            <span style="background:#e8f5e9; color:#2e7d32; padding:2px 8px; border-radius:4px; font-size:10px;">활성</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:#f8f9fb; border-radius:6px;">
+            <input type="checkbox" style="accent-color:#1677ff;">
+            <div style="flex:1;">
+              <div style="font-size:12px; font-weight:600;">비식별 정책 자동연결</div>
+              <div style="font-size:11px; color:#888;">탐지된 PII 유형에 따라 기등록된 비식별 정책 자동 매핑</div>
+            </div>
+            <span style="background:#fff7e6; color:#d48806; padding:2px 8px; border-radius:4px; font-size:10px;">비활성</span>
+          </div>
+        </div>
+        <div style="margin-top:10px; padding:8px 12px; background:#e6f7ff; border-radius:6px; border-left:3px solid #1677ff;">
+          <div style="font-size:11px; color:#0958d9; font-weight:600;">📌 참고: 개인정보 보호법 제15조 (수집·이용 제한)</div>
+          <div style="font-size:11px; color:#555; margin-top:2px;">수집 단계에서 불필요한 개인정보는 수집을 최소화하고, 필수 수집 항목은 인라인 마스킹 또는 저장 전 비식별화를 권장합니다.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -395,65 +446,77 @@
     </div>
   </div>
 
-  <!-- KPI 5개 (서버 인프라 요약) -->
-  <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-bottom:16px;">
+  <!-- KPI 6개 (서버 인프라 요약) -->
+  <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-bottom:16px;">
     <div class="card" style="padding:0;margin-bottom:0;">
-      <div class="card-body" style="padding:16px;">
+      <div class="card-body" style="padding:14px;">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
           <div>
-            <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">전체 서버</div>
-            <div style="font-size:24px; font-weight:700; color:#1677ff;">55<span style="font-size:14px; font-weight:400; color:var(--text-secondary); margin-left:4px;">대</span></div>
-            <div style="font-size:11px; margin-top:4px;"><span style="color:var(--text-secondary);">VM 43 + PM 11 + GM 1</span></div>
+            <div style="font-size:11px; color:var(--text-secondary); margin-bottom:4px;">전체 서버</div>
+            <div style="font-size:22px; font-weight:700; color:#1677ff;">58<span style="font-size:13px; font-weight:400; color:var(--text-secondary); margin-left:3px;">대</span></div>
+            <div style="font-size:10px; margin-top:4px; color:var(--text-secondary);">K8S 3 + VM 44 + PM 12 + GPU 1</div>
           </div>
-          <div style="width:36px; height:36px; background:#e6f7ff; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;">🖥️</div>
+          <div style="width:32px; height:32px; background:#e6f7ff; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px;">🖥️</div>
         </div>
       </div>
     </div>
     <div class="card" style="padding:0;margin-bottom:0;">
-      <div class="card-body" style="padding:16px;">
+      <div class="card-body" style="padding:14px;">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
           <div>
-            <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">VM 인스턴스</div>
-            <div style="font-size:24px; font-weight:700; color:#4caf50;">43<span style="font-size:14px; font-weight:400; color:var(--text-secondary); margin-left:4px;">대</span></div>
-            <div style="font-size:11px; margin-top:4px;"><span style="color:#4caf50; font-weight:600;">All Running</span></div>
+            <div style="font-size:11px; color:var(--text-secondary); margin-bottom:4px;">K8S 클러스터</div>
+            <div style="font-size:22px; font-weight:700; color:#1565c0;">3<span style="font-size:13px; font-weight:400; color:var(--text-secondary); margin-left:3px;">클러스터</span></div>
+            <div style="font-size:10px; margin-top:4px;"><span style="color:#1565c0; font-weight:600;">Agent·Platform·Ontology</span></div>
           </div>
-          <div style="width:36px; height:36px; background:#f6ffed; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;">💻</div>
+          <div style="width:32px; height:32px; background:#e3f2fd; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px;">☸️</div>
         </div>
       </div>
     </div>
     <div class="card" style="padding:0;margin-bottom:0;">
-      <div class="card-body" style="padding:16px;">
+      <div class="card-body" style="padding:14px;">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
           <div>
-            <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">PM 인스턴스</div>
-            <div style="font-size:24px; font-weight:700; color:#7c4dff;">11<span style="font-size:14px; font-weight:400; color:var(--text-secondary); margin-left:4px;">대</span></div>
-            <div style="font-size:11px; margin-top:4px;"><span style="color:var(--text-secondary);">64Core / 1TB 고사양</span></div>
+            <div style="font-size:11px; color:var(--text-secondary); margin-bottom:4px;">VM (Virtual)</div>
+            <div style="font-size:22px; font-weight:700; color:#4caf50;">44<span style="font-size:13px; font-weight:400; color:var(--text-secondary); margin-left:3px;">대</span></div>
+            <div style="font-size:10px; margin-top:4px;"><span style="color:#4caf50; font-weight:600;">All Running</span></div>
           </div>
-          <div style="width:36px; height:36px; background:#ede7f6; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;">🗄️</div>
+          <div style="width:32px; height:32px; background:#f6ffed; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px;">💻</div>
         </div>
       </div>
     </div>
     <div class="card" style="padding:0;margin-bottom:0;">
-      <div class="card-body" style="padding:16px;">
+      <div class="card-body" style="padding:14px;">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
           <div>
-            <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">GM (GPU)</div>
-            <div style="font-size:24px; font-weight:700; color:#ef6c00;">1<span style="font-size:14px; font-weight:400; color:var(--text-secondary); margin-left:4px;">대</span></div>
-            <div style="font-size:11px; margin-top:4px;"><span style="color:#ef6c00; font-weight:600;">GPU B300</span></div>
+            <div style="font-size:11px; color:var(--text-secondary); margin-bottom:4px;">PM (Physical)</div>
+            <div style="font-size:22px; font-weight:700; color:#7c4dff;">12<span style="font-size:13px; font-weight:400; color:var(--text-secondary); margin-left:3px;">대</span></div>
+            <div style="font-size:10px; margin-top:4px; color:var(--text-secondary);">64Core / 1TB 고사양</div>
           </div>
-          <div style="width:36px; height:36px; background:#fff3e0; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;">🧠</div>
+          <div style="width:32px; height:32px; background:#ede7f6; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px;">🗄️</div>
         </div>
       </div>
     </div>
     <div class="card" style="padding:0;margin-bottom:0;">
-      <div class="card-body" style="padding:16px;">
+      <div class="card-body" style="padding:14px;">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
           <div>
-            <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">Kafka 클러스터</div>
-            <div style="font-size:24px; font-weight:700; color:#4caf50;">6<span style="font-size:14px; font-weight:400; color:var(--text-secondary); margin-left:4px;">노드</span></div>
-            <div style="font-size:11px; margin-top:4px;"><span style="color:#4caf50; font-weight:600;">All Healthy</span></div>
+            <div style="font-size:11px; color:var(--text-secondary); margin-bottom:4px;">GPU (Analysis)</div>
+            <div style="font-size:22px; font-weight:700; color:#ef6c00;">1<span style="font-size:13px; font-weight:400; color:var(--text-secondary); margin-left:3px;">대</span></div>
+            <div style="font-size:10px; margin-top:4px;"><span style="color:#ef6c00; font-weight:600;">GPU B300</span></div>
           </div>
-          <div style="width:36px; height:36px; background:#e8f5e9; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;">📡</div>
+          <div style="width:32px; height:32px; background:#fff3e0; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px;">🧠</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="padding:0;margin-bottom:0;">
+      <div class="card-body" style="padding:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div style="font-size:11px; color:var(--text-secondary); margin-bottom:4px;">Kafka Broker</div>
+            <div style="font-size:22px; font-weight:700; color:#00838f;">6<span style="font-size:13px; font-weight:400; color:var(--text-secondary); margin-left:3px;">노드</span></div>
+            <div style="font-size:10px; margin-top:4px;"><span style="color:#00838f; font-weight:600;">Data Highway PM</span></div>
+          </div>
+          <div style="width:32px; height:32px; background:#e0f7fa; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px;">📡</div>
         </div>
       </div>
     </div>
@@ -475,204 +538,216 @@
       </div>
     </div>
     <div style="overflow-x:auto; padding:8px 0;">
-      <svg viewBox="0 0 1300 720" style="width:100%; min-width:1080px; height:auto;" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 1400 520" style="width:100%; min-width:1100px; height:auto;" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#f5222d"/></marker>
           <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#1677ff"/></marker>
           <marker id="arrowGray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#8c8c8c"/></marker>
-          <marker id="arrowBlueR" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto"><polygon points="8 0, 0 3, 8 6" fill="#1677ff"/></marker>
           <filter id="dropShadow"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.08"/></filter>
         </defs>
 
         <!-- ========== Zone 1: FA망 ========== -->
-        <rect x="10" y="10" width="152" height="700" rx="10" fill="#fff1f0" stroke="#ffa39e" stroke-width="1.5"/>
+        <rect x="10" y="10" width="152" height="480" rx="10" fill="#fff1f0" stroke="#ffa39e" stroke-width="1.5"/>
         <rect x="10" y="10" width="152" height="28" rx="10" fill="#ff4d4f"/><text x="86" y="29" text-anchor="middle" style="font-size:12px; font-weight:700; fill:#fff;">FA망</text>
-        <!-- FA 서버들 -->
-        <rect x="22" y="52" width="128" height="48" rx="6" fill="#fff" stroke="#ffa39e" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="86" y="72" text-anchor="middle" style="font-size:11px; font-weight:700; fill:#333;">RWIS</text>
-        <text x="86" y="88" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">수위관측시스템</text>
-        <rect x="22" y="110" width="128" height="48" rx="6" fill="#fff" stroke="#ffa39e" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="86" y="130" text-anchor="middle" style="font-size:11px; font-weight:700; fill:#333;">HDAPS</text>
-        <text x="86" y="146" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">댐관측시스템</text>
-        <rect x="22" y="168" width="128" height="48" rx="6" fill="#fff" stroke="#ffa39e" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="86" y="188" text-anchor="middle" style="font-size:11px; font-weight:700; fill:#333;">GIOS</text>
-        <text x="86" y="204" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">지하수관측시스템</text>
-        <rect x="22" y="226" width="128" height="48" rx="6" fill="#fff" stroke="#ffa39e" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="86" y="246" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">스마트미터링</text>
-        <text x="86" y="262" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">광역 TM</text>
-        <!-- FA→OA 연결: Kafka 일방향 전송 -->
-        <line x1="150" y1="76" x2="175" y2="76" stroke="#f5222d" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
-        <line x1="150" y1="134" x2="175" y2="134" stroke="#f5222d" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
-        <line x1="150" y1="192" x2="175" y2="192" stroke="#f5222d" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
-        <line x1="150" y1="250" x2="175" y2="250" stroke="#f5222d" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
-        <text x="163" y="310" text-anchor="middle" style="font-size:8px; fill:#f5222d; font-weight:600;">Kafka</text>
-        <text x="163" y="320" text-anchor="middle" style="font-size:8px; fill:#f5222d;">일방향전송</text>
+        <!-- FA 소스 5개 -->
+        <rect x="22" y="50" width="128" height="44" rx="6" fill="#fff" stroke="#ffa39e" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="86" y="68" text-anchor="middle" style="font-size:11px; font-weight:700; fill:#333;">RWIS</text>
+        <text x="86" y="82" text-anchor="middle" style="font-size:8px; fill:#8c8c8c;">수위관측시스템</text>
+        <rect x="22" y="102" width="128" height="44" rx="6" fill="#fff" stroke="#ffa39e" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="86" y="120" text-anchor="middle" style="font-size:11px; font-weight:700; fill:#333;">HDAPS</text>
+        <text x="86" y="134" text-anchor="middle" style="font-size:8px; fill:#8c8c8c;">댐관측시스템</text>
+        <rect x="22" y="154" width="128" height="44" rx="6" fill="#fff" stroke="#ffa39e" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="86" y="172" text-anchor="middle" style="font-size:11px; font-weight:700; fill:#333;">GIOS</text>
+        <text x="86" y="186" text-anchor="middle" style="font-size:8px; fill:#8c8c8c;">지하수관측시스템</text>
+        <rect x="22" y="206" width="128" height="44" rx="6" fill="#fff" stroke="#ffa39e" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="86" y="224" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">스마트미터링</text>
+        <text x="86" y="238" text-anchor="middle" style="font-size:8px; fill:#8c8c8c;">광역 TM</text>
+        <rect x="22" y="258" width="128" height="44" rx="6" fill="#fff" stroke="#ffa39e" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="86" y="276" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">물진단처</text>
+        <text x="86" y="290" text-anchor="middle" style="font-size:8px; fill:#8c8c8c;">진단데이터</text>
+        <!-- FA→OA: Kafka 단방향 -->
+        <line x1="150" y1="72" x2="176" y2="72" stroke="#f5222d" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
+        <line x1="150" y1="124" x2="176" y2="124" stroke="#f5222d" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
+        <line x1="150" y1="176" x2="176" y2="176" stroke="#f5222d" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
+        <line x1="150" y1="228" x2="176" y2="228" stroke="#f5222d" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
+        <line x1="150" y1="280" x2="176" y2="280" stroke="#f5222d" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
+        <text x="163" y="330" text-anchor="middle" style="font-size:8px; fill:#f5222d; font-weight:600;">Kafka</text>
+        <text x="163" y="340" text-anchor="middle" style="font-size:8px; fill:#f5222d;">일방향전송</text>
 
         <!-- ========== Zone 2: OA망 (데이터허브 Core) ========== -->
-        <rect x="177" y="10" width="555" height="700" rx="10" fill="#e6f7ff" fill-opacity="0.35" stroke="#91caff" stroke-width="1.5"/>
-        <rect x="177" y="10" width="555" height="28" rx="10" fill="#1677ff"/><text x="454" y="29" text-anchor="middle" style="font-size:12px; font-weight:700; fill:#fff;">OA망 (데이터허브 Core)</text>
+        <rect x="178" y="10" width="620" height="480" rx="10" fill="#e6f7ff" fill-opacity="0.35" stroke="#91caff" stroke-width="1.5"/>
+        <rect x="178" y="10" width="620" height="28" rx="10" fill="#1677ff"/><text x="488" y="29" text-anchor="middle" style="font-size:12px; font-weight:700; fill:#fff;">OA망 (데이터허브 Core)</text>
 
-        <!-- OA Row 1: 사용자 / 서비스 -->
-        <rect x="192" y="48" width="115" height="46" rx="6" fill="#e8f5e9" stroke="#81c784" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="249" y="66" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">내부 사용자</text>
-        <text x="249" y="82" text-anchor="middle" style="font-size:8px; fill:#666;">웹사용자 · 관리자</text>
-        <rect x="317" y="48" width="100" height="46" rx="6" fill="#fff" stroke="#91caff" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="367" y="66" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">모니터링서버</text>
-        <text x="367" y="82" text-anchor="middle" style="font-size:8px; fill:#42a5f5;">VM(x4)</text>
-        <rect x="427" y="48" width="88" height="46" rx="6" fill="#fff" stroke="#91caff" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="471" y="66" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">WAS서버</text>
-        <text x="471" y="82" text-anchor="middle" style="font-size:8px; fill:#42a5f5;">VM(x4)</text>
-        <rect x="525" y="48" width="88" height="46" rx="6" fill="#fff" stroke="#91caff" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="569" y="66" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">WEB서버</text>
-        <text x="569" y="82" text-anchor="middle" style="font-size:8px; fill:#42a5f5;">VM(x4)</text>
-        <!-- 연계 (API/MCP) — OA 우측 -->
-        <rect x="623" y="48" width="100" height="98" rx="6" fill="#e0f2f1" stroke="#80cbc4" stroke-width="1.2" filter="url(#dropShadow)"/>
-        <text x="673" y="66" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#26a69a;">연계</text>
-        <rect x="633" y="76" width="80" height="24" rx="4" fill="#fff" stroke="#80cbc4" stroke-width="0.8"/>
-        <text x="673" y="93" text-anchor="middle" style="font-size:10px; font-weight:600; fill:#333;">API VM(x4)</text>
-        <rect x="633" y="106" width="80" height="24" rx="4" fill="#fff" stroke="#80cbc4" stroke-width="0.8"/>
-        <text x="673" y="123" text-anchor="middle" style="font-size:10px; font-weight:600; fill:#333;">MCP VM(x4)</text>
+        <!-- OA Row 1: 서비스계 -->
+        <rect x="192" y="48" width="100" height="48" rx="6" fill="#e8f5e9" stroke="#81c784" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="242" y="66" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">내부 사용자</text>
+        <text x="242" y="80" text-anchor="middle" style="font-size:8px; fill:#666;">웹 · 관리자</text>
+        <rect x="302" y="48" width="120" height="48" rx="6" fill="#fff" stroke="#91caff" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="362" y="64" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">Portal Server</text>
+        <text x="362" y="78" text-anchor="middle" style="font-size:8px; fill:#42a5f5;">WEB+WAS</text>
+        <rect x="330" y="84" width="64" height="14" rx="3" fill="#e3f2fd" stroke="#90caf9" stroke-width="0.6"/><text x="362" y="94" text-anchor="middle" style="font-size:8px; font-weight:600; fill:#1565c0;">Virtual</text>
+        <rect x="432" y="48" width="120" height="48" rx="6" fill="#fff" stroke="#1565c0" stroke-width="1.5" filter="url(#dropShadow)"/>
+        <text x="492" y="64" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">Platform Server</text>
+        <text x="492" y="78" text-anchor="middle" style="font-size:8px; fill:#1565c0;">플랫폼 서비스</text>
+        <rect x="460" y="84" width="64" height="14" rx="3" fill="#e3f2fd" stroke="#2196f3" stroke-width="0.8"/><text x="492" y="94" text-anchor="middle" style="font-size:8px; font-weight:700; fill:#1565c0;">K8S</text>
+        <rect x="562" y="48" width="115" height="48" rx="6" fill="#fff" stroke="#91caff" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="619" y="64" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">모니터링서버</text>
+        <text x="619" y="78" text-anchor="middle" style="font-size:8px; fill:#42a5f5;">VM(x4)</text>
+        <rect x="587" y="84" width="64" height="14" rx="3" fill="#e3f2fd" stroke="#90caf9" stroke-width="0.6"/><text x="619" y="94" text-anchor="middle" style="font-size:8px; font-weight:600; fill:#1565c0;">Virtual</text>
+        <!-- 연계 (Integration) — OA 우측 -->
+        <rect x="687" y="48" width="100" height="58" rx="6" fill="#e0f2f1" stroke="#80cbc4" stroke-width="1.2" filter="url(#dropShadow)"/>
+        <text x="737" y="66" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#26a69a;">Integration</text>
+        <text x="737" y="80" text-anchor="middle" style="font-size:9px; fill:#333;">API · MCP</text>
+        <rect x="705" y="94" width="64" height="14" rx="3" fill="#e3f2fd" stroke="#90caf9" stroke-width="0.6"/><text x="737" y="104" text-anchor="middle" style="font-size:8px; font-weight:600; fill:#1565c0;">Virtual</text>
         <!-- 서비스 간 흐름 -->
-        <line x1="307" y1="71" x2="317" y2="71" stroke="#8c8c8c" stroke-width="1" marker-end="url(#arrowGray)"/>
-        <line x1="417" y1="71" x2="427" y2="71" stroke="#8c8c8c" stroke-width="1" marker-end="url(#arrowGray)"/>
-        <line x1="515" y1="71" x2="525" y2="71" stroke="#8c8c8c" stroke-width="1" marker-end="url(#arrowGray)"/>
+        <line x1="292" y1="72" x2="302" y2="72" stroke="#8c8c8c" stroke-width="1" marker-end="url(#arrowGray)"/>
+        <line x1="422" y1="72" x2="432" y2="72" stroke="#8c8c8c" stroke-width="1" marker-end="url(#arrowGray)"/>
+        <line x1="552" y1="72" x2="562" y2="72" stroke="#8c8c8c" stroke-width="1" marker-end="url(#arrowGray)"/>
 
-        <!-- OA Row 2: 분석/AI 계층 -->
-        <rect x="192" y="106" width="115" height="46" rx="6" fill="#fff" stroke="#f48fb1" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="249" y="124" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">분석DB</text>
-        <text x="249" y="140" text-anchor="middle" style="font-size:8px; fill:#9c27b0;">PM(x4) DATA MART</text>
-        <rect x="317" y="106" width="115" height="46" rx="6" fill="#fff" stroke="#91caff" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="374" y="124" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">정제/변환DB</text>
-        <text x="374" y="140" text-anchor="middle" style="font-size:8px; fill:#9c27b0;">PM(x3) ODS·GPT</text>
-        <rect x="442" y="106" width="80" height="46" rx="6" fill="#fff" stroke="#9fa8da" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="482" y="124" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">마인즈DB</text>
-        <text x="482" y="140" text-anchor="middle" style="font-size:8px; fill:#42a5f5;">VM(x4)</text>
-        <rect x="532" y="106" width="80" height="46" rx="6" fill="#fff3e0" stroke="#ffb74d" stroke-width="1.5" filter="url(#dropShadow)"/>
-        <text x="572" y="120" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#e65100;">LLM(GPU)</text>
-        <text x="572" y="140" text-anchor="middle" style="font-size:8px; fill:#ef6c00;">GM(x1) B300</text>
+        <!-- OA Row 2: 분석/AI -->
+        <rect x="192" y="116" width="120" height="48" rx="6" fill="#fff3e0" stroke="#ffb74d" stroke-width="1.5" filter="url(#dropShadow)"/>
+        <text x="252" y="132" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#e65100;">Analysis Server</text>
+        <text x="252" y="146" text-anchor="middle" style="font-size:8px; fill:#ef6c00;">GM(x1) GPU B300</text>
+        <rect x="220" y="152" width="64" height="14" rx="3" fill="#fff3e0" stroke="#ffb74d" stroke-width="0.8"/><text x="252" y="162" text-anchor="middle" style="font-size:8px; font-weight:700; fill:#e65100;">GPU</text>
+        <rect x="322" y="116" width="120" height="48" rx="6" fill="#fff" stroke="#1565c0" stroke-width="1.5" filter="url(#dropShadow)"/>
+        <text x="382" y="132" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">Ontology Server</text>
+        <text x="382" y="146" text-anchor="middle" style="font-size:8px; fill:#1565c0;">그래프DB · 마인즈DB</text>
+        <rect x="350" y="152" width="64" height="14" rx="3" fill="#e3f2fd" stroke="#2196f3" stroke-width="0.8"/><text x="382" y="162" text-anchor="middle" style="font-size:8px; font-weight:700; fill:#1565c0;">K8S</text>
+        <rect x="452" y="116" width="110" height="48" rx="6" fill="#fff" stroke="#f48fb1" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="507" y="132" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">Analysis DB</text>
+        <text x="507" y="146" text-anchor="middle" style="font-size:8px; fill:#9c27b0;">PM(x4) DATA MART</text>
+        <rect x="475" y="152" width="64" height="14" rx="3" fill="#f3e5f5" stroke="#ce93d8" stroke-width="0.8"/><text x="507" y="162" text-anchor="middle" style="font-size:8px; font-weight:700; fill:#7b1fa2;">Physical</text>
+        <rect x="572" y="116" width="105" height="48" rx="6" fill="#fff" stroke="#f48fb1" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="624" y="132" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">ODS DB</text>
+        <text x="624" y="146" text-anchor="middle" style="font-size:8px; fill:#9c27b0;">PM(x3) 정제/변환</text>
+        <rect x="592" y="152" width="64" height="14" rx="3" fill="#f3e5f5" stroke="#ce93d8" stroke-width="0.8"/><text x="624" y="162" text-anchor="middle" style="font-size:8px; font-weight:700; fill:#7b1fa2;">Physical</text>
+        <rect x="687" y="116" width="100" height="48" rx="6" fill="#fff" stroke="#9fa8da" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="737" y="132" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">마인즈DB</text>
+        <text x="737" y="146" text-anchor="middle" style="font-size:8px; fill:#42a5f5;">VM(x4)</text>
 
-        <!-- OA Row 3: KAFKA + 수집 -->
-        <rect x="192" y="164" width="115" height="46" rx="6" fill="#e0f7fa" stroke="#00acc1" stroke-width="1.5" filter="url(#dropShadow)"/>
-        <text x="249" y="182" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#00838f;">KAFKA 저장소</text>
-        <text x="249" y="198" text-anchor="middle" style="font-size:8px; fill:#00acc1;">VM(x6) 스트리밍</text>
-        <rect x="317" y="164" width="95" height="46" rx="6" fill="#fff" stroke="#91caff" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="364" y="182" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">수집Agent</text>
-        <text x="364" y="198" text-anchor="middle" style="font-size:8px; fill:#42a5f5;">VM(x5)</text>
-        <rect x="422" y="164" width="80" height="46" rx="6" fill="#fff" stroke="#f48fb1" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="462" y="182" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">수집DB</text>
-        <text x="462" y="198" text-anchor="middle" style="font-size:8px; fill:#9c27b0;">PM(x3)</text>
-        <rect x="512" y="164" width="100" height="46" rx="6" fill="#fff" stroke="#91caff" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="562" y="182" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">프로듀서서버</text>
-        <text x="562" y="198" text-anchor="middle" style="font-size:8px; fill:#42a5f5;">VM(x4)</text>
-        <rect x="622" y="164" width="100" height="46" rx="6" fill="#fff" stroke="#91caff" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="672" y="182" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">CDC/ETL서버</text>
-        <text x="672" y="198" text-anchor="middle" style="font-size:8px; fill:#42a5f5;">VM(x4)</text>
+        <!-- OA Row 3: 수집계 -->
+        <rect x="192" y="184" width="120" height="48" rx="6" fill="#fff" stroke="#1565c0" stroke-width="1.5" filter="url(#dropShadow)"/>
+        <text x="252" y="200" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">Agent Server</text>
+        <text x="252" y="214" text-anchor="middle" style="font-size:8px; fill:#1565c0;">수집 에이전트</text>
+        <rect x="220" y="220" width="64" height="14" rx="3" fill="#e3f2fd" stroke="#2196f3" stroke-width="0.8"/><text x="252" y="230" text-anchor="middle" style="font-size:8px; font-weight:700; fill:#1565c0;">K8S</text>
+        <rect x="322" y="184" width="110" height="48" rx="6" fill="#fff" stroke="#f48fb1" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="377" y="200" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">Collection DB</text>
+        <text x="377" y="214" text-anchor="middle" style="font-size:8px; fill:#9c27b0;">PM(x3) 수집DB</text>
+        <rect x="345" y="220" width="64" height="14" rx="3" fill="#f3e5f5" stroke="#ce93d8" stroke-width="0.8"/><text x="377" y="230" text-anchor="middle" style="font-size:8px; font-weight:700; fill:#7b1fa2;">Physical</text>
+        <rect x="442" y="184" width="90" height="48" rx="6" fill="#fff" stroke="#91caff" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="487" y="200" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">CDC Server</text>
+        <text x="487" y="214" text-anchor="middle" style="font-size:8px; fill:#42a5f5;">VM(x4)</text>
+        <rect x="455" y="220" width="64" height="14" rx="3" fill="#e3f2fd" stroke="#90caf9" stroke-width="0.6"/><text x="487" y="230" text-anchor="middle" style="font-size:8px; font-weight:600; fill:#1565c0;">Virtual</text>
+        <rect x="542" y="184" width="90" height="48" rx="6" fill="#fff" stroke="#91caff" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="587" y="200" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">ETL Server</text>
+        <text x="587" y="214" text-anchor="middle" style="font-size:8px; fill:#42a5f5;">VM(x4)</text>
+        <rect x="555" y="220" width="64" height="14" rx="3" fill="#e3f2fd" stroke="#90caf9" stroke-width="0.6"/><text x="587" y="230" text-anchor="middle" style="font-size:8px; font-weight:600; fill:#1565c0;">Virtual</text>
+        <rect x="642" y="184" width="145" height="48" rx="6" fill="#e0f7fa" stroke="#00acc1" stroke-width="1.5" filter="url(#dropShadow)"/>
+        <text x="714" y="200" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#00838f;">Data Highway</text>
+        <text x="714" y="214" text-anchor="middle" style="font-size:8px; fill:#00acc1;">Kafka Broker PM(x6)</text>
+        <rect x="682" y="220" width="64" height="14" rx="3" fill="#f3e5f5" stroke="#ce93d8" stroke-width="0.8"/><text x="714" y="230" text-anchor="middle" style="font-size:8px; font-weight:700; fill:#7b1fa2;">Physical</text>
         <!-- 수집 내부 흐름 -->
-        <line x1="307" y1="187" x2="317" y2="187" stroke="#00acc1" stroke-width="1"/>
-        <line x1="412" y1="187" x2="422" y2="187" stroke="#8c8c8c" stroke-width="1"/>
-        <line x1="502" y1="187" x2="512" y2="187" stroke="#8c8c8c" stroke-width="1"/>
-        <line x1="612" y1="187" x2="622" y2="187" stroke="#8c8c8c" stroke-width="1"/>
+        <line x1="312" y1="208" x2="322" y2="208" stroke="#00acc1" stroke-width="1" marker-end="url(#arrowGray)"/>
+        <line x1="432" y1="208" x2="442" y2="208" stroke="#8c8c8c" stroke-width="1" marker-end="url(#arrowGray)"/>
+        <line x1="532" y1="208" x2="542" y2="208" stroke="#8c8c8c" stroke-width="1" marker-end="url(#arrowGray)"/>
+        <line x1="632" y1="208" x2="642" y2="208" stroke="#00acc1" stroke-width="1" marker-end="url(#arrowGray)"/>
 
-        <!-- 그래프DB (분석 옆) -->
-        <rect x="622" y="106" width="100" height="46" rx="6" fill="#fff" stroke="#9fa8da" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="672" y="124" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">그래프DB</text>
-        <text x="672" y="140" text-anchor="middle" style="font-size:8px; fill:#9c27b0;">PM(x1)</text>
+        <!-- OA Row 4: 데이터소스 -->
+        <rect x="192" y="250" width="595" height="54" rx="6" fill="#f0f5ff" stroke="#adc6ff" stroke-width="1"/>
+        <text x="210" y="268" style="font-size:9px; font-weight:700; fill:#0958d9;">데이터소스</text>
+        <rect x="276" y="260" width="55" height="32" rx="4" fill="#e3f2fd" stroke="#90caf9" stroke-width="0.8"/><text x="303" y="281" text-anchor="middle" style="font-size:8px; font-weight:600; fill:#1565c0;">RTDB</text>
+        <rect x="337" y="260" width="64" height="32" rx="4" fill="#fff" stroke="#adc6ff" stroke-width="0.8"/><text x="369" y="281" text-anchor="middle" style="font-size:8px; font-weight:600; fill:#333;">TIBERO</text>
+        <rect x="407" y="260" width="50" height="32" rx="4" fill="#fff" stroke="#adc6ff" stroke-width="0.8"/><text x="432" y="281" text-anchor="middle" style="font-size:8px; font-weight:600; fill:#333;">Zeta</text>
+        <rect x="463" y="260" width="68" height="32" rx="4" fill="#fff8e1" stroke="#ffe58f" stroke-width="0.8"/><text x="497" y="275" text-anchor="middle" style="font-size:7px; font-weight:600; fill:#333;">자산 Oracle</text><text x="497" y="286" text-anchor="middle" style="font-size:7px; fill:#d48806;">운영통합 Oracle</text>
+        <rect x="537" y="260" width="70" height="32" rx="4" fill="#fce4ec" stroke="#f48fb1" stroke-width="0.8"/><text x="572" y="275" text-anchor="middle" style="font-size:7px; font-weight:600; fill:#333;">시설 SAP HANA</text><text x="572" y="286" text-anchor="middle" style="font-size:7px; fill:#c2185b;">수질 SAP HANA</text>
+        <rect x="613" y="260" width="55" height="32" rx="4" fill="#fff" stroke="#adc6ff" stroke-width="0.8"/><text x="640" y="275" text-anchor="middle" style="font-size:8px; font-weight:600; fill:#333;">수집</text><text x="640" y="286" text-anchor="middle" style="font-size:7px; fill:#666;">관망 · 수질</text>
+        <rect x="674" y="260" width="105" height="32" rx="4" fill="#ede7f6" stroke="#b39ddb" stroke-width="0.8"/><text x="726" y="281" text-anchor="middle" style="font-size:8px; font-weight:600; fill:#4527a0;">그래프DB PM(x1)</text>
 
-        <!-- OA Row 4: TIBERO 데이터베이스 -->
-        <rect x="192" y="224" width="530" height="54" rx="6" fill="#f0f5ff" stroke="#adc6ff" stroke-width="1"/>
-        <text x="210" y="242" style="font-size:9px; font-weight:700; fill:#0958d9;">TIBERO</text>
-        <rect x="270" y="234" width="75" height="32" rx="4" fill="#fff" stroke="#adc6ff" stroke-width="0.8"/><text x="307" y="255" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">자산(Zeta)</text>
-        <rect x="353" y="234" width="60" height="32" rx="4" fill="#fff" stroke="#adc6ff" stroke-width="0.8"/><text x="383" y="255" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">시설</text>
-        <rect x="421" y="234" width="60" height="32" rx="4" fill="#fff" stroke="#adc6ff" stroke-width="0.8"/><text x="451" y="255" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">수집</text>
-        <rect x="489" y="234" width="75" height="32" rx="4" fill="#fff" stroke="#adc6ff" stroke-width="0.8"/><text x="526" y="255" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">운영통합</text>
-        <rect x="572" y="234" width="60" height="32" rx="4" fill="#fff" stroke="#adc6ff" stroke-width="0.8"/><text x="602" y="255" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">관망</text>
-        <rect x="640" y="234" width="75" height="32" rx="4" fill="#fff" stroke="#adc6ff" stroke-width="0.8"/><text x="677" y="255" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">수질</text>
+        <!-- OA Row 5: DT + LLM -->
+        <rect x="192" y="318" width="595" height="54" rx="6" fill="#fff8e1" stroke="#ffe58f" stroke-width="1"/>
+        <text x="210" y="336" style="font-size:9px; font-weight:700; fill:#d48806;">Digital Twin · LLM</text>
+        <rect x="290" y="328" width="64" height="32" rx="4" fill="#fff" stroke="#ffe58f" stroke-width="0.8"/><text x="322" y="349" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">정수장DT</text>
+        <rect x="360" y="328" width="58" height="32" rx="4" fill="#fff" stroke="#ffe58f" stroke-width="0.8"/><text x="389" y="349" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">관로DT</text>
+        <rect x="424" y="328" width="52" height="32" rx="4" fill="#fff" stroke="#ffe58f" stroke-width="0.8"/><text x="450" y="349" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">댐DT</text>
+        <rect x="482" y="328" width="58" height="32" rx="4" fill="#fff" stroke="#ffe58f" stroke-width="0.8"/><text x="511" y="349" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">발전DT</text>
+        <rect x="546" y="328" width="64" height="32" rx="4" fill="#fff" stroke="#ffe58f" stroke-width="0.8"/><text x="578" y="349" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">스마트DT</text>
+        <rect x="616" y="328" width="56" height="32" rx="4" fill="#fff3e0" stroke="#ffb74d" stroke-width="0.8"/><text x="644" y="349" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#e65100;">LLM</text>
+        <rect x="678" y="328" width="68" height="32" rx="4" fill="#fff3e0" stroke="#ffb74d" stroke-width="0.8"/><text x="712" y="349" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#e65100;">LLMOps</text>
 
-        <!-- OA Row 5: Digital Twin -->
-        <rect x="192" y="290" width="530" height="54" rx="6" fill="#fff8e1" stroke="#ffe58f" stroke-width="1"/>
-        <text x="210" y="308" style="font-size:9px; font-weight:700; fill:#d48806;">Digital Twin</text>
-        <rect x="290" y="300" width="68" height="32" rx="4" fill="#fff" stroke="#ffe58f" stroke-width="0.8"/><text x="324" y="321" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">정수장DT</text>
-        <rect x="366" y="300" width="60" height="32" rx="4" fill="#fff" stroke="#ffe58f" stroke-width="0.8"/><text x="396" y="321" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">관로DT</text>
-        <rect x="434" y="300" width="55" height="32" rx="4" fill="#fff" stroke="#ffe58f" stroke-width="0.8"/><text x="461" y="321" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">댐DT</text>
-        <rect x="497" y="300" width="60" height="32" rx="4" fill="#fff" stroke="#ffe58f" stroke-width="0.8"/><text x="527" y="321" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">발전DT</text>
-        <rect x="565" y="300" width="68" height="32" rx="4" fill="#fff" stroke="#ffe58f" stroke-width="0.8"/><text x="599" y="321" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">스마트DT</text>
-        <rect x="641" y="300" width="72" height="32" rx="4" fill="#fff" stroke="#ffe58f" stroke-width="0.8"/><text x="677" y="321" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#333;">생성형AI</text>
-
-        <!-- OA→DMZ 연결: 양방향 전송 -->
-        <line x1="723" y1="88" x2="748" y2="88" stroke="#1677ff" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowBlue)"/>
-        <line x1="748" y1="130" x2="723" y2="130" stroke="#f5222d" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
-        <line x1="723" y1="187" x2="748" y2="187" stroke="#1677ff" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowBlue)"/>
-        <text x="736" y="240" text-anchor="middle" style="font-size:8px; fill:#1677ff; font-weight:600;">양방향</text>
-        <text x="736" y="250" text-anchor="middle" style="font-size:8px; fill:#1677ff;">전송</text>
+        <!-- OA→DMZ 연결 -->
+        <line x1="790" y1="80" x2="815" y2="80" stroke="#1677ff" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowBlue)"/>
+        <line x1="815" y1="140" x2="790" y2="140" stroke="#f5222d" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
+        <line x1="790" y1="208" x2="815" y2="208" stroke="#1677ff" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowBlue)"/>
+        <text x="803" y="260" text-anchor="middle" style="font-size:8px; fill:#1677ff; font-weight:600;">양방향</text>
+        <text x="803" y="270" text-anchor="middle" style="font-size:8px; fill:#1677ff;">전송</text>
 
         <!-- ========== Zone 3: DMZ망 ========== -->
-        <rect x="750" y="10" width="158" height="700" rx="10" fill="#f6ffed" fill-opacity="0.6" stroke="#b7eb8f" stroke-width="1.5"/>
-        <rect x="750" y="10" width="158" height="28" rx="10" fill="#52c41a"/><text x="829" y="29" text-anchor="middle" style="font-size:12px; font-weight:700; fill:#fff;">DMZ망</text>
-        <!-- DMZ 서버들 -->
-        <rect x="762" y="52" width="134" height="48" rx="6" fill="#fff" stroke="#b7eb8f" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="829" y="72" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">Kafka</text>
-        <text x="829" y="88" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">양방향 전송</text>
-        <rect x="762" y="110" width="134" height="48" rx="6" fill="#fff" stroke="#b7eb8f" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="829" y="126" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">스마트미터링</text>
-        <text x="829" y="144" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">WEB/WAS서버</text>
-        <rect x="762" y="168" width="134" height="48" rx="6" fill="#fff" stroke="#b7eb8f" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="829" y="188" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">기상 수집</text>
-        <text x="829" y="204" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">기상청 API 연계</text>
-        <!-- DMZ→IoT 연결 -->
-        <line x1="896" y1="134" x2="921" y2="134" stroke="#fa8c16" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowGray)"/>
-        <!-- DMZ→인터넷 연결 -->
-        <line x1="896" y1="76" x2="1078" y2="76" stroke="#1677ff" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowBlue)"/>
+        <rect x="817" y="10" width="158" height="480" rx="10" fill="#f6ffed" fill-opacity="0.6" stroke="#b7eb8f" stroke-width="1.5"/>
+        <rect x="817" y="10" width="158" height="28" rx="10" fill="#52c41a"/><text x="896" y="29" text-anchor="middle" style="font-size:12px; font-weight:700; fill:#fff;">DMZ망</text>
+        <rect x="829" y="50" width="134" height="48" rx="6" fill="#fff" stroke="#b7eb8f" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="896" y="70" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">Collection Server</text>
+        <text x="896" y="86" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">Kafka 양방향</text>
+        <rect x="829" y="106" width="134" height="48" rx="6" fill="#fff" stroke="#b7eb8f" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="896" y="122" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">스마트미터링</text>
+        <text x="896" y="140" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">WEB/WAS서버</text>
+        <rect x="829" y="162" width="134" height="48" rx="6" fill="#fff" stroke="#b7eb8f" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="896" y="178" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">기상 수집</text>
+        <text x="896" y="194" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">기상청 API</text>
+        <rect x="829" y="218" width="134" height="48" rx="6" fill="#fff" stroke="#b7eb8f" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="896" y="234" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">NASA 수집</text>
+        <text x="896" y="250" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">위성 데이터 양방향</text>
+        <!-- DMZ→IoT -->
+        <line x1="963" y1="130" x2="990" y2="130" stroke="#fa8c16" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowGray)"/>
+        <!-- DMZ→인터넷 -->
+        <line x1="963" y1="74" x2="1148" y2="74" stroke="#1677ff" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowBlue)"/>
 
         <!-- ========== Zone 4: IoT망 ========== -->
-        <rect x="923" y="10" width="155" height="700" rx="10" fill="#fff7e6" fill-opacity="0.6" stroke="#ffd591" stroke-width="1.5"/>
-        <rect x="923" y="10" width="155" height="28" rx="10" fill="#fa8c16"/><text x="1000" y="29" text-anchor="middle" style="font-size:12px; font-weight:700; fill:#fff;">IoT망</text>
-        <!-- IoT 장비들 -->
-        <rect x="935" y="52" width="131" height="48" rx="6" fill="#fff" stroke="#ffd591" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="1000" y="68" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">스마트미터링</text>
-        <text x="1000" y="86" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">중계서버</text>
-        <rect x="935" y="110" width="131" height="48" rx="6" fill="#fff" stroke="#ffd591" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="1000" y="126" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">스마트미터링</text>
-        <text x="1000" y="144" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">지방운영효율화</text>
-        <rect x="935" y="168" width="131" height="48" rx="6" fill="#fff" stroke="#ffd591" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="1000" y="184" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">스마트미터링</text>
-        <text x="1000" y="202" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">제방/사회안전망</text>
-        <rect x="935" y="226" width="131" height="48" rx="6" fill="#fff" stroke="#ffd591" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="1000" y="246" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">스마트미터링</text>
-        <text x="1000" y="262" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">광역 IoT</text>
+        <rect x="992" y="10" width="155" height="480" rx="10" fill="#fff7e6" fill-opacity="0.6" stroke="#ffd591" stroke-width="1.5"/>
+        <rect x="992" y="10" width="155" height="28" rx="10" fill="#fa8c16"/><text x="1069" y="29" text-anchor="middle" style="font-size:12px; font-weight:700; fill:#fff;">IoT망</text>
+        <rect x="1004" y="50" width="131" height="44" rx="6" fill="#fff" stroke="#ffd591" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="1069" y="66" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">스마트미터링</text>
+        <text x="1069" y="82" text-anchor="middle" style="font-size:8px; fill:#8c8c8c;">중계서버</text>
+        <rect x="1004" y="102" width="131" height="44" rx="6" fill="#fff" stroke="#ffd591" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="1069" y="118" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">스마트미터링</text>
+        <text x="1069" y="134" text-anchor="middle" style="font-size:8px; fill:#8c8c8c;">지방운영효율화</text>
+        <rect x="1004" y="154" width="131" height="44" rx="6" fill="#fff" stroke="#ffd591" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="1069" y="170" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">스마트미터링</text>
+        <text x="1069" y="186" text-anchor="middle" style="font-size:8px; fill:#8c8c8c;">제방/사회안전망</text>
+        <rect x="1004" y="206" width="131" height="44" rx="6" fill="#fff" stroke="#ffd591" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="1069" y="222" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">스마트미터링</text>
+        <text x="1069" y="238" text-anchor="middle" style="font-size:8px; fill:#8c8c8c;">광역 IoT</text>
 
         <!-- ========== Zone 5: 인터넷 ========== -->
-        <rect x="1080" y="10" width="155" height="700" rx="10" fill="#f5f5f5" stroke="#d9d9d9" stroke-width="1.5"/>
-        <rect x="1080" y="10" width="155" height="28" rx="10" fill="#8c8c8c"/><text x="1157" y="29" text-anchor="middle" style="font-size:12px; font-weight:700; fill:#fff;">인터넷</text>
-        <!-- 인터넷 요소들 -->
-        <rect x="1092" y="52" width="131" height="48" rx="6" fill="#fff" stroke="#d9d9d9" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="1157" y="72" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">외부사용자</text>
-        <text x="1157" y="88" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">공공데이터 포털</text>
-        <rect x="1092" y="110" width="131" height="48" rx="6" fill="#fff" stroke="#d9d9d9" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="1157" y="130" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">모바일 WEB서버</text>
-        <text x="1157" y="146" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">모바일 앱 서비스</text>
-        <rect x="1092" y="168" width="131" height="48" rx="6" fill="#fff" stroke="#d9d9d9" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="1157" y="188" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">모바일 사용자</text>
-        <text x="1157" y="204" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">📱 앱 / 📊 웹</text>
-        <rect x="1092" y="226" width="131" height="48" rx="6" fill="#fff" stroke="#d9d9d9" stroke-width="1" filter="url(#dropShadow)"/>
-        <text x="1157" y="246" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">기상청</text>
-        <text x="1157" y="262" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">기상 Data API</text>
+        <rect x="1150" y="10" width="155" height="480" rx="10" fill="#f5f5f5" stroke="#d9d9d9" stroke-width="1.5"/>
+        <rect x="1150" y="10" width="155" height="28" rx="10" fill="#8c8c8c"/><text x="1227" y="29" text-anchor="middle" style="font-size:12px; font-weight:700; fill:#fff;">인터넷</text>
+        <rect x="1162" y="50" width="131" height="48" rx="6" fill="#fff" stroke="#d9d9d9" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="1227" y="70" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">외부사용자</text>
+        <text x="1227" y="86" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">공공데이터 포털</text>
+        <rect x="1162" y="106" width="131" height="48" rx="6" fill="#fff" stroke="#d9d9d9" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="1227" y="126" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">기상청</text>
+        <text x="1227" y="142" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">기상 Data API</text>
+        <rect x="1162" y="162" width="131" height="48" rx="6" fill="#fff" stroke="#d9d9d9" stroke-width="1" filter="url(#dropShadow)"/>
+        <text x="1227" y="182" text-anchor="middle" style="font-size:10px; font-weight:700; fill:#333;">NASA</text>
+        <text x="1227" y="198" text-anchor="middle" style="font-size:9px; fill:#8c8c8c;">위성 데이터</text>
 
         <!-- ========== 범례 (하단) ========== -->
-        <rect x="10" y="360" width="1225" height="40" rx="6" fill="#fafafa" stroke="#e8e8e8" stroke-width="1"/>
-        <text x="30" y="384" style="font-size:10px; font-weight:700; fill:#333;">범례:</text>
-        <rect x="80" y="372" width="42" height="16" rx="3" fill="#e3f2fd" stroke="#90caf9" stroke-width="0.8"/><text x="101" y="384" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#1565c0;">VM</text>
-        <text x="130" y="384" style="font-size:9px; fill:#666;">4Core/8GB</text>
-        <rect x="200" y="372" width="42" height="16" rx="3" fill="#f3e5f5" stroke="#ce93d8" stroke-width="0.8"/><text x="221" y="384" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#7b1fa2;">PM</text>
-        <text x="250" y="384" style="font-size:9px; fill:#666;">64Core/1TB/NVMe+SSD</text>
-        <rect x="395" y="372" width="42" height="16" rx="3" fill="#fff3e0" stroke="#ffb74d" stroke-width="0.8"/><text x="416" y="384" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#e65100;">GM</text>
-        <text x="445" y="384" style="font-size:9px; fill:#666;">64Core/1TB/GPU B300</text>
-        <text x="620" y="384" style="font-size:9px; fill:#666;">|  총 서버: <tspan font-weight="700">55대</tspan>  (VM 43 + PM 11 + GM 1)  |  Kafka: <tspan font-weight="700">6노드</tspan></text>
-        <line x1="935" y1="378" x2="960" y2="378" stroke="#f5222d" stroke-width="2" stroke-dasharray="5,3"/>
-        <text x="968" y="384" style="font-size:9px; fill:#f5222d; font-weight:600;">Data In</text>
-        <line x1="1020" y1="378" x2="1045" y2="378" stroke="#1677ff" stroke-width="2" stroke-dasharray="5,3"/>
-        <text x="1053" y="384" style="font-size:9px; fill:#1677ff; font-weight:600;">Data Out</text>
-        <rect x="1110" y="372" width="16" height="16" rx="3" fill="#e0f7fa" stroke="#00acc1" stroke-width="0.8"/>
-        <text x="1134" y="384" style="font-size:9px; fill:#00838f; font-weight:600;">Kafka 스트림</text>
+        <rect x="10" y="420" width="1295" height="45" rx="6" fill="#fafafa" stroke="#e8e8e8" stroke-width="1"/>
+        <text x="30" y="446" style="font-size:10px; font-weight:700; fill:#333;">범례:</text>
+        <rect x="75" y="434" width="42" height="16" rx="3" fill="#e3f2fd" stroke="#2196f3" stroke-width="1"/><text x="96" y="446" text-anchor="middle" style="font-size:9px; font-weight:700; fill:#1565c0;">K8S</text>
+        <text x="123" y="446" style="font-size:9px; fill:#666;">쿠버네티스</text>
+        <rect x="190" y="434" width="42" height="16" rx="3" fill="#e3f2fd" stroke="#90caf9" stroke-width="0.8"/><text x="211" y="446" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#1565c0;">VM</text>
+        <text x="238" y="446" style="font-size:9px; fill:#666;">Virtual</text>
+        <rect x="290" y="434" width="42" height="16" rx="3" fill="#f3e5f5" stroke="#ce93d8" stroke-width="0.8"/><text x="311" y="446" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#7b1fa2;">PM</text>
+        <text x="338" y="446" style="font-size:9px; fill:#666;">Physical</text>
+        <rect x="400" y="434" width="42" height="16" rx="3" fill="#fff3e0" stroke="#ffb74d" stroke-width="0.8"/><text x="421" y="446" text-anchor="middle" style="font-size:9px; font-weight:600; fill:#e65100;">GPU</text>
+        <text x="448" y="446" style="font-size:9px; fill:#666;">B300</text>
+        <text x="510" y="446" style="font-size:9px; fill:#666;">|  총 서버: <tspan font-weight="700">58대</tspan>  (K8S 3 + VM 44 + PM 12 + GPU 1)  |  Kafka: <tspan font-weight="700">6노드</tspan></text>
+        <line x1="870" y1="440" x2="895" y2="440" stroke="#f5222d" stroke-width="2" stroke-dasharray="5,3"/>
+        <text x="903" y="446" style="font-size:9px; fill:#f5222d; font-weight:600;">Data In</text>
+        <line x1="950" y1="440" x2="975" y2="440" stroke="#1677ff" stroke-width="2" stroke-dasharray="5,3"/>
+        <text x="983" y="446" style="font-size:9px; fill:#1677ff; font-weight:600;">Data Out</text>
+        <rect x="1030" y="434" width="16" height="16" rx="3" fill="#e0f7fa" stroke="#00acc1" stroke-width="0.8"/>
+        <text x="1054" y="446" style="font-size:9px; fill:#00838f; font-weight:600;">Kafka 스트림</text>
       </svg>
     </div>
   </div>
@@ -682,10 +757,10 @@
     <div class="filter-bar" style="margin-bottom:0; border-bottom:1px solid #f0f0f0; padding-bottom:12px;">
       <input type="text" placeholder="서버명 검색..." style="padding:6px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px; width:220px;">
       <select style="padding:6px 10px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
-        <option>전체 계층</option><option>서비스/모니터링</option><option>분석계</option><option>온톨로지/메타데이터</option><option>연계</option><option>수집계</option>
+        <option>전체 계층</option><option>서비스/모니터링</option><option>분석/AI</option><option>연계</option><option>수집계</option>
       </select>
       <select style="padding:6px 10px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
-        <option>전체 유형</option><option>VM</option><option>PM</option><option>GM</option>
+        <option>전체 유형</option><option>K8S</option><option>VM</option><option>PM</option><option>GPU</option>
       </select>
       <select style="padding:6px 10px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
         <option>전체 상태</option><option>정상</option><option>점검</option>
@@ -701,71 +776,77 @@
     <div class="card" style="margin-bottom:0;">
       <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
         <span>📥 수집계</span>
-        <span class="badge badge-success" style="font-size:10px;">16대 정상</span>
+        <span class="badge badge-success" style="font-size:10px;">정상 가동</span>
       </div>
       <div style="font-size:12px;">
         <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
-          <span>수집DB</span><strong>PM x3 (64Core, 1TB)</strong>
+          <span>Agent Server</span><strong style="color:#1565c0;">K8S (에이전트)</strong>
         </div>
         <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
-          <span>수집Agent</span><strong>VM x5 (4Core, 8GB)</strong>
+          <span>Collection DB</span><strong>PM x3 (64Core, 1TB)</strong>
         </div>
         <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
-          <span>CDC서버</span><strong>VM x4 (Debezium)</strong>
+          <span>CDC Server</span><strong>VM x4 (Debezium)</strong>
         </div>
         <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
-          <span>프로듀서</span><strong>VM x4 (Kafka Producer)</strong>
+          <span>ETL Server</span><strong>VM x4 (변환/적재)</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
+          <span>Data Highway</span><strong style="color:#00838f;">PM x6 (Kafka Broker)</strong>
         </div>
         <div style="display:flex; justify-content:space-between; padding:8px 0;">
-          <span>외부 소스</span><strong style="color:#1677ff;">SAP/기상청/RWIS 등</strong>
+          <span>프로듀서</span><strong>VM x4 (Kafka Producer)</strong>
         </div>
       </div>
     </div>
-    <!-- 온톨로지/메타데이터 상세 -->
+    <!-- 분석/AI 상세 -->
     <div class="card" style="margin-bottom:0;">
       <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
-        <span>🧠 온톨로지/메타데이터</span>
-        <span class="badge badge-success" style="font-size:10px;">6대 정상</span>
+        <span>🧠 분석/AI</span>
+        <span class="badge badge-success" style="font-size:10px;">정상 가동</span>
       </div>
       <div style="font-size:12px;">
         <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
-          <span>LLM</span><strong style="color:#ef6c00;">GM x1 (GPU B300)</strong>
+          <span>Analysis Server</span><strong style="color:#ef6c00;">GPU (B300)</strong>
         </div>
         <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
-          <span>그래프DB</span><strong>PM x1 (64Core, 1TB)</strong>
+          <span>Ontology Server</span><strong style="color:#1565c0;">K8S (그래프/마인즈)</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
+          <span>Analysis DB</span><strong>PM x4 (DATA MART)</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
+          <span>ODS DB</span><strong>PM x3 (정제/변환)</strong>
         </div>
         <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
           <span>마인즈DB</span><strong>VM x4 (AI/ML 추론)</strong>
         </div>
-        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
-          <span>GPU 사양</span><strong style="color:#ef6c00;">NVIDIA B300</strong>
-        </div>
         <div style="display:flex; justify-content:space-between; padding:8px 0;">
-          <span>디스크</span><strong>NVMe 3x30TB + SSD 3x30TB</strong>
+          <span>그래프DB</span><strong>PM x1 (64Core, 1TB)</strong>
         </div>
       </div>
     </div>
-    <!-- 연계/서비스 상세 -->
+    <!-- 서비스/연계 상세 -->
     <div class="card" style="margin-bottom:0;">
       <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
-        <span>🔗 연계 + 서비스</span>
-        <span class="badge badge-success" style="font-size:10px;">20대 정상</span>
+        <span>🔗 서비스 + 연계</span>
+        <span class="badge badge-success" style="font-size:10px;">정상 가동</span>
       </div>
       <div style="font-size:12px;">
         <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
-          <span>MCP서버</span><strong>VM x4 (AI 연계)</strong>
+          <span>Portal Server</span><strong>VM x8 (WEB+WAS)</strong>
         </div>
         <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
-          <span>API서버</span><strong>VM x4 (DT 연계)</strong>
+          <span>Platform Server</span><strong style="color:#1565c0;">K8S (플랫폼)</strong>
         </div>
         <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
-          <span>모니터링서버</span><strong>VM x4</strong>
+          <span>모니터링서버</span><strong>VM x4 (Prometheus)</strong>
         </div>
         <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f5f5f5;">
-          <span>WAS/WEB서버</span><strong>VM x4 + VM x4</strong>
+          <span>Integration Server</span><strong>VM x8 (API·MCP)</strong>
         </div>
         <div style="display:flex; justify-content:space-between; padding:8px 0;">
-          <span>연계 대상</span><strong style="color:#1677ff;">AI + 정수장/관로/댐/발전/스마트DT</strong>
+          <span>연계 대상</span><strong style="color:#1677ff;">DT 5종 + LLM/LLMOps</strong>
         </div>
       </div>
     </div>
@@ -819,31 +900,31 @@
       </div>
     </div>
     <div class="card" style="margin-bottom:0;">
-      <div class="card-title">🖥️ 계층별 서버 분포</div>
+      <div class="card-title">🖥️ 배포유형별 서버 분포</div>
       <div style="padding:4px 0;">
         <div style="margin-bottom:12px;">
-          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span style="font-weight:600;">수집계 (수집DB+Agent+CDC+프로듀서)</span><span style="color:#42a5f5; font-weight:600;">16대</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span style="font-weight:600;">수집계 (Agent[K8S]+CollectionDB+CDC+ETL+DataHighway+프로듀서)</span><span style="color:#42a5f5; font-weight:600;">21대+K8S</span></div>
           <div style="background:#f5f5f5; border-radius:4px; height:14px; overflow:hidden;"><div style="background:linear-gradient(90deg,#90caf9,#42a5f5); height:100%; width:100%; border-radius:4px;"></div></div>
         </div>
         <div style="margin-bottom:12px;">
-          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span style="font-weight:600;">서비스/모니터링 (모니터링+WAS+WEB)</span><span style="color:#42a5f5; font-weight:600;">12대</span></div>
-          <div style="background:#f5f5f5; border-radius:4px; height:14px; overflow:hidden;"><div style="background:linear-gradient(90deg,#90caf9,#42a5f5); height:100%; width:75%; border-radius:4px;"></div></div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span style="font-weight:600;">서비스 (Portal[VM]+Platform[K8S]+모니터링)</span><span style="color:#7e57c2; font-weight:600;">12대+K8S</span></div>
+          <div style="background:#f5f5f5; border-radius:4px; height:14px; overflow:hidden;"><div style="background:linear-gradient(90deg,#b39ddb,#7e57c2); height:100%; width:65%; border-radius:4px;"></div></div>
         </div>
         <div style="margin-bottom:12px;">
-          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span style="font-weight:600;">연계 (MCP+API서버)</span><span style="color:#26a69a; font-weight:600;">8대</span></div>
-          <div style="background:#f5f5f5; border-radius:4px; height:14px; overflow:hidden;"><div style="background:linear-gradient(90deg,#80cbc4,#26a69a); height:100%; width:50%; border-radius:4px;"></div></div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span style="font-weight:600;">분석/AI (Analysis[GPU]+Ontology[K8S]+DB+ODS+마인즈+그래프)</span><span style="color:#ec407a; font-weight:600;">13대+K8S</span></div>
+          <div style="background:#f5f5f5; border-radius:4px; height:14px; overflow:hidden;"><div style="background:linear-gradient(90deg,#f48fb1,#ec407a); height:100%; width:60%; border-radius:4px;"></div></div>
         </div>
         <div style="margin-bottom:12px;">
-          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span style="font-weight:600;">분석계 (분석DB+ODSDB)</span><span style="color:#ec407a; font-weight:600;">7대</span></div>
-          <div style="background:#f5f5f5; border-radius:4px; height:14px; overflow:hidden;"><div style="background:linear-gradient(90deg,#f48fb1,#ec407a); height:100%; width:44%; border-radius:4px;"></div></div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span style="font-weight:600;">연계 (Integration Server API·MCP)</span><span style="color:#26a69a; font-weight:600;">8대</span></div>
+          <div style="background:#f5f5f5; border-radius:4px; height:14px; overflow:hidden;"><div style="background:linear-gradient(90deg,#80cbc4,#26a69a); height:100%; width:40%; border-radius:4px;"></div></div>
         </div>
-        <div style="margin-bottom:12px;">
-          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span style="font-weight:600;">카프카 클러스터</span><span style="color:#00acc1; font-weight:600;">6대</span></div>
-          <div style="background:#f5f5f5; border-radius:4px; height:14px; overflow:hidden;"><div style="background:linear-gradient(90deg,#80deea,#00acc1); height:100%; width:38%; border-radius:4px;"></div></div>
-        </div>
-        <div style="margin-bottom:0;">
-          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span style="font-weight:600;">온톨로지/메타데이터 (LLM+그래프DB+마인즈DB)</span><span style="color:#ef6c00; font-weight:600;">6대</span></div>
-          <div style="background:#f5f5f5; border-radius:4px; height:14px; overflow:hidden;"><div style="background:linear-gradient(90deg,#ffcc80,#ef6c00); height:100%; width:38%; border-radius:4px;"></div></div>
+        <div style="margin-bottom:8px; padding-top:8px; border-top:1px solid #f0f0f0;">
+          <div style="display:flex; gap:16px; font-size:11px; color:var(--text-secondary);">
+            <span><span style="display:inline-block;width:10px;height:10px;background:#1565c0;border-radius:2px;margin-right:4px;border:1px solid #2196f3;"></span>K8S: 3 클러스터</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:#42a5f5;border-radius:2px;margin-right:4px;"></span>VM: 44대</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:#7b1fa2;border-radius:2px;margin-right:4px;"></span>PM: 12대</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:#ef6c00;border-radius:2px;margin-right:4px;"></span>GPU: 1대</span>
+          </div>
         </div>
       </div>
     </div>
@@ -890,6 +971,70 @@
       </div>
     </div>
   </div>
+
+  <!-- ── 네트워크 구간 방화벽·전송 상태 ── -->
+  <div style="margin-top:28px;">
+    <h3 style="font-size:16px; font-weight:700; margin-bottom:16px;">🔥 네트워크 구간 방화벽·전송 상태</h3>
+    <div class="grid-2" style="gap:16px;">
+      <!-- FA → OA 구간 -->
+      <div class="card" style="padding:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <span style="font-size:14px; font-weight:700;">🏭 FA → OA 구간</span>
+          <span class="badge badge-success">정상</span>
+        </div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;">Kafka Broker 연계 (단방향)</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:13px;">
+          <div>방화벽 룰: <strong>12개 활성</strong></div>
+          <div>차단 이벤트: <strong style="color:#52c41a;">0건/1h</strong></div>
+          <div>평균 전송량: <strong>2.4 GB/h</strong></div>
+          <div>지연시간: <strong>3ms</strong></div>
+        </div>
+      </div>
+      <!-- DMZ ↔ 인터넷 구간 -->
+      <div class="card" style="padding:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <span style="font-size:14px; font-weight:700;">🌐 DMZ ↔ 인터넷 구간</span>
+          <span class="badge badge-success">정상</span>
+        </div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;">기상·NASA 양방향 수집</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:13px;">
+          <div>방화벽 룰: <strong>8개 활성</strong></div>
+          <div>차단 이벤트: <strong style="color:#faad14;">3건/1h</strong></div>
+          <div>인바운드: <strong>850 MB/h</strong></div>
+          <div>아웃바운드: <strong>120 MB/h</strong></div>
+        </div>
+      </div>
+      <!-- IoT → DMZ → OA 구간 -->
+      <div class="card" style="padding:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <span style="font-size:14px; font-weight:700;">📡 IoT → DMZ → OA 구간</span>
+          <span class="badge badge-success">정상</span>
+        </div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;">스마트미터링 전용 (단방향)</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:13px;">
+          <div>방화벽 룰: <strong>6개 활성</strong></div>
+          <div>차단 이벤트: <strong style="color:#52c41a;">0건/1h</strong></div>
+          <div>평균 전송량: <strong>380 MB/h</strong></div>
+          <div>지연시간: <strong>8ms</strong></div>
+        </div>
+      </div>
+      <!-- OA → 인터넷 구간 -->
+      <div class="card" style="padding:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <span style="font-size:14px; font-weight:700;">🔓 OA → 인터넷 구간</span>
+          <span class="badge badge-warning">주의</span>
+        </div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;">외부사용자 API 제공</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:13px;">
+          <div>방화벽 룰: <strong>15개 활성</strong></div>
+          <div>차단 이벤트: <strong style="color:#faad14;">12건/1h</strong></div>
+          <div>API 트래픽: <strong>1.2 GB/h</strong></div>
+          <div>지연시간: <strong style="color:#faad14;">45ms</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- 아키텍처 모달: 서버 등록 -->
@@ -1090,6 +1235,79 @@
     </div>
   </div>
 
+  <!-- ===== Row 1.5: 수집DB / 분석DB 분리 현황 ===== -->
+  <div style="display:grid; grid-template-columns:1fr 1fr auto; gap:12px; margin-bottom:14px; align-items:stretch;">
+    <!-- 수집DB 서버 [Physical] -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center; background:#f0f7ff;">
+        <div class="card-title">🗄️ 수집 DB 서버 [Physical]</div>
+        <span class="badge badge-success" style="margin:0; font-size:10px;">정상</span>
+      </div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:11px; margin-bottom:10px;">
+          <div><span style="color:var(--text-secondary);">DB 유형:</span> <span style="font-weight:600;">Tibero / PostgreSQL</span></div>
+          <div><span style="color:var(--text-secondary);">용량:</span> <span style="font-weight:600; color:#13c2c2;">4.7TB / 6.0TB</span></div>
+          <div><span style="color:var(--text-secondary);">테이블:</span> <span style="font-weight:600;">342개</span></div>
+          <div><span style="color:var(--text-secondary);">금일 적재:</span> <span style="font-weight:600; color:#1677ff;">18.4M건</span></div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:10px; min-width:40px; color:var(--text-secondary);">용량</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:78%; height:100%; background:#13c2c2; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:10px; font-weight:600;">78%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:10px; min-width:40px; color:var(--text-secondary);">I/O</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:45%; height:100%; background:#4caf50; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:10px; font-weight:600;">45%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 데이터 이동 화살표 -->
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; min-width:100px; max-width:120px;">
+      <div style="font-size:10px; color:var(--text-secondary); font-weight:600;">ETL/dbt 변환</div>
+      <div style="font-size:24px; color:#1677ff;">→</div>
+      <div style="font-size:11px; color:#1677ff; font-weight:600;">12.8M건/일</div>
+      <div style="font-size:10px; color:var(--text-secondary);">평균 지연 3.2s</div>
+    </div>
+    <!-- 분석DB 서버 [Physical] -->
+    <div class="card" style="padding:0; margin-bottom:0;">
+      <div class="card-head" style="display:flex; justify-content:space-between; align-items:center; background:#f9f0ff;">
+        <div class="card-title">📊 분석 DB 서버 [Physical]</div>
+        <span class="badge badge-success" style="margin:0; font-size:10px;">정상</span>
+      </div>
+      <div class="card-body" style="padding:14px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:11px; margin-bottom:10px;">
+          <div><span style="color:var(--text-secondary);">DB 유형:</span> <span style="font-weight:600;">PostgreSQL (분석용)</span></div>
+          <div><span style="color:var(--text-secondary);">용량:</span> <span style="font-weight:600; color:#722ed1;">8.2TB / 12.0TB</span></div>
+          <div><span style="color:var(--text-secondary);">마트 테이블:</span> <span style="font-weight:600;">128개</span></div>
+          <div><span style="color:var(--text-secondary);">금일 변환:</span> <span style="font-weight:600; color:#722ed1;">12.8M건</span></div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:10px; min-width:40px; color:var(--text-secondary);">용량</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:68%; height:100%; background:#722ed1; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:10px; font-weight:600;">68%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:10px; min-width:40px; color:var(--text-secondary);">I/O</span>
+            <div style="flex:1; height:6px; background:#f0f0f0; border-radius:3px;">
+              <div style="width:35%; height:100%; background:#4caf50; border-radius:3px;"></div>
+            </div>
+            <span style="font-size:10px; font-weight:600;">35%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== Row 2: 네트워크 구간별 현황 + 처리량 추이 ===== -->
   <div style="display:grid; grid-template-columns:1fr 1.2fr; gap:12px; margin-bottom:14px;">
 
@@ -1205,6 +1423,98 @@
             <text x="350" y="175" style="font-size:9px; fill:var(--text-secondary);">10:00</text>
             <text x="450" y="175" style="font-size:9px; fill:var(--text-secondary);">11:00</text>
           </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Row 2.5: FA망 소스별 수집 상세 ===== -->
+  <div class="card" style="padding:0; margin-bottom:14px;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="card-title">📡 FA망 소스별 수집 상세</div>
+      <span style="font-size:11px; color:var(--text-secondary);">일방향전송 → Kafka Broker</span>
+    </div>
+    <div class="card-body" style="padding:14px;">
+      <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px;">
+        <!-- RWIS -->
+        <div style="padding:12px; background:#f0f7ff; border-radius:8px; border-left:3px solid #1677ff;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:13px; font-weight:700; color:#1677ff;">📡 RWIS</span>
+            <span class="badge badge-success" style="margin:0; font-size:10px;">정상</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; font-size:11px;">
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">수집방식</span><span style="font-weight:600;">실시간 스트리밍</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">처리량</span><span style="font-weight:600; color:#1677ff;">4,120건/min</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">금일 누적</span><span style="font-weight:600;">3.2M건</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Lag</span><span style="font-weight:600; color:#52c41a;">0.2s</span></div>
+            <div style="margin-top:4px; height:4px; background:#e0e0e0; border-radius:2px;">
+              <div style="width:95%; height:100%; background:#52c41a; border-radius:2px;"></div>
+            </div>
+          </div>
+        </div>
+        <!-- HDAPS -->
+        <div style="padding:12px; background:#f6ffed; border-radius:8px; border-left:3px solid #52c41a;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:13px; font-weight:700; color:#52c41a;">🌊 HDAPS</span>
+            <span class="badge badge-success" style="margin:0; font-size:10px;">정상</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; font-size:11px;">
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">수집방식</span><span style="font-weight:600;">실시간 스트리밍</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">처리량</span><span style="font-weight:600; color:#52c41a;">3,850건/min</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">금일 누적</span><span style="font-weight:600;">2.8M건</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Lag</span><span style="font-weight:600; color:#52c41a;">0.3s</span></div>
+            <div style="margin-top:4px; height:4px; background:#e0e0e0; border-radius:2px;">
+              <div style="width:92%; height:100%; background:#52c41a; border-radius:2px;"></div>
+            </div>
+          </div>
+        </div>
+        <!-- GIOS -->
+        <div style="padding:12px; background:#f9f0ff; border-radius:8px; border-left:3px solid #722ed1;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:13px; font-weight:700; color:#722ed1;">🏔️ GIOS</span>
+            <span class="badge badge-success" style="margin:0; font-size:10px;">정상</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; font-size:11px;">
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">수집방식</span><span style="font-weight:600;">실시간 스트리밍</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">처리량</span><span style="font-weight:600; color:#722ed1;">2,180건/min</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">금일 누적</span><span style="font-weight:600;">1.6M건</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Lag</span><span style="font-weight:600; color:#52c41a;">0.5s</span></div>
+            <div style="margin-top:4px; height:4px; background:#e0e0e0; border-radius:2px;">
+              <div style="width:88%; height:100%; background:#52c41a; border-radius:2px;"></div>
+            </div>
+          </div>
+        </div>
+        <!-- 스마트미터링 (광역TM) -->
+        <div style="padding:12px; background:#fff7e6; border-radius:8px; border-left:3px solid #fa8c16;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:13px; font-weight:700; color:#fa8c16;">📊 광역TM</span>
+            <span class="badge badge-warning" style="margin:0; font-size:10px;">지연</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; font-size:11px;">
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">수집방식</span><span style="font-weight:600;">IoT 스트리밍</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">처리량</span><span style="font-weight:600; color:#fa8c16;">1,450건/min</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">금일 누적</span><span style="font-weight:600;">1.1M건</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Lag</span><span style="font-weight:600; color:#fa8c16;">12.5s ⚠</span></div>
+            <div style="margin-top:4px; height:4px; background:#e0e0e0; border-radius:2px;">
+              <div style="width:72%; height:100%; background:#fa8c16; border-radius:2px;"></div>
+            </div>
+          </div>
+        </div>
+        <!-- 물진단처 (진단데이터) -->
+        <div style="padding:12px; background:#e6fffb; border-radius:8px; border-left:3px solid #13c2c2;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:13px; font-weight:700; color:#13c2c2;">🔬 물진단</span>
+            <span class="badge badge-success" style="margin:0; font-size:10px;">정상</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; font-size:11px;">
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">수집방식</span><span style="font-weight:600;">배치 + 스트리밍</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">처리량</span><span style="font-weight:600; color:#13c2c2;">740건/min</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">금일 누적</span><span style="font-weight:600;">0.5M건</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Lag</span><span style="font-weight:600; color:#52c41a;">0.8s</span></div>
+            <div style="margin-top:4px; height:4px; background:#e0e0e0; border-radius:2px;">
+              <div style="width:90%; height:100%; background:#52c41a; border-radius:2px;"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1393,6 +1703,79 @@
           <span>많음</span>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ===== Row: 수집 단계 개인정보 필터링 현황 ===== -->
+  <div class="card" style="padding:0; margin-bottom:0;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="card-title">🔒 수집 단계 개인정보 필터링 현황</div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <span class="badge badge-info" style="margin:0; font-size:10px;">자동탐지 ON</span>
+        <button class="btn btn-outline" style="padding:2px 8px; font-size:11px;" onclick="navigate('dist-deidentify')">비식별 정책관리 →</button>
+      </div>
+    </div>
+    <div class="card-body" style="padding:14px;">
+      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:14px;">
+        <div style="padding:10px 14px; background:#fff1f0; border-radius:8px; border-left:3px solid #f5222d;">
+          <div style="font-size:11px; color:#8c8c8c;">PII 탐지 파이프라인</div>
+          <div style="font-size:20px; font-weight:700; color:#f5222d;">3<span style="font-size:11px; font-weight:400; color:#8c8c8c;">/47</span></div>
+          <div style="font-size:10px; color:#cf1322;">고객정보·인사·요금 파이프라인</div>
+        </div>
+        <div style="padding:10px 14px; background:#e6f7ff; border-radius:8px; border-left:3px solid #1677ff;">
+          <div style="font-size:11px; color:#8c8c8c;">인라인 마스킹 적용</div>
+          <div style="font-size:20px; font-weight:700; color:#1677ff;">2<span style="font-size:11px; font-weight:400; color:#8c8c8c;">/3</span></div>
+          <div style="font-size:10px; color:#0958d9;">고객명·전화번호 마스킹 중</div>
+        </div>
+        <div style="padding:10px 14px; background:#f6ffed; border-radius:8px; border-left:3px solid #52c41a;">
+          <div style="font-size:11px; color:#8c8c8c;">금일 필터링 건수</div>
+          <div style="font-size:20px; font-weight:700; color:#52c41a;">24.8K<span style="font-size:11px; font-weight:400; color:#8c8c8c;">건</span></div>
+          <div style="font-size:10px; color:#389e0d;">정상 처리 100%</div>
+        </div>
+        <div style="padding:10px 14px; background:#fff7e6; border-radius:8px; border-left:3px solid #fa8c16;">
+          <div style="font-size:11px; color:#8c8c8c;">미조치 알림</div>
+          <div style="font-size:20px; font-weight:700; color:#fa8c16;">1<span style="font-size:11px; font-weight:400; color:#8c8c8c;">건</span></div>
+          <div style="font-size:10px; color:#d48806;">요금정보 파이프라인 검토 필요</div>
+        </div>
+      </div>
+      <table class="data-table" style="font-size:12px;">
+        <thead>
+          <tr>
+            <th>파이프라인</th>
+            <th>PII 유형</th>
+            <th>탐지 컬럼</th>
+            <th>필터링 방식</th>
+            <th>금일 처리</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>스마트미터 검침</strong></td>
+            <td><span style="background:#fce4ec; color:#c62828; padding:1px 6px; border-radius:3px; font-size:10px;">고객정보</span></td>
+            <td>고객명, 전화번호, 주소</td>
+            <td><span style="color:#1677ff; font-weight:600;">인라인 마스킹</span></td>
+            <td style="font-family:monospace;">18,420건</td>
+            <td><span style="display:inline-flex; align-items:center; gap:4px; background:#e8f5e9; color:#389e0d; padding:2px 8px; border-radius:4px; font-size:11px;"><span style="width:6px; height:6px; background:#52c41a; border-radius:50%;"></span>적용중</span></td>
+          </tr>
+          <tr>
+            <td><strong>Oracle 인사데이터</strong></td>
+            <td><span style="background:#f3e5f5; color:#7b1fa2; padding:1px 6px; border-radius:3px; font-size:10px;">인사정보</span></td>
+            <td>주민번호, 계좌번호</td>
+            <td><span style="color:#722ed1; font-weight:600;">SHA-256 해싱</span></td>
+            <td style="font-family:monospace;">6,380건</td>
+            <td><span style="display:inline-flex; align-items:center; gap:4px; background:#e8f5e9; color:#389e0d; padding:2px 8px; border-radius:4px; font-size:11px;"><span style="width:6px; height:6px; background:#52c41a; border-radius:50%;"></span>적용중</span></td>
+          </tr>
+          <tr style="background:#fffbe6;">
+            <td><strong>수도요금 정산</strong></td>
+            <td><span style="background:#fff3e0; color:#ef6c00; padding:1px 6px; border-radius:3px; font-size:10px;">금융정보</span></td>
+            <td>계좌번호, 카드번호</td>
+            <td><span style="color:#fa8c16; font-weight:600;">미적용 (검토중)</span></td>
+            <td style="font-family:monospace;">—</td>
+            <td><span style="display:inline-flex; align-items:center; gap:4px; background:#fff7e6; color:#d48806; padding:2px 8px; border-radius:4px; font-size:11px;"><span style="width:6px; height:6px; background:#faad14; border-radius:50%;"></span>검토중</span></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
