@@ -31,114 +31,114 @@
 
 | # | 테이블 | PK | 핵심 FK/관계 | 설명 |
 |---|--------|-----|-------------|------|
-| 1 | `division` | division_id | — | 본부/권역 |
-| 2 | `department` | dept_id | → division | 부서/팀 |
+| 1 | `divs` | divs_id | — | 본부/권역 |
+| 2 | `dept` | dept_id | → divs | 부서/팀 |
 | 3 | `role` | role_id | — | 역할 정의 (RBAC) |
-| 4 | `user_account` | user_id (UUID) | → dept, role | 사용자 계정 |
+| 4 | `usr_acnt` | usr_id (UUID) | → dept, role | 사용자 계정 |
 | 5 | `menu` | menu_id | → menu (자기참조) | 메뉴/화면 정의 |
 | 6 | `role_menu_perm` | (role_id, menu_id) | → role, menu | 역할별 메뉴 권한 |
-| 7 | `login_history` | history_id | → user_account | 로그인 이력 |
+| 7 | `login_hist` | hist_id | → usr_acnt | 로그인 이력 |
 
 ### 2-2. 카탈로그·메타데이터 (14개)
 
 | # | 테이블 | PK | 핵심 FK/관계 | 설명 |
 |---|--------|-----|-------------|------|
-| 8 | `domain` | domain_id | — | 비즈니스 도메인 |
-| 9 | `source_system` | system_id | → department | 원천시스템 |
-| 10 | `dataset` | dataset_id (UUID) | → domain, system, dept, user | 데이터셋 카탈로그 |
-| 11 | `dataset_column` | column_id | → dataset, glossary_term | 컬럼 스키마+프로파일링 |
+| 8 | `domn` | domn_id | — | 비즈니스 도메인 |
+| 9 | `src_sys` | sys_id | → dept | 원천시스템 |
+| 10 | `dset` | dset_id (UUID) | → domn, system, dept, user | 데이터셋 카탈로그 |
+| 11 | `dset_col` | col_id | → dset, glsry_term | 컬럼 스키마+프로파일링 |
 | 12 | `tag` | tag_id | — | 태그 |
-| 13 | `dataset_tag` | (dataset_id, tag_id) | → dataset, tag | N:M 매핑 |
-| 14 | `bookmark` | bookmark_id | → user, dataset | 즐겨찾기 |
-| 15 | `glossary_term` | term_id | → domain, user | 표준용어사전 |
-| 16 | `glossary_history` | history_id | → glossary_term, user | 용어 변경이력 |
-| 17 | `code_group` | group_id | — | 공통코드 그룹 |
-| 18 | `code` | code_id | → code_group | 공통코드 값 |
-| 19 | `data_model` | model_id | → domain, user | 논리/물리 모델 |
-| 20 | `model_entity` | entity_id | → data_model | 모델 엔티티 |
-| 21 | `model_attribute` | attribute_id | → model_entity | 모델 속성 |
+| 13 | `dset_tag` | (dataset_id, tag_id) | → dset, tag | N:M 매핑 |
+| 14 | `bmrk` | bmrk_id | → user, dset | 즐겨찾기 |
+| 15 | `glsry_term` | term_id | → domn, user | 표준용어사전 |
+| 16 | `glsry_hist` | hist_id | → glsry_term, user | 용어 변경이력 |
+| 17 | `cd_grp` | group_id | — | 공통코드 그룹 |
+| 18 | `cd` | cd_id | → cd_grp | 공통코드 값 |
+| 19 | `data_model` | model_id | → domn, user | 논리/물리 모델 |
+| 20 | `model_entty` | entty_id | → data_model | 모델 엔티티 |
+| 21 | `model_atrb` | atrb_id | → model_entty | 모델 속성 |
 
 ### 2-3. 수집 관리 (8개)
 
 | # | 테이블 | PK | 핵심 FK/관계 | 설명 |
 |---|--------|-----|-------------|------|
-| 22 | `pipeline` | pipeline_id | → source_system, user, dept | 수집 파이프라인 |
-| 23 | `pipeline_execution` | execution_id | → pipeline | 실행 이력 |
-| 24 | `pipeline_column_mapping` | mapping_id | → pipeline | 컬럼 매핑·변환 |
-| 25 | `cdc_connector` | connector_id | → source_system | CDC 커넥터 |
-| 26 | `kafka_topic` | topic_id | — | Kafka 토픽 |
-| 27 | `external_integration` | integration_id | — | 외부 연계 |
+| 22 | `ppln` | ppln_id | → src_sys, user, dept | 수집 파이프라인 |
+| 23 | `ppln_exec` | exec_id | → ppln | 실행 이력 |
+| 24 | `ppln_col_mapng` | mapng_id | → ppln | 컬럼 매핑·변환 |
+| 25 | `cdc_cnctr` | cnctr_id | → src_sys | CDC 커넥터 |
+| 26 | `kafka_topc` | topic_id | — | Kafka 토픽 |
+| 27 | `extn_intgrn` | intgrn_id | — | 외부 연계 |
 | 28 | `dbt_model` | dbt_model_id | → user | dbt 변환 모델 |
-| 29 | `server_inventory` | server_id | — | 서버 인프라 자산 |
+| 29 | `server_invntry` | server_id | — | 서버 인프라 자산 |
 
 ### 2-4. 유통·활용 (11개)
 
 | # | 테이블 | PK | 핵심 FK/관계 | 설명 |
 |---|--------|-----|-------------|------|
-| 30 | `data_product` | product_id (UUID) | → domain, dept, user | Data Product |
-| 31 | `product_source` | source_id | → product, dataset | 소스 매핑 |
+| 30 | `data_product` | product_id (UUID) | → domn, dept, user | Data Product |
+| 31 | `product_src` | source_id | → product, dset | 소스 매핑 |
 | 32 | `product_field` | field_id | → product | 필드 정의 |
 | 33 | `api_key` | key_id (UUID) | → user, product | API 키 |
-| 34 | `deidentify_policy` | policy_id | → user | 비식별화 정책 |
-| 35 | `deidentify_rule` | rule_id | → policy | 비식별화 규칙 |
-| 36 | `data_request` | request_id | → user, dataset, product | 데이터 신청 |
-| 37 | `request_attachment` | attachment_id | → request | 첨부파일 |
-| 38 | `request_timeline` | timeline_id | → request, user | 처리 타임라인 |
-| 39 | `chart_content` | chart_id | → domain, user | 차트 콘텐츠 |
-| 40 | `external_provision` | provision_id | → dataset, product | 외부 제공 현황 |
+| 34 | `didntf_polcy` | policy_id | → user | 비식별화 정책 |
+| 35 | `didntf_rule` | rule_id | → policy | 비식별화 규칙 |
+| 36 | `data_rqst` | rqst_id | → user, dset, product | 데이터 신청 |
+| 37 | `rqst_atch` | atch_id | → request | 첨부파일 |
+| 38 | `rqst_tmln` | tmln_id | → request, user | 처리 타임라인 |
+| 39 | `chart_cntnt` | chart_id | → domn, user | 차트 콘텐츠 |
+| 40 | `extn_prvsn` | prvsn_id | → dset, product | 외부 제공 현황 |
 
 ### 2-5. 데이터 품질 (4개)
 
 | # | 테이블 | PK | 핵심 FK/관계 | 설명 |
 |---|--------|-----|-------------|------|
-| 41 | `dq_rule` | rule_id | → dataset, user | 품질 검증 규칙 |
-| 42 | `dq_execution` | execution_id | → rule, dataset | 검증 실행 결과 |
-| 43 | `domain_quality_score` | score_id | → domain | 도메인별 품질 점수 |
-| 44 | `quality_issue` | issue_id | → dataset, rule, user | 품질 이슈 |
+| 41 | `dq_rule` | rule_id | → dset, user | 품질 검증 규칙 |
+| 42 | `dq_exec` | exec_id | → rule, dset | 검증 실행 결과 |
+| 43 | `domn_qlity_score` | score_id | → domn | 도메인별 품질 점수 |
+| 44 | `qlity_issue` | issue_id | → dset, rule, user | 품질 이슈 |
 
 ### 2-6. 온톨로지 (3개)
 
 | # | 테이블 | PK | 핵심 FK/관계 | 설명 |
 |---|--------|-----|-------------|------|
 | 45 | `onto_class` | class_id | → onto_class (자기참조) | 온톨로지 클래스 |
-| 46 | `onto_data_property` | property_id | → class, glossary_term | 데이터 속성 |
-| 47 | `onto_relationship` | rel_id | → class (source/target) | 클래스 간 관계 |
+| 46 | `onto_data_prprty` | prprty_id | → class, glsry_term | 데이터 속성 |
+| 47 | `onto_rel` | rel_id | → class (source/target) | 클래스 간 관계 |
 
 ### 2-7. 모니터링 (5개)
 
 | # | 테이블 | PK | 핵심 FK/관계 | 설명 |
 |---|--------|-----|-------------|------|
-| 48 | `region` | region_id | — | 유역/지사 |
-| 49 | `office` | office_id | → region | 사무소 |
+| 48 | `regn` | regn_id | — | 유역/지사 |
+| 49 | `office` | office_id | → regn | 사무소 |
 | 50 | `site` | site_id | → office | 사업장/현장 |
 | 51 | `sensor_tag` | tag_id | → site | 센서 태그 (메타만) |
-| 52 | `asset_database` | asset_db_id | — | 자산DB 현황 |
+| 52 | `asset_db` | asset_db_id | — | 자산DB 현황 |
 
 ### 2-8. 커뮤니티 (3개)
 
 | # | 테이블 | PK | 핵심 FK/관계 | 설명 |
 |---|--------|-----|-------------|------|
 | 53 | `board_post` | post_id | → user | 게시판 글 |
-| 54 | `board_comment` | comment_id | → post, user, comment(대댓글) | 댓글 |
-| 55 | `resource_archive` | resource_id | → user | 자료실 |
+| 54 | `board_cm` | cm_id | → post, user, comment(대댓글) | 댓글 |
+| 55 | `resrce_archv` | resrce_id | → user | 자료실 |
 
 ### 2-9. 시스템관리 (13개)
 
 | # | 테이블 | PK | 핵심 FK/관계 | 설명 |
 |---|--------|-----|-------------|------|
-| 56 | `security_policy` | policy_id | → user | 보안 정책 |
-| 57 | `system_interface` | interface_id | → source_system (×2) | 인터페이스 |
+| 56 | `scrty_polcy` | policy_id | → user | 보안 정책 |
+| 57 | `sys_intrfc` | intrfc_id | → src_sys (×2) | 인터페이스 |
 | 58 | `audit_log` | log_id | → user | 감사 로그 |
-| 59 | `notification` | noti_id | → user | 알림 |
-| 60 | `widget_template` | widget_id | — | 위젯 템플릿 |
-| 61 | `user_widget_layout` | layout_id | → user, widget | 위젯 배치 |
-| 62 | `lineage_node` | node_id | — | 리니지 노드 |
-| 63 | `lineage_edge` | edge_id | → node (×2), pipeline | 리니지 엣지 |
-| 64 | `ai_chat_session` | session_id (UUID) | → user | AI 대화 세션 |
-| 65 | `ai_chat_message` | message_id | → session | AI 메시지 |
-| 66 | `daily_dist_stats` | stat_id | → product | 일별 유통 통계 |
-| 67 | `dept_usage_stats` | stat_id | → department | 부서별 활용 통계 |
-| 68 | `erp_sync_history` | sync_id | — | ERP 동기화 이력 |
+| 59 | `ntfc` | noti_id | → user | 알림 |
+| 60 | `widg_tmplat` | widget_id | — | 위젯 템플릿 |
+| 61 | `usr_widg_layout` | layout_id | → user, widget | 위젯 배치 |
+| 62 | `lnage_node` | node_id | — | 리니지 노드 |
+| 63 | `lnage_edge` | edge_id | → node (×2), ppln | 리니지 엣지 |
+| 64 | `ai_chat_sesn` | sesn_id (UUID) | → user | AI 대화 세션 |
+| 65 | `ai_chat_msg` | msg_id | → session | AI 메시지 |
+| 66 | `daly_dist_stats` | stat_id | → product | 일별 유통 통계 |
+| 67 | `dept_usg_stats` | stat_id | → dept | 부서별 활용 통계 |
+| 68 | `erp_sync_hist` | sync_id | — | ERP 동기화 이력 |
 
 ---
 
@@ -148,87 +148,87 @@
 ┌─────────────────────────────────────────────────────────────────────┐
 │                      사용자·조직·권한                                │
 │                                                                     │
-│  division ──1:N──▸ department ──1:N──▸ user_account                 │
+│  divs ──1:N──▸ dept ──1:N──▸ usr_acnt                 │
 │                                            │                        │
 │                    role ──────────────────┘ (N:1)                   │
 │                      │                                              │
 │                      └──N:M──▸ menu  (via role_menu_perm)          │
 │                                                                     │
-│  user_account ──1:N──▸ login_history                               │
+│  usr_acnt ──1:N──▸ login_hist                               │
 └─────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    카탈로그·메타데이터                                │
 │                                                                     │
-│  domain ──1:N──▸ dataset ◂──N:1── source_system                    │
+│  domn ──1:N──▸ dset ◂──N:1── src_sys                    │
 │                    │                                                │
-│                    ├──1:N──▸ dataset_column ──N:1──▸ glossary_term  │
-│                    ├──N:M──▸ tag  (via dataset_tag)                │
-│                    └──1:N──▸ bookmark                              │
+│                    ├──1:N──▸ dset_col ──N:1──▸ glsry_term  │
+│                    ├──N:M──▸ tag  (via dset_tag)                │
+│                    └──1:N──▸ bmrk                              │
 │                                                                     │
-│  domain ──1:N──▸ glossary_term ──1:N──▸ glossary_history           │
-│  domain ──1:N──▸ data_model ──1:N──▸ model_entity ──1:N──▸ attr   │
-│  code_group ──1:N──▸ code                                          │
+│  domn ──1:N──▸ glsry_term ──1:N──▸ glsry_hist           │
+│  domn ──1:N──▸ data_model ──1:N──▸ model_entty ──1:N──▸ attr   │
+│  cd_grp ──1:N──▸ cd                                          │
 └─────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────┐
 │                       수집 관리                                     │
 │                                                                     │
-│  source_system ──1:N──▸ pipeline ──1:N──▸ pipeline_execution       │
-│                    │        └──1:N──▸ pipeline_column_mapping      │
-│                    └──1:N──▸ cdc_connector                         │
+│  src_sys ──1:N──▸ ppln ──1:N──▸ ppln_exec       │
+│                    │        └──1:N──▸ ppln_col_mapng      │
+│                    └──1:N──▸ cdc_cnctr                         │
 │                                                                     │
-│  kafka_topic    external_integration    dbt_model    server_inv    │
+│  kafka_topc    extn_intgrn    dbt_model    server_inv    │
 └─────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────┐
 │                      유통·활용                                      │
 │                                                                     │
-│  data_product ──1:N──▸ product_source ◂──N:1── dataset             │
+│  data_product ──1:N──▸ product_src ◂──N:1── dset             │
 │       │         └──1:N──▸ product_field                            │
 │       └──1:N──▸ api_key                                            │
 │                                                                     │
-│  deidentify_policy ──1:N──▸ deidentify_rule                        │
+│  didntf_polcy ──1:N──▸ didntf_rule                        │
 │                                                                     │
-│  data_request ──1:N──▸ request_attachment                          │
-│       └────────1:N──▸ request_timeline                             │
+│  data_rqst ──1:N──▸ rqst_atch                          │
+│       └────────1:N──▸ rqst_tmln                             │
 │                                                                     │
-│  chart_content    external_provision                                │
+│  chart_cntnt    extn_prvsn                                │
 └─────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────┐
 │                       품질 관리                                     │
 │                                                                     │
-│  dq_rule ──1:N──▸ dq_execution                                    │
-│  domain ──1:N──▸ domain_quality_score                              │
-│  dataset ──1:N──▸ quality_issue                                    │
+│  dq_rule ──1:N──▸ dq_exec                                    │
+│  domn ──1:N──▸ domn_qlity_score                              │
+│  dset ──1:N──▸ qlity_issue                                    │
 └─────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────┐
 │                      온톨로지                                       │
 │                                                                     │
-│  onto_class (자기참조: parent) ──1:N──▸ onto_data_property          │
-│       └──────────────────N:M──▸ onto_relationship                  │
+│  onto_class (자기참조: parent) ──1:N──▸ onto_data_prprty          │
+│       └──────────────────N:M──▸ onto_rel                  │
 └─────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────┐
 │                      모니터링                                       │
 │                                                                     │
-│  region ──1:N──▸ office ──1:N──▸ site ──1:N──▸ sensor_tag          │
-│  asset_database (독립)                                              │
+│  regn ──1:N──▸ office ──1:N──▸ site ──1:N──▸ sensor_tag          │
+│  asset_db (독립)                                              │
 └─────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────┐
 │                     시스템관리                                       │
 │                                                                     │
 │  audit_log (사용자 작업 추적, 월별 파티셔닝 권장)                    │
-│  notification (사용자 알림)                                         │
-│  widget_template ──1:N──▸ user_widget_layout                       │
-│  lineage_node ◂──N:M──▸ lineage_edge                              │
-│  ai_chat_session ──1:N──▸ ai_chat_message                          │
-│  daily_dist_stats / dept_usage_stats (통계 집계)                    │
-│  erp_sync_history (ERP 동기화 이력)                                 │
-│  system_interface / security_policy                                 │
+│  ntfc (사용자 알림)                                         │
+│  widg_tmplat ──1:N──▸ usr_widg_layout                       │
+│  lnage_node ◂──N:M──▸ lnage_edge                              │
+│  ai_chat_sesn ──1:N──▸ ai_chat_msg                          │
+│  daly_dist_stats / dept_usg_stats (통계 집계)                    │
+│  erp_sync_hist (ERP 동기화 이력)                                 │
+│  sys_intrfc / scrty_polcy                                 │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -239,34 +239,34 @@
 ### 4.1 보안·거버넌스
 - **데이터 보안등급**: 4단계 (public → internal → restricted → confidential)
 - **RBAC 권한**: `role_menu_perm`으로 메뉴 단위 6종 권한 (CRUD + 승인 + 다운로드)
-- **비식별화**: `deidentify_policy` → `deidentify_rule` (마스킹/가명/삭제 등 6종)
+- **비식별화**: `didntf_polcy` → `didntf_rule` (마스킹/가명/삭제 등 6종)
 - **감사로그**: `audit_log` (모든 사용자 작업 추적, 월별 파티셔닝 권장)
 
 ### 4.2 메타데이터 관리
-- **표준용어사전**: `glossary_term` + 변경이력 추적 (`glossary_history`)
-- **데이터 프로파일링**: `dataset_column`의 null_rate, unique_rate, sample_values
-- **데이터 리니지**: `lineage_node` ↔ `lineage_edge` (계보 추적)
+- **표준용어사전**: `glsry_term` + 변경이력 추적 (`glsry_hist`)
+- **데이터 프로파일링**: `dset_col`의 null_rt, unique_rt, smple_vals
+- **데이터 리니지**: `lnage_node` ↔ `lnage_edge` (계보 추적)
 - **온톨로지**: `onto_class` 자기참조 트리 + 속성 + 관계
 
 ### 4.3 운영 관리
-- **파이프라인 모니터링**: pipeline → execution 이력 (성공률, 소요시간)
+- **파이프라인 모니터링**: ppln → ppln_exec 이력 (성공률, 소요시간)
 - **Data Product**: 데이터셋 기반 API/다운로드 패키지 + API 키 관리
-- **신청/승인 워크플로우**: `data_request` → `request_timeline` (타임라인 추적)
-- **ERP 동기화**: `erp_sync_history` (SAP HR 조직/사용자 동기화)
+- **신청/승인 워크플로우**: `data_rqst` → `rqst_tmln` (타임라인 추적)
+- **ERP 동기화**: `erp_sync_hist` (SAP HR 조직/사용자 동기화)
 
 ### 4.4 공통 감사 컬럼
 - **모든 68개 테이블**에 다음 4개 감사 컬럼 포함:
-  - `created_at` (TIMESTAMPTZ) — 등록일시 (DEFAULT now())
-  - `created_by` (UUID) — 등록자 ID (user_account.user_id 참조)
-  - `updated_at` (TIMESTAMPTZ) — 수정일시 (DEFAULT now(), 트리거 자동 갱신)
-  - `updated_by` (UUID) — 수정자 ID (user_account.user_id 참조)
+  - `crtd_at` (TIMESTAMPTZ) — 등록일시 (DEFAULT now())
+  - `crtd_by` (UUID) — 등록자 ID (usr_acnt.usr_id 참조)
+  - `updtd_at` (TIMESTAMPTZ) — 수정일시 (DEFAULT now(), 트리거 자동 갱신)
+  - `updtd_by` (UUID) — 수정자 ID (usr_acnt.usr_id 참조)
 - 전체 테이블/컬럼에 한글 COMMENT 정의 (`portal_comments.sql`)
 
 ### 4.5 성능 고려
-- UUID PK: `user_account`, `dataset`, `data_product`, `api_key`, `ai_chat_session`
-- GIN 인덱스: `dataset.dataset_name` 전문검색
-- 통계 테이블: `daily_dist_stats`, `dept_usage_stats` 일별 집계
-- `updated_at` 자동 갱신 트리거 (모든 해당 테이블)
+- UUID PK: `usr_acnt`, `dset`, `data_product`, `api_key`, `ai_chat_sesn`
+- GIN 인덱스: `dset.dset_nm` 전문검색
+- 통계 테이블: `daly_dist_stats`, `dept_usg_stats` 일별 집계
+- `updtd_at` 자동 갱신 트리거 (모든 해당 테이블)
 - `audit_log` 월별 파티셔닝 권장 (연간 ~50GB)
 
 ---
