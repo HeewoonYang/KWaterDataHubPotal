@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/styles/ag-theme-alpine.min.css">
   <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/dist/ag-grid-community.min.js"></script>
   <!-- Custom CSS (gradually replaced) -->
-  <link rel="stylesheet" href="css/style.css?v=20260313a">
+  <link rel="stylesheet" href="css/style.css?v=20260313d">
 </head>
 
 <body>
@@ -591,7 +591,7 @@
 
   </div> <!-- /layout -->
 
-  <script src="js/main.js?v=20260313a"></script>
+  <script src="js/main.js?v=20260313d"></script>
   <script>
     // 페이지 로드 시 모든 섹션 HTML을 순차적으로 로드 (순서 보장)
     (async function () {
@@ -627,6 +627,9 @@
       document.querySelectorAll('.tag-pill').forEach(function (pill) {
         pill.addEventListener('click', function () { this.classList.toggle('active'); });
       });
+
+      // 모달 외부클릭 닫기 + 드래그 이동 초기화
+      if (typeof initAllModals === 'function') initAllModals();
 
       // AG Grid 초기화
       if (typeof initAllGrids === 'function') initAllGrids();

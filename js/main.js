@@ -8,6 +8,79 @@ function showToast(msg, type) {
   setTimeout(function(){ t.style.opacity='0'; setTimeout(function(){ t.remove(); }, 300); }, 2500);
 }
 
+// ===== 모달 공통: 외부 클릭 닫기 + 드래그 이동 =====
+// 모달 오버레이 클릭 시 닫기 (카드 내부 클릭은 무시, 드래그 중에는 무시)
+function initModalOverlayClose(overlay) {
+  overlay.addEventListener('mousedown', function(e) {
+    // mousedown이 오버레이 자체에서 발생한 경우만 기록
+    if (e.target === overlay) overlay._closeCandidate = true;
+    else overlay._closeCandidate = false;
+  });
+  overlay.addEventListener('mouseup', function(e) {
+    // mousedown과 mouseup 모두 오버레이에서 발생 + 드래그 중 아닌 경우만 닫기
+    if (e.target === overlay && overlay._closeCandidate && !overlay._isDragging) {
+      overlay.style.display = 'none';
+      var card = overlay.querySelector('.modal-card');
+      if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+    }
+    overlay._closeCandidate = false;
+  });
+}
+
+// 모달 헤더 드래그로 이동
+function initModalDrag(overlay) {
+  var card = overlay.querySelector('.modal-card');
+  var header = overlay.querySelector('.modal-header');
+  if (!card || !header) return;
+  header.style.cursor = 'move';
+  header.style.userSelect = 'none';
+  var startX = 0, startY = 0, offsetX = 0, offsetY = 0;
+
+  header.addEventListener('mousedown', function(e) {
+    if (e.target.closest('.modal-close') || e.target.closest('button')) return;
+    overlay._isDragging = true;
+    var rect = card.getBoundingClientRect();
+    startX = e.clientX;
+    startY = e.clientY;
+    offsetX = rect.left;
+    offsetY = rect.top;
+    card.style.transition = 'none';
+    card.style.margin = '0';
+    card.style.position = 'fixed';
+    card.style.left = offsetX + 'px';
+    card.style.top = offsetY + 'px';
+    card.style.transform = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!overlay._isDragging) return;
+    var dx = e.clientX - startX;
+    var dy = e.clientY - startY;
+    card.style.left = (offsetX + dx) + 'px';
+    card.style.top = (offsetY + dy) + 'px';
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (overlay._isDragging) {
+      // 약간의 지연으로 click 이벤트가 닫기를 트리거하지 않도록 방지
+      setTimeout(function() { overlay._isDragging = false; }, 50);
+      card.style.transition = '';
+    }
+  });
+}
+
+// 모든 modal-overlay에 외부 클릭 닫기 + 드래그 적용
+// (pages/*.html이 비동기 로드되므로 initAfterLoad에서 호출해야 함)
+function initAllModals() {
+  document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+    if (overlay.dataset.modalInit) return; // 중복 방지
+    overlay.dataset.modalInit = 'true';
+    initModalOverlayClose(overlay);
+    initModalDrag(overlay);
+  });
+}
+
 // ===== 메타데이터 표준사전 API =====
 var META_API_BASE = 'http://localhost:8010/api/v1';
 
@@ -35,9 +108,19 @@ function buildQueryString(params) {
   return parts.length > 0 ? '?' + parts.join('&') : '';
 }
 
-var wordApi = { list: function(params) { return metaApiFetch('/words' + buildQueryString(params)); } };
-var termApi = { list: function(params) { return metaApiFetch('/terms' + buildQueryString(params)); } };
-var codeApiClient = { listGroups: function(params) { return metaApiFetch('/code-groups' + buildQueryString(params)); } };
+var wordApi = {
+  list: function(params) { return metaApiFetch('/words' + buildQueryString(params)); },
+  get: function(id) { return metaApiFetch('/words/' + id); }
+};
+var termApi = {
+  list: function(params) { return metaApiFetch('/terms' + buildQueryString(params)); },
+  get: function(id) { return metaApiFetch('/terms/' + id); }
+};
+var codeApiClient = {
+  listGroups: function(params) { return metaApiFetch('/code-groups' + buildQueryString(params)); },
+  getGroup: function(id) { return metaApiFetch('/code-groups/' + id); },
+  getTree: function(groupId) { return metaApiFetch('/codes/tree/' + groupId); }
+};
 var domainApiClient = { listGroups: function() { return metaApiFetch('/domain-groups'); } };
 var statsApiClient = {
   summary: function() { return metaApiFetch('/stats/summary'); },
@@ -3794,7 +3877,7 @@ function glossaryStatusRenderer(p) {
 function getWordColumnDefs() {
   return [
     { field: 'word_id', headerName: 'ID', width: 60, hide: true },
-    { field: 'logical_name', headerName: '논리명', width: 140, cellRenderer: function(p) { return '<strong>' + (p.value || '') + '</strong>'; } },
+    { field: 'logical_name', headerName: '논리명', width: 140, cellRenderer: function(p) { return '<a href="#" onclick="openWordDetail(' + p.data.word_id + ');return false;" style="color:#1677ff;font-weight:600;text-decoration:none;">' + (p.value || '') + '</a>'; } },
     { field: 'physical_name', headerName: '물리명', width: 120, cellStyle: { fontFamily: 'monospace', fontSize: '12px' } },
     { field: 'physical_desc', headerName: '물리의미', flex: 1, cellStyle: { fontSize: '12px' } },
     { field: 'is_class_word', headerName: '분류어', width: 70, cellRenderer: function(p) { return p.value ? '<span style="color:#1967d2;font-weight:600;">Y</span>' : '<span style="color:#aaa;">N</span>'; } },
@@ -3807,7 +3890,7 @@ function getWordColumnDefs() {
 function getTermColumnDefs() {
   return [
     { field: 'term_id', headerName: 'ID', width: 60, hide: true },
-    { field: 'logical_name', headerName: '논리명', width: 140, cellRenderer: function(p) { return '<strong>' + (p.value || '') + '</strong>'; } },
+    { field: 'logical_name', headerName: '논리명', width: 140, cellRenderer: function(p) { return '<a href="#" onclick="openTermDetail(' + p.data.term_id + ');return false;" style="color:#1677ff;font-weight:600;text-decoration:none;">' + (p.value || '') + '</a>'; } },
     { field: 'physical_name', headerName: '물리명', width: 140, cellStyle: { fontFamily: 'monospace', fontSize: '12px' } },
     { field: 'english_name', headerName: '영문의미', flex: 1, cellStyle: { fontSize: '12px' } },
     { field: 'group_name', headerName: '도메인그룹', width: 110 },
@@ -3823,7 +3906,7 @@ function getCodeGroupColumnDefs() {
   return [
     { field: 'group_id', headerName: 'ID', width: 60, hide: true },
     { field: 'system_prefix', headerName: '시스템', width: 80, cellStyle: { fontFamily: 'monospace', fontSize: '11px', color: '#7b1fa2' } },
-    { field: 'logical_name', headerName: '코드그룹명', width: 150, cellRenderer: function(p) { return '<strong>' + (p.value || '') + '</strong>'; } },
+    { field: 'logical_name', headerName: '코드그룹명', width: 150, cellRenderer: function(p) { return '<a href="#" onclick="openCodeGroupDetail(' + p.data.group_id + ');return false;" style="color:#1677ff;font-weight:600;text-decoration:none;">' + (p.value || '') + '</a>'; } },
     { field: 'physical_name', headerName: '물리명', width: 150, cellStyle: { fontFamily: 'monospace', fontSize: '12px' } },
     { field: 'code_id', headerName: '코드ID', width: 120, cellStyle: { fontFamily: 'monospace', fontSize: '11px' } },
     { field: 'code_count', headerName: '코드 수', width: 80, type: 'numericColumn', cellStyle: { fontWeight: '700' } },
@@ -4086,6 +4169,143 @@ function filterByDomainGroup(groupId, groupName) {
     domainSelect.style.boxShadow = '0 0 0 3px rgba(25,103,210,0.3)';
     setTimeout(function() { domainSelect.style.boxShadow = ''; }, 1500);
   }
+}
+
+// ===== 표준사전 상세 모달 =====
+function closeGlossaryDetailModal(modalId) {
+  var modal = document.getElementById(modalId);
+  modal.style.display = 'none';
+  // 드래그 위치 초기화
+  var card = modal.querySelector('.modal-card');
+  if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+}
+
+function formatDateTime(dt) {
+  if (!dt) return '-';
+  var d = new Date(dt);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+
+function glossaryDetailStatusBadge(status) {
+  var m = { active: { bg: '#e8f5e9', c: '#2e7d32', t: '활성' }, inactive: { bg: '#fff3e0', c: '#f57c00', t: '비활성' }, deprecated: { bg: '#ffebee', c: '#c62828', t: '폐기' } };
+  var s = m[status] || { bg: '#f5f5f5', c: '#666', t: status || '-' };
+  return '<span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:600;background:' + s.bg + ';color:' + s.c + ';">' + s.t + '</span>';
+}
+
+function buildInfoRow(label, value) {
+  return '<div class="modal-info-row"><span class="modal-info-label">' + label + '</span><span class="modal-info-value">' + (value !== null && value !== undefined && value !== '' ? value : '-') + '</span></div>';
+}
+
+function openWordDetail(wordId) {
+  var modal = document.getElementById('glossary-word-detail-modal');
+  var body = document.getElementById('word-detail-body');
+  var subtitle = document.getElementById('word-detail-subtitle');
+  body.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">로딩중...</div>';
+  subtitle.textContent = '';
+  modal.style.display = 'flex';
+  wordApi.get(wordId).then(function(data) {
+    subtitle.textContent = data.physical_name || '';
+    var html = '';
+    html += buildInfoRow('논리명', data.logical_name);
+    html += buildInfoRow('물리명', '<code style="background:#f0f2f5;padding:1px 6px;border-radius:3px;font-size:12px;">' + (data.physical_name || '-') + '</code>');
+    html += buildInfoRow('물리의미', data.physical_desc);
+    html += buildInfoRow('분류어 여부', data.is_class_word ? '<span style="color:#1967d2;font-weight:600;">Y (분류어)</span>' : '<span style="color:#888;">N</span>');
+    html += buildInfoRow('동의어', data.synonym);
+    html += buildInfoRow('설명', data.description);
+    html += buildInfoRow('상태', glossaryDetailStatusBadge(data.status));
+    html += '<div class="detail-divider"></div>';
+    html += buildInfoRow('등록일시', formatDateTime(data.created_at));
+    html += buildInfoRow('수정일시', formatDateTime(data.updated_at));
+    body.innerHTML = html;
+  }).catch(function(err) {
+    body.innerHTML = '<div style="text-align:center;padding:20px;color:#f44336;">조회 실패: ' + err.message + '</div>';
+  });
+}
+
+function openTermDetail(termId) {
+  var modal = document.getElementById('glossary-term-detail-modal');
+  var body = document.getElementById('term-detail-body');
+  var subtitle = document.getElementById('term-detail-subtitle');
+  body.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">로딩중...</div>';
+  subtitle.textContent = '';
+  modal.style.display = 'flex';
+  termApi.get(termId).then(function(data) {
+    subtitle.textContent = data.physical_name || '';
+    var html = '';
+    html += '<div class="detail-section-title">기본 정보</div>';
+    html += buildInfoRow('논리명', data.logical_name);
+    html += buildInfoRow('물리명', '<code style="background:#f0f2f5;padding:1px 6px;border-radius:3px;font-size:12px;">' + (data.physical_name || '-') + '</code>');
+    html += buildInfoRow('영문의미', data.english_name);
+    html += buildInfoRow('도메인그룹', data.group_name);
+    html += buildInfoRow('도메인', data.domain_logical_name);
+    html += buildInfoRow('도메인약어', data.domain_abbr);
+    html += buildInfoRow('설명', data.description);
+    html += buildInfoRow('상태', glossaryDetailStatusBadge(data.status));
+    html += '<div class="detail-section-title">데이터 속성</div>';
+    html += buildInfoRow('데이터타입', data.data_type ? '<code style="background:#f0f2f5;padding:1px 6px;border-radius:3px;font-size:12px;">' + data.data_type + '</code>' : '-');
+    html += buildInfoRow('길이', data.data_length);
+    html += buildInfoRow('소수점', data.data_scale);
+    html += '<div class="detail-section-title">보안 정보</div>';
+    html += buildInfoRow('개인정보', data.is_personal_info ? '<span style="color:#c62828;font-weight:600;">Y (개인정보 포함)</span>' : '<span style="color:#888;">N</span>');
+    html += buildInfoRow('암호화', data.is_encrypted ? '<span style="color:#c62828;font-weight:600;">Y (암호화 대상)</span>' : '<span style="color:#888;">N</span>');
+    html += buildInfoRow('스크램블 유형', data.scramble_type);
+    html += '<div class="detail-divider"></div>';
+    html += buildInfoRow('등록일시', formatDateTime(data.created_at));
+    html += buildInfoRow('수정일시', formatDateTime(data.updated_at));
+    body.innerHTML = html;
+  }).catch(function(err) {
+    body.innerHTML = '<div style="text-align:center;padding:20px;color:#f44336;">조회 실패: ' + err.message + '</div>';
+  });
+}
+
+function openCodeGroupDetail(groupId) {
+  var modal = document.getElementById('glossary-code-detail-modal');
+  var body = document.getElementById('code-group-detail-body');
+  var subtitle = document.getElementById('code-detail-subtitle');
+  body.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">로딩중...</div>';
+  subtitle.textContent = '';
+  modal.style.display = 'flex';
+  Promise.all([
+    codeApiClient.getGroup(groupId),
+    codeApiClient.getTree(groupId).catch(function() { return []; })
+  ]).then(function(results) {
+    var data = results[0];
+    var codes = results[1];
+    subtitle.textContent = data.code_id || '';
+    var html = '';
+    html += '<div class="detail-section-title">코드그룹 정보</div>';
+    html += buildInfoRow('시스템', '<span style="color:#7b1fa2;font-weight:600;">' + (data.system_prefix || '-') + '</span>' + (data.system_name ? ' (' + data.system_name + ')' : ''));
+    html += buildInfoRow('논리명', data.logical_name);
+    html += buildInfoRow('물리명', '<code style="background:#f0f2f5;padding:1px 6px;border-radius:3px;font-size:12px;">' + (data.physical_name || '-') + '</code>');
+    html += buildInfoRow('코드ID', '<code style="background:#f0f2f5;padding:1px 6px;border-radius:3px;font-size:12px;">' + (data.code_id || '-') + '</code>');
+    html += buildInfoRow('코드구분', data.code_type);
+    html += buildInfoRow('길이', data.data_length);
+    html += buildInfoRow('설명', data.code_desc);
+    html += buildInfoRow('상태', glossaryDetailStatusBadge(data.status));
+    html += buildInfoRow('코드 수', '<span style="font-weight:700;color:#1967d2;">' + (data.code_count || 0) + '건</span>');
+    html += '<div class="detail-divider"></div>';
+    html += buildInfoRow('등록일시', formatDateTime(data.created_at));
+    html += buildInfoRow('수정일시', formatDateTime(data.updated_at));
+    // 하위 코드 목록
+    if (codes && codes.length > 0) {
+      html += '<div class="detail-section-title" style="margin-top:10px;">하위 코드 목록 (' + codes.length + '건)</div>';
+      html += '<div style="max-height:280px;overflow-y:auto;border:1px solid #e8e8e8;border-radius:6px;">';
+      html += '<table class="data-table" style="width:100%;margin:0;">';
+      html += '<thead><tr><th style="width:36px;">#</th><th>코드값</th><th>코드값명</th><th>설명</th><th style="width:50px;">상태</th></tr></thead>';
+      html += '<tbody>';
+      codes.forEach(function(code, idx) {
+        html += '<tr><td>' + (idx + 1) + '</td>';
+        html += '<td><code style="background:#f0f2f5;padding:1px 5px;border-radius:3px;font-size:11px;">' + (code.code_value || '') + '</code></td>';
+        html += '<td>' + (code.code_name || '') + '</td>';
+        html += '<td style="color:#666;">' + (code.description || '') + '</td>';
+        html += '<td>' + glossaryDetailStatusBadge(code.status) + '</td></tr>';
+      });
+      html += '</tbody></table></div>';
+    }
+    body.innerHTML = html;
+  }).catch(function(err) {
+    body.innerHTML = '<div style="text-align:center;padding:20px;color:#f44336;">조회 실패: ' + err.message + '</div>';
+  });
 }
 
 // ===== 위젯 템플릿 관리 AG Grid =====

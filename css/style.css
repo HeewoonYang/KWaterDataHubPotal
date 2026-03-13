@@ -5784,3 +5784,20 @@ body {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
 }
+
+/* ═══════ 상세 모달 compact 스타일 ═══════ */
+.modal-compact .modal-header { padding: 12px 20px; }
+.modal-compact .modal-title { font-size: 15px; }
+.modal-compact .modal-body { padding: 12px 20px; }
+.modal-compact .modal-footer { padding: 10px 20px; }
+.modal-compact .modal-info-row { padding: 3px 0; font-size: 12.5px; }
+.modal-compact .modal-info-label { font-size: 12px; min-width: 80px; }
+.modal-compact .modal-info-value { font-size: 12.5px; }
+.modal-compact .detail-section-title {
+  font-size: 12px; font-weight: 600; color: #1967d2;
+  margin: 6px 0 4px; padding-bottom: 3px; border-bottom: 1px solid #f0f0f0;
+}
+.modal-compact .detail-divider { margin: 6px 0; border-top: 1px solid #f0f0f0; }
+.modal-compact .data-table th,
+.modal-compact .data-table td { padding: 4px 8px; font-size: 11.5px; }
+[data-theme="dark"] .modal-compact .detail-section-title { color: #69b1ff; border-color: #334155; }

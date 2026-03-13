@@ -48,6 +48,43 @@ css/style.css        -- All custom CSS: variables, component classes, dark mode,
 - **AG Grid**: `initAGGrid(containerId, columnDefs, rowData, options)` creates grids with standard defaults (sorting, filtering, pagination at 15 rows). All instances tracked in `agGridInstances` object
 - **Dark mode**: `toggleTheme()` sets `data-theme="dark"` on `<html>`. CSS variables in `:root` / `[data-theme="dark"]`. Many inline style overrides needed due to hardcoded colors in HTML
 - **Toast**: `showToast(msg, 'success'|'error')` for notifications
+- **Modal**: `.modal-overlay` + `.modal-card` 패턴 사용. 아래 모달 규칙 참고
+
+## Modal (모달 팝업) 규칙
+
+모달을 새로 생성하거나 수정할 때 반드시 아래 규칙을 따른다.
+
+### 필수 동작
+1. **외부 클릭 닫기**: 모달 오버레이(반투명 배경) 클릭 시 모달이 닫혀야 한다
+2. **드래그 이동**: 모달 헤더를 마우스로 드래그하면 모달 위치가 이동되어야 한다
+
+### HTML 구조
+```html
+<div class="modal-overlay" id="my-modal" style="display:none;">
+  <div class="modal-card" style="width:640px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">제목</h3>
+      <button class="modal-close" onclick="...">×</button>
+    </div>
+    <div class="modal-body">내용</div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="...">닫기</button>
+    </div>
+  </div>
+</div>
+```
+
+### 자동 적용
+- `main.js`의 `DOMContentLoaded` 이벤트에서 모든 `.modal-overlay`에 외부 클릭 닫기(`initModalOverlayClose`)와 드래그 이동(`initModalDrag`)이 자동 바인딩된다
+- 새 모달을 HTML에 `.modal-overlay` 클래스로 추가하면 별도 JS 없이 두 기능이 자동 적용된다
+- compact 레이아웃이 필요하면 `.modal-card`에 `modal-compact` 클래스를 추가한다
+
+### 닫기 시 위치 초기화
+- 모달을 JS로 닫을 때는 드래그 위치를 초기화해야 한다:
+```javascript
+var card = modal.querySelector('.modal-card');
+if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+```
 
 ## Custom CSS Classes (defined in style.css, NOT daisyUI)
 
@@ -70,19 +107,26 @@ Format: `?v=YYYYMMDD[letter]` (increment letter for same-day changes).
 
 포탈 운영 DB 스키마는 `db/portal_schema.sql`에 정의되어 있다 (ERD 요약: `db/portal_erd_summary.md`).
 
+### 명명 규칙
+
+- K-water 표준사전 영문약어 기반 snake_case (소문자)
+- ENUM 타입명은 풀네임 유지 (변환 대상 아님)
+- 감사 컬럼: `crtd_at`, `crtd_by`, `updtd_at`, `updtd_by` (모든 테이블 공통)
+- 신규 단어 등록 목록: `db/std_new_words.md`
+
 ### 스키마 구조 (9개 도메인, 68개 테이블)
 
 | 도메인 | 테이블 수 | 핵심 테이블 |
 |--------|:---------:|------------|
-| 사용자·조직·권한 | 7 | `user_account`, `role`, `role_menu_perm`, `login_history` |
-| 카탈로그·메타데이터 | 14 | `dataset`, `dataset_column`, `glossary_term`, `data_model`, `tag` |
-| 수집 관리 | 8 | `pipeline`, `pipeline_execution`, `cdc_connector`, `kafka_topic` |
-| 유통·활용 | 11 | `data_product`, `api_key`, `data_request`, `deidentify_policy` |
-| 데이터 품질 | 4 | `dq_rule`, `dq_execution`, `domain_quality_score`, `quality_issue` |
-| 온톨로지 | 3 | `onto_class`, `onto_data_property`, `onto_relationship` |
-| 모니터링 | 5 | `region`, `office`, `site`, `sensor_tag`, `asset_database` |
-| 커뮤니티 | 3 | `board_post`, `board_comment`, `resource_archive` |
-| 시스템관리 | 13 | `audit_log`, `notification`, `lineage_node`, `ai_chat_session` |
+| 사용자·조직·권한 | 7 | `usr_acnt`, `role`, `role_menu_perm`, `lgn_hist` |
+| 카탈로그·메타데이터 | 14 | `dset`, `dset_col`, `glsry_term`, `data_mdl`, `tag` |
+| 수집 관리 | 8 | `ppln`, `ppln_exec`, `cdc_cnctr`, `kafka_topc` |
+| 유통·활용 | 11 | `data_prdct`, `api_key`, `data_rqst`, `didntf_plcy` |
+| 데이터 품질 | 4 | `dq_rule`, `dq_exec`, `domn_qlty_scr`, `qlty_issue` |
+| 온톨로지 | 3 | `onto_cls`, `onto_data_prprty`, `onto_rel` |
+| 모니터링 | 5 | `rgn`, `offc`, `site`, `snsr_tag`, `asset_db` |
+| 커뮤니티 | 3 | `board_post`, `board_cm`, `resrce_archv` |
+| 시스템관리 | 13 | `audt_log`, `noti`, `lnage_node`, `ai_chat_sesn` |
 
 ### 주요 ENUM 타입
 
@@ -101,7 +145,7 @@ Format: `?v=YYYYMMDD[letter]` (increment letter for same-day changes).
 
 1. **화면(screen) 추가/삭제 시** → `menu` 테이블에 해당 메뉴 행 추가/삭제, `role_menu_perm`에 권한 매핑 반영
 2. **AG Grid 컬럼 변경 시** → 해당 테이블의 컬럼 정의 확인 및 `portal_schema.sql` 업데이트
-3. **KPI/통계 항목 추가 시** → 집계 테이블(`daily_dist_stats`, `dept_usage_stats`, `domain_quality_score`) 컬럼 반영
+3. **KPI/통계 항목 추가 시** → 집계 테이블(`daly_dist_stts`, `dept_usg_stts`, `domn_qlty_scr`) 컬럼 반영
 4. **신규 엔티티/기능 추가 시** → `portal_schema.sql`에 테이블 추가, `portal_erd_summary.md` 업데이트
 5. **RBAC 역할/권한 변경 시** → `role` 테이블 초기 데이터 및 `role_menu_perm` 구조 반영
 6. **폼 필드 추가/변경 시** → 대응하는 테이블 컬럼 추가/변경 (타입, 제약조건 포함)

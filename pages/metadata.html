@@ -753,6 +753,63 @@
   </div>
 </div>
 
+<!-- 단어 상세 모달 -->
+<div class="modal-overlay" id="glossary-word-detail-modal" style="display:none;">
+  <div class="modal-card modal-compact" style="width:580px; max-height:90vh;">
+    <div class="modal-header">
+      <div>
+        <h3 class="modal-title">📘 단어 상세정보</h3>
+        <div style="font-size:11px;color:#888;margin-top:1px;" id="word-detail-subtitle"></div>
+      </div>
+      <button class="modal-close" onclick="closeGlossaryDetailModal('glossary-word-detail-modal')">×</button>
+    </div>
+    <div class="modal-body" id="word-detail-body">
+      <div style="text-align:center;padding:24px;color:#888;">로딩중...</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeGlossaryDetailModal('glossary-word-detail-modal')">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 용어 상세 모달 -->
+<div class="modal-overlay" id="glossary-term-detail-modal" style="display:none;">
+  <div class="modal-card modal-compact" style="width:640px; max-height:90vh;">
+    <div class="modal-header">
+      <div>
+        <h3 class="modal-title">📗 용어 상세정보</h3>
+        <div style="font-size:11px;color:#888;margin-top:1px;" id="term-detail-subtitle"></div>
+      </div>
+      <button class="modal-close" onclick="closeGlossaryDetailModal('glossary-term-detail-modal')">×</button>
+    </div>
+    <div class="modal-body" id="term-detail-body">
+      <div style="text-align:center;padding:24px;color:#888;">로딩중...</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeGlossaryDetailModal('glossary-term-detail-modal')">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 코드그룹 상세 모달 -->
+<div class="modal-overlay" id="glossary-code-detail-modal" style="display:none;">
+  <div class="modal-card modal-compact" style="width:800px; max-height:90vh;">
+    <div class="modal-header">
+      <div>
+        <h3 class="modal-title">📙 코드그룹 상세정보</h3>
+        <div style="font-size:11px;color:#888;margin-top:1px;" id="code-detail-subtitle"></div>
+      </div>
+      <button class="modal-close" onclick="closeGlossaryDetailModal('glossary-code-detail-modal')">×</button>
+    </div>
+    <div class="modal-body" id="code-group-detail-body">
+      <div style="text-align:center;padding:24px;color:#888;">로딩중...</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeGlossaryDetailModal('glossary-code-detail-modal')">닫기</button>
+    </div>
+  </div>
+</div>
+
 <!-- ========== META SCREEN 2: 분류체계 및 태그관리 ========== -->
 <div class="screen" id="screen-meta-tag">
   <div class="breadcrumb"><a href="#" onclick="navigate('meta-glossary')">메타데이터 관리</a> &gt; <strong>분류체계·태그관리</strong></div>
