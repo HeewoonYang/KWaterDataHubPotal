@@ -5,13 +5,8 @@
   <div class="filter-bar">
     <input type="text" placeholder="Data Product 검색 (이름, 도메인, 포맷)"
       style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
-    <select>
-      <option>도메인: 전체</option>
-      <option>상수도</option>
-      <option>에너지</option>
-      <option>고객</option>
-      <option>수질</option>
-      <option>수자원</option>
+    <select data-code-source="domain-groups" data-placeholder="도메인: 전체">
+      <option value="">도메인: 전체</option>
     </select>
     <select>
       <option>유통상태: 전체</option>
@@ -589,32 +584,20 @@
       </div>
       <div class="form-group">
         <label class="form-label">도메인 <span class="required">*</span></label>
-        <select class="form-control">
-          <option>하수도</option>
-          <option>상수도</option>
-          <option>에너지</option>
-          <option>수자원</option>
-          <option>수질</option>
-          <option>고객</option>
-          <option>계측</option>
+        <select class="form-control" data-code-source="domain-groups" data-placeholder="— 도메인 선택 —">
+          <option value="">— 도메인 선택 —</option>
         </select>
       </div>
       <div class="form-group">
         <label class="form-label">데이터 포맷 <span class="required">*</span></label>
-        <select class="form-control">
-          <option>JSON</option>
-          <option>CSV</option>
-          <option>JSON/CSV</option>
-          <option>Parquet</option>
-          <option>엑셀</option>
+        <select class="form-control" data-code-source="SYS_RESPONSE_FORMAT" data-placeholder="" data-value-field="code_name">
+          <option value="">— 포맷 선택 —</option>
         </select>
       </div>
       <div class="form-group">
         <label class="form-label">보안등급 <span class="required">*</span></label>
-        <select class="form-control">
-          <option>3등급 (공개)</option>
-          <option selected>2등급 (일반)</option>
-          <option>1등급 (기밀)</option>
+        <select class="form-control" data-code-source="SYS_SECURITY_LEVEL" data-placeholder="" data-value-field="code_name">
+          <option value="">— 등급 선택 —</option>
         </select>
       </div>
       <div class="form-group">
@@ -709,11 +692,8 @@
     <div class="form-grid">
       <div class="form-group">
         <label class="form-label">API 유형 <span class="required">*</span></label>
-        <select class="form-control">
-          <option selected>REST API</option>
-          <option>GraphQL</option>
-          <option>Kafka Topic</option>
-          <option>gRPC</option>
+        <select class="form-control" data-code-source="SYS_API_TYPE" data-placeholder="" data-value-field="code_name">
+          <option value="">— API 유형 선택 —</option>
         </select>
       </div>
       <div class="form-group">
@@ -722,11 +702,8 @@
       </div>
       <div class="form-group">
         <label class="form-label">인증방식</label>
-        <select class="form-control">
-          <option selected>API Key</option>
-          <option>OAuth 2.0</option>
-          <option>JWT</option>
-          <option>인증 없음 (공개)</option>
+        <select class="form-control" data-code-source="SYS_AUTH_METHOD" data-placeholder="" data-value-field="code_name">
+          <option value="">— 인증방식 선택 —</option>
         </select>
       </div>
       <div class="form-group">

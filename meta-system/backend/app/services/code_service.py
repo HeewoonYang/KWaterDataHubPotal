@@ -97,6 +97,42 @@ async def update_code_group(db: AsyncSession, group_id: int, data: CodeGroupUpda
     return group
 
 
+async def get_group_by_code_id(db: AsyncSession, code_id: str) -> dict:
+    """코드그룹을 code_id(문자열)로 조회 → 그룹정보 + 하위 코드 배열 반환"""
+    result = await db.execute(
+        select(StdCodeGroup).where(StdCodeGroup.code_id == code_id)
+    )
+    group = result.scalar_one_or_none()
+    if not group:
+        raise NotFoundException("코드그룹", code_id)
+
+    # 하위 코드 조회 (active만, 정렬순서)
+    codes_result = await db.execute(
+        select(StdCode)
+        .where(StdCode.group_id == group.group_id, StdCode.status == "active")
+        .order_by(StdCode.sort_order)
+    )
+    codes = list(codes_result.scalars().all())
+
+    return {
+        "group_id": group.group_id,
+        "code_id": group.code_id,
+        "logical_name": group.logical_name,
+        "physical_name": group.physical_name,
+        "code_desc": group.code_desc,
+        "codes": [
+            {
+                "code_id": c.code_id,
+                "code_value": c.code_value,
+                "code_name": c.code_name,
+                "sort_order": c.sort_order,
+                "description": c.description,
+            }
+            for c in codes
+        ],
+    }
+
+
 async def get_system_prefixes(db: AsyncSession) -> List[dict]:
     """시스템 접두어 목록 (필터용)"""
     result = await db.execute(

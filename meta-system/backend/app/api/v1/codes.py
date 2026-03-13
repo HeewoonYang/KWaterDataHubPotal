@@ -42,6 +42,12 @@ async def list_code_groups(
     )
 
 
+@router.get("/code-groups/by-code-id/{code_id}", summary="코드그룹 code_id로 조회")
+async def get_group_by_code_id(code_id: str, db: AsyncSession = Depends(get_db)):
+    """코드그룹을 code_id(문자열)로 조회하여 그룹정보 + 하위 코드 목록 반환"""
+    return await code_service.get_group_by_code_id(db, code_id)
+
+
 @router.get("/code-groups/prefixes", summary="시스템 접두어 목록")
 async def list_system_prefixes(db: AsyncSession = Depends(get_db)):
     """시스템 접두어 목록 (필터 드롭다운용)"""

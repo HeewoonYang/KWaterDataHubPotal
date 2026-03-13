@@ -125,15 +125,8 @@
           <input type="text" placeholder="예: WL (2~5자)"
             style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; font-family:monospace; width:120px;">
           <label style="font-weight:600; color:#555;">도메인 *</label>
-          <select style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; background:#fff;">
+          <select data-code-source="domain-groups" data-placeholder="— 도메인 선택 —" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; background:#fff;">
             <option value="">— 도메인 선택 —</option>
-            <option>수자원</option>
-            <option>수질</option>
-            <option>수도</option>
-            <option>에너지</option>
-            <option>고객</option>
-            <option>시설</option>
-            <option>공통</option>
           </select>
         </div>
       </div>
@@ -150,14 +143,9 @@
           style="display:grid; grid-template-columns:120px 1fr; gap:12px 16px; align-items:center; font-size:13px; padding-left:26px;">
           <label style="font-weight:600; color:#555;">데이터타입 *</label>
           <div style="display:flex; gap:8px;">
-            <select
+            <select data-code-source="SYS_DATA_TYPE" data-placeholder="" data-value-field="code_name"
               style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; background:#fff;">
-              <option>NUMBER</option>
-              <option>VARCHAR</option>
-              <option>DATE</option>
-              <option>TIMESTAMP</option>
-              <option>CLOB</option>
-              <option>BLOB</option>
+              <option value="">— 타입 선택 —</option>
             </select>
             <input type="text" placeholder="길이(정밀도)" value="10,2"
               style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; font-family:monospace; width:100px;">
@@ -166,16 +154,9 @@
           <div style="display:flex; gap:8px;">
             <input type="text" placeholder="예: m, m³/s, mg/L"
               style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; width:120px;">
-            <select
+            <select data-code-source="SYS_UNIT" data-placeholder="직접입력" data-value-field="code_name"
               style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; background:#fff;">
-              <option>직접입력</option>
-              <option>m (미터)</option>
-              <option>m³/s (유량)</option>
-              <option>mg/L (농도)</option>
-              <option>NTU (탁도)</option>
-              <option>MWh (전력)</option>
-              <option>℃ (온도)</option>
-              <option>- (무단위)</option>
+              <option value="">직접입력</option>
             </select>
           </div>
           <label style="font-weight:600; color:#555;">허용범위</label>
@@ -265,21 +246,13 @@
         <input type="text" value="WL"
           style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; font-family:monospace; width:80px;">
         <label style="font-weight:600; color:#555;">도메인</label>
-        <select style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; background:#fff;">
-          <option selected>수자원</option>
-          <option>수질</option>
-          <option>수도</option>
-          <option>에너지</option>
-          <option>고객</option>
-          <option>시설</option>
-          <option>공통</option>
+        <select data-code-source="domain-groups" data-placeholder="— 도메인 선택 —" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; background:#fff;">
+          <option value="">— 도메인 선택 —</option>
         </select>
         <label style="font-weight:600; color:#555;">데이터타입</label>
         <div style="display:flex; gap:8px;">
-          <select style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; background:#fff;">
-            <option selected>NUMBER</option>
-            <option>VARCHAR</option>
-            <option>DATE</option>
+          <select data-code-source="SYS_DATA_TYPE" data-placeholder="" data-value-field="code_name" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; background:#fff;">
+            <option value="">— 타입 선택 —</option>
           </select>
           <input type="text" value="10,2"
             style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; font-family:monospace; width:80px;">

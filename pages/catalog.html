@@ -75,49 +75,32 @@
       <!-- 도메인 -->
       <div class="cat-filter-section">
         <div class="cat-filter-title">📂 도메인</div>
-        <select id="catFilterDomain" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); border-radius:6px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
-          <option value="all">전체 도메인</option>
-          <option value="water">🌊 수자원</option>
-          <option value="quality">🔬 수질</option>
-          <option value="energy">⚡ 에너지</option>
-          <option value="infra">🔧 인프라·시설</option>
-          <option value="customer">👤 고객·요금</option>
+        <select id="catFilterDomain" data-code-source="domain-groups" data-placeholder="전체 도메인" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); border-radius:6px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체 도메인</option>
         </select>
       </div>
 
       <!-- 데이터 유형 -->
       <div class="cat-filter-section">
         <div class="cat-filter-title">💾 데이터 유형</div>
-        <select id="catFilterType" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); border-radius:6px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
-          <option value="all">전체 유형</option>
-          <option value="table">📋 테이블</option>
-          <option value="api">🔌 API</option>
-          <option value="file">📁 파일</option>
-          <option value="view">📊 뷰/모델</option>
+        <select id="catFilterType" data-code-source="SYS_DATA_ASSET_TYPE" data-placeholder="전체 유형" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); border-radius:6px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체 유형</option>
         </select>
       </div>
 
       <!-- 수집 방식 -->
       <div class="cat-filter-section">
         <div class="cat-filter-title">🔄 수집 방식</div>
-        <select id="catFilterMethod" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); border-radius:6px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
-          <option value="all">전체 방식</option>
-          <option value="cdc">⚡ 실시간 (CDC)</option>
-          <option value="batch">🔄 배치 (ETL)</option>
-          <option value="api">🔌 API 수집</option>
-          <option value="file">📁 파일 수집</option>
+        <select id="catFilterMethod" data-code-source="SYS_COLLECT_METHOD" data-placeholder="전체 방식" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); border-radius:6px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체 방식</option>
         </select>
       </div>
 
       <!-- 보안등급 -->
       <div class="cat-filter-section">
         <div class="cat-filter-title">🔐 데이터등급</div>
-        <select id="catFilterSecurity" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); border-radius:6px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
-          <option value="all">전체 등급</option>
-          <option value="1">🟢 공개</option>
-          <option value="2">🔵 내부일반</option>
-          <option value="3">🟠 내부중요</option>
-          <option value="4">🔴 기밀</option>
+        <select id="catFilterSecurity" data-code-source="SYS_SECURITY_LEVEL" data-placeholder="전체 등급" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); border-radius:6px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체 등급</option>
         </select>
       </div>
 

@@ -5,11 +5,8 @@
   <div class="filter-bar">
     <input type="text" placeholder="파이프라인 검색 (이름, 원본시스템, 수집방식)"
       style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
-    <select>
-      <option>수집방식: 전체</option>
-      <option>배치(ETL)</option>
-      <option>실시간(CDC)</option>
-      <option>API호출</option>
+    <select data-code-source="SYS_COLLECT_METHOD" data-placeholder="수집방식: 전체">
+      <option value="">수집방식: 전체</option>
     </select>
     <select>
       <option>상태: 전체</option>
@@ -39,10 +36,8 @@
             <option>Oracle ERP</option>
             <option>환경부 API</option>
           </select></div>
-        <div class="form-group"><label>수집방식 *</label><select>
-            <option>배치(ETL)</option>
-            <option>실시간(CDC)</option>
-            <option>API 호출</option>
+        <div class="form-group"><label>수집방식 *</label><select data-code-source="SYS_COLLECT_METHOD" data-placeholder="" data-value-field="code_name">
+            <option value="">— 수집방식 선택 —</option>
           </select></div>
         <div class="form-group"><label>스케줄</label><input type="text" value="매일 06:00 (Cron: 0 6 * * *)"></div>
         <div class="form-group"><label>대상테이블</label><input type="text" value="BKPF, BSEG, ACDOCA (3개 선택됨)"></div>
@@ -2705,8 +2700,8 @@
       <select style="padding:6px 10px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
         <option>전체 상태</option><option>정상</option><option>경고</option><option>비활성</option>
       </select>
-      <select style="padding:6px 10px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
-        <option>전체 도메인</option><option>수자원</option><option>수질</option><option>에너지</option><option>계측</option><option>시스템</option>
+      <select data-code-source="domain-groups" data-placeholder="전체 도메인" style="padding:6px 10px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+        <option value="">전체 도메인</option>
       </select>
       <button class="btn btn-primary" data-perm="write" onclick="openKafkaModal('kafkaTopicModal')">+ 토픽 생성</button>
     </div>

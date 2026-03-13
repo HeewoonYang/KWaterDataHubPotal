@@ -127,6 +127,121 @@ var statsApiClient = {
   domainDistribution: function() { return metaApiFetch('/stats/domain-distribution'); }
 };
 
+// ===== 드롭다운 동적 로드 유틸 =====
+// API 응답 캐시 (같은 코드그룹을 여러 select에서 사용할 때 중복 호출 방지)
+var _codeCache = {};
+
+/**
+ * 도메인그룹 API → select 옵션 채우기
+ * @param {HTMLSelectElement|string} selectEl - select 요소 또는 셀렉터
+ * @param {Object} options - { placeholder: '전체 도메인', valueField: 'group_id'|'group_name', showIcon: true }
+ */
+function loadDomainOptions(selectEl, options) {
+  var el = typeof selectEl === 'string' ? document.querySelector(selectEl) : selectEl;
+  if (!el) return Promise.resolve();
+  var opts = options || {};
+  var placeholder = opts.placeholder || '';
+  var valueField = opts.valueField || 'group_name';
+
+  return metaApiFetch('/domain-groups?size=100').then(function(res) {
+    var items = res.items || res;
+    // 기존 option 제거 (placeholder 제외)
+    while (el.options.length > 0) el.remove(0);
+    // placeholder 추가
+    if (placeholder) {
+      var ph = document.createElement('option');
+      ph.value = '';
+      ph.textContent = placeholder;
+      el.appendChild(ph);
+    }
+    // 도메인그룹 옵션 추가
+    items.forEach(function(item) {
+      var opt = document.createElement('option');
+      opt.value = valueField === 'group_id' ? item.group_id : item.group_name;
+      opt.textContent = item.group_name;
+      el.appendChild(opt);
+    });
+    return items;
+  }).catch(function(err) {
+    console.warn('도메인그룹 로드 실패:', err.message);
+  });
+}
+
+/**
+ * 공통코드(code_id) API → select 옵션 채우기
+ * @param {HTMLSelectElement|string} selectEl - select 요소 또는 셀렉터
+ * @param {string} codeId - 코드그룹 code_id (예: 'SYS_COLLECT_METHOD')
+ * @param {Object} options - { placeholder: '전체', valueField: 'code_value'|'code_name' }
+ */
+function loadCodeOptions(selectEl, codeId, options) {
+  var el = typeof selectEl === 'string' ? document.querySelector(selectEl) : selectEl;
+  if (!el) return Promise.resolve();
+  var opts = options || {};
+  var placeholder = opts.placeholder || '';
+  var valueField = opts.valueField || 'code_value';
+
+  // 캐시 확인
+  var fetchPromise;
+  if (_codeCache[codeId]) {
+    fetchPromise = Promise.resolve(_codeCache[codeId]);
+  } else {
+    fetchPromise = metaApiFetch('/code-groups/by-code-id/' + codeId).then(function(res) {
+      _codeCache[codeId] = res;
+      return res;
+    });
+  }
+
+  return fetchPromise.then(function(data) {
+    var codes = data.codes || [];
+    while (el.options.length > 0) el.remove(0);
+    if (placeholder) {
+      var ph = document.createElement('option');
+      ph.value = '';
+      ph.textContent = placeholder;
+      el.appendChild(ph);
+    }
+    codes.forEach(function(code) {
+      var opt = document.createElement('option');
+      opt.value = valueField === 'code_name' ? code.code_name : code.code_value;
+      opt.textContent = code.code_name;
+      el.appendChild(opt);
+    });
+    return codes;
+  }).catch(function(err) {
+    console.warn('공통코드(' + codeId + ') 로드 실패:', err.message);
+  });
+}
+
+/**
+ * data-code-source 속성이 있는 모든 select 자동 초기화
+ * data-code-source="domain-groups" → loadDomainOptions
+ * data-code-source="SYS_COLLECT_METHOD" → loadCodeOptions
+ */
+function initDynamicSelects() {
+  var selects = document.querySelectorAll('select[data-code-source]');
+  var promises = [];
+  selects.forEach(function(sel) {
+    if (sel.dataset.codeLoaded) return;
+    sel.dataset.codeLoaded = 'true';
+    var source = sel.dataset.codeSource;
+    var placeholder = sel.dataset.placeholder || '';
+    var valueField = sel.dataset.valueField || '';
+
+    if (source === 'domain-groups') {
+      promises.push(loadDomainOptions(sel, {
+        placeholder: placeholder,
+        valueField: valueField || 'group_name'
+      }));
+    } else {
+      promises.push(loadCodeOptions(sel, source, {
+        placeholder: placeholder,
+        valueField: valueField || 'code_value'
+      }));
+    }
+  });
+  return Promise.all(promises);
+}
+
 var glossaryState = {
   activeTab: 'word',
   wordPage: 1, wordSize: 50, wordSearch: '', wordStatus: '', wordTotal: 0,
