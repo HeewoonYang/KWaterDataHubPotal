@@ -1,120 +1,88 @@
-﻿<!-- ========== META SCREEN 1: 표준용어 및 코드관리 ========== -->
+﻿<!-- ========== META SCREEN 1: 표준 단어/용어/공통코드 관리 ========== -->
 <div class="screen" id="screen-meta-glossary">
-  <div class="breadcrumb"><a href="#" onclick="navigate('meta-glossary')">메타데이터 관리</a> &gt; <strong>표준용어·코드관리</strong></div>
-  <div class="page-title">표준용어 및 코드관리 (Glossary)</div>
+  <div class="breadcrumb"><a href="#" onclick="navigate('meta-glossary')">메타데이터 관리</a> &gt; <strong>표준 단어/용어/공통코드 관리</strong></div>
+  <div class="page-title">표준 단어/용어/공통코드 관리</div>
 
   <!-- KPI 카드 -->
   <div class="grid-4" style="margin-bottom:20px;">
-    <div class="kpi-card">
+    <div class="kpi-card" id="glossary-kpi-words">
+      <div class="kpi-label">전체 단어</div>
+      <div class="kpi-value" style="color:#1967d2;"><span class="kpi-loading">로딩중...</span></div>
+    </div>
+    <div class="kpi-card" id="glossary-kpi-terms">
       <div class="kpi-label">전체 용어</div>
-      <div class="kpi-value" style="color:#1967d2;">286개</div>
+      <div class="kpi-value" style="color:#4caf50;"><span class="kpi-loading">로딩중...</span></div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-label">승인률</div>
-      <div class="kpi-value" style="color:#4caf50;">91.6%</div>
+    <div class="kpi-card" id="glossary-kpi-codes">
+      <div class="kpi-label">전체 코드</div>
+      <div class="kpi-value" style="color:#7b1fa2;"><span class="kpi-loading">로딩중...</span></div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-label">검토중 / 반려</div>
-      <div class="kpi-value"><span style="color:#ff9800;">18</span> / <span style="color:#f44336;">6</span></div>
+    <div class="kpi-card" id="glossary-kpi-changes">
+      <div class="kpi-label">변경이력</div>
+      <div class="kpi-value"><span class="kpi-loading">로딩중...</span></div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-label">도메인 수</div>
-      <div class="kpi-value">7개</div>
-    </div>
+  </div>
+
+  <!-- 탭 네비게이션 -->
+  <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e8e8e8;">
+    <button class="glossary-tab-btn active" data-tab="word" onclick="switchGlossaryTab('word')">단어사전</button>
+    <button class="glossary-tab-btn" data-tab="term" onclick="switchGlossaryTab('term')">용어사전</button>
+    <button class="glossary-tab-btn" data-tab="code" onclick="switchGlossaryTab('code')">공통코드</button>
   </div>
 
   <!-- 필터 바 -->
   <div class="filter-bar">
-    <input type="text" placeholder="🔍 용어 검색... (예: 수위, FlowRate, WaterLevel)"
+    <input type="text" id="glossary-search-input" placeholder="검색... (논리명, 물리명, 설명)"
       style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
-    <span class="tag-pill active">전체</span>
-    <span class="tag-pill">승인</span>
-    <span class="tag-pill">검토중</span>
-    <span class="tag-pill">반려</span>
-    <span style="border-left:1px solid #ddd; height:20px; margin:0 4px;"></span>
-    <span class="tag-pill" style="background:#e3f2fd; color:#1967d2;">수자원</span>
-    <span class="tag-pill" style="background:#e8f5e9; color:#2e7d32;">수질</span>
-    <span class="tag-pill" style="background:#fff3e0; color:#e65100;">에너지</span>
-    <span class="tag-pill" style="background:#fce4ec; color:#c62828;">고객</span>
-    <button class="btn btn-primary" data-perm="write" onclick="document.getElementById('glossary-register-modal').style.display='flex'">➕
-      용어등록</button>
+    <span class="glossary-status-pill active" data-status="">전체</span>
+    <span class="glossary-status-pill" data-status="active">활성</span>
+    <span class="glossary-status-pill" data-status="inactive">비활성</span>
+    <span class="glossary-status-pill" data-status="deprecated">폐기</span>
+    <select id="glossary-domain-filter" style="padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px;display:none;"></select>
+    <button class="btn btn-primary" data-perm="write" onclick="document.getElementById('glossary-register-modal').style.display='flex'">+ 등록</button>
   </div>
 
-  <!-- 표준용어 테이블 -->
-  <div class="card">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <div class="card-title" style="margin-bottom:0;">📖 표준용어 목록</div>
-      <div style="font-size:12px; color:#888;">총 286건 중 8건 표시 · 페이지 1/36</div>
-    </div>
-    <div id="ag-grid-meta-glossary" class="ag-theme-alpine" style="width:100%;"></div>
-    <div style="margin-top:12px; padding:10px 16px; background:#f5f7fa; border-radius:8px; font-size:12px; color:#666;">
-      🔄 기관표준단어/사전 동기화 &nbsp;|&nbsp; 온톨로지 용어집(Glossary) 자동연동
+  <!-- 단어사전 섹션 -->
+  <div id="glossary-word-section">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div class="card-title" style="margin-bottom:0;">단어사전 목록</div>
+        <div id="word-count-label" style="font-size:12px;color:#888;">로딩중...</div>
+      </div>
+      <div id="ag-grid-glossary-word" class="ag-theme-alpine" style="width:100%;"></div>
+      <div id="word-pagination" class="glossary-pagination"></div>
     </div>
   </div>
 
-  <!-- 공통코드 관리 -->
-  <div class="card" style="margin-top:20px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <div class="card-title" style="margin-bottom:0;">🏷️ 공통코드 관리</div>
-      <button class="btn btn-primary" style="font-size:13px; padding:6px 16px;"
-        data-perm="write" onclick="document.getElementById('code-group-register-modal').style.display='flex'">+ 코드 그룹 등록</button>
+  <!-- 용어사전 섹션 -->
+  <div id="glossary-term-section" style="display:none;">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div class="card-title" style="margin-bottom:0;">용어사전 목록</div>
+        <div id="term-count-label" style="font-size:12px;color:#888;">로딩중...</div>
+      </div>
+      <div id="ag-grid-glossary-term" class="ag-theme-alpine" style="width:100%;"></div>
+      <div id="term-pagination" class="glossary-pagination"></div>
     </div>
-    <div id="ag-grid-meta-code" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+
+  <!-- 공통코드 섹션 -->
+  <div id="glossary-code-section" style="display:none;">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div class="card-title" style="margin-bottom:0;">공통코드 그룹 목록</div>
+        <div id="code-count-label" style="font-size:12px;color:#888;">로딩중...</div>
+      </div>
+      <div id="ag-grid-glossary-code" class="ag-theme-alpine" style="width:100%;"></div>
+      <div id="code-pagination" class="glossary-pagination"></div>
+    </div>
   </div>
 
   <!-- 도메인별 분포 -->
   <div class="card" style="margin-top:20px;">
-    <div class="card-title">📊 도메인별 표준용어 현황</div>
-    <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:12px;">
-      <div style="text-align:center; padding:16px 8px; background:#f8f9fb; border-radius:10px;">
-        <div style="font-size:22px; font-weight:700; color:#1967d2;">82</div>
-        <div style="font-size:11px; color:#888; margin-top:4px;">수자원</div>
-        <div style="height:4px; background:#e3f2fd; border-radius:2px; margin-top:8px;">
-          <div style="width:100%; height:100%; background:#1967d2; border-radius:2px;"></div>
-        </div>
-      </div>
-      <div style="text-align:center; padding:16px 8px; background:#f8f9fb; border-radius:10px;">
-        <div style="font-size:22px; font-weight:700; color:#2e7d32;">64</div>
-        <div style="font-size:11px; color:#888; margin-top:4px;">수질</div>
-        <div style="height:4px; background:#e8f5e9; border-radius:2px; margin-top:8px;">
-          <div style="width:78%; height:100%; background:#2e7d32; border-radius:2px;"></div>
-        </div>
-      </div>
-      <div style="text-align:center; padding:16px 8px; background:#f8f9fb; border-radius:10px;">
-        <div style="font-size:22px; font-weight:700; color:#7b1fa2;">45</div>
-        <div style="font-size:11px; color:#888; margin-top:4px;">수도</div>
-        <div style="height:4px; background:#f3e5f5; border-radius:2px; margin-top:8px;">
-          <div style="width:55%; height:100%; background:#7b1fa2; border-radius:2px;"></div>
-        </div>
-      </div>
-      <div style="text-align:center; padding:16px 8px; background:#f8f9fb; border-radius:10px;">
-        <div style="font-size:22px; font-weight:700; color:#e65100;">32</div>
-        <div style="font-size:11px; color:#888; margin-top:4px;">에너지</div>
-        <div style="height:4px; background:#fff3e0; border-radius:2px; margin-top:8px;">
-          <div style="width:39%; height:100%; background:#e65100; border-radius:2px;"></div>
-        </div>
-      </div>
-      <div style="text-align:center; padding:16px 8px; background:#f8f9fb; border-radius:10px;">
-        <div style="font-size:22px; font-weight:700; color:#c62828;">28</div>
-        <div style="font-size:11px; color:#888; margin-top:4px;">고객</div>
-        <div style="height:4px; background:#fce4ec; border-radius:2px; margin-top:8px;">
-          <div style="width:34%; height:100%; background:#c62828; border-radius:2px;"></div>
-        </div>
-      </div>
-      <div style="text-align:center; padding:16px 8px; background:#f8f9fb; border-radius:10px;">
-        <div style="font-size:22px; font-weight:700; color:#00695c;">21</div>
-        <div style="font-size:11px; color:#888; margin-top:4px;">시설</div>
-        <div style="height:4px; background:#e0f2f1; border-radius:2px; margin-top:8px;">
-          <div style="width:26%; height:100%; background:#00695c; border-radius:2px;"></div>
-        </div>
-      </div>
-      <div style="text-align:center; padding:16px 8px; background:#f8f9fb; border-radius:10px;">
-        <div style="font-size:22px; font-weight:700; color:#546e7a;">14</div>
-        <div style="font-size:11px; color:#888; margin-top:4px;">공통</div>
-        <div style="height:4px; background:#eceff1; border-radius:2px; margin-top:8px;">
-          <div style="width:17%; height:100%; background:#546e7a; border-radius:2px;"></div>
-        </div>
-      </div>
+    <div class="card-title">도메인그룹별 용어 분포 <span style="font-size:11px;font-weight:400;color:#888;margin-left:8px;">클릭하면 해당 도메인의 용어 목록을 조회합니다</span></div>
+    <div id="glossary-domain-distribution" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px;">
+      <div style="text-align:center;padding:16px;color:#888;grid-column:1/-1;">로딩중...</div>
     </div>
   </div>
 </div>

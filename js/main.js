@@ -8,6 +8,50 @@ function showToast(msg, type) {
   setTimeout(function(){ t.style.opacity='0'; setTimeout(function(){ t.remove(); }, 300); }, 2500);
 }
 
+// ===== 메타데이터 표준사전 API =====
+var META_API_BASE = 'http://localhost:8010/api/v1';
+
+function metaApiFetch(endpoint, options) {
+  var url = META_API_BASE + endpoint;
+  var opts = { headers: { 'Content-Type': 'application/json' } };
+  if (options) { Object.keys(options).forEach(function(k) { opts[k] = options[k]; }); }
+  return fetch(url, opts).then(function(res) {
+    if (!res.ok) {
+      return res.json().catch(function() { return { detail: 'HTTP ' + res.status }; }).then(function(err) {
+        throw new Error(err.detail || 'API 오류 (HTTP ' + res.status + ')');
+      });
+    }
+    return res.json();
+  });
+}
+
+function buildQueryString(params) {
+  var parts = [];
+  Object.keys(params).forEach(function(k) {
+    if (params[k] !== null && params[k] !== undefined && params[k] !== '') {
+      parts.push(encodeURIComponent(k) + '=' + encodeURIComponent(params[k]));
+    }
+  });
+  return parts.length > 0 ? '?' + parts.join('&') : '';
+}
+
+var wordApi = { list: function(params) { return metaApiFetch('/words' + buildQueryString(params)); } };
+var termApi = { list: function(params) { return metaApiFetch('/terms' + buildQueryString(params)); } };
+var codeApiClient = { listGroups: function(params) { return metaApiFetch('/code-groups' + buildQueryString(params)); } };
+var domainApiClient = { listGroups: function() { return metaApiFetch('/domain-groups'); } };
+var statsApiClient = {
+  summary: function() { return metaApiFetch('/stats/summary'); },
+  domainDistribution: function() { return metaApiFetch('/stats/domain-distribution'); }
+};
+
+var glossaryState = {
+  activeTab: 'word',
+  wordPage: 1, wordSize: 50, wordSearch: '', wordStatus: '', wordTotal: 0,
+  termPage: 1, termSize: 50, termSearch: '', termDomainGroupId: null, termStatus: '', termTotal: 0,
+  codePage: 1, codeSize: 50, codeSearch: '', codeTotal: 0,
+  domainGroups: []
+};
+
 // ===== AG GRID HELPER =====
 var agGridInstances = {};
 
@@ -519,6 +563,9 @@ function navigate(screen) {
   }
   if (screen === 'sys-perm') {
     setTimeout(initPermGrid, 100);
+  }
+  if (screen === 'meta-glossary') {
+    setTimeout(initGlossaryScreen, 100);
   }
 }
 
@@ -3560,60 +3607,19 @@ function initDistributeGrids() {
   });
 }
 
-function initMetadataGrids() {
-  // 표준용어 (meta-glossary)
-  initAGGrid('ag-grid-meta-glossary', [
-    { field: 'term', headerName: '표준용어', width: 102, cellRenderer: function (p) { return '<strong>' + p.value + '</strong>'; } },
-    { field: 'engName', headerName: '영문명', width: 110, cellStyle: { fontFamily: 'monospace', fontSize: '12px' } },
-    { field: 'abbr', headerName: '약어', width: 70, cellStyle: { color: '#888' } },
-    {
-      field: 'domain', headerName: '도메인', width: 90, cellRenderer: function (p) {
-        return '<span style="background:' + p.data.domBg + ';color:' + p.data.domColor + ';padding:2px 8px;border-radius:4px;font-size:11px;">' + p.value + '</span>';
-      }
-    },
-    { field: 'dataType', headerName: '데이터타입', width: 100, cellStyle: { fontFamily: 'monospace', fontSize: '11px' } },
-    { field: 'unit', headerName: '단위', width: 70 },
-    { field: 'desc', headerName: '설명', flex: 1 },
-    {
-      field: 'status', headerName: '상태', width: 70, cellRenderer: function (p) {
-        var c = p.value === '승인' ? '#4caf50' : '#ff9800';
-        return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:' + c + ';"><span style="width:6px;height:6px;border-radius:50%;background:' + c + ';display:inline-block;"></span>' + p.value + '</span>';
-      }
-    },
-    { field: 'action', headerName: '액션', width: 70, sortable: false, filter: false, cellRenderer: function () { return '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;" onclick="document.getElementById(\'glossary-edit-modal\').style.display=\'flex\'">상세</button>'; } }
-  ], [
-    { term: '수위', engName: 'WaterLevel', abbr: 'WL', domain: '수자원', domBg: '#e3f2fd', domColor: '#1967d2', dataType: 'NUMBER(10,2)', unit: 'm', desc: '관측지점의 수면높이', status: '승인' },
-    { term: '유량', engName: 'FlowRate', abbr: 'FR', domain: '수자원', domBg: '#e3f2fd', domColor: '#1967d2', dataType: 'NUMBER(12,3)', unit: 'm³/s', desc: '단위시간당 흐르는 물의 양', status: '승인' },
-    { term: '탁도', engName: 'Turbidity', abbr: 'TBD', domain: '수질', domBg: '#e8f5e9', domColor: '#2e7d32', dataType: 'NUMBER(8,2)', unit: 'NTU', desc: '물의 혼탁한 정도', status: '승인' },
-    { term: '잔류염소', engName: 'ResidualChlorine', abbr: 'RC', domain: '수질', domBg: '#e8f5e9', domColor: '#2e7d32', dataType: 'NUMBER(6,3)', unit: 'mg/L', desc: '소독 후 남은 염소농도', status: '검토중' },
-    { term: '전력량', engName: 'PowerGeneration', abbr: 'PG', domain: '에너지', domBg: '#fff3e0', domColor: '#e65100', dataType: 'NUMBER(12,2)', unit: 'MWh', desc: '수력발전 시간당 발전량', status: '승인' },
-    { term: '검침량', engName: 'MeterReading', abbr: 'MR', domain: '고객', domBg: '#fce4ec', domColor: '#c62828', dataType: 'NUMBER(10,2)', unit: 'm³', desc: '원격검침 사용량 누적값', status: '승인' },
-    { term: 'DO', engName: 'DissolvedOxygen', abbr: 'DO', domain: '수질', domBg: '#e8f5e9', domColor: '#2e7d32', dataType: 'NUMBER(6,2)', unit: 'mg/L', desc: '용존산소 농도', status: '검토중' },
-    { term: 'pH', engName: 'pH', abbr: 'pH', domain: '수질', domBg: '#e8f5e9', domColor: '#2e7d32', dataType: 'NUMBER(4,2)', unit: '-', desc: '수소이온 농도지수 (0~14)', status: '승인' }
-  ]);
+var glossaryInitialized = false;
+function initGlossaryScreen() {
+  if (glossaryInitialized) return;
+  glossaryInitialized = true;
+  loadGlossaryStats();
+  loadDomainGroups();
+  loadDomainDistribution();
+  initGlossaryFilters();
+  switchGlossaryTab('word');
+}
 
-  // 공통코드 (meta-code)
-  initAGGrid('ag-grid-meta-code', [
-    { field: 'codeGroup', headerName: '코드그룹', width: 105, cellStyle: { fontFamily: 'monospace', fontSize: '12px' } },
-    { field: 'name', headerName: '코드그룹명', width: 115, cellRenderer: function (p) { return '<strong>' + p.value + '</strong>'; } },
-    { field: 'count', headerName: '코드 수', width: 94, type: 'numericColumn' },
-    { field: 'desc', headerName: '설명', flex: 1 },
-    {
-      field: 'status', headerName: '상태', width: 70, cellRenderer: function (p) {
-        var c = p.value === '활성' ? '#4caf50' : '#ff9800';
-        return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:' + c + ';"><span style="width:6px;height:6px;border-radius:50%;background:' + c + ';display:inline-block;"></span>' + p.value + '</span>';
-      }
-    },
-    { field: 'lastMod', headerName: '최종수정', width: 96 },
-    { field: 'action', headerName: '액션', width: 70, sortable: false, filter: false, cellRenderer: function () { return '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;" onclick="document.getElementById(\'code-detail-modal\').style.display=\'flex\'">관리</button>'; } }
-  ], [
-    { codeGroup: 'CD_REGION', name: '지역코드', count: 18, desc: 'K-water 관할 지역 분류 (본사/지사/권역)', status: '활성', lastMod: '2025-02-20' },
-    { codeGroup: 'CD_WQ_GRADE', name: '수질등급', count: 7, desc: '수질 판정 등급 (Ia ~ VI)', status: '활성', lastMod: '2025-02-18' },
-    { codeGroup: 'CD_FACILITY', name: '시설유형', count: 12, desc: '댐, 정수장, 취수장, 배수지 등 시설 분류', status: '활성', lastMod: '2025-02-15' },
-    { codeGroup: 'CD_SENSOR_TYPE', name: '센서유형', count: 9, desc: '수위계, 유량계, 수질센서, 기상센서 등', status: '활성', lastMod: '2025-02-12' },
-    { codeGroup: 'CD_DATA_STATUS', name: '데이터상태', count: 5, desc: '원시/검증/정제/보정/확정 데이터 처리 상태', status: '검토중', lastMod: '2025-02-25' },
-    { codeGroup: 'CD_ALARM_LVL', name: '알람등급', count: 4, desc: '정상/관심/주의/경계/심각 단계', status: '활성', lastMod: '2025-01-30' }
-  ]);
+function initMetadataGrids() {
+  // 표준사전 API 연동은 화면 진입 시 initGlossaryScreen()에서 처리
 
   // 도메인 분류 (meta-domain)
   initAGGrid('ag-grid-meta-domain', [
@@ -3773,6 +3779,313 @@ function initMetadataGrids() {
       if (p.data.result === '경고') return { background: '#fffbe6' };
     }
   });
+}
+
+// ===== 표준사전 Glossary API 연동 함수 =====
+
+// 상태 셀 렌더러
+function glossaryStatusRenderer(p) {
+  if (!p.value) return '';
+  var m = { active: { c: '#2e7d32', bg: '#e8f5e9', lbl: '활성' }, inactive: { c: '#ed6c02', bg: '#fff3e0', lbl: '비활성' }, deprecated: { c: '#c62828', bg: '#ffebee', lbl: '폐기' } };
+  var s = m[p.value] || { c: '#666', bg: '#f5f5f5', lbl: p.value };
+  return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:' + s.c + ';"><span style="width:6px;height:6px;border-radius:50%;background:' + s.c + ';display:inline-block;"></span>' + s.lbl + '</span>';
+}
+
+function getWordColumnDefs() {
+  return [
+    { field: 'word_id', headerName: 'ID', width: 60, hide: true },
+    { field: 'logical_name', headerName: '논리명', width: 140, cellRenderer: function(p) { return '<strong>' + (p.value || '') + '</strong>'; } },
+    { field: 'physical_name', headerName: '물리명', width: 120, cellStyle: { fontFamily: 'monospace', fontSize: '12px' } },
+    { field: 'physical_desc', headerName: '물리의미', flex: 1, cellStyle: { fontSize: '12px' } },
+    { field: 'is_class_word', headerName: '분류어', width: 70, cellRenderer: function(p) { return p.value ? '<span style="color:#1967d2;font-weight:600;">Y</span>' : '<span style="color:#aaa;">N</span>'; } },
+    { field: 'synonym', headerName: '동의어', width: 100 },
+    { field: 'description', headerName: '설명', flex: 1 },
+    { field: 'status', headerName: '상태', width: 70, cellRenderer: glossaryStatusRenderer }
+  ];
+}
+
+function getTermColumnDefs() {
+  return [
+    { field: 'term_id', headerName: 'ID', width: 60, hide: true },
+    { field: 'logical_name', headerName: '논리명', width: 140, cellRenderer: function(p) { return '<strong>' + (p.value || '') + '</strong>'; } },
+    { field: 'physical_name', headerName: '물리명', width: 140, cellStyle: { fontFamily: 'monospace', fontSize: '12px' } },
+    { field: 'english_name', headerName: '영문의미', flex: 1, cellStyle: { fontSize: '12px' } },
+    { field: 'group_name', headerName: '도메인그룹', width: 110 },
+    { field: 'data_type', headerName: '데이터타입', width: 100, cellStyle: { fontFamily: 'monospace', fontSize: '11px' } },
+    { field: 'data_length', headerName: '길이', width: 60, type: 'numericColumn' },
+    { field: 'description', headerName: '설명', flex: 1 },
+    { field: 'is_personal_info', headerName: '개인정보', width: 75, cellRenderer: function(p) { return p.value ? '<span style="color:#c62828;font-weight:600;">Y</span>' : '<span style="color:#aaa;">N</span>'; } },
+    { field: 'status', headerName: '상태', width: 70, cellRenderer: glossaryStatusRenderer }
+  ];
+}
+
+function getCodeGroupColumnDefs() {
+  return [
+    { field: 'group_id', headerName: 'ID', width: 60, hide: true },
+    { field: 'system_prefix', headerName: '시스템', width: 80, cellStyle: { fontFamily: 'monospace', fontSize: '11px', color: '#7b1fa2' } },
+    { field: 'logical_name', headerName: '코드그룹명', width: 150, cellRenderer: function(p) { return '<strong>' + (p.value || '') + '</strong>'; } },
+    { field: 'physical_name', headerName: '물리명', width: 150, cellStyle: { fontFamily: 'monospace', fontSize: '12px' } },
+    { field: 'code_id', headerName: '코드ID', width: 120, cellStyle: { fontFamily: 'monospace', fontSize: '11px' } },
+    { field: 'code_count', headerName: '코드 수', width: 80, type: 'numericColumn', cellStyle: { fontWeight: '700' } },
+    { field: 'description', headerName: '설명', flex: 1 },
+    { field: 'status', headerName: '상태', width: 70, cellRenderer: glossaryStatusRenderer }
+  ];
+}
+
+// 단어 그리드 로드
+function loadWordGrid(page) {
+  glossaryState.wordPage = page || glossaryState.wordPage;
+  var params = {
+    page: glossaryState.wordPage,
+    size: glossaryState.wordSize,
+    search: glossaryState.wordSearch || null,
+    status: glossaryState.wordStatus || null
+  };
+  var container = document.getElementById('ag-grid-glossary-word');
+  if (container) container.style.opacity = '0.5';
+  wordApi.list(params).then(function(data) {
+    glossaryState.wordTotal = data.total;
+    initAGGrid('ag-grid-glossary-word', getWordColumnDefs(), data.items, { pagination: false, domLayout: 'autoHeight' });
+    updateGlossaryPagination('word-pagination', data.page, data.pages, data.total, data.size, 'word');
+    var lbl = document.getElementById('word-count-label');
+    if (lbl) lbl.textContent = '총 ' + data.total.toLocaleString() + '건 중 ' + data.items.length + '건 표시';
+    if (container) container.style.opacity = '1';
+  }).catch(function(err) {
+    showToast('단어 목록 조회 실패: ' + err.message, 'error');
+    if (container) container.style.opacity = '1';
+  });
+}
+
+// 용어 그리드 로드
+function loadTermGrid(page) {
+  glossaryState.termPage = page || glossaryState.termPage;
+  var params = {
+    page: glossaryState.termPage,
+    size: glossaryState.termSize,
+    search: glossaryState.termSearch || null,
+    domain_group_id: glossaryState.termDomainGroupId || null,
+    status: glossaryState.termStatus || null
+  };
+  var container = document.getElementById('ag-grid-glossary-term');
+  if (container) container.style.opacity = '0.5';
+  termApi.list(params).then(function(data) {
+    glossaryState.termTotal = data.total;
+    initAGGrid('ag-grid-glossary-term', getTermColumnDefs(), data.items, { pagination: false, domLayout: 'autoHeight' });
+    updateGlossaryPagination('term-pagination', data.page, data.pages, data.total, data.size, 'term');
+    var lbl = document.getElementById('term-count-label');
+    if (lbl) lbl.textContent = '총 ' + data.total.toLocaleString() + '건 중 ' + data.items.length + '건 표시';
+    if (container) container.style.opacity = '1';
+  }).catch(function(err) {
+    showToast('용어 목록 조회 실패: ' + err.message, 'error');
+    if (container) container.style.opacity = '1';
+  });
+}
+
+// 코드그룹 그리드 로드
+function loadCodeGroupGrid(page) {
+  glossaryState.codePage = page || glossaryState.codePage;
+  var params = {
+    page: glossaryState.codePage,
+    size: glossaryState.codeSize,
+    search: glossaryState.codeSearch || null
+  };
+  var container = document.getElementById('ag-grid-glossary-code');
+  if (container) container.style.opacity = '0.5';
+  codeApiClient.listGroups(params).then(function(data) {
+    glossaryState.codeTotal = data.total;
+    initAGGrid('ag-grid-glossary-code', getCodeGroupColumnDefs(), data.items, { pagination: false, domLayout: 'autoHeight' });
+    updateGlossaryPagination('code-pagination', data.page, data.pages, data.total, data.size, 'code');
+    var lbl = document.getElementById('code-count-label');
+    if (lbl) lbl.textContent = '총 ' + data.total.toLocaleString() + '건 중 ' + data.items.length + '건 표시';
+    if (container) container.style.opacity = '1';
+  }).catch(function(err) {
+    showToast('코드그룹 목록 조회 실패: ' + err.message, 'error');
+    if (container) container.style.opacity = '1';
+  });
+}
+
+// 탭 전환
+function switchGlossaryTab(tab) {
+  glossaryState.activeTab = tab;
+  document.querySelectorAll('.glossary-tab-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.getAttribute('data-tab') === tab);
+  });
+  var ws = document.getElementById('glossary-word-section');
+  var ts = document.getElementById('glossary-term-section');
+  var cs = document.getElementById('glossary-code-section');
+  if (ws) ws.style.display = tab === 'word' ? 'block' : 'none';
+  if (ts) ts.style.display = tab === 'term' ? 'block' : 'none';
+  if (cs) cs.style.display = tab === 'code' ? 'block' : 'none';
+  // 도메인그룹 필터는 용어탭에서만 표시
+  var df = document.getElementById('glossary-domain-filter');
+  if (df) df.style.display = tab === 'term' ? 'inline-block' : 'none';
+  // 해당 탭 데이터 로드
+  if (tab === 'word') loadWordGrid(1);
+  else if (tab === 'term') loadTermGrid(1);
+  else if (tab === 'code') loadCodeGroupGrid(1);
+}
+
+// 필터 이벤트 바인딩
+function initGlossaryFilters() {
+  var searchInput = document.getElementById('glossary-search-input');
+  var debounceTimer;
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      clearTimeout(debounceTimer);
+      var val = this.value.trim();
+      debounceTimer = setTimeout(function() {
+        if (glossaryState.activeTab === 'word') { glossaryState.wordSearch = val; glossaryState.wordPage = 1; loadWordGrid(); }
+        else if (glossaryState.activeTab === 'term') { glossaryState.termSearch = val; glossaryState.termPage = 1; loadTermGrid(); }
+        else { glossaryState.codeSearch = val; glossaryState.codePage = 1; loadCodeGroupGrid(); }
+      }, 300);
+    });
+  }
+  // 상태 pill 클릭
+  document.querySelectorAll('.glossary-status-pill').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      document.querySelectorAll('.glossary-status-pill').forEach(function(p) { p.classList.remove('active'); });
+      this.classList.add('active');
+      var status = this.getAttribute('data-status') || '';
+      if (glossaryState.activeTab === 'word') { glossaryState.wordStatus = status; glossaryState.wordPage = 1; loadWordGrid(); }
+      else if (glossaryState.activeTab === 'term') { glossaryState.termStatus = status; glossaryState.termPage = 1; loadTermGrid(); }
+      else { glossaryState.codePage = 1; loadCodeGroupGrid(); }
+    });
+  });
+  // 도메인그룹 필터 (용어 전용)
+  var domainSelect = document.getElementById('glossary-domain-filter');
+  if (domainSelect) {
+    domainSelect.addEventListener('change', function() {
+      glossaryState.termDomainGroupId = this.value || null;
+      glossaryState.termPage = 1;
+      loadTermGrid();
+    });
+  }
+}
+
+// 커스텀 페이지네이션 UI
+function updateGlossaryPagination(containerId, currentPage, totalPages, totalItems, pageSize, tabKey) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  if (totalPages <= 1) { el.innerHTML = '<div style="font-size:12px;color:#888;">전체 ' + totalItems.toLocaleString() + '건</div>'; return; }
+  var startItem = (currentPage - 1) * pageSize + 1;
+  var endItem = Math.min(currentPage * pageSize, totalItems);
+  var html = '<div style="font-size:12px;color:#888;">전체 ' + totalItems.toLocaleString() + '건 중 ' + startItem + '~' + endItem + '건</div>';
+  html += '<div style="display:flex;gap:2px;align-items:center;">';
+  html += '<button class="glossary-page-btn" onclick="onGlossaryPageChange(\'' + tabKey + '\',' + Math.max(1, currentPage - 1) + ')" ' + (currentPage <= 1 ? 'disabled' : '') + '>&lt;</button>';
+  var pages = [];
+  if (totalPages <= 9) { for (var i = 1; i <= totalPages; i++) pages.push(i); }
+  else {
+    pages.push(1);
+    if (currentPage > 4) pages.push('...');
+    for (var j = Math.max(2, currentPage - 2); j <= Math.min(totalPages - 1, currentPage + 2); j++) pages.push(j);
+    if (currentPage < totalPages - 3) pages.push('...');
+    pages.push(totalPages);
+  }
+  pages.forEach(function(pg) {
+    if (pg === '...') { html += '<span style="padding:0 4px;color:#aaa;">…</span>'; }
+    else { html += '<button class="glossary-page-btn' + (pg === currentPage ? ' active' : '') + '" onclick="onGlossaryPageChange(\'' + tabKey + '\',' + pg + ')">' + pg + '</button>'; }
+  });
+  html += '<button class="glossary-page-btn" onclick="onGlossaryPageChange(\'' + tabKey + '\',' + Math.min(totalPages, currentPage + 1) + ')" ' + (currentPage >= totalPages ? 'disabled' : '') + '>&gt;</button>';
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function onGlossaryPageChange(tab, page) {
+  if (tab === 'word') loadWordGrid(page);
+  else if (tab === 'term') loadTermGrid(page);
+  else loadCodeGroupGrid(page);
+}
+
+// KPI 통계 로드
+function loadGlossaryStats() {
+  statsApiClient.summary().then(function(data) {
+    var dicts = data.dictionaries || [];
+    dicts.forEach(function(d) {
+      if (d.type === 'word') updateGlossaryKpi('glossary-kpi-words', d.count.toLocaleString() + '건');
+      if (d.type === 'term') updateGlossaryKpi('glossary-kpi-terms', d.count.toLocaleString() + '건');
+      if (d.type === 'code') updateGlossaryKpi('glossary-kpi-codes', d.count.toLocaleString() + '건');
+    });
+    updateGlossaryKpi('glossary-kpi-changes', (data.total_changes || 0).toLocaleString() + '건');
+  }).catch(function(err) {
+    console.error('[통계 로드 실패]', err);
+  });
+}
+
+function updateGlossaryKpi(cardId, value) {
+  var card = document.getElementById(cardId);
+  if (!card) return;
+  var valEl = card.querySelector('.kpi-value');
+  if (valEl) valEl.innerHTML = value;
+}
+
+// 도메인그룹 목록 로드 (용어 필터용)
+function loadDomainGroups() {
+  domainApiClient.listGroups().then(function(data) {
+    var items = Array.isArray(data) ? data : (data.items || []);
+    glossaryState.domainGroups = items;
+    var select = document.getElementById('glossary-domain-filter');
+    if (select) {
+      select.innerHTML = '<option value="">전체 도메인</option>';
+      items.forEach(function(g) {
+        select.innerHTML += '<option value="' + g.group_id + '">' + g.group_name + '</option>';
+      });
+    }
+  }).catch(function(err) {
+    console.error('[도메인그룹 로드 실패]', err);
+  });
+}
+
+// 도메인 분포 렌더링
+function loadDomainDistribution() {
+  var container = document.getElementById('glossary-domain-distribution');
+  if (!container) return;
+  var colors = ['#1967d2', '#2e7d32', '#7b1fa2', '#e65100', '#c62828', '#00695c', '#546e7a', '#5c6bc0', '#00838f', '#d48806', '#6d4c41'];
+  statsApiClient.domainDistribution().then(function(data) {
+    if (!data || data.length === 0) { container.innerHTML = '<div style="text-align:center;padding:16px;color:#888;grid-column:1/-1;">분포 데이터 없음</div>'; return; }
+    var maxTermCount = Math.max.apply(null, data.map(function(d) { return d.term_count || 0; }));
+    var html = '';
+    data.forEach(function(d, idx) {
+      var c = colors[idx % colors.length];
+      var termCount = d.term_count || 0;
+      var pct = maxTermCount > 0 ? Math.round((termCount / maxTermCount) * 100) : 0;
+      html += '<div class="domain-dist-card" data-group-id="' + d.group_id + '" data-domain="' + d.group_name + '" style="text-align:center;padding:16px 8px;background:#f8f9fb;border-radius:10px;cursor:pointer;transition:all 0.2s;border:2px solid transparent;" title="클릭하면 \'' + d.group_name + '\' 용어 목록을 조회합니다">';
+      html += '<div style="font-size:22px;font-weight:700;color:' + c + ';">' + termCount.toLocaleString() + '</div>';
+      html += '<div style="font-size:11px;color:#888;margin-top:4px;">' + d.group_name + '</div>';
+      html += '<div style="font-size:10px;color:#aaa;margin-top:2px;">도메인 ' + d.domain_count + '건</div>';
+      html += '<div style="height:4px;background:#eceff1;border-radius:2px;margin-top:6px;"><div style="width:' + pct + '%;height:100%;background:' + c + ';border-radius:2px;"></div></div>';
+      html += '</div>';
+    });
+    container.innerHTML = html;
+    // 도메인 카드 클릭 → 용어탭 전환 + domain_group_id 필터 적용
+    container.querySelectorAll('.domain-dist-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        var groupId = this.getAttribute('data-group-id');
+        var groupName = this.getAttribute('data-domain');
+        filterByDomainGroup(groupId, groupName);
+      });
+    });
+  }).catch(function(err) {
+    console.error('[도메인 분포 로드 실패]', err);
+    container.innerHTML = '<div style="text-align:center;padding:16px;color:#f44336;grid-column:1/-1;">분포 데이터 로드 실패</div>';
+  });
+}
+
+// 도메인 카드 클릭 → 용어탭으로 전환 + domain_group_id 필터 적용
+function filterByDomainGroup(groupId, groupName) {
+  var searchInput = document.getElementById('glossary-search-input');
+  if (searchInput) searchInput.value = '';
+  glossaryState.termSearch = '';
+  glossaryState.termDomainGroupId = groupId;
+  glossaryState.termPage = 1;
+  var domainSelect = document.getElementById('glossary-domain-filter');
+  if (domainSelect) domainSelect.value = groupId;
+  switchGlossaryTab('term');
+  var filterBar = document.querySelector('.filter-bar');
+  if (filterBar) filterBar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (domainSelect) {
+    domainSelect.style.boxShadow = '0 0 0 3px rgba(25,103,210,0.3)';
+    setTimeout(function() { domainSelect.style.boxShadow = ''; }, 1500);
+  }
 }
 
 // ===== 위젯 템플릿 관리 AG Grid =====

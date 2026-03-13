@@ -37,19 +37,39 @@ async def get_summary(db: AsyncSession) -> dict:
 
 
 async def get_domain_distribution(db: AsyncSession) -> list:
-    """도메인그룹별 분포 통계"""
+    """도메인그룹별 분포 통계 (도메인 건수 + 용어 건수)"""
+    # 도메인그룹별 도메인 건수
     result = await db.execute(
         select(
+            StdDomainGroup.group_id,
             StdDomainGroup.group_name,
             func.count(StdDomain.domain_id).label("domain_count"),
         )
         .outerjoin(StdDomain, StdDomain.group_id == StdDomainGroup.group_id)
-        .group_by(StdDomainGroup.group_name, StdDomainGroup.sort_order)
+        .group_by(StdDomainGroup.group_id, StdDomainGroup.group_name, StdDomainGroup.sort_order)
         .order_by(StdDomainGroup.sort_order)
     )
+    rows = result.all()
+
+    # 도메인그룹별 용어 건수
+    term_result = await db.execute(
+        select(
+            StdTerm.domain_group_id,
+            func.count(StdTerm.term_id).label("term_count"),
+        )
+        .where(StdTerm.domain_group_id.isnot(None))
+        .group_by(StdTerm.domain_group_id)
+    )
+    term_counts = {row[0]: row[1] for row in term_result.all()}
+
     return [
-        {"group_name": row[0], "domain_count": row[1]}
-        for row in result.all()
+        {
+            "group_id": row[0],
+            "group_name": row[1],
+            "domain_count": row[2],
+            "term_count": term_counts.get(row[0], 0),
+        }
+        for row in rows
     ]
 
 
