@@ -6345,7 +6345,7 @@ var SCREEN_LABEL_MAP = {
   'meta-dq': '데이터 품질', 'meta-ontology': '온톨로지',
   'sys-user': '조직 및 사용자관리', 'sys-role': '권한 및 역할관리', 'sys-security': '데이터등급·보안정책',
   'sys-interface': '연계인터페이스 모니터링', 'sys-audit': '접속통계·감사로그',
-  'sys-widget-template': '위젯 템플릿 관리', 'sys-perm': '화면별 권한설정', 'sys-engine': '데이터허브 엔진관리', 'sys-erp-sync': 'ERP 인사정보 동기화', 'llmops': 'LLMOps 관리',
+  'sys-widget-template': '위젯 템플릿 관리', 'sys-perm': '화면별 권한설정', 'sys-engine': '데이터허브 엔진관리', 'sys-erp-sync': 'ERP 인사정보 동기화', 'sys-ext-register': '외부사용자 관리', 'llmops': 'LLMOps 관리',
   'comm-notice': '공지사항', 'comm-internal': '내부게시판', 'comm-external': '외부협력게시판', 'comm-archive': '자료실'
 };
 
@@ -7430,7 +7430,7 @@ function submitExtRegister() {
   hideExtRegisterForm();
 }
 
-// ===== 외부사용자 신청관리 (관리자) =====
+// ===== 외부사용자 관리 (관리자) =====
 var extRegisterData = [
   { id: 'EXT-2026-0047', date: '2026-03-06', name: '박연구', org: '국립환경과학원', dept: '수질연구팀', position: '연구원', email: 'park@nier.go.kr', phone: '010-9876-5432', purpose: '공동 연구', purposeDetail: '한강 수계 수질 빅데이터 공동 분석 연구', dataAccess: '수질, 수문', period: '2026-04 ~ 2026-12', attachment: '재직증명서.pdf', status: '승인대기', processDate: '-' },
   { id: 'EXT-2026-0046', date: '2026-03-06', name: '이분석', org: '서울대학교', dept: '환경공학부', position: '교수', email: 'lee@snu.ac.kr', phone: '010-5555-1234', purpose: '데이터 조회', purposeDetail: '댐 수위 및 유량 데이터 분석을 통한 기후변화 영향 연구', dataAccess: '댐, 수문, 기상', period: '2026-03 ~ 2027-02', attachment: '연구계획서.pdf', status: '승인대기', processDate: '-' },
