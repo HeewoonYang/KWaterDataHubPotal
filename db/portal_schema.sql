@@ -81,7 +81,7 @@ CREATE TABLE usr_acnt (
     phone          VARCHAR(20),
     dept_id        INT           REFERENCES dept(dept_id),
     role_id        INT           NOT NULL REFERENCES role(role_id),
-    login_type     login_type    NOT NULL DEFAULT 'sso',
+    login_ty       login_type    NOT NULL DEFAULT 'sso',
     stat         entity_status NOT NULL DEFAULT 'active',
     last_login_at  TIMESTAMPTZ,
     pwd_hash  VARCHAR(256),
@@ -127,7 +127,7 @@ CREATE TABLE role_menu_perm (
 CREATE TABLE login_hist (
     hist_id   BIGSERIAL    PRIMARY KEY,
     usr_id      UUID         NOT NULL REFERENCES usr_acnt(usr_id),
-    login_type   login_type   NOT NULL,
+    login_ty     login_type   NOT NULL,
     login_ip     INET,
     usr_agent   VARCHAR(500),
     login_at     TIMESTAMPTZ  DEFAULT now(),
@@ -139,6 +139,21 @@ CREATE TABLE login_hist (
     updtd_at   TIMESTAMPTZ  DEFAULT now(),
     updtd_by   UUID
 );
+
+CREATE TABLE pwd_reset_hist (
+    reset_id      BIGSERIAL    PRIMARY KEY,
+    usr_id        UUID         NOT NULL REFERENCES usr_acnt(usr_id),
+    reset_ty      VARCHAR(20)  NOT NULL DEFAULT 'email',  -- email / admin / self
+    temp_pwd_hash VARCHAR(256),
+    req_ip        INET,
+    is_used       BOOLEAN      DEFAULT FALSE,
+    expires_at    TIMESTAMPTZ  NOT NULL,
+    crtd_at       TIMESTAMPTZ  DEFAULT now(),
+    crtd_by       UUID,
+    updtd_at      TIMESTAMPTZ  DEFAULT now(),
+    updtd_by      UUID
+);
+COMMENT ON TABLE pwd_reset_hist IS '비밀번호 초기화 이력';
 
 
 -- ============================================================================
@@ -246,7 +261,7 @@ CREATE TABLE dset_tag (
     crtd_by UUID,
     updtd_at TIMESTAMPTZ DEFAULT now(),
     updtd_by UUID,
-    PRIMARY KEY (dataset_id, tag_id)
+    PRIMARY KEY (dset_id, tag_id)
 );
 
 CREATE TABLE bmrk (
@@ -362,22 +377,22 @@ CREATE TABLE model_entty (
 CREATE TABLE model_atrb (
     atrb_id  SERIAL       PRIMARY KEY,
     entty_id     INT          NOT NULL REFERENCES model_entty(entty_id) ON DELETE CASCADE,
-    attr_nm     VARCHAR(128) NOT NULL,
-    attr_nm_ko  VARCHAR(128),
+    atrb_nm     VARCHAR(128) NOT NULL,
+    atrb_nm_ko  VARCHAR(128),
     data_ty     VARCHAR(50)  NOT NULL,
     data_lt   INT,
     is_pk         BOOLEAN      DEFAULT FALSE,
     is_fk         BOOLEAN      DEFAULT FALSE,
     is_nulbl   BOOLEAN      DEFAULT TRUE,
     fk_ref_entty VARCHAR(128),
-    fk_ref_attr   VARCHAR(128),
+    fk_ref_atrb   VARCHAR(128),
     dc   TEXT,
     sort_ord    INT          DEFAULT 0,
     crtd_at    TIMESTAMPTZ  DEFAULT now(),
     crtd_by    UUID,
     updtd_at    TIMESTAMPTZ  DEFAULT now(),
     updtd_by    UUID,
-    UNIQUE (entty_id, attr_nm)
+    UNIQUE (entty_id, atrb_nm)
 );
 
 
@@ -410,7 +425,7 @@ CREATE TABLE ppln_exec (
     ppln_id     INT         NOT NULL REFERENCES ppln(ppln_id) ON DELETE CASCADE,
     strtd_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
     fnshed_at     TIMESTAMPTZ,
-    dur_sec    INT,
+    dur_secnd  INT,
     rcrds_read    BIGINT      DEFAULT 0,
     rcrds_wrtn BIGINT      DEFAULT 0,
     rcrds_err   BIGINT      DEFAULT 0,
@@ -503,7 +518,7 @@ CREATE TABLE dbt_model (
     tags            TEXT[],
     last_run_at     TIMESTAMPTZ,
     last_run_stat VARCHAR(20),
-    run_dur_sec INT,
+    run_dur_secnd INT,
     owner_usr_id   UUID          REFERENCES usr_acnt(usr_id),
     stat          entity_status DEFAULT 'active',
     crtd_at      TIMESTAMPTZ   DEFAULT now(),
@@ -629,7 +644,7 @@ CREATE TABLE didntf_rule (
     col_pttrn VARCHAR(200)         NOT NULL,
     rule_ty      deidentify_rule_type NOT NULL,
     rule_cnfg    JSONB,
-    prty       INT                  DEFAULT 0,
+    priort     INT                  DEFAULT 0,
     dc    VARCHAR(200),
     crtd_at     TIMESTAMPTZ          DEFAULT now(),
     crtd_by     UUID,
@@ -771,7 +786,7 @@ CREATE TABLE domn_qlity_score (
     cnstnc   NUMERIC(5,2) DEFAULT 0,
     tmlns    NUMERIC(5,2) DEFAULT 0,
     valid      NUMERIC(5,2) DEFAULT 0,
-    unqns    NUMERIC(5,2) DEFAULT 0,
+    uqe      NUMERIC(5,2) DEFAULT 0,
     ovrall_score NUMERIC(5,2) DEFAULT 0,
     dset_co INT          DEFAULT 0,
     rule_co    INT          DEFAULT 0,
@@ -1051,10 +1066,10 @@ CREATE TABLE audit_log (
     updtd_by    UUID
 );
 
-CREATE TABLE ntfc (
-    noti_id    BIGSERIAL    PRIMARY KEY,
-    usr_id    UUID         NOT NULL REFERENCES usr_acnt(usr_id),
-    noti_ty  noti_type    NOT NULL DEFAULT 'system',
+CREATE TABLE ntcn (
+    ntcn_id    BIGSERIAL    PRIMARY KEY,
+    usr_id     UUID         NOT NULL REFERENCES usr_acnt(usr_id),
+    ntcn_ty    noti_type    NOT NULL DEFAULT 'system',
     tit      VARCHAR(200) NOT NULL,
     msg    TEXT         NOT NULL,
     link_url   VARCHAR(500),
@@ -1075,9 +1090,9 @@ CREATE TABLE widg_tmplat (
     cnfg_json   JSONB,
     thumb_url VARCHAR(500),
     min_width     INT          DEFAULT 1,
-    min_hgt    INT          DEFAULT 1,
+    min_hg     INT          DEFAULT 1,
     max_width     INT          DEFAULT 4,
-    max_hgt    INT          DEFAULT 4,
+    max_hg     INT          DEFAULT 4,
     ctgry      VARCHAR(30),
     is_actv     BOOLEAN      DEFAULT TRUE,
     crtd_at    TIMESTAMPTZ  DEFAULT now(),
@@ -1093,7 +1108,7 @@ CREATE TABLE usr_widg_layout (
     positn_x      INT         DEFAULT 0,
     positn_y      INT         DEFAULT 0,
     width           INT         DEFAULT 1,
-    hgt          INT         DEFAULT 1,
+    hg           INT         DEFAULT 1,
     cnfg_ovrd JSONB,
     is_vsbl      BOOLEAN     DEFAULT TRUE,
     sort_ord      INT         DEFAULT 0,
@@ -1259,7 +1274,7 @@ CREATE INDEX idx_board_cm_post     ON board_cm(post_id);
 CREATE INDEX idx_audit_log_usr         ON audit_log(usr_id, crtd_at DESC);
 CREATE INDEX idx_audit_log_actn       ON audit_log(actn_ty, crtd_at DESC);
 CREATE INDEX idx_audit_log_dt         ON audit_log(crtd_at DESC);
-CREATE INDEX idx_ntfc_usr      ON ntfc(usr_id, is_read, crtd_at DESC);
+CREATE INDEX idx_ntcn_usr      ON ntcn(usr_id, is_read, crtd_at DESC);
 CREATE INDEX idx_lnage_edge_src    ON lnage_edge(src_node_id);
 CREATE INDEX idx_lnage_edge_trget    ON lnage_edge(trget_node_id);
 CREATE INDEX idx_ai_chat_sesn_usr   ON ai_chat_sesn(usr_id, crtd_at DESC);

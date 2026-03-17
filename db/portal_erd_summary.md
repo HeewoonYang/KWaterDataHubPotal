@@ -10,7 +10,7 @@
 
 | 구분 | 테이블 수 | ENUM 타입 |
 |------|:---------:|:---------:|
-| 사용자·조직·권한 | 7 | login_type |
+| 사용자·조직·권한 | 8 | login_type |
 | 카탈로그·메타데이터 | 14 | data_asset_type, data_security_level |
 | 수집 관리 | 8 | collect_method |
 | 유통·활용 | 11 | deidentify_rule_type |
@@ -48,7 +48,7 @@
 | 10 | `dset` | dset_id (UUID) | → domn, system, dept, user | 데이터셋 카탈로그 |
 | 11 | `dset_col` | col_id | → dset, glsry_term | 컬럼 스키마+프로파일링 |
 | 12 | `tag` | tag_id | — | 태그 |
-| 13 | `dset_tag` | (dataset_id, tag_id) | → dset, tag | N:M 매핑 |
+| 13 | `dset_tag` | (dset_id, tag_id) | → dset, tag | N:M 매핑 |
 | 14 | `bmrk` | bmrk_id | → user, dset | 즐겨찾기 |
 | 15 | `glsry_term` | term_id | → domn, user | 표준용어사전 |
 | 16 | `glsry_hist` | hist_id | → glsry_term, user | 용어 변경이력 |
@@ -129,7 +129,7 @@
 | 56 | `scrty_polcy` | policy_id | → user | 보안 정책 |
 | 57 | `sys_intrfc` | intrfc_id | → src_sys (×2) | 인터페이스 |
 | 58 | `audit_log` | log_id | → user | 감사 로그 |
-| 59 | `ntfc` | noti_id | → user | 알림 |
+| 59 | `ntcn` | ntcn_id | → user | 알림 |
 | 60 | `widg_tmplat` | widget_id | — | 위젯 템플릿 |
 | 61 | `usr_widg_layout` | layout_id | → user, widget | 위젯 배치 |
 | 62 | `lnage_node` | node_id | — | 리니지 노드 |
@@ -222,7 +222,7 @@
 │                     시스템관리                                       │
 │                                                                     │
 │  audit_log (사용자 작업 추적, 월별 파티셔닝 권장)                    │
-│  ntfc (사용자 알림)                                         │
+│  ntcn (사용자 알림)                                         │
 │  widg_tmplat ──1:N──▸ usr_widg_layout                       │
 │  lnage_node ◂──N:M──▸ lnage_edge                              │
 │  ai_chat_sesn ──1:N──▸ ai_chat_msg                          │

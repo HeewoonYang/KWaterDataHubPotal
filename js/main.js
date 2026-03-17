@@ -7430,6 +7430,239 @@ function submitExtRegister() {
   hideExtRegisterForm();
 }
 
+// ===== 신청현황 조회 (로그인 화면) =====
+function showExtStatusCheck() {
+  document.querySelector('#loginOverlay > .card').style.display = 'none';
+  document.getElementById('extRegisterForm').style.display = 'none';
+  document.getElementById('extStatusCheckForm').style.display = '';
+  // 초기화
+  document.getElementById('ext-check-name').value = '';
+  document.getElementById('ext-check-id').value = '';
+  document.getElementById('ext-check-phone').value = '';
+  document.getElementById('ext-check-result').style.display = 'none';
+}
+
+function hideExtStatusCheck() {
+  document.getElementById('extStatusCheckForm').style.display = 'none';
+  document.querySelector('#loginOverlay > .card').style.display = '';
+}
+
+function checkExtRegisterStatus() {
+  var name = document.getElementById('ext-check-name').value.trim();
+  var idOrEmail = document.getElementById('ext-check-id').value.trim();
+  var phone = document.getElementById('ext-check-phone').value.trim();
+
+  if (!name || !idOrEmail) {
+    showToast('성명과 접수번호(또는 이메일)를 모두 입력해주세요.', 'error');
+    return;
+  }
+
+  // extRegisterData에서 검색
+  var found = null;
+  for (var i = 0; i < extRegisterData.length; i++) {
+    var d = extRegisterData[i];
+    if (d.name === name && (d.id === idOrEmail || d.email === idOrEmail)) {
+      if (!phone || d.phone === phone) {
+        found = d;
+        break;
+      }
+    }
+  }
+
+  var resultDiv = document.getElementById('ext-check-result');
+  if (!found) {
+    resultDiv.style.display = '';
+    resultDiv.innerHTML =
+      '<div style="background:#fff2f0; border:1px solid #ffccc7; border-radius:8px; padding:16px; text-align:center;">' +
+      '<div style="font-size:20px; margin-bottom:4px;">🔍</div>' +
+      '<div style="font-size:13px; color:#cf1322; font-weight:600;">일치하는 신청 정보가 없습니다</div>' +
+      '<div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">성명과 접수번호(또는 이메일)를 다시 확인해주세요.</div>' +
+      '</div>';
+    return;
+  }
+
+  // 상태별 스타일
+  var statusStyles = {
+    '승인대기': { bg: '#fff8e1', c: '#d48806', dot: '#faad14', icon: '⏳', msg: '현재 심사가 진행 중입니다. 처리 완료 시 등록하신 이메일로 안내드립니다.' },
+    '승인완료': { bg: '#e8f5e9', c: '#2e7d32', dot: '#52c41a', icon: '✅', msg: '승인이 완료되었습니다. 발급된 계정 정보는 등록하신 이메일로 발송되었습니다.' },
+    '반려':     { bg: '#ffebee', c: '#c62828', dot: '#ff4d4f', icon: '❌', msg: '신청이 반려되었습니다. 반려 사유를 확인 후 재신청해주세요.' }
+  };
+  var st = statusStyles[found.status] || statusStyles['승인대기'];
+
+  var html = '<div style="border:1px solid var(--border-color); border-radius:8px; overflow:hidden;">';
+  // 상태 헤더
+  html += '<div style="background:' + st.bg + '; padding:14px 16px; text-align:center;">';
+  html += '<div style="font-size:24px; margin-bottom:4px;">' + st.icon + '</div>';
+  html += '<div style="font-size:14px; font-weight:700; color:' + st.c + ';">' + found.status + '</div>';
+  html += '<div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">' + st.msg + '</div>';
+  html += '</div>';
+  // 상세 정보
+  html += '<div style="padding:14px 16px; background:var(--card-bg);">';
+  html += '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">';
+  html += '<div><span style="color:var(--text-secondary);">접수번호</span><br><strong>' + found.id + '</strong></div>';
+  html += '<div><span style="color:var(--text-secondary);">신청일</span><br><strong>' + found.date + '</strong></div>';
+  html += '<div><span style="color:var(--text-secondary);">소속기관</span><br>' + found.org + '</div>';
+  html += '<div><span style="color:var(--text-secondary);">처리일</span><br>' + (found.processDate || '-') + '</div>';
+  html += '</div>';
+
+  // 반려 사유 표시
+  if (found.status === '반려' && found.rejectReason) {
+    html += '<div style="margin-top:10px; background:#fff2f0; border:1px solid #ffccc7; border-radius:6px; padding:10px;">';
+    html += '<div style="font-size:11px; font-weight:600; color:#cf1322; margin-bottom:2px;">반려 사유</div>';
+    html += '<div style="font-size:12px; color:#333;">' + found.rejectReason + '</div>';
+    html += '</div>';
+  }
+
+  // 처리 단계 타임라인
+  html += '<div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--border-color);">';
+  html += '<div style="font-size:11px; font-weight:600; color:var(--text-secondary); margin-bottom:8px;">처리 단계</div>';
+  html += '<div style="display:flex; align-items:center; gap:0;">';
+  // 1단계: 신청접수 (항상 완료)
+  html += '<div style="text-align:center; flex:1;">';
+  html += '<div style="width:28px; height:28px; border-radius:50%; background:#1677ff; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">1</div>';
+  html += '<div style="font-size:10px; margin-top:2px; color:#1677ff; font-weight:600;">신청접수</div>';
+  html += '</div>';
+  // 연결선
+  html += '<div style="flex:0 0 30px; height:2px; background:' + (found.status !== '승인대기' ? '#1677ff' : '#e0e0e0') + ';"></div>';
+  // 2단계: 심사중
+  var step2Active = true;
+  var step2Color = found.status === '승인대기' ? '#faad14' : '#1677ff';
+  html += '<div style="text-align:center; flex:1;">';
+  html += '<div style="width:28px; height:28px; border-radius:50%; background:' + step2Color + '; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">2</div>';
+  html += '<div style="font-size:10px; margin-top:2px; color:' + step2Color + '; font-weight:600;">심사중</div>';
+  html += '</div>';
+  // 연결선
+  html += '<div style="flex:0 0 30px; height:2px; background:' + (found.status !== '승인대기' ? (found.status === '승인완료' ? '#52c41a' : '#f5222d') : '#e0e0e0') + ';"></div>';
+  // 3단계: 처리완료
+  var step3Color = found.status === '승인대기' ? '#e0e0e0' : (found.status === '승인완료' ? '#52c41a' : '#f5222d');
+  var step3Text = found.status === '승인대기' ? '#999' : (found.status === '승인완료' ? '#52c41a' : '#f5222d');
+  html += '<div style="text-align:center; flex:1;">';
+  html += '<div style="width:28px; height:28px; border-radius:50%; background:' + step3Color + '; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">3</div>';
+  html += '<div style="font-size:10px; margin-top:2px; color:' + step3Text + '; font-weight:600;">' + (found.status === '승인대기' ? '처리완료' : found.status) + '</div>';
+  html += '</div>';
+  html += '</div>'; // flex
+  html += '</div>'; // 처리 단계
+
+  html += '</div>'; // 상세 정보
+  html += '</div>'; // 전체 카드
+
+  resultDiv.style.display = '';
+  resultDiv.innerHTML = html;
+}
+
+// ===== 비밀번호 찾기/초기화 (외부사용자) =====
+function showPwResetForm() {
+  document.querySelector('#loginOverlay > .card').style.display = 'none';
+  document.getElementById('extRegisterForm').style.display = 'none';
+  document.getElementById('extStatusCheckForm').style.display = 'none';
+  document.getElementById('pwResetForm').style.display = '';
+  // 초기화
+  document.getElementById('pw-reset-name').value = '';
+  document.getElementById('pw-reset-id').value = '';
+  document.getElementById('pw-reset-phone').value = '';
+  document.getElementById('pw-reset-result').style.display = 'none';
+  document.getElementById('pw-reset-step1').style.display = '';
+}
+
+function hidePwResetForm() {
+  document.getElementById('pwResetForm').style.display = 'none';
+  document.querySelector('#loginOverlay > .card').style.display = '';
+}
+
+function generateTempPassword() {
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  var pwd = 'Kw@';
+  for (var i = 0; i < 8; i++) {
+    pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return pwd;
+}
+
+function verifyPwResetIdentity() {
+  var name = document.getElementById('pw-reset-name').value.trim();
+  var idOrEmail = document.getElementById('pw-reset-id').value.trim();
+  var phone = document.getElementById('pw-reset-phone').value.trim();
+
+  if (!name || !idOrEmail) {
+    showToast('성명과 아이디(또는 이메일)를 모두 입력해주세요.', 'error');
+    return;
+  }
+
+  // extRegisterData에서 검색
+  var found = null;
+  for (var i = 0; i < extRegisterData.length; i++) {
+    var d = extRegisterData[i];
+    if (d.name === name && (d.id === idOrEmail || d.email === idOrEmail)) {
+      if (!phone || d.phone === phone) {
+        found = d;
+        break;
+      }
+    }
+  }
+
+  var resultDiv = document.getElementById('pw-reset-result');
+
+  if (!found) {
+    resultDiv.style.display = '';
+    resultDiv.innerHTML =
+      '<div style="background:#fff2f0; border:1px solid #ffccc7; border-radius:8px; padding:16px; text-align:center;">' +
+      '<div style="font-size:20px; margin-bottom:4px;">🔍</div>' +
+      '<div style="font-size:13px; color:#cf1322; font-weight:600;">일치하는 계정 정보가 없습니다</div>' +
+      '<div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">성명과 아이디(또는 이메일)를 다시 확인해주세요.</div>' +
+      '</div>';
+    return;
+  }
+
+  // 승인완료 상태가 아닌 경우
+  if (found.status !== '승인완료') {
+    resultDiv.style.display = '';
+    resultDiv.innerHTML =
+      '<div style="background:#fff8e1; border:1px solid #ffe58f; border-radius:8px; padding:16px; text-align:center;">' +
+      '<div style="font-size:20px; margin-bottom:4px;">⚠️</div>' +
+      '<div style="font-size:13px; color:#d48806; font-weight:600;">비밀번호 초기화를 할 수 없습니다</div>' +
+      '<div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">승인 완료된 계정만 비밀번호 초기화가 가능합니다.<br>현재 상태: <strong>' + found.status + '</strong></div>' +
+      '</div>';
+    return;
+  }
+
+  // 임시 비밀번호 발급
+  var tempPwd = generateTempPassword();
+  var maskedEmail = found.email.replace(/(.{2})(.*)(@.*)/, function(m, a, b, c) { return a + b.replace(/./g, '*') + c; });
+  var now = new Date();
+  var expireTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  var expireStr = expireTime.toISOString().substring(0, 16).replace('T', ' ');
+
+  document.getElementById('pw-reset-step1').style.display = 'none';
+
+  var html = '<div style="border:1px solid var(--border-color); border-radius:8px; overflow:hidden;">';
+  // 성공 헤더
+  html += '<div style="background:#e8f5e9; padding:16px; text-align:center;">';
+  html += '<div style="font-size:28px; margin-bottom:4px;">✅</div>';
+  html += '<div style="font-size:15px; font-weight:700; color:#2e7d32;">임시 비밀번호가 발급되었습니다</div>';
+  html += '<div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">' + maskedEmail + ' 으로 발송되었습니다</div>';
+  html += '</div>';
+  // 임시 비밀번호 표시
+  html += '<div style="padding:16px; background:var(--card-bg); text-align:center;">';
+  html += '<div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">임시 비밀번호 (프로토타입 화면 표시)</div>';
+  html += '<div style="background:#f6f8fa; border:2px dashed var(--border-color); border-radius:8px; padding:14px; margin-bottom:12px;">';
+  html += '<code style="font-size:18px; font-weight:700; letter-spacing:2px; color:#1677ff;">' + tempPwd + '</code>';
+  html += '</div>';
+  // 안내 사항
+  html += '<div style="text-align:left; background:#fff8e1; border:1px solid #ffe58f; border-radius:6px; padding:10px; font-size:11px;">';
+  html += '<div style="font-weight:600; color:#d48806; margin-bottom:4px;">⚠️ 안내 사항</div>';
+  html += '<ul style="margin:0; padding-left:16px; color:#666; line-height:1.7;">';
+  html += '<li>임시 비밀번호로 로그인 후 <strong>반드시 비밀번호를 변경</strong>해주세요.</li>';
+  html += '<li>유효기간: <strong>' + expireStr + '</strong> 까지 (24시간)</li>';
+  html += '<li>영문 대/소문자 + 숫자 + 특수문자 조합, 8자 이상으로 설정하세요.</li>';
+  html += '</ul>';
+  html += '</div>';
+  html += '</div>';
+  html += '</div>';
+
+  resultDiv.style.display = '';
+  resultDiv.innerHTML = html;
+}
+
 // ===== 외부사용자 관리 (관리자) =====
 var extRegisterData = [
   { id: 'EXT-2026-0047', date: '2026-03-06', name: '박연구', org: '국립환경과학원', dept: '수질연구팀', position: '연구원', email: 'park@nier.go.kr', phone: '010-9876-5432', purpose: '공동 연구', purposeDetail: '한강 수계 수질 빅데이터 공동 분석 연구', dataAccess: '수질, 수문', period: '2026-04 ~ 2026-12', attachment: '재직증명서.pdf', status: '승인대기', processDate: '-' },
@@ -7461,8 +7694,14 @@ function initExtRegisterGrid() {
       return '<span style="display:inline-flex;align-items:center;gap:4px;background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:11px;"><span style="width:6px;height:6px;border-radius:50%;background:'+s.dot+';"></span>'+p.value+'</span>';
     }},
     { field: 'processDate', headerName: '처리일', width: 100 },
-    { field: 'action', headerName: '관리', width: 65, sortable: false, filter: false, cellRenderer: function(p) {
-      return '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;">상세</button>';
+    { field: 'action', headerName: '관리', width: 180, sortable: false, filter: false, cellRenderer: function(p) {
+      var html = '';
+      if (p.data.status === '승인대기') {
+        html += '<button class="btn btn-primary" style="padding:1px 6px;font-size:11px;margin-right:3px;background:#52c41a;border-color:#52c41a;" data-action="approve">승인</button>';
+        html += '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;margin-right:3px;color:#f5222d;border-color:#f5222d;" data-action="reject">반려</button>';
+      }
+      html += '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;" data-action="detail">상세</button>';
+      return html;
     }}
   ], extRegisterData, {
     domLayout: 'autoHeight',
@@ -7472,7 +7711,16 @@ function initExtRegisterGrid() {
     },
     onCellClicked: function(e) {
       if (e.colDef.field === 'action') {
-        openExtRegisterDetail(e.data);
+        var action = e.event.target.getAttribute('data-action');
+        if (action === 'approve') {
+          if (confirm(e.data.name + '님(' + e.data.org + ')의 신청을 승인하시겠습니까?')) {
+            approveExtRegisterDirect(e.data);
+          }
+        } else if (action === 'reject') {
+          openExtRejectModal(e.data);
+        } else if (action === 'detail') {
+          openExtRegisterDetail(e.data);
+        }
       }
     }
   });
@@ -7530,10 +7778,6 @@ function openExtRegisterDetail(data) {
   if (data.status === '승인대기') {
     actionCard.style.display = '';
     resultCard.style.display = 'none';
-    document.getElementById('ext-detail-reject-reason-box').style.display = 'none';
-    document.getElementById('ext-detail-reject-btn').style.display = 'none';
-    document.getElementById('ext-detail-reject-toggle').style.display = '';
-    document.getElementById('ext-detail-approve-btn').style.display = '';
   } else if (data.status === '승인완료') {
     actionCard.style.display = 'none';
     resultCard.style.display = '';
@@ -7555,54 +7799,57 @@ function openExtRegisterDetail(data) {
   navigate('sys-ext-register-detail');
 }
 
-function toggleRejectReason() {
-  var box = document.getElementById('ext-detail-reject-reason-box');
-  var rejectBtn = document.getElementById('ext-detail-reject-btn');
-  var toggleBtn = document.getElementById('ext-detail-reject-toggle');
-  if (box.style.display === 'none') {
-    box.style.display = '';
-    rejectBtn.style.display = '';
-    toggleBtn.style.display = 'none';
-  } else {
-    box.style.display = 'none';
-    rejectBtn.style.display = 'none';
-    toggleBtn.style.display = '';
-  }
-}
-
-function approveExtRegister() {
-  if (!window._extDetailData) return;
-  var data = window._extDetailData;
+// --- 승인 처리 (직접) ---
+function approveExtRegisterDirect(data) {
   data.status = '승인완료';
   data.processDate = new Date().toISOString().substring(0, 10);
-
-  // 승인 완료 UI 갱신
   showToast(data.name + '님의 신청이 승인되었습니다. 계정이 생성되었습니다.', 'success');
-
-  // 그리드 새로고침
   initExtRegisterGrid();
-
-  // 상세 화면 갱신
-  openExtRegisterDetail(data);
 }
 
-function rejectExtRegister() {
+// 상세 화면에서 승인
+function approveExtRegister() {
   if (!window._extDetailData) return;
-  var reason = document.getElementById('ext-detail-reject-reason').value.trim();
+  approveExtRegisterDirect(window._extDetailData);
+  openExtRegisterDetail(window._extDetailData);
+}
+
+// --- 반려 모달 ---
+function openExtRejectModal(data) {
+  if (!data) return;
+  window._extRejectTarget = data;
+  document.getElementById('ext-reject-modal-id').textContent = data.id;
+  document.getElementById('ext-reject-modal-date').textContent = data.date;
+  document.getElementById('ext-reject-modal-name').textContent = data.name;
+  document.getElementById('ext-reject-modal-org').textContent = data.org;
+  document.getElementById('ext-reject-modal-reason').value = '';
+  document.getElementById('ext-reject-modal').style.display = 'flex';
+}
+
+function closeExtRejectModal() {
+  var modal = document.getElementById('ext-reject-modal');
+  modal.style.display = 'none';
+  var card = modal.querySelector('.modal-card');
+  if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+  window._extRejectTarget = null;
+}
+
+function confirmExtReject() {
+  var reason = document.getElementById('ext-reject-modal-reason').value.trim();
   if (!reason) {
     showToast('반려 사유를 입력해주세요.', 'error');
     return;
   }
-  var data = window._extDetailData;
+  var data = window._extRejectTarget;
+  if (!data) return;
   data.status = '반려';
   data.processDate = new Date().toISOString().substring(0, 10);
   data.rejectReason = reason;
-
   showToast(data.name + '님의 신청이 반려되었습니다.', 'error');
-
-  // 그리드 새로고침
   initExtRegisterGrid();
-
-  // 상세 화면 갱신
-  openExtRegisterDetail(data);
+  closeExtRejectModal();
+  // 상세 화면이 열려 있으면 갱신
+  if (window._extDetailData && window._extDetailData.id === data.id) {
+    openExtRegisterDetail(data);
+  }
 }
