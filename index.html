@@ -41,16 +41,16 @@
       <!-- 로그인 유형 선택 -->
       <div class="login-type-selector grid grid-cols-4 gap-1.5 mb-5">
         <div
-          class="login-type-btn active flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 border-transparent cursor-pointer text-center transition-all hover:bg-base-200"
+          class="login-type-btn flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 border-transparent cursor-pointer text-center transition-all hover:bg-base-200"
           data-type="sso" onclick="switchLoginType('sso')">
           <span class="text-2xl">🏢</span>
-          <span class="text-[11px] leading-tight">수공 직원 (SSO)</span>
+          <span class="text-[11px] leading-tight">내부사용자</span>
         </div>
         <div
           class="login-type-btn flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 border-transparent cursor-pointer text-center transition-all hover:bg-base-200"
           data-type="partner" onclick="switchLoginType('partner')">
           <span class="text-2xl">🤝</span>
-          <span class="text-[11px] leading-tight">협력 직원</span>
+          <span class="text-[11px] leading-tight">외부사용자</span>
         </div>
         <div
           class="login-type-btn flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 border-transparent cursor-pointer text-center transition-all hover:bg-base-200"
@@ -59,7 +59,7 @@
           <span class="text-[11px] leading-tight">데이터 엔지니어</span>
         </div>
         <div
-          class="login-type-btn flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 border-transparent cursor-pointer text-center transition-all hover:bg-base-200"
+          class="login-type-btn active flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 border-transparent cursor-pointer text-center transition-all hover:bg-base-200"
           data-type="admin" onclick="switchLoginType('admin')">
           <span class="text-2xl">🛡️</span>
           <span class="text-[11px] leading-tight">관리자</span>
@@ -67,7 +67,7 @@
       </div>
 
       <!-- SSO 로그인 -->
-      <div class="login-form" id="login-sso">
+      <div class="login-form" id="login-sso" style="display:none;">
         <div class="alert bg-base-200/60 border border-base-300 mb-4 flex-col items-center text-center py-5">
           <span class="text-2xl">🔐</span>
           <span class="font-bold text-sm">SSO 자동 로그인</span>
@@ -137,7 +137,7 @@
       </div>
 
       <!-- 관리자 로그인 -->
-      <div class="login-form" id="login-admin" style="display:none;">
+      <div class="login-form" id="login-admin">
         <fieldset class="fieldset mb-2">
           <legend class="fieldset-legend text-xs font-semibold">관리자 아이디</legend>
           <input type="text" class="input input-bordered w-full text-sm" placeholder="관리자 아이디" value="admin">
@@ -149,9 +149,9 @@
         <fieldset class="fieldset mb-2">
           <legend class="fieldset-legend text-xs font-semibold">권한 선택 (데모용)</legend>
           <select id="admin-role" class="select select-bordered w-full text-sm">
+            <option value="관리자|슈퍼관리자" selected>SuperAdmin — 전체 관리자</option>
             <option value="관리자|시스템관리자">관리자 — 시스템 관리자</option>
             <option value="관리자|보안관리자">보안팀 — 보안 관리자</option>
-            <option value="관리자|슈퍼관리자">SuperAdmin — 전체 관리자</option>
           </select>
         </fieldset>
         <button class="btn btn-primary w-full mt-2" onclick="doLogin('admin')">관리자 로그인</button>
@@ -671,7 +671,7 @@
 
   </div> <!-- /layout -->
 
-  <script src="js/main.js?v=20260316b"></script>
+  <script src="js/main.js?v=20260317b"></script>
   <script>
     // 페이지 로드 시 모든 섹션 HTML을 순차적으로 로드 (순서 보장)
     (async function () {

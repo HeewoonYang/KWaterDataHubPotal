@@ -9,9 +9,9 @@
       <div style="font-size:12px; color:var(--text-secondary);">K-water 전사 조직·사용자·권한을 통합 관리합니다</div>
     </div>
     <div style="display:flex; gap:6px; flex-shrink:0;">
-      <button class="btn btn-primary btn-sm" data-perm="write">➕ 사용자등록</button>
-      <button class="btn btn-outline btn-sm" data-perm="admin">📥 일괄등록</button>
-      <button class="btn btn-outline btn-sm">📊 Excel 내보내기</button>
+      <button class="btn btn-primary btn-sm" data-perm="write" onclick="showToast('사용자 등록 기능은 ERP 연동 후 활성화됩니다.','error')">➕ 사용자등록</button>
+      <button class="btn btn-outline btn-sm" data-perm="admin" onclick="showToast('일괄등록 기능은 ERP 연동 후 활성화됩니다.','error')">📥 일괄등록</button>
+      <button class="btn btn-outline btn-sm" onclick="exportUserCSV()">📊 Excel 내보내기</button>
     </div>
   </div>
 
@@ -53,16 +53,16 @@
     <div class="card-head" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
       <div class="card-title">👥 사용자 목록</div>
       <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
-          <option>전체 상태</option><option>활성</option><option>비활성</option><option>승인대기</option><option>잠김</option>
+        <select id="user-filter-status" onchange="filterUserGrid()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option value="">전체 상태</option><option>활성</option><option>비활성</option><option>승인대기</option><option>잠김</option>
         </select>
-        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
-          <option>전체 부서</option><option>정보화추진단</option><option>수자원관리팀</option><option>데이터분석팀</option><option>경영기획팀</option><option>수도사업팀</option><option>AI연구팀</option>
+        <select id="user-filter-dept" onchange="filterUserGrid()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option value="">전체 부서</option><option>정보화추진단</option><option>수자원관리팀</option><option>데이터분석팀</option><option>경영기획팀</option><option>수도사업팀</option><option>AI연구팀</option><option>수력발전팀</option><option>수질관리팀</option><option>인프라운영팀</option>
         </select>
-        <select style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
-          <option>전체 역할</option><option>시스템관리자</option><option>데이터관리자</option><option>데이터엔지니어</option><option>일반사용자</option><option>외부사용자</option>
+        <select id="user-filter-role" onchange="filterUserGrid()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; background:#fff;">
+          <option value="">전체 역할</option><option>시스템관리자</option><option>데이터관리자</option><option>데이터엔지니어</option><option>일반사용자</option><option>외부사용자</option>
         </select>
-        <input type="text" placeholder="사용자 검색..." style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; width:140px;">
+        <input id="user-filter-search" onkeyup="filterUserGrid()" type="text" placeholder="사용자 검색..." style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:11px; width:140px;">
       </div>
     </div>
     <div id="ag-grid-sys-user" class="ag-theme-alpine" style="width:100%;"></div>
@@ -352,6 +352,33 @@
   </div>
 </div>
 
+    <!-- 사용자 승인 모달 -->
+    <div class="modal-overlay" id="user-approve-modal" style="display:none;">
+      <div class="modal-card modal-compact" style="width:520px;">
+        <div class="modal-header">
+          <h3 class="modal-title">✅ 사용자 승인 처리</h3>
+          <button class="modal-close" onclick="closeApproveModal()">×</button>
+        </div>
+        <div class="modal-body" style="padding:16px 20px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; padding:12px; background:#f8f9fa; border-radius:6px;">
+            <div style="font-size:12px;"><span style="color:#888;">이름</span><div style="font-weight:700;" id="apm-name">-</div></div>
+            <div style="font-size:12px;"><span style="color:#888;">사번</span><div style="font-family:monospace;" id="apm-empNo">-</div></div>
+            <div style="font-size:12px;"><span style="color:#888;">부서</span><div id="apm-dept">-</div></div>
+            <div style="font-size:12px;"><span style="color:#888;">신청 역할</span><div style="font-weight:600; color:#1967d2;" id="apm-role">-</div></div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">승인 의견</label>
+            <textarea id="apm-comment" rows="3" placeholder="승인 또는 반려 의견을 입력하세요..." style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; resize:vertical;"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer" style="gap:8px;">
+          <button class="btn btn-outline" onclick="closeApproveModal()">취소</button>
+          <button class="btn btn-outline" style="color:#f44336; border-color:#f44336;" onclick="rejectUser()">반려</button>
+          <button class="btn btn-primary" onclick="approveUser()">승인</button>
+        </div>
+      </div>
+    </div>
+
     <!-- ========== SYS SCREEN 1-1: 사용자 상세 (연계화면) ========== -->
     <div class="screen" id="screen-sys-user-detail">
       <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <a href="#" onclick="navigate('sys-user')">조직 및 사용자관리</a> &gt; <strong>사용자 상세</strong></div>
@@ -418,7 +445,7 @@
         <div class="card" style="margin-bottom:0;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <div class="card-title" style="margin-bottom:0;">🛡️ 역할 및 권한</div>
-            <button class="btn btn-outline btn-sm" data-perm="admin" style="font-size:10px;">+ 역할 추가</button>
+            <button class="btn btn-outline btn-sm" data-perm="admin" style="font-size:10px;" onclick="openAddRoleModal()">+ 역할 추가</button>
           </div>
           <table class="data-table" style="font-size:12px;">
             <thead>
@@ -626,9 +653,44 @@
       <!-- 하단 버튼 -->
       <div style="display:flex; gap:8px;">
         <button class="btn btn-primary" onclick="navigate('sys-user')">← 목록으로</button>
-        <button class="btn btn-outline" data-perm="write">수정</button>
-        <button class="btn btn-outline" data-perm="admin">역할 변경</button>
-        <button class="btn btn-outline" data-perm="admin" style="color:#f5222d; border-color:#f5222d;">계정 비활성화</button>
+        <button class="btn btn-outline" data-perm="write" onclick="showToast('사용자 정보가 저장되었습니다.','success')">수정</button>
+        <button class="btn btn-outline" data-perm="admin" onclick="openAddRoleModal()">역할 변경</button>
+        <button class="btn btn-outline" data-perm="admin" style="color:#f5222d; border-color:#f5222d;" onclick="if(confirm('이 사용자 계정을 비활성화하시겠습니까?')){showToast('계정이 비활성화되었습니다.','success');navigate('sys-user');}">계정 비활성화</button>
+      </div>
+    </div>
+
+    <!-- 역할 추가 모달 -->
+    <div class="modal-overlay" id="user-role-add-modal" style="display:none;">
+      <div class="modal-card modal-compact" style="width:480px;">
+        <div class="modal-header">
+          <h3 class="modal-title">🛡️ 역할 추가</h3>
+          <button class="modal-close" onclick="closeAddRoleModal()">×</button>
+        </div>
+        <div class="modal-body" style="padding:16px 20px;">
+          <div style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">대상 사용자</label>
+            <div id="arm-user-info" style="font-size:13px; padding:6px 10px; background:#f8f9fa; border-radius:4px; font-weight:600;">-</div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">추가할 역할 <span style="color:#f44336;">*</span></label>
+            <select id="arm-role-select" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:13px; background:#fff;">
+              <option value="">역할 선택...</option>
+              <option value="시스템관리자">시스템관리자 (Level 5)</option>
+              <option value="데이터관리자">데이터관리자 (Level 4)</option>
+              <option value="데이터엔지니어">데이터엔지니어 (Level 3)</option>
+              <option value="일반사용자">일반사용자 (Level 2)</option>
+              <option value="외부사용자">외부사용자 (Level 1)</option>
+            </select>
+          </div>
+          <div style="margin-bottom:8px;">
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">변경 사유</label>
+            <textarea id="arm-reason" rows="3" placeholder="역할 추가 사유를 입력하세요..." style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; resize:vertical;"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeAddRoleModal()">취소</button>
+          <button class="btn btn-primary" onclick="addUserRole()">추가</button>
+        </div>
       </div>
     </div>
 
@@ -2062,8 +2124,8 @@
           <div style="font-size:13px; color:#888;">사용자 접속 현황 · 활동 감사 · 이상행위 탐지 · API 모니터링</div>
         </div>
         <div style="display:flex; gap:8px;">
-          <button class="btn btn-outline" style="font-size:12px;">📥 내보내기</button>
-          <button class="btn btn-outline" style="font-size:12px;">🔍 상세 필터</button>
+          <button class="btn btn-outline" style="font-size:12px;" onclick="exportAuditCSV()">📥 내보내기</button>
+          <button class="btn btn-outline" style="font-size:12px;" onclick="document.getElementById('audit-filter-type').value='';document.getElementById('audit-filter-risk').value='';document.getElementById('audit-filter-search').value='';filterAuditLog();">↺ 필터 초기화</button>
         </div>
       </div>
       <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:20px;">
@@ -2080,13 +2142,13 @@
         <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
           <span>📋 감사로그 (최근 활동)</span>
           <div style="display:flex; gap:8px; align-items:center;">
-            <select style="font-size:12px; padding:4px 8px; border:1px solid #ddd; border-radius:4px; background:#fff;">
-              <option>전체 유형</option><option>데이터</option><option>수집</option><option>유통</option><option>접속</option><option>시스템</option><option>권한</option><option>배치</option>
+            <select id="audit-filter-type" onchange="filterAuditLog()" style="font-size:12px; padding:4px 8px; border:1px solid #ddd; border-radius:4px; background:#fff;">
+              <option value="">전체 유형</option><option>데이터</option><option>수집</option><option>유통</option><option>접속</option><option>시스템</option><option>권한</option><option>배치</option><option>API</option>
             </select>
-            <select style="font-size:12px; padding:4px 8px; border:1px solid #ddd; border-radius:4px; background:#fff;">
-              <option>전체 위험도</option><option>높음</option><option>보통</option><option>낮음</option>
+            <select id="audit-filter-risk" onchange="filterAuditLog()" style="font-size:12px; padding:4px 8px; border:1px solid #ddd; border-radius:4px; background:#fff;">
+              <option value="">전체 위험도</option><option>높음</option><option>보통</option><option>낮음</option>
             </select>
-            <input type="text" placeholder="사용자·활동 검색..." style="font-size:12px; padding:4px 10px; border:1px solid #ddd; border-radius:4px; width:160px;">
+            <input id="audit-filter-search" onkeyup="filterAuditLog()" type="text" placeholder="사용자·활동 검색..." style="font-size:12px; padding:4px 10px; border:1px solid #ddd; border-radius:4px; width:160px;">
           </div>
         </div>
         <div class="card-body" style="padding:0;">
@@ -2301,6 +2363,49 @@
       </div>
     </div>
 
+    <!-- 감사로그 상세보기 모달 -->
+    <div class="modal-overlay" id="audit-detail-modal" style="display:none;">
+      <div class="modal-card" style="width:680px; max-height:90vh;">
+        <div class="modal-header">
+          <h3 class="modal-title">📋 감사로그 상세</h3>
+          <button class="modal-close" onclick="closeAuditDetailModal()">×</button>
+        </div>
+        <div class="modal-body" style="padding:16px 20px;">
+          <!-- 기본 정보 -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="font-size:12px;"><span style="color:#888; width:70px; display:inline-block;">시간</span><strong id="adm-time">-</strong></div>
+              <div style="font-size:12px;"><span style="color:#888; width:70px; display:inline-block;">사용자</span><strong id="adm-user">-</strong></div>
+              <div style="font-size:12px;"><span style="color:#888; width:70px; display:inline-block;">부서</span><span id="adm-dept">-</span></div>
+              <div style="font-size:12px;"><span style="color:#888; width:70px; display:inline-block;">IP</span><code id="adm-ip" style="background:#f5f5f5;padding:1px 6px;border-radius:3px;font-size:11px;">-</code></div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="font-size:12px;"><span style="color:#888; width:70px; display:inline-block;">유형</span><span id="adm-type">-</span></div>
+              <div style="font-size:12px;"><span style="color:#888; width:70px; display:inline-block;">결과</span><span id="adm-result">-</span></div>
+              <div style="font-size:12px;"><span style="color:#888; width:70px; display:inline-block;">위험도</span><span id="adm-risk">-</span></div>
+              <div style="font-size:12px;"><span style="color:#888; width:70px; display:inline-block;">대상</span><code id="adm-entity" style="background:#f5f5f5;padding:1px 6px;border-radius:3px;font-size:11px;">-</code></div>
+            </div>
+          </div>
+          <!-- 활동 내용 -->
+          <div style="margin-bottom:16px; padding:10px 12px; background:#f8f9fa; border-radius:6px; border-left:3px solid #1967d2;">
+            <div style="font-size:11px; color:#888; margin-bottom:4px;">활동 내용</div>
+            <div id="adm-activity" style="font-size:13px; font-weight:600;">-</div>
+          </div>
+          <!-- 동일 사용자 최근 활동 -->
+          <div style="margin-bottom:8px; font-size:12px; font-weight:700; color:#333;">🔗 동일 사용자 최근 활동</div>
+          <table class="data-table" style="font-size:12px;">
+            <thead><tr><th style="width:80px;">시간</th><th>활동 내용</th><th style="width:70px;">결과</th></tr></thead>
+            <tbody id="adm-related-tbody">
+              <tr><td colspan="3" style="text-align:center; color:#999; font-size:11px;">관련 활동 없음</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeAuditDetailModal()">닫기</button>
+        </div>
+      </div>
+    </div>
+
 <!-- ========== SYS SCREEN 8: 위젯 템플릿 관리 ========== -->
 <div class="screen" id="screen-sys-widget-template">
   <div class="breadcrumb"><a href="#" onclick="navigate('home')">개인 대시보드</a> &gt; <strong>위젯 템플릿 관리</strong></div>
@@ -2499,6 +2604,42 @@
     <div class="card-title">📝 최근 변경 이력</div>
     <div id="perm-history-list">
       <div style="text-align:center; padding:20px; color:#bbb;">변경 이력이 없습니다</div>
+    </div>
+  </div>
+</div>
+
+<!-- 권한 변경 승인 요청 모달 -->
+<div class="modal-overlay" id="perm-approve-modal" style="display:none;">
+  <div class="modal-card" style="width:580px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">📋 권한 변경 승인 요청</h3>
+      <button class="modal-close" onclick="closePermApproveModal()">×</button>
+    </div>
+    <div class="modal-body" style="padding:16px 20px;">
+      <div style="display:flex; gap:16px; margin-bottom:14px; padding:10px 12px; background:#f8f9fa; border-radius:6px;">
+        <div style="font-size:12px;"><span style="color:#888;">대상 역할</span><div style="font-weight:700; color:#1967d2;" id="pam-role-name">-</div></div>
+        <div style="font-size:12px;"><span style="color:#888;">변경 항목</span><div style="font-weight:700;" id="pam-change-count">0건</div></div>
+        <div style="font-size:12px;"><span style="color:#888;">요청일시</span><div id="pam-request-date" style="font-size:11px;">-</div></div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px; font-weight:700; margin-bottom:6px;">변경 내역</div>
+        <table class="data-table" style="font-size:12px;">
+          <thead><tr><th>화면 ID</th><th>현재 권한</th><th>변경 권한</th></tr></thead>
+          <tbody id="pam-changes-tbody">
+            <tr><td colspan="3" style="text-align:center; color:#999;">변경 내역 없음</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-bottom:8px;">
+        <label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">요청 사유 <span style="color:#f44336;">*</span></label>
+        <textarea id="pam-reason" rows="3" placeholder="권한 변경 요청 사유를 입력하세요..." style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; resize:vertical;"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer" style="gap:8px;">
+      <button class="btn btn-outline" onclick="closePermApproveModal()">취소</button>
+      <button class="btn btn-primary" onclick="submitPermApproval()">승인 요청</button>
     </div>
   </div>
 </div>
@@ -2832,8 +2973,8 @@
       <div style="font-size:12px; color:var(--text-secondary);">Oracle ERP 인사시스템과 포털 사용자/조직 정보를 동기화합니다</div>
     </div>
     <div style="display:flex; gap:6px; flex-shrink:0;">
-      <button class="btn btn-primary btn-sm" data-perm="admin" onclick="showToast('수동 동기화를 시작합니다...', 'success')">🔄 수동 동기화 실행</button>
-      <button class="btn btn-outline btn-sm" data-perm="admin">⚙️ 동기화 설정</button>
+      <button class="btn btn-primary btn-sm" data-perm="admin" onclick="openErpSyncRunModal()">🔄 수동 동기화 실행</button>
+      <button class="btn btn-outline btn-sm" data-perm="admin" onclick="openErpSyncSettingModal()">⚙️ 동기화 설정</button>
       <button class="btn btn-outline btn-sm">📥 이력 다운로드</button>
     </div>
   </div>
@@ -3059,11 +3200,402 @@
     <div class="card-head" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
       <div class="card-title">🗂️ ERP ↔ DataHub 필드 매핑 설정</div>
       <div style="display:flex; gap:6px;">
-        <button class="btn btn-outline btn-sm" data-perm="admin">✏️ 매핑 편집</button>
+        <button class="btn btn-outline btn-sm" data-perm="admin" onclick="openErpMappingEditModal()">✏️ 매핑 편집</button>
         <button class="btn btn-outline btn-sm">📥 매핑정의서 다운로드</button>
       </div>
     </div>
     <div id="ag-grid-sys-erp-mapping" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
+<!-- ── ERP 동기화 이력 상세 모달 ── -->
+<div class="modal-overlay" id="erpSyncDetailModal" style="display:none;">
+  <div class="modal-card" style="width:700px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">📋 동기화 이력 상세</h3>
+      <button class="modal-close" onclick="closeErpSyncDetailModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="overflow-y:auto; max-height:65vh;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+        <div style="background:#f8f9fa; border-radius:8px; padding:12px;">
+          <div style="font-size:10px; color:var(--text-secondary); margin-bottom:4px;">동기화 ID</div>
+          <div style="font-size:14px; font-weight:700; font-family:monospace;" id="erpSyncDetail-syncId">-</div>
+        </div>
+        <div style="background:#f8f9fa; border-radius:8px; padding:12px;">
+          <div style="font-size:10px; color:var(--text-secondary); margin-bottom:4px;">실행 시각</div>
+          <div style="font-size:14px; font-weight:700;" id="erpSyncDetail-execTime">-</div>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;">
+        <div style="background:#f8f9fa; border-radius:8px; padding:12px; text-align:center;">
+          <div style="font-size:10px; color:var(--text-secondary); margin-bottom:4px;">유형</div>
+          <div id="erpSyncDetail-syncType" style="font-weight:700;">-</div>
+        </div>
+        <div style="background:#f8f9fa; border-radius:8px; padding:12px; text-align:center;">
+          <div style="font-size:10px; color:var(--text-secondary); margin-bottom:4px;">대상</div>
+          <div id="erpSyncDetail-target" style="font-weight:700;">-</div>
+        </div>
+        <div style="background:#f8f9fa; border-radius:8px; padding:12px; text-align:center;">
+          <div style="font-size:10px; color:var(--text-secondary); margin-bottom:4px;">상태</div>
+          <div id="erpSyncDetail-status" style="font-weight:700;">-</div>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px; font-weight:700; margin-bottom:8px; color:var(--text-primary);">📊 처리 통계</div>
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;">
+          <div style="border:1px solid var(--border-color); border-radius:8px; padding:10px; text-align:center;">
+            <div style="font-size:10px; color:var(--text-secondary);">전체 처리</div>
+            <div style="font-size:20px; font-weight:800; color:#1677ff;" id="erpSyncDetail-totalCount">0</div>
+            <div style="font-size:10px; color:var(--text-secondary);">건</div>
+          </div>
+          <div style="border:1px solid var(--border-color); border-radius:8px; padding:10px; text-align:center;">
+            <div style="font-size:10px; color:var(--text-secondary);">신규</div>
+            <div style="font-size:20px; font-weight:800; color:#52c41a;" id="erpSyncDetail-newCount">0</div>
+            <div style="font-size:10px; color:var(--text-secondary);">건</div>
+          </div>
+          <div style="border:1px solid var(--border-color); border-radius:8px; padding:10px; text-align:center;">
+            <div style="font-size:10px; color:var(--text-secondary);">변경</div>
+            <div style="font-size:20px; font-weight:800; color:#fa8c16;" id="erpSyncDetail-changeCount">0</div>
+            <div style="font-size:10px; color:var(--text-secondary);">건</div>
+          </div>
+          <div style="border:1px solid var(--border-color); border-radius:8px; padding:10px; text-align:center;">
+            <div style="font-size:10px; color:var(--text-secondary);">퇴직</div>
+            <div style="font-size:20px; font-weight:800; color:#f5222d;" id="erpSyncDetail-retireCount">0</div>
+            <div style="font-size:10px; color:var(--text-secondary);">건</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px; font-weight:700; margin-bottom:8px; color:var(--text-primary);">⏱️ 실행 정보</div>
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:12px;">
+          <div style="display:flex; justify-content:space-between; padding:6px 12px; background:#f8f9fa; border-radius:6px;">
+            <span style="color:var(--text-secondary);">소요시간</span>
+            <span style="font-weight:600;" id="erpSyncDetail-duration">-</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:6px 12px; background:#f8f9fa; border-radius:6px;">
+            <span style="color:var(--text-secondary);">실행 트리거</span>
+            <span style="font-weight:600;" id="erpSyncDetail-trigger">스케줄 (cron)</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:6px 12px; background:#f8f9fa; border-radius:6px;">
+            <span style="color:var(--text-secondary);">실행 서버</span>
+            <span style="font-weight:600; font-family:monospace;">datahub-batch-01</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px; font-weight:700; margin-bottom:8px; color:var(--text-primary);">📝 처리 로그</div>
+        <div style="background:#1e1e1e; color:#d4d4d4; border-radius:8px; padding:12px; font-family:monospace; font-size:11px; line-height:1.6; max-height:150px; overflow-y:auto;">
+          <div style="color:#6a9955;">[INFO] 동기화 시작...</div>
+          <div style="color:#dcdcaa;">[STEP 1/4] ERP 소스 연결 확인...</div>
+          <div style="color:#4ec9b0;">[OK] Oracle ERP HR 연결 성공 (응답: 42ms)</div>
+          <div style="color:#dcdcaa;">[STEP 2/4] 변경분 추출 중...</div>
+          <div style="color:#4ec9b0;">[OK] 변경 레코드 추출 완료</div>
+          <div style="color:#dcdcaa;">[STEP 3/4] DataHub 사용자DB 반영 중...</div>
+          <div style="color:#4ec9b0;">[OK] 반영 완료</div>
+          <div style="color:#dcdcaa;">[STEP 4/4] 후처리 및 검증...</div>
+          <div style="color:#4ec9b0;">[OK] 무결성 검증 통과</div>
+          <div style="color:#6a9955;">[INFO] 동기화 완료</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeErpSyncDetailModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ERP 동기화 설정 모달 ── -->
+<div class="modal-overlay" id="erpSyncSettingModal" style="display:none;">
+  <div class="modal-card" style="width:640px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">⚙️ 동기화 설정</h3>
+      <button class="modal-close" onclick="closeErpSyncSettingModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="overflow-y:auto; max-height:65vh;">
+      <div style="margin-bottom:18px;">
+        <div style="font-size:12px; font-weight:700; margin-bottom:10px; color:var(--text-primary);">🔗 ERP 연결 설정</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12px;">
+          <div>
+            <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:3px;">호스트</label>
+            <input type="text" value="10.1.20.51" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; font-family:monospace;">
+          </div>
+          <div>
+            <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:3px;">포트</label>
+            <input type="text" value="1521" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; font-family:monospace;">
+          </div>
+          <div>
+            <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:3px;">SID / 서비스명</label>
+            <input type="text" value="ERPDB" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; font-family:monospace;">
+          </div>
+          <div>
+            <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:3px;">계정</label>
+            <input type="text" value="datahub_sync" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; font-family:monospace;">
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:18px;">
+        <div style="font-size:12px; font-weight:700; margin-bottom:10px; color:var(--text-primary);">🕐 스케줄 설정</div>
+        <div style="display:flex; flex-direction:column; gap:10px; font-size:12px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label style="min-width:100px; color:var(--text-secondary);">전체 동기화</label>
+            <input type="text" value="0 2,14 * * *" style="flex:1; padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-family:monospace; font-size:12px;">
+            <span style="font-size:10px; color:var(--text-secondary);">매일 02:00, 14:00</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label style="min-width:100px; color:var(--text-secondary);">CDC 실시간</label>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <input type="checkbox" checked style="accent-color:#1677ff;">
+              <span>활성화</span>
+            </div>
+            <span style="font-size:10px; color:var(--text-secondary);">Debezium CDC 커넥터</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label style="min-width:100px; color:var(--text-secondary);">타임아웃</label>
+            <input type="number" value="30" style="width:80px; padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px;">
+            <span style="font-size:10px; color:var(--text-secondary);">초</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label style="min-width:100px; color:var(--text-secondary);">재시도 횟수</label>
+            <input type="number" value="3" style="width:80px; padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px;">
+            <span style="font-size:10px; color:var(--text-secondary);">회</span>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:18px;">
+        <div style="font-size:12px; font-weight:700; margin-bottom:10px; color:var(--text-primary);">🔧 동기화 옵션</div>
+        <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+          <label style="display:flex; align-items:center; gap:8px; padding:6px 10px; background:#f8f9fa; border-radius:6px; cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:#1677ff;"> 퇴직자 자동 비활성화
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; padding:6px 10px; background:#f8f9fa; border-radius:6px; cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:#1677ff;"> 조직 변경 시 권한 자동 갱신
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; padding:6px 10px; background:#f8f9fa; border-radius:6px; cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:#1677ff;"> SSO 토큰 연동 해제 (퇴직 시)
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; padding:6px 10px; background:#f8f9fa; border-radius:6px; cursor:pointer;">
+            <input type="checkbox" style="accent-color:#1677ff;"> 겸직 정보 자동 보정
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; padding:6px 10px; background:#f8f9fa; border-radius:6px; cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:#1677ff;"> 오류 발생 시 관리자 알림
+          </label>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px; font-weight:700; margin-bottom:10px; color:var(--text-primary);">🔔 알림 설정</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12px;">
+          <div>
+            <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:3px;">알림 수신 이메일</label>
+            <input type="email" value="admin@kwater.or.kr" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px;">
+          </div>
+          <div>
+            <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:3px;">알림 조건</label>
+            <select style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; background:#fff;">
+              <option>오류 시만 알림</option>
+              <option selected>오류 + 경고 시 알림</option>
+              <option>모든 실행 결과 알림</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeErpSyncSettingModal()">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="showToast('동기화 설정이 저장되었습니다.', 'success'); closeErpSyncSettingModal();">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ERP 수동 동기화 실행 확인 모달 ── -->
+<div class="modal-overlay" id="erpSyncRunModal" style="display:none;">
+  <div class="modal-card" style="width:500px;">
+    <div class="modal-header">
+      <h3 class="modal-title">🔄 수동 동기화 실행</h3>
+      <button class="modal-close" onclick="closeErpSyncRunModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div id="erpSyncRun-confirm">
+        <div style="padding:12px 14px; background:#e8f0fe; border-radius:8px; margin-bottom:14px; font-size:12px; color:#1967d2;">
+          수동 동기화를 실행하면 ERP 인사시스템의 최신 데이터를 즉시 동기화합니다.
+        </div>
+        <div style="font-size:12px; font-weight:700; margin-bottom:8px;">동기화 대상 선택</div>
+        <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:14px; font-size:12px;">
+          <label style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:#f8f9fa; border-radius:6px; cursor:pointer;">
+            <input type="checkbox" checked name="erpSyncTarget" value="hr" style="accent-color:#1677ff;"> 👤 인사정보 (사용자 프로필, 직급, 부서)
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:#f8f9fa; border-radius:6px; cursor:pointer;">
+            <input type="checkbox" checked name="erpSyncTarget" value="org" style="accent-color:#1677ff;"> 🏢 조직정보 (조직구조, 부서코드)
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:#f8f9fa; border-radius:6px; cursor:pointer;">
+            <input type="checkbox" checked name="erpSyncTarget" value="concurrent" style="accent-color:#1677ff;"> 🔄 겸직정보 (겸직 부서 매핑)
+          </label>
+        </div>
+        <div style="font-size:12px; font-weight:700; margin-bottom:8px;">동기화 유형</div>
+        <div style="display:flex; gap:8px; margin-bottom:14px;">
+          <label style="flex:1; display:flex; align-items:center; gap:6px; padding:10px 12px; background:#f8f9fa; border:2px solid #1677ff; border-radius:8px; cursor:pointer; font-size:12px;">
+            <input type="radio" name="erpSyncType" value="incremental" checked style="accent-color:#1677ff;"> 증분 동기화
+          </label>
+          <label style="flex:1; display:flex; align-items:center; gap:6px; padding:10px 12px; background:#f8f9fa; border:2px solid var(--border-color); border-radius:8px; cursor:pointer; font-size:12px;">
+            <input type="radio" name="erpSyncType" value="full" style="accent-color:#1677ff;"> 전체 동기화
+          </label>
+        </div>
+      </div>
+      <div id="erpSyncRun-progress" style="display:none;">
+        <div style="text-align:center; padding:20px 0;">
+          <div style="font-size:32px; margin-bottom:10px; animation:spin 1.5s linear infinite;">🔄</div>
+          <div style="font-size:14px; font-weight:700; margin-bottom:4px;" id="erpSyncRun-progressTitle">동기화 진행 중...</div>
+          <div style="font-size:12px; color:var(--text-secondary);" id="erpSyncRun-progressStep">ERP 소스 연결 확인 중...</div>
+        </div>
+        <div style="background:#f0f0f0; border-radius:8px; height:8px; margin:14px 0; overflow:hidden;">
+          <div id="erpSyncRun-progressBar" style="background:linear-gradient(90deg, #1677ff, #52c41a); height:100%; width:0%; border-radius:8px; transition:width 0.5s ease;"></div>
+        </div>
+        <div id="erpSyncRun-progressLog" style="font-size:11px; color:var(--text-secondary); display:flex; flex-direction:column; gap:3px;"></div>
+      </div>
+      <div id="erpSyncRun-complete" style="display:none; text-align:center; padding:20px 0;">
+        <div style="font-size:40px; margin-bottom:10px;">✅</div>
+        <div style="font-size:16px; font-weight:700; color:#52c41a; margin-bottom:6px;">동기화 완료</div>
+        <div style="font-size:12px; color:var(--text-secondary);" id="erpSyncRun-completeMsg">총 285건 처리, 변경 3건, 소요시간 2분 48초</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" id="erpSyncRun-cancelBtn" onclick="closeErpSyncRunModal()">취소</button>
+      <button class="btn btn-primary btn-sm" id="erpSyncRun-execBtn" onclick="executeErpManualSync()">실행</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ERP 인사변동 상세 모달 ── -->
+<div class="modal-overlay" id="erpChangeDetailModal" style="display:none;">
+  <div class="modal-card" style="width:580px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">👤 인사변동 상세</h3>
+      <button class="modal-close" onclick="closeErpChangeDetailModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="overflow-y:auto; max-height:65vh;">
+      <div style="display:flex; align-items:center; gap:14px; padding:14px; background:#f8f9fa; border-radius:10px; margin-bottom:16px;">
+        <div style="width:50px; height:50px; border-radius:50%; background:#e8f0fe; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; color:#1967d2;" id="erpChangeDetail-avatar">K</div>
+        <div style="flex:1;">
+          <div style="font-size:15px; font-weight:700;" id="erpChangeDetail-name">-</div>
+          <div style="font-size:12px; color:var(--text-secondary);">
+            <span id="erpChangeDetail-empNo" style="font-family:monospace;">-</span> ·
+            <span id="erpChangeDetail-email">-</span>
+          </div>
+        </div>
+        <div id="erpChangeDetail-changeTypeBadge" style="padding:4px 12px; border-radius:6px; font-size:12px; font-weight:600;">-</div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px; font-weight:700; margin-bottom:10px;">📋 변동 내용</div>
+        <div style="display:grid; grid-template-columns:1fr auto 1fr; gap:10px; align-items:center;">
+          <div style="background:#ffebee; border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:10px; color:var(--text-secondary); margin-bottom:4px;">변동 전</div>
+            <div style="font-size:14px; font-weight:700; color:#c62828;" id="erpChangeDetail-before">-</div>
+          </div>
+          <div style="font-size:20px; color:var(--text-secondary);">→</div>
+          <div style="background:#e8f5e9; border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:10px; color:var(--text-secondary); margin-bottom:4px;">변동 후</div>
+            <div style="font-size:14px; font-weight:700; color:#2e7d32;" id="erpChangeDetail-after">-</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px; font-weight:700; margin-bottom:10px;">⏱️ 처리 정보</div>
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:12px;">
+          <div style="display:flex; justify-content:space-between; padding:6px 12px; background:#f8f9fa; border-radius:6px;">
+            <span style="color:var(--text-secondary);">처리 시각</span>
+            <span style="font-weight:600;" id="erpChangeDetail-processTime">-</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:6px 12px; background:#f8f9fa; border-radius:6px;">
+            <span style="color:var(--text-secondary);">처리 상태</span>
+            <span style="font-weight:600;" id="erpChangeDetail-status">-</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:6px 12px; background:#f8f9fa; border-radius:6px;">
+            <span style="color:var(--text-secondary);">동기화 ID</span>
+            <span style="font-weight:600; font-family:monospace;" id="erpChangeDetail-syncId">SYNC-0305-01</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:6px 12px; background:#f8f9fa; border-radius:6px;">
+            <span style="color:var(--text-secondary);">ERP 원본 변경일</span>
+            <span style="font-weight:600;" id="erpChangeDetail-erpDate">2026-03-05</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px; font-weight:700; margin-bottom:10px;">🔗 연관 영향</div>
+        <div id="erpChangeDetail-impacts" style="display:flex; flex-direction:column; gap:6px; font-size:12px;"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeErpChangeDetailModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ERP 필드 매핑 편집 모달 ── -->
+<div class="modal-overlay" id="erpMappingEditModal" style="display:none;">
+  <div class="modal-card" style="width:680px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">✏️ 필드 매핑 편집</h3>
+      <button class="modal-close" onclick="closeErpMappingEditModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="overflow-y:auto; max-height:65vh;">
+      <div style="padding:10px 14px; background:#fff7e6; border:1px solid #ffe58f; border-radius:8px; margin-bottom:14px; font-size:12px; color:#d48806;">
+        ⚠️ 필드 매핑을 변경하면 다음 동기화부터 적용됩니다. 변경 전 영향도를 확인해주세요.
+      </div>
+      <div style="font-size:12px; font-weight:700; margin-bottom:8px;">매핑 항목</div>
+      <table class="data-table" style="font-size:11px; width:100%; margin-bottom:14px;">
+        <thead>
+          <tr><th style="width:30px;"></th><th>ERP 테이블</th><th>ERP 컬럼</th><th>DataHub 필드</th><th>변환규칙</th><th style="width:60px;">상태</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="checkbox" checked style="accent-color:#1677ff;"></td>
+            <td style="font-family:monospace;">HR.PER_ALL_PEOPLE</td>
+            <td style="font-family:monospace;">EMPLOYEE_NUMBER</td>
+            <td><input type="text" value="emp_no" style="width:100%; padding:3px 6px; border:1px solid #ddd; border-radius:4px; font-family:monospace; font-size:11px;"></td>
+            <td><input type="text" value="PREFIX(&quot;KW&quot;)" style="width:100%; padding:3px 6px; border:1px solid #ddd; border-radius:4px; font-family:monospace; font-size:11px;"></td>
+            <td><span class="badge badge-success" style="font-size:9px;">활성</span></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" checked style="accent-color:#1677ff;"></td>
+            <td style="font-family:monospace;">HR.PER_ALL_PEOPLE</td>
+            <td style="font-family:monospace;">FULL_NAME</td>
+            <td><input type="text" value="user_name" style="width:100%; padding:3px 6px; border:1px solid #ddd; border-radius:4px; font-family:monospace; font-size:11px;"></td>
+            <td><input type="text" value="-" style="width:100%; padding:3px 6px; border:1px solid #ddd; border-radius:4px; font-family:monospace; font-size:11px;"></td>
+            <td><span class="badge badge-success" style="font-size:9px;">활성</span></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" checked style="accent-color:#1677ff;"></td>
+            <td style="font-family:monospace;">HR.PER_ALL_PEOPLE</td>
+            <td style="font-family:monospace;">EMAIL_ADDRESS</td>
+            <td><input type="text" value="email" style="width:100%; padding:3px 6px; border:1px solid #ddd; border-radius:4px; font-family:monospace; font-size:11px;"></td>
+            <td><input type="text" value="LOWER()" style="width:100%; padding:3px 6px; border:1px solid #ddd; border-radius:4px; font-family:monospace; font-size:11px;"></td>
+            <td><span class="badge badge-success" style="font-size:9px;">활성</span></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" checked style="accent-color:#1677ff;"></td>
+            <td style="font-family:monospace;">HR.PER_ASSIGNMENTS</td>
+            <td style="font-family:monospace;">ORGANIZATION_ID</td>
+            <td><input type="text" value="dept_code" style="width:100%; padding:3px 6px; border:1px solid #ddd; border-radius:4px; font-family:monospace; font-size:11px;"></td>
+            <td><input type="text" value="LOOKUP(ORG_MAP)" style="width:100%; padding:3px 6px; border:1px solid #ddd; border-radius:4px; font-family:monospace; font-size:11px;"></td>
+            <td><span class="badge badge-success" style="font-size:9px;">활성</span></td>
+          </tr>
+          <tr style="background:#f0f7ff;">
+            <td><input type="checkbox" checked style="accent-color:#1677ff;"></td>
+            <td style="font-family:monospace;">HR.PER_ALL_PEOPLE</td>
+            <td style="font-family:monospace;">SSO_ACCOUNT</td>
+            <td><input type="text" value="sso_linked" style="width:100%; padding:3px 6px; border:1px solid #ddd; border-radius:4px; font-family:monospace; font-size:11px;"></td>
+            <td><input type="text" value="BOOL(Y/N)" style="width:100%; padding:3px 6px; border:1px solid #ddd; border-radius:4px; font-family:monospace; font-size:11px;"></td>
+            <td><span class="badge badge-info" style="font-size:9px;">신규</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="display:flex; justify-content:flex-end;">
+        <button class="btn btn-outline btn-sm" onclick="showToast('새 매핑 행이 추가되었습니다.', 'success')">+ 매핑 추가</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeErpMappingEditModal()">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="showToast('매핑 설정이 저장되었습니다.', 'success'); closeErpMappingEditModal();">저장</button>
+    </div>
   </div>
 </div>
 
@@ -3255,14 +3787,9 @@
   <div class="card" id="ext-detail-action-card" style="margin-bottom:14px;">
     <div class="card-head" style="font-weight:700; font-size:13px; padding:10px 16px; border-bottom:1px solid var(--border-color);">처리</div>
     <div class="card-body" style="padding:16px;">
-      <div id="ext-detail-reject-reason-box" style="margin-bottom:12px; display:none;">
-        <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:4px;">반려 사유</label>
-        <textarea id="ext-detail-reject-reason" rows="2" placeholder="반려 사유를 입력하세요" style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:6px; font-size:13px; resize:vertical; background:var(--card-bg); color:var(--text-color);"></textarea>
-      </div>
       <div style="display:flex; gap:8px;">
-        <button class="btn btn-primary btn-sm" onclick="approveExtRegister()" id="ext-detail-approve-btn">승인</button>
-        <button class="btn btn-outline btn-sm" onclick="toggleRejectReason()" id="ext-detail-reject-toggle" style="color:#f5222d; border-color:#f5222d;">반려</button>
-        <button class="btn btn-primary btn-sm" onclick="rejectExtRegister()" id="ext-detail-reject-btn" style="display:none; background:#f5222d; border-color:#f5222d;">반려 확인</button>
+        <button class="btn btn-primary btn-sm" onclick="approveExtRegister()" id="ext-detail-approve-btn">✅ 승인</button>
+        <button class="btn btn-outline btn-sm" onclick="openExtRejectModal(window._extDetailData)" id="ext-detail-reject-toggle" style="color:#f5222d; border-color:#f5222d;">❌ 반려</button>
       </div>
     </div>
   </div>
@@ -3271,6 +3798,35 @@
   <div class="card" id="ext-detail-result-card" style="margin-bottom:14px; display:none;">
     <div class="card-head" style="font-weight:700; font-size:13px; padding:10px 16px; border-bottom:1px solid var(--border-color); color:#52c41a;">승인 완료 정보</div>
     <div class="card-body" style="padding:16px;" id="ext-detail-result">
+    </div>
+  </div>
+</div>
+
+<!-- ========== 반려 사유 입력 모달 ========== -->
+<div class="modal-overlay" id="ext-reject-modal" style="display:none;">
+  <div class="modal-card" style="width:480px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">반려 사유 입력</h3>
+      <button class="modal-close" onclick="closeExtRejectModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <!-- 신청자 요약 정보 -->
+      <div style="background:var(--bg-color); border:1px solid var(--border-color); border-radius:8px; padding:12px 16px; margin-bottom:16px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
+          <div><span style="color:var(--text-secondary);">접수번호:</span> <strong id="ext-reject-modal-id">-</strong></div>
+          <div><span style="color:var(--text-secondary);">신청일:</span> <span id="ext-reject-modal-date">-</span></div>
+          <div><span style="color:var(--text-secondary);">성명:</span> <strong id="ext-reject-modal-name">-</strong></div>
+          <div><span style="color:var(--text-secondary);">소속기관:</span> <span id="ext-reject-modal-org">-</span></div>
+        </div>
+      </div>
+      <!-- 반려 사유 입력 -->
+      <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:6px;">반려 사유 <span style="color:#f5222d;">*</span></label>
+      <textarea id="ext-reject-modal-reason" rows="4" placeholder="반려 사유를 구체적으로 입력해주세요.&#10;예) 재직증명서 미첨부, 사용 목적 불명확 등" style="width:100%; padding:10px 12px; border:1px solid var(--border-color); border-radius:6px; font-size:13px; resize:vertical; background:var(--card-bg); color:var(--text-color); line-height:1.5;"></textarea>
+      <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">※ 반려 사유는 신청자에게 이메일로 안내됩니다.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeExtRejectModal()">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmExtReject()" style="background:#f5222d; border-color:#f5222d;">반려 확인</button>
     </div>
   </div>
 </div>

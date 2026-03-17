@@ -4662,12 +4662,14 @@ function openUserDetail(data) {
   var avatar = document.querySelector('#screen-sys-user-detail [style*="border-radius:50%"][style*="64px"]');
   if (avatar) avatar.textContent = firstChar;
 
-  // 역할 테이블
+  // 역할 테이블 (해제 버튼에 onclick 바인딩)
+  window._currentUserDetail = data;
+  var roleLevel = data.role === '시스템관리자' ? '5' : data.role === '데이터관리자' ? '4' : data.role === '데이터엔지니어' ? '3' : data.role === '외부사용자' ? '1' : '2';
   el('ud-roles').innerHTML =
     '<tr><td><span style="background:' + rc.bg + ';color:' + rc.c + ';padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">' + data.role + '</span></td>' +
-    '<td>Level ' + (data.role === '시스템관리자' ? '5' : data.role === '데이터관리자' ? '4' : data.role === '데이터엔지니어' ? '3' : data.role === '외부사용자' ? '1' : '2') + '</td>' +
+    '<td>Level ' + roleLevel + '</td>' +
     '<td>' + data.joinDate + '</td><td>관리자</td>' +
-    '<td><button class="btn btn-outline btn-sm" style="font-size:10px;padding:1px 6px;color:#ef4444;border-color:#ef4444;" data-perm="admin">해제</button></td></tr>' +
+    '<td><button class="btn btn-outline btn-sm" style="font-size:10px;padding:1px 6px;color:#ef4444;border-color:#ef4444;" data-perm="admin" onclick="removeUserRole(this,\'' + data.role + '\')">해제</button></td></tr>' +
     '<tr><td><span style="background:#f3e5f5;color:#7b1fa2;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">일반사용자</span></td>' +
     '<td>Level 1</td><td>' + data.joinDate + '</td><td>SYSTEM</td><td><span style="font-size:10px;color:#999;">기본역할</span></td></tr>';
 
@@ -4738,8 +4740,12 @@ function initSystemGrids() {
       return null;
     },
     onCellClicked: function (e) {
-      if (e.colDef.field === 'action' && e.data.status !== '승인대기') {
-        openUserDetail(e.data);
+      if (e.colDef.field === 'action') {
+        if (e.data.status === '승인대기') {
+          openApproveModal(e.data);
+        } else {
+          openUserDetail(e.data);
+        }
       }
     }
   });
@@ -4921,6 +4927,9 @@ function initSystemGrids() {
     getRowStyle: function(p) {
       if (p.data.result === '차단') return { background: '#fff5f5' };
       if (p.data.risk === '높음') return { background: '#fff5f5' };
+    },
+    onCellClicked: function(e) {
+      if (e.colDef.field === 'detail') openAuditDetail(e.data);
     }
   });
 
@@ -5008,7 +5017,8 @@ function initSystemGrids() {
     },
     { field: 'detail', headerName: '상세', width: 60, sortable: false, filter: false, cellRenderer: function() {
         return '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;">상세</button>';
-      }
+      },
+      onCellClicked: function(params) { openErpSyncDetailModal(params.data); }
     }
   ], [
     { syncId: 'SYNC-0305-01', execTime: '2026-03-05 02:00', syncType: '전체', target: '인사', totalCount: 249, newCount: 0, changeCount: 2, retireCount: 0, duration: '2분 34초', status: '성공' },
@@ -5053,7 +5063,7 @@ function initSystemGrids() {
     { empNo: 'KW2048', name: '김데이터', changeType: '부서이동', before: '데이터분석팀', after: 'AI연구팀', processTime: '02:00', status: '완료' },
     { empNo: 'KW1792', name: '윤상수', changeType: '직급변경', before: '과장', after: '차장', processTime: '02:00', status: '완료' },
     { empNo: 'KW3072', name: '한에너지', changeType: '부서이동', before: '수력발전팀', after: '신재생팀(겸직)', processTime: '14:00', status: '완료' }
-  ], { domLayout: 'autoHeight' });
+  ], { domLayout: 'autoHeight', onRowClicked: function(params) { openErpChangeDetailModal(params.data); } });
 
   // ===== ERP 인사정보 동기화 - 필드 매핑 설정 =====
   initAGGrid('ag-grid-sys-erp-mapping', [
@@ -5088,6 +5098,146 @@ function initSystemGrids() {
     { erpTable: 'HR.PER_ALL_PEOPLE', erpColumn: 'SSO_ACCOUNT', dhField: 'sso_linked', transform: 'BOOL(Y/N)', mappingStatus: '신규' }
   ], { domLayout: 'autoHeight' });
 }
+
+// ===== ERP 동기화 모달 함수 =====
+function closeModalHelper(modalId) {
+  var modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.style.display = 'none';
+  var card = modal.querySelector('.modal-card');
+  if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+}
+
+// -- 동기화 이력 상세 모달 --
+function openErpSyncDetailModal(data) {
+  if (!data) return;
+  document.getElementById('erpSyncDetail-syncId').textContent = data.syncId;
+  document.getElementById('erpSyncDetail-execTime').textContent = data.execTime;
+  document.getElementById('erpSyncDetail-syncType').textContent = data.syncType;
+  document.getElementById('erpSyncDetail-target').textContent = data.target;
+  var statusEl = document.getElementById('erpSyncDetail-status');
+  var sc = { '성공': '#52c41a', '부분성공': '#faad14', '실패': '#ff4d4f' };
+  statusEl.textContent = data.status;
+  statusEl.style.color = sc[data.status] || '#666';
+  document.getElementById('erpSyncDetail-totalCount').textContent = data.totalCount;
+  document.getElementById('erpSyncDetail-newCount').textContent = data.newCount;
+  document.getElementById('erpSyncDetail-changeCount').textContent = data.changeCount;
+  document.getElementById('erpSyncDetail-retireCount').textContent = data.retireCount;
+  document.getElementById('erpSyncDetail-duration').textContent = data.duration;
+  document.getElementById('erpSyncDetail-trigger').textContent = data.execTime.includes('02:00') || data.execTime.includes('14:00') ? '스케줄 (cron)' : '수동 실행';
+  document.getElementById('erpSyncDetailModal').style.display = 'flex';
+}
+function closeErpSyncDetailModal() { closeModalHelper('erpSyncDetailModal'); }
+
+// -- 동기화 설정 모달 --
+function openErpSyncSettingModal() { document.getElementById('erpSyncSettingModal').style.display = 'flex'; }
+function closeErpSyncSettingModal() { closeModalHelper('erpSyncSettingModal'); }
+
+// -- 수동 동기화 실행 모달 --
+function openErpSyncRunModal() {
+  document.getElementById('erpSyncRun-confirm').style.display = '';
+  document.getElementById('erpSyncRun-progress').style.display = 'none';
+  document.getElementById('erpSyncRun-complete').style.display = 'none';
+  document.getElementById('erpSyncRun-execBtn').style.display = '';
+  document.getElementById('erpSyncRun-cancelBtn').textContent = '취소';
+  document.getElementById('erpSyncRunModal').style.display = 'flex';
+}
+function closeErpSyncRunModal() { closeModalHelper('erpSyncRunModal'); }
+
+function executeErpManualSync() {
+  document.getElementById('erpSyncRun-confirm').style.display = 'none';
+  document.getElementById('erpSyncRun-progress').style.display = '';
+  document.getElementById('erpSyncRun-execBtn').style.display = 'none';
+  document.getElementById('erpSyncRun-cancelBtn').textContent = '닫기';
+  var bar = document.getElementById('erpSyncRun-progressBar');
+  var stepEl = document.getElementById('erpSyncRun-progressStep');
+  var logEl = document.getElementById('erpSyncRun-progressLog');
+  logEl.innerHTML = '';
+  var steps = [
+    { pct: 15, step: 'ERP 소스 연결 확인 중...', log: '[OK] Oracle ERP HR 연결 성공 (42ms)' },
+    { pct: 40, step: '변경 데이터 추출 중...', log: '[OK] 285건 레코드 추출 완료' },
+    { pct: 70, step: 'DataHub 사용자DB 반영 중...', log: '[OK] 신규 0건, 변경 3건, 퇴직 0건 반영' },
+    { pct: 90, step: '후처리 및 무결성 검증 중...', log: '[OK] 무결성 검증 통과' }
+  ];
+  var i = 0;
+  function nextStep() {
+    if (i < steps.length) {
+      bar.style.width = steps[i].pct + '%';
+      stepEl.textContent = steps[i].step;
+      var logLine = document.createElement('div');
+      logLine.style.cssText = 'color:#52c41a; font-family:monospace;';
+      logLine.textContent = steps[i].log;
+      logEl.appendChild(logLine);
+      i++;
+      setTimeout(nextStep, 800);
+    } else {
+      bar.style.width = '100%';
+      setTimeout(function() {
+        document.getElementById('erpSyncRun-progress').style.display = 'none';
+        document.getElementById('erpSyncRun-complete').style.display = '';
+      }, 400);
+    }
+  }
+  setTimeout(nextStep, 500);
+}
+
+// -- 인사변동 상세 모달 --
+function openErpChangeDetailModal(data) {
+  if (!data) return;
+  document.getElementById('erpChangeDetail-avatar').textContent = data.name.charAt(0);
+  document.getElementById('erpChangeDetail-name').textContent = data.name;
+  document.getElementById('erpChangeDetail-empNo').textContent = data.empNo;
+  document.getElementById('erpChangeDetail-email').textContent = data.empNo.toLowerCase() + '@kwater.or.kr';
+  var badge = document.getElementById('erpChangeDetail-changeTypeBadge');
+  var cm = { '신규입사': { bg:'#e8f0fe', c:'#1967d2' }, '부서이동': { bg:'#fff3e0', c:'#ef6c00' }, '직급변경': { bg:'#f9f0ff', c:'#722ed1' }, '퇴직': { bg:'#ffebee', c:'#c62828' } };
+  var cs = cm[data.changeType] || { bg:'#f5f5f5', c:'#666' };
+  badge.textContent = data.changeType;
+  badge.style.background = cs.bg;
+  badge.style.color = cs.c;
+  document.getElementById('erpChangeDetail-before').textContent = data.before;
+  document.getElementById('erpChangeDetail-after').textContent = data.after;
+  document.getElementById('erpChangeDetail-processTime').textContent = '2026-03-05 ' + data.processTime;
+  document.getElementById('erpChangeDetail-status').textContent = data.status;
+  // 연관 영향 동적 생성
+  var impactsEl = document.getElementById('erpChangeDetail-impacts');
+  impactsEl.innerHTML = '';
+  var impacts = [];
+  if (data.changeType === '부서이동') {
+    impacts = [
+      { icon: '🔑', text: '데이터 접근 권한이 새 부서 기준으로 자동 갱신됨', color: '#1677ff' },
+      { icon: '📂', text: '기존 부서 데이터셋 접근 권한 30일 유지 후 해제 예정', color: '#fa8c16' },
+      { icon: '👥', text: '새 부서 팀장에게 승인 권한 이관 완료', color: '#52c41a' }
+    ];
+  } else if (data.changeType === '직급변경') {
+    impacts = [
+      { icon: '🔑', text: '승인 권한 레벨이 새 직급 기준으로 갱신됨', color: '#722ed1' },
+      { icon: '📊', text: '대시보드 접근 범위 변경 없음', color: '#52c41a' }
+    ];
+  } else if (data.changeType === '퇴직') {
+    impacts = [
+      { icon: '🔒', text: 'SSO 토큰 즉시 무효화 처리됨', color: '#ff4d4f' },
+      { icon: '📂', text: '소유 데이터셋 관리자 이관 필요', color: '#fa8c16' },
+      { icon: '🔑', text: 'API 키 전체 비활성화됨', color: '#ff4d4f' }
+    ];
+  } else {
+    impacts = [
+      { icon: '🔑', text: '초기 접근 권한 설정 완료', color: '#52c41a' },
+      { icon: '📧', text: '포털 가입 안내 메일 발송됨', color: '#1677ff' }
+    ];
+  }
+  impacts.forEach(function(imp) {
+    var div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f8f9fa;border-radius:6px;border-left:3px solid ' + imp.color + ';';
+    div.innerHTML = '<span>' + imp.icon + '</span><span>' + imp.text + '</span>';
+    impactsEl.appendChild(div);
+  });
+  document.getElementById('erpChangeDetailModal').style.display = 'flex';
+}
+function closeErpChangeDetailModal() { closeModalHelper('erpChangeDetailModal'); }
+
+// -- 매핑 편집 모달 --
+function openErpMappingEditModal() { document.getElementById('erpMappingEditModal').style.display = 'flex'; }
+function closeErpMappingEditModal() { closeModalHelper('erpMappingEditModal'); }
 
 // ===== 역할별 홈 대시보드 =====
 function getLoginGroup(roleKey) {
@@ -6593,8 +6743,43 @@ function updatePermHistory() {
 function savePermChanges() {
   var roleKey = document.getElementById('perm-role-select').value;
   if (!roleKey) { alert('역할을 선택해주세요.'); return; }
-  // 이미 onPermSelectChange에서 실시간 저장됨
-  alert('✅ ' + roleKey + ' 역할의 권한 설정이 저장되었습니다.\n변경사항은 해당 역할 로그인 시 즉시 적용됩니다.');
+
+  // 변경 사항 확인
+  var custom = getCustomScreenPerms();
+  var rolePerms = custom[roleKey];
+  if (!rolePerms || Object.keys(rolePerms).length === 0) {
+    showToast('변경된 권한 설정이 없습니다.', 'error');
+    return;
+  }
+
+  // 승인 요청 모달 열기
+  var modal = document.getElementById('perm-approve-modal');
+  if (!modal) {
+    // 모달이 없으면 기존 방식으로 저장
+    showToast(roleKey + ' 역할의 권한 설정이 저장되었습니다.', 'success');
+    return;
+  }
+
+  // 변경 내역 테이블 구성
+  var tbody = document.getElementById('pam-changes-tbody');
+  if (tbody) {
+    var html = '';
+    var defaultPerms = (RBAC_SCREEN_PERMS && RBAC_SCREEN_PERMS[roleKey]) || {};
+    var defaultPerm = defaultPerms._default || 'read';
+    Object.keys(rolePerms).forEach(function(screenId) {
+      var newPerm = rolePerms[screenId];
+      var oldPerm = defaultPerms[screenId] || defaultPerm;
+      var permLabels = { 'read':'조회', 'write':'조회+등록', 'manage':'관리', 'admin':'전체관리' };
+      html += '<tr><td style="font-size:11px;"><code>' + screenId + '</code></td>' +
+        '<td style="font-size:11px;">' + (permLabels[oldPerm] || oldPerm) + '</td>' +
+        '<td style="font-size:11px; font-weight:600; color:#1967d2;">' + (permLabels[newPerm] || newPerm) + '</td></tr>';
+    });
+    tbody.innerHTML = html;
+  }
+  document.getElementById('pam-role-name').textContent = roleKey;
+  document.getElementById('pam-change-count').textContent = Object.keys(rolePerms).length + '건';
+  document.getElementById('pam-reason').value = '';
+  modal.style.display = 'flex';
 }
 
 function resetPermChanges() {
@@ -7852,4 +8037,357 @@ function confirmExtReject() {
   if (window._extDetailData && window._extDetailData.id === data.id) {
     openExtRegisterDetail(data);
   }
+}
+
+/* ========== 감사로그 필터/검색 ========== */
+function filterAuditLog() {
+  var grid = agGridInstances['ag-grid-sys-audit'];
+  if (!grid) return;
+  var typeVal = document.getElementById('audit-filter-type') ? document.getElementById('audit-filter-type').value : '';
+  var riskVal = document.getElementById('audit-filter-risk') ? document.getElementById('audit-filter-risk').value : '';
+  var searchVal = document.getElementById('audit-filter-search') ? document.getElementById('audit-filter-search').value.trim() : '';
+
+  // 외부 필터 사용
+  grid.setGridOption('isExternalFilterPresent', function() {
+    return typeVal !== '' || riskVal !== '' || searchVal !== '';
+  });
+  grid.setGridOption('doesExternalFilterPass', function(node) {
+    var d = node.data;
+    if (typeVal && d.type !== typeVal) return false;
+    if (riskVal && d.risk !== riskVal) return false;
+    if (searchVal) {
+      var s = searchVal.toLowerCase();
+      var match = (d.user && d.user.toLowerCase().indexOf(s) >= 0) ||
+                  (d.activity && d.activity.toLowerCase().indexOf(s) >= 0) ||
+                  (d.entity && d.entity.toLowerCase().indexOf(s) >= 0) ||
+                  (d.dept && d.dept.toLowerCase().indexOf(s) >= 0);
+      if (!match) return false;
+    }
+    return true;
+  });
+  grid.onFilterChanged();
+}
+
+/* ========== 감사로그 상세보기 모달 ========== */
+function openAuditDetail(data) {
+  var modal = document.getElementById('audit-detail-modal');
+  if (!modal) return;
+  // 데이터 바인딩
+  var el = function(id) { return document.getElementById(id); };
+  el('adm-time').textContent = data.time || '-';
+  el('adm-user').textContent = data.user || '-';
+  el('adm-dept').textContent = data.dept || '-';
+  el('adm-ip').textContent = data.ip || '-';
+  el('adm-entity').textContent = data.entity || '-';
+  el('adm-activity').textContent = data.activity || '-';
+
+  // 유형 배지
+  var typeColors = { '데이터':{bg:'#e8f0fe',c:'#1967d2'}, '수집':{bg:'#e8f5e9',c:'#2e7d32'}, '유통':{bg:'#fff3e0',c:'#ef6c00'}, '접속':{bg:'#f3e5f5',c:'#7b1fa2'}, '시스템':{bg:'#e0f7fa',c:'#00838f'}, '권한':{bg:'#fce4ec',c:'#c62828'}, '배치':{bg:'#f1f8e9',c:'#558b2f'}, 'API':{bg:'#e8eaf6',c:'#3949ab'} };
+  var tc = typeColors[data.type] || {bg:'#f5f5f5',c:'#666'};
+  el('adm-type').innerHTML = '<span style="background:'+tc.bg+';color:'+tc.c+';padding:2px 10px;border-radius:4px;font-size:12px;font-weight:600;">'+data.type+'</span>';
+
+  // 결과 배지
+  var resultMap = { '성공': {icon:'✅', c:'#4caf50'}, '차단': {icon:'🚫', c:'#f44336'}, '경고': {icon:'⚠️', c:'#ff9800'} };
+  var rc = resultMap[data.result] || {icon:'', c:'#666'};
+  el('adm-result').innerHTML = '<span style="color:'+rc.c+';font-weight:700;">'+rc.icon+' '+data.result+'</span>';
+
+  // 위험도 배지
+  var riskMap = { '높음':{bg:'#fff1f0',c:'#cf1322'}, '보통':{bg:'#fff7e6',c:'#d48806'}, '낮음':{bg:'#f6ffed',c:'#389e0d'} };
+  var rk = riskMap[data.risk] || {bg:'#f5f5f5',c:'#666'};
+  el('adm-risk').innerHTML = '<span style="background:'+rk.bg+';color:'+rk.c+';padding:2px 10px;border-radius:4px;font-size:12px;font-weight:600;">'+data.risk+'</span>';
+
+  // 동일 사용자 최근 활동 (AG Grid 데이터에서 추출)
+  var grid = agGridInstances['ag-grid-sys-audit'];
+  var relatedHtml = '';
+  if (grid) {
+    var rows = [];
+    grid.forEachNode(function(node) {
+      if (node.data.user === data.user && node.data.time !== data.time) rows.push(node.data);
+    });
+    rows = rows.slice(0, 5);
+    if (rows.length > 0) {
+      rows.forEach(function(r) {
+        var rrc = resultMap[r.result] || {icon:'', c:'#666'};
+        relatedHtml += '<tr><td style="font-family:monospace;font-size:11px;color:#888;">'+r.time+'</td><td style="font-size:11px;">'+r.activity+'</td><td><span style="color:'+rrc.c+';font-size:11px;">'+rrc.icon+' '+r.result+'</span></td></tr>';
+      });
+    } else {
+      relatedHtml = '<tr><td colspan="3" style="text-align:center;color:#999;font-size:11px;">관련 활동 없음</td></tr>';
+    }
+  }
+  el('adm-related-tbody').innerHTML = relatedHtml;
+
+  modal.style.display = 'flex';
+}
+
+function closeAuditDetailModal() {
+  var modal = document.getElementById('audit-detail-modal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  var card = modal.querySelector('.modal-card');
+  if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+}
+
+/* ========== 감사로그 CSV 내보내기 ========== */
+function exportAuditCSV() {
+  var grid = agGridInstances['ag-grid-sys-audit'];
+  if (!grid) { showToast('그리드 데이터를 찾을 수 없습니다.', 'error'); return; }
+  var rows = [];
+  grid.forEachNodeAfterFilterAndSort(function(node) { rows.push(node.data); });
+  if (rows.length === 0) { showToast('내보낼 데이터가 없습니다.', 'error'); return; }
+
+  var headers = ['시간', '사용자', '부서', '유형', '활동 내용', '대상 엔티티', 'IP', '결과', '위험도'];
+  var fields = ['time', 'user', 'dept', 'type', 'activity', 'entity', 'ip', 'result', 'risk'];
+  var csvContent = '\uFEFF'; // BOM (한글 깨짐 방지)
+  csvContent += headers.join(',') + '\n';
+  rows.forEach(function(r) {
+    var line = fields.map(function(f) {
+      var val = (r[f] || '').toString().replace(/"/g, '""');
+      return '"' + val + '"';
+    }).join(',');
+    csvContent += line + '\n';
+  });
+
+  var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = '감사로그_' + new Date().toISOString().substring(0, 10) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('감사로그 CSV 파일이 다운로드되었습니다.', 'success');
+}
+
+/* ========== 사용자 역할 추가/해제 ========== */
+function openAddRoleModal() {
+  var modal = document.getElementById('user-role-add-modal');
+  if (!modal) return;
+  var data = window._currentUserDetail;
+  var userInfo = data ? data.name + ' (' + data.empNo + ' · ' + data.dept + ')' : '-';
+  document.getElementById('arm-user-info').textContent = userInfo;
+  document.getElementById('arm-role-select').value = '';
+  document.getElementById('arm-reason').value = '';
+  modal.style.display = 'flex';
+}
+
+function closeAddRoleModal() {
+  var modal = document.getElementById('user-role-add-modal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  var card = modal.querySelector('.modal-card');
+  if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+}
+
+function addUserRole() {
+  var roleName = document.getElementById('arm-role-select').value;
+  if (!roleName) { showToast('추가할 역할을 선택하세요.', 'error'); return; }
+  var data = window._currentUserDetail;
+  if (!data) return;
+
+  var roleColors = {
+    '시스템관리자': { bg:'#e8f0fe', c:'#1967d2', lv:'5' },
+    '데이터관리자': { bg:'#e0f7fa', c:'#00838f', lv:'4' },
+    '데이터엔지니어': { bg:'#fff3e0', c:'#ef6c00', lv:'3' },
+    '일반사용자': { bg:'#f3e5f5', c:'#7b1fa2', lv:'2' },
+    '외부사용자': { bg:'#fce4ec', c:'#c62828', lv:'1' }
+  };
+  var rc = roleColors[roleName] || { bg:'#f5f5f5', c:'#666', lv:'1' };
+  var today = new Date().toISOString().substring(0, 10);
+
+  // 중복 체크
+  var tbody = document.getElementById('ud-roles');
+  if (tbody && tbody.innerHTML.indexOf(roleName) >= 0) {
+    showToast('이미 할당된 역할입니다.', 'error');
+    return;
+  }
+
+  // 테이블 맨 앞에 행 추가
+  var newRow = '<tr><td><span style="background:' + rc.bg + ';color:' + rc.c + ';padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">' + roleName + '</span></td>' +
+    '<td>Level ' + rc.lv + '</td><td>' + today + '</td><td>' + (window.currentRoleKey || 'admin') + '</td>' +
+    '<td><button class="btn btn-outline btn-sm" style="font-size:10px;padding:1px 6px;color:#ef4444;border-color:#ef4444;" data-perm="admin" onclick="removeUserRole(this,\'' + roleName + '\')">해제</button></td></tr>';
+  if (tbody) tbody.insertAdjacentHTML('afterbegin', newRow);
+
+  // 이력 기록
+  addPermHistory(roleName, 'user-role', '-', roleName);
+  showToast(data.name + '님에게 ' + roleName + ' 역할이 추가되었습니다.', 'success');
+  closeAddRoleModal();
+}
+
+function removeUserRole(btn, roleName) {
+  if (!confirm(roleName + ' 역할을 해제하시겠습니까?')) return;
+  var row = btn.closest('tr');
+  if (row) row.remove();
+  var data = window._currentUserDetail;
+  var userName = data ? data.name : '-';
+  addPermHistory(roleName, 'user-role', roleName, '해제');
+  showToast(userName + '님의 ' + roleName + ' 역할이 해제되었습니다.', 'success');
+}
+
+/* ========== 사용자 승인 처리 ========== */
+var _approveTarget = null;
+
+function openApproveModal(data) {
+  _approveTarget = data;
+  var modal = document.getElementById('user-approve-modal');
+  if (!modal) return;
+  document.getElementById('apm-name').textContent = data.name || '-';
+  document.getElementById('apm-empNo').textContent = data.empNo || '-';
+  document.getElementById('apm-dept').textContent = data.dept || '-';
+  document.getElementById('apm-role').textContent = data.role || '-';
+  document.getElementById('apm-comment').value = '';
+  modal.style.display = 'flex';
+}
+
+function closeApproveModal() {
+  var modal = document.getElementById('user-approve-modal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  var card = modal.querySelector('.modal-card');
+  if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+  _approveTarget = null;
+}
+
+function approveUser() {
+  if (!_approveTarget) return;
+  var data = _approveTarget;
+  var today = new Date().toISOString().substring(0, 10);
+
+  // AG Grid 데이터 갱신
+  data.status = '활성';
+  data.joinDate = today;
+  data.access = data.role === '시스템관리자' ? '전체' : data.role === '데이터관리자' ? '전체' : data.role === '데이터엔지니어' ? '할당됨' : data.role === '외부사용자' ? '3등급만' : '등급별';
+
+  var grid = agGridInstances['ag-grid-sys-user'];
+  if (grid) {
+    grid.applyTransaction({ update: [data] });
+    grid.refreshCells({ force: true });
+  }
+
+  addPermHistory(data.name, 'user-approve', '승인대기', '활성(승인)');
+  showToast(data.name + '님의 가입이 승인되었습니다.', 'success');
+  closeApproveModal();
+}
+
+function rejectUser() {
+  if (!_approveTarget) return;
+  var comment = document.getElementById('apm-comment').value.trim();
+  if (!comment) { showToast('반려 의견을 입력하세요.', 'error'); return; }
+  var data = _approveTarget;
+
+  // AG Grid에서 행 제거
+  var grid = agGridInstances['ag-grid-sys-user'];
+  if (grid) {
+    grid.applyTransaction({ remove: [data] });
+  }
+
+  addPermHistory(data.name, 'user-approve', '승인대기', '반려');
+  showToast(data.name + '님의 가입이 반려되었습니다.', 'error');
+  closeApproveModal();
+}
+
+/* ========== 사용자 목록 필터 ========== */
+function filterUserGrid() {
+  var grid = agGridInstances['ag-grid-sys-user'];
+  if (!grid) return;
+  var statusVal = document.getElementById('user-filter-status') ? document.getElementById('user-filter-status').value : '';
+  var deptVal = document.getElementById('user-filter-dept') ? document.getElementById('user-filter-dept').value : '';
+  var roleVal = document.getElementById('user-filter-role') ? document.getElementById('user-filter-role').value : '';
+  var searchVal = document.getElementById('user-filter-search') ? document.getElementById('user-filter-search').value.trim() : '';
+
+  grid.setGridOption('isExternalFilterPresent', function() {
+    return statusVal !== '' || deptVal !== '' || roleVal !== '' || searchVal !== '';
+  });
+  grid.setGridOption('doesExternalFilterPass', function(node) {
+    var d = node.data;
+    if (statusVal && d.status !== statusVal) return false;
+    if (deptVal && d.dept !== deptVal) return false;
+    if (roleVal && d.role !== roleVal) return false;
+    if (searchVal) {
+      var s = searchVal.toLowerCase();
+      var match = (d.name && d.name.toLowerCase().indexOf(s) >= 0) ||
+                  (d.empNo && d.empNo.toLowerCase().indexOf(s) >= 0) ||
+                  (d.dept && d.dept.toLowerCase().indexOf(s) >= 0);
+      if (!match) return false;
+    }
+    return true;
+  });
+  grid.onFilterChanged();
+}
+
+/* ========== 사용자 목록 CSV 내보내기 ========== */
+function exportUserCSV() {
+  var grid = agGridInstances['ag-grid-sys-user'];
+  if (!grid) { showToast('그리드 데이터를 찾을 수 없습니다.', 'error'); return; }
+  var rows = [];
+  grid.forEachNodeAfterFilterAndSort(function(node) { rows.push(node.data); });
+  if (rows.length === 0) { showToast('내보낼 데이터가 없습니다.', 'error'); return; }
+
+  var headers = ['이름', '사번', '부서', '직급', '역할', '접근등급', '상태', 'SSO', '최종로그인', '가입일'];
+  var fields = ['name', 'empNo', 'dept', 'grade', 'role', 'access', 'status', 'sso', 'lastLogin', 'joinDate'];
+  var csvContent = '\uFEFF';
+  csvContent += headers.join(',') + '\n';
+  rows.forEach(function(r) {
+    var line = fields.map(function(f) {
+      var val = (r[f] || '').toString().replace(/"/g, '""');
+      return '"' + val + '"';
+    }).join(',');
+    csvContent += line + '\n';
+  });
+
+  var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = '사용자목록_' + new Date().toISOString().substring(0, 10) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('사용자 목록 CSV 파일이 다운로드되었습니다.', 'success');
+}
+
+/* ========== 권한 변경 승인 프로세스 ========== */
+function closePermApproveModal() {
+  var modal = document.getElementById('perm-approve-modal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  var card = modal.querySelector('.modal-card');
+  if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+}
+
+function submitPermApproval() {
+  var reason = document.getElementById('pam-reason').value.trim();
+  if (!reason) { showToast('요청 사유를 입력하세요.', 'error'); return; }
+
+  var roleKey = document.getElementById('perm-role-select').value;
+
+  // 승인 요청 이력 저장
+  var approvalRequests = JSON.parse(localStorage.getItem('PERM_APPROVAL_REQUESTS') || '[]');
+  var custom = getCustomScreenPerms();
+  var rolePerms = custom[roleKey] || {};
+
+  approvalRequests.unshift({
+    id: 'PAR-' + Date.now(),
+    date: new Date().toISOString().substring(0, 19).replace('T', ' '),
+    role: roleKey,
+    changes: rolePerms,
+    changeCount: Object.keys(rolePerms).length,
+    reason: reason,
+    requester: window.currentRoleKey || 'admin',
+    status: '대기중'
+  });
+
+  // 최대 50건 보관
+  if (approvalRequests.length > 50) approvalRequests = approvalRequests.slice(0, 50);
+  localStorage.setItem('PERM_APPROVAL_REQUESTS', JSON.stringify(approvalRequests));
+
+  // 변경 이력에도 기록
+  addPermHistory(roleKey, '(승인요청)', '변경 ' + Object.keys(rolePerms).length + '건', '승인대기');
+
+  showToast(roleKey + ' 역할의 권한 변경 승인이 요청되었습니다.', 'success');
+  closePermApproveModal();
+
+  // 변경 이력 UI 갱신
+  if (typeof updatePermHistory === 'function') updatePermHistory();
 }
