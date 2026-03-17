@@ -5394,6 +5394,8 @@ function buildAdminCards() {
 function renderHomeWidgets() {
   var area = document.getElementById('home-widget-area');
   if (!area) return;
+  // localStorage에서 저장된 레이아웃 복원 시도 (메모리에 없을 때)
+  if (wsPlacedWidgets.length === 0) wsLoadSavedLayout();
   // 위젯설정에서 배치한 위젯 목록 가져옴 (없으면 기본값)
   var placed = wsPlacedWidgets.length > 0 ? wsPlacedWidgets.slice() : ['w-active-users','w-availability','w-security','w-storage','w-my-work','w-notices','w-quality-bar'];
   if (placed.length === 0) {
@@ -5682,8 +5684,12 @@ var WS_WIDGETS = [
 var wsPlacedWidgets = []; // IDs of widgets on canvas
 
 function initWidgetSettingsGrid() {
-  // no AG Grid needed; render widget library instead
+  // localStorage에서 저장된 레이아웃 복원
+  if (wsPlacedWidgets.length === 0) wsLoadSavedLayout();
+  wsRenderTemplates();
+  wsRenderCanvas();
   wsRenderLibrary();
+  wsUpdateCount();
 }
 
 function wsRenderLibrary() {
@@ -6016,7 +6022,125 @@ function wsSaveLayout() {
     alert('배치된 위젯이 없습니다.\n위젯을 먼저 배치해 주세요.');
     return;
   }
-  alert('위젯 레이아웃이 저장되었습니다.\n\n배치 위젯: ' + wsPlacedWidgets.length + '개\n대시보드에 즉시 반영됩니다.');
+  // 위젯 크기 정보 수집
+  var sizes = {};
+  wsPlacedWidgets.forEach(function(wid) {
+    var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
+    if (w && (w._size || w._height)) {
+      sizes[wid] = {};
+      if (w._size) sizes[wid].w = w._size;
+      if (w._height) sizes[wid].h = w._height;
+    }
+  });
+  var colSel = document.getElementById('ws-col-select');
+  var columns = colSel ? parseInt(colSel.value) : 3;
+  var data = { widgets: wsPlacedWidgets.slice(), sizes: sizes, columns: columns };
+  try {
+    localStorage.setItem('dhp_widget_layout', JSON.stringify(data));
+  } catch(e) { /* 저장 실패 무시 */ }
+  showToast('위젯 레이아웃이 저장되었습니다. (위젯 ' + wsPlacedWidgets.length + '개)', 'success');
+}
+
+// localStorage에서 위젯 레이아웃 복원
+function wsLoadSavedLayout() {
+  try {
+    var raw = localStorage.getItem('dhp_widget_layout');
+    if (!raw) return false;
+    var data = JSON.parse(raw);
+    if (!data || !Array.isArray(data.widgets)) return false;
+    // 기존 크기 초기화
+    wsPlacedWidgets.forEach(function(wid) {
+      var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
+      if (w) { delete w._size; delete w._height; }
+    });
+    wsPlacedWidgets = data.widgets.slice();
+    // 크기 복원
+    if (data.sizes) {
+      Object.keys(data.sizes).forEach(function(wid) {
+        var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
+        if (w && data.sizes[wid]) {
+          if (data.sizes[wid].w) w._size = data.sizes[wid].w;
+          if (data.sizes[wid].h) w._height = data.sizes[wid].h;
+        }
+      });
+    }
+    // 열 수 복원
+    if (data.columns) {
+      var colSel = document.getElementById('ws-col-select');
+      if (colSel) colSel.value = data.columns;
+      var canvas = document.getElementById('ws-canvas');
+      if (canvas) canvas.style.gridTemplateColumns = 'repeat(' + data.columns + ', 1fr)';
+    }
+    return true;
+  } catch(e) { return false; }
+}
+
+// ===== 대시보드 템플릿 =====
+var WS_TEMPLATES = [
+  { id: 'tpl-default', name: '기본', icon: '🏠', desc: '주요 KPI와 알림을 한눈에 확인',
+    widgets: ['w-active-users','w-availability','w-security','w-storage','w-my-work','w-notices','w-quality-bar'],
+    sizes: {}, columns: 3 },
+  { id: 'tpl-statistics', name: '통계 분석', icon: '📊', desc: '차트·KPI 중심의 데이터 분석 대시보드',
+    widgets: ['w-active-users','w-collection','w-quality','w-api-calls','w-quality-bar','w-resource','w-collection-trend','w-api-latency'],
+    sizes: { 'w-quality-bar': {w:2,h:1}, 'w-collection-trend': {w:2,h:1} }, columns: 3 },
+  { id: 'tpl-monitoring', name: '모니터링', icon: '🖥️', desc: '시스템 상태·알림·로그를 실시간 모니터링',
+    widgets: ['w-availability','w-sys-monitor','w-sys-alert','w-error-log','w-batch-status','w-disk-trend','w-login-stats'],
+    sizes: { 'w-sys-monitor': {w:2,h:1}, 'w-error-log': {w:2,h:1} }, columns: 3 },
+  { id: 'tpl-data-mgmt', name: '데이터 관리', icon: '🗄️', desc: '데이터 수집·품질·카탈로그 현황 중심',
+    widgets: ['w-pipeline','w-collection','w-quality','w-data-catalog','w-recent-update','w-popular','w-download-stats'],
+    sizes: {}, columns: 3 }
+];
+
+// 템플릿 목록 렌더링
+function wsRenderTemplates() {
+  var container = document.getElementById('ws-template-list');
+  if (!container) return;
+  container.innerHTML = '';
+  WS_TEMPLATES.forEach(function(tpl) {
+    var card = document.createElement('div');
+    card.className = 'ws-tpl-card';
+    card.onclick = function() { wsApplyTemplate(tpl.id); };
+    card.innerHTML = '<div style="font-size:24px; margin-bottom:6px;">' + tpl.icon + '</div>'
+      + '<div style="font-size:13px; font-weight:700; color:var(--text-color);">' + tpl.name + '</div>'
+      + '<div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">' + tpl.desc + '</div>'
+      + '<div style="font-size:10px; color:#1677ff; margin-top:6px;">위젯 ' + tpl.widgets.length + '개</div>';
+    container.appendChild(card);
+  });
+}
+
+// 템플릿 적용
+function wsApplyTemplate(tplId) {
+  var tpl = WS_TEMPLATES.find(function(t) { return t.id === tplId; });
+  if (!tpl) return;
+  if (wsPlacedWidgets.length > 0 && !confirm('"' + tpl.name + '" 템플릿을 적용하시겠습니까?\n현재 배치된 위젯이 교체됩니다.')) return;
+  // 기존 크기 초기화
+  wsPlacedWidgets.forEach(function(wid) {
+    var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
+    if (w) { delete w._size; delete w._height; }
+  });
+  // 템플릿 위젯 적용
+  wsPlacedWidgets = tpl.widgets.slice();
+  // 템플릿 크기 적용
+  if (tpl.sizes) {
+    Object.keys(tpl.sizes).forEach(function(wid) {
+      var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
+      if (w && tpl.sizes[wid]) {
+        if (tpl.sizes[wid].w) w._size = tpl.sizes[wid].w;
+        if (tpl.sizes[wid].h) w._height = tpl.sizes[wid].h;
+      }
+    });
+  }
+  // 열 수 적용
+  if (tpl.columns) {
+    var colSel = document.getElementById('ws-col-select');
+    if (colSel) colSel.value = tpl.columns;
+    var canvas = document.getElementById('ws-canvas');
+    if (canvas) canvas.style.gridTemplateColumns = 'repeat(' + tpl.columns + ', 1fr)';
+  }
+  wsRenderCanvas();
+  wsRenderLibrary();
+  wsUpdateCount();
+  showToast('"' + tpl.name + '" 템플릿이 적용되었습니다.', 'success');
 }
 
 // ===== 실시간 로그·알림 =====

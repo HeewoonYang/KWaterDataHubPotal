@@ -1483,6 +1483,23 @@ body {
   font-size: 12px;
 }
 
+/* ===== 위젯 템플릿 카드 ===== */
+.ws-tpl-card {
+  flex: 0 0 180px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  background: var(--card-bg);
+}
+.ws-tpl-card:hover {
+  border-color: #1677ff;
+  box-shadow: 0 2px 8px rgba(22,119,255,0.15);
+  transform: translateY(-2px);
+}
+
 /* ===== BADGES ===== */
 .badge {
   display: inline-flex;
