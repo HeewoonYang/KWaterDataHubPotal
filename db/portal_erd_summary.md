@@ -19,7 +19,8 @@
 | 모니터링 | 5 | — |
 | 커뮤니티 | 3 | — |
 | 시스템관리 | 13 | noti_type |
-| **합계** | **68** | **7 ENUM** |
+| K-water 데이터표준 사전 | 5 | — |
+| **합계** | **73** | **7 ENUM** |
 
 공통 ENUM: `entity_status`, `approval_status`
 
@@ -121,6 +122,19 @@
 | 53 | `board_post` | post_id | → user | 게시판 글 |
 | 54 | `board_cm` | cm_id | → post, user, comment(대댓글) | 댓글 |
 | 55 | `resrce_archv` | resrce_id | → user | 자료실 |
+
+### 2-10. K-water 데이터표준 사전 (5개) — 데이터관리포탈 연동
+
+| # | 테이블 | PK | 핵심 FK/관계 | 설명 | 시드 건수 |
+|---|--------|-----|-------------|------|:---------:|
+| 69 | `std_word` | word_id | — | 표준단어사전 | 6,306 |
+| 70 | `std_domn_dict` | std_domn_id | — | 표준도메인사전 | 615 |
+| 71 | `std_term` | std_term_id | — | 표준용어사전 | 41,724 |
+| 72 | `std_cd_grp` | std_cd_grp_id | — | 표준코드그룹사전 | 3,572 |
+| 73 | `std_cd` | std_cd_id | → std_cd_grp | 표준코드사전 | 139,288 |
+
+> 시드 데이터 원본: K-water 데이터관리포탈 표준 데이터 조회 엑셀 4종
+> (`seed_std_word.sql`, `seed_std_domn_dict.sql`, `seed_std_term.sql`, `seed_std_cd.sql`)
 
 ### 2-9. 시스템관리 (13개)
 
@@ -230,6 +244,15 @@
 │  erp_sync_hist (ERP 동기화 이력)                                 │
 │  sys_intrfc / scrty_polcy                                 │
 └─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│              K-water 데이터표준 사전 (데이터관리포탈 연동)            │
+│                                                                     │
+│  std_word (6,306건)           표준단어사전                     │
+│  std_domn_dict (615건)        표준도메인사전                   │
+│  std_term (41,724건)          표준용어사전                     │
+│  std_cd_grp ──1:N──▸ std_cd   표준코드사전 (3,572+139,288건)   │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -244,6 +267,7 @@
 
 ### 4.2 메타데이터 관리
 - **표준용어사전**: `glsry_term` + 변경이력 추적 (`glsry_hist`)
+- **K-water 데이터표준**: `std_word`(단어) + `std_domn_dict`(도메인) + `std_term`(용어) + `std_cd_grp`/`std_cd`(코드) — 데이터관리포탈 연동용
 - **데이터 프로파일링**: `dset_col`의 null_rt, unique_rt, smple_vals
 - **데이터 리니지**: `lnage_node` ↔ `lnage_edge` (계보 추적)
 - **온톨로지**: `onto_class` 자기참조 트리 + 속성 + 관계
@@ -255,12 +279,19 @@
 - **ERP 동기화**: `erp_sync_hist` (SAP HR 조직/사용자 동기화)
 
 ### 4.4 공통 감사 컬럼
-- **모든 68개 테이블**에 다음 4개 감사 컬럼 포함:
+- **모든 73개 테이블**에 다음 4개 감사 컬럼 포함:
   - `crtd_at` (TIMESTAMPTZ) — 등록일시 (DEFAULT now())
   - `crtd_by` (UUID) — 등록자 ID (usr_acnt.usr_id 참조)
   - `updtd_at` (TIMESTAMPTZ) — 수정일시 (DEFAULT now(), 트리거 자동 갱신)
   - `updtd_by` (UUID) — 수정자 ID (usr_acnt.usr_id 참조)
 - 전체 테이블/컬럼에 한글 COMMENT 정의 (`portal_comments.sql`)
+
+### 4.6 K-water 데이터표준 사전 (데이터관리포탈 연동)
+- **표준단어사전** (`std_word`): 6,306건 — 논리명/물리명/영문풀네임/속성분류어/동의어
+- **표준도메인사전** (`std_domn_dict`): 615건 — 도메인그룹/데이터유형/길이/개인정보여부
+- **표준용어사전** (`std_term`): 41,724건 — 논리명/물리명/도메인매핑/데이터유형
+- **표준코드사전** (`std_cd_grp` + `std_cd`): 3,572그룹 + 139,288코드값
+- 기존 `glsry_term`(포탈 자체 용어관리)과 `std_term`(K-water 표준)은 별도 운영하되 참조 연계 가능
 
 ### 4.5 성능 고려
 - UUID PK: `usr_acnt`, `dset`, `data_product`, `api_key`, `ai_chat_sesn`
@@ -293,5 +324,9 @@
 | 파일 | 설명 |
 |------|------|
 | `db/portal_schema.sql` | DDL (테이블 + 인덱스 + 트리거 + 초기데이터) |
-| `db/portal_comments.sql` | 전체 68개 테이블 · 모든 컬럼 한글 COMMENT |
+| `db/portal_comments.sql` | 전체 73개 테이블 · 모든 컬럼 한글 COMMENT |
 | `db/portal_erd_summary.md` | 이 문서 (ERD 요약) |
+| `db/seed_std_word.sql` | 표준단어사전 시드 (6,306건) |
+| `db/seed_std_domn_dict.sql` | 표준도메인사전 시드 (615건) |
+| `db/seed_std_term.sql` | 표준용어사전 시드 (41,724건) |
+| `db/seed_std_cd.sql` | 표준코드사전 시드 (3,572그룹 + 139,288코드) |

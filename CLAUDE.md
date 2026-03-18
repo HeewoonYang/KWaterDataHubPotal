@@ -144,6 +144,18 @@ DB 모델(테이블, 컬럼, 인덱스, 제약조건 등)을 **생성·수정할
 | 모니터링 | 5 | `rgn`, `offc`, `site`, `snsr_tag`, `asset_db` |
 | 커뮤니티 | 3 | `board_post`, `board_cm`, `resrce_archv` |
 | 시스템관리 | 13 | `audt_log`, `noti`, `lnage_node`, `ai_chat_sesn` |
+| K-water 데이터표준 사전 | 5 | `std_word`, `std_domn_dict`, `std_term`, `std_cd_grp`, `std_cd` |
+
+### K-water 데이터표준 사전 (데이터관리포탈 연동)
+
+기존 데이터관리포탈에서 관리하는 표준 사전 4종을 수용하는 테이블이다. 시드 데이터는 별도 SQL 파일로 관리한다.
+
+| 테이블 | 시드 파일 | 건수 | 설명 |
+|--------|-----------|:----:|------|
+| `std_word` | `db/seed_std_word.sql` | 6,306 | 표준단어사전 |
+| `std_domn_dict` | `db/seed_std_domn_dict.sql` | 615 | 표준도메인사전 |
+| `std_term` | `db/seed_std_term.sql` | 41,724 | 표준용어사전 |
+| `std_cd_grp` + `std_cd` | `db/seed_std_cd.sql` | 3,572 + 139,288 | 표준코드사전 |
 
 ### 주요 ENUM 타입
 
