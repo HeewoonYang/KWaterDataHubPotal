@@ -185,3 +185,84 @@ DB 모델(테이블, 컬럼, 인덱스, 제약조건 등)을 **생성·수정할
 ### 레거시 스키마 (참고용)
 
 `db/001_schema.sql`, `db/003_comments_*.sql`, `db/datahub_schema_full.sql`은 이전 버전 스키마로 참고용이다. 실제 운영 스키마는 `db/portal_schema.sql`을 기준으로 한다.
+
+## 개발표준정의서 (KWDP-SD-DS-03 v0.6)
+
+K-water 디지털플랫폼 구축 사업의 개발 표준. 본 프로젝트(데이터허브 포탈, DH)에 적용되는 핵심 사항을 아래에 정리한다.
+
+### 프로젝트 명명 규칙
+
+- 프로젝트명: `KWDP-[모듈영문약어]-[프로그램유형약어]` (KWDP = K-Water DigitalPlatform)
+- 영역별 코드: 메인포탈=`MP`, 데이터허브=`DH`, SaaS갤러리=`SG`, 생성형AI=`GA`
+- 프로그램 유형: WEB=`web`, BATCH=`bat`, API=`api`
+
+### 공통 코드 표준
+
+- 모든 이름은 `a-z`, `A-Z`, `0-9`만 사용, 표준용어 기반
+- 이름 길이 64자 이내, 약어는 표준용어사전에 등록된 것만 사용
+- 특수기호 사용 금지, 의미가 비슷하거나 대소문자만 다른 이름 금지
+- **하드코딩 금지 항목**: IP주소/도메인/호스트명, 포트, 계정/비밀번호, 암호화키 → 설정에서 관리
+
+### 표기법 가이드
+
+| 표기법 | 예제 | 적용 대상 |
+|--------|------|-----------|
+| PascalCase | `ContentManagement` | 클래스, 인터페이스, React 컴포넌트 |
+| camelCase | `contentManagement` | 변수, 함수, 메서드, 파일명 |
+| UPPER_SNAKE_CASE | `DEFAULT_COLOR` | 상수(Constants) |
+| snake_case | `content_management` | DB 컬럼, Python 변수/함수 |
+| kebab-case | `content-management` | CSS 클래스, URL |
+
+### JavaScript 표준 (본 프로젝트 직접 적용)
+
+- **파일명**: 소문자, 단어 구분은 `.` 사용 (예: `order.view.js`)
+- **변수**: `const`(상수) / `let`(재할당 가능) 사용 권장, `var` 지양
+- **비교**: 반드시 `===` (일치 연산자) 사용, `==` (동등 연산자) 금지
+- **문자열**: 작은따옴표(`'`) 기본, 템플릿 리터럴(`` ` ``) 활용
+- **들여쓰기**: 스페이스 4칸
+- **세미콜론**: 문장 끝에 반드시 `;`
+- **중괄호**: 한 줄이라도 반드시 사용 (if/for/while 등)
+- **주석**: 단일행 `//`, 블록 `/* */`, 직관적 변수명으로 주석 최소화
+- **Strict Mode**: `"use strict"` 사용 권장 (ES6 모듈 사용 시 자동 적용)
+- **IIFE**: 전역변수 오염 방지를 위해 즉시실행함수 사용 고려
+- **네임스페이스**: 모듈 간 호출 시 단일 전역 네임스페이스 패턴 사용
+
+### Java/Springboot 표준 (백엔드 참조용)
+
+- 클래스: PascalCase + Postfix (`Controller`, `Service`, `ServiceImpl`, `Mapper`, `DTO`)
+- 메서드 Prefix: 단건조회=`select`, 다건조회=`selectList`, 입력=`insert`, 수정=`update`, 삭제=`delete`, 입력+수정=`regist`
+- Ajax 호출: Postfix `Ajax` (예: `selectBoardAjax`)
+- 필드/변수: camelCase, `private` 필수, getter/setter 접근
+- 예외처리: catch 블록 비우기 금지, 에러 로그 기록 필수, CUD 트랜잭션은 rollback 처리
+- **API 응답 표준**: `{ success, code, message, data }` 형식
+- **에러 응답 표준**: `{ success: false, code, message, errors[], traceId }` 형식
+- **예외 분류**: ValidationException(400), AuthException(401/403), NotFoundException(404), BusinessException(409), SystemException(500)
+- DTO/Entity 분리 필수, Controller에서 Entity 직접 노출 금지
+- 로그 레벨: DEBUG(개발), INFO(운영), WARN(잠재적 에러), ERROR(복구불가), FATAL(서비스불가)
+
+### Python 표준 (데이터허브 백엔드)
+
+- PEP 8 준수, 변수/함수: `snake_case`, 클래스: `PascalCase`, 상수: `UPPER_SNAKE_CASE`
+- 함수는 "한 가지 역할" 원칙
+- 주석은 "왜(Why)" 중심, 공용 모듈에 타입힌트 권장
+- 포맷: black, 린트: ruff, 타입체크: mypy
+- 공통 예외 계층: `DomainError`, `ValidationError`, `InfraError`
+
+### Go 표준 (데이터허브 백엔드)
+
+- Go 1.21+, `go.mod`/`go.sum` 커밋 필수
+- 포맷: `gofmt`/`goimports`, 린트: `golangci-lint`
+- goroutine 사용 시 `context.Context` 필수, 종료 조건 명확화
+- 에러는 `%w`로 래핑하여 원인 추적 가능하게 유지
+
+### React 표준 (메인포탈 참조용)
+
+- 컴포넌트: `PascalCase` (예: `UserList.tsx`), 훅: `useXxx`
+- Presentational / Container 분리 권장
+- `any` 타입 사용 금지
+- API 레이어 분리, 화면에서 URL 하드코딩 금지
+
+### 자원 관리
+
+- JDBC Connection 등 외부 자원은 명시적으로 반납 (HikariCP auto close 활용)
+- 트랜잭션: `@Transactional` 어노테이션 기반, `readOnly=true` 시 `Propagation.SUPPORTS` 설정

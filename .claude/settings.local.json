@@ -66,7 +66,10 @@
       "Bash(PYTHONIOENCODING=utf-8 python3 scripts/fill_menu_perm.py)",
       "Bash(curl -s -o /dev/null -w \"HTTP Status: %{http_code}\\\\nResponse Time: %{time_total}s\\\\nRedirect URL: %{redirect_url}\\\\n\" --connect-timeout 5 http://172.30.1.55:8080)",
       "Bash(curl -s -o /dev/null -w \"HTTP Status: %{http_code}\\\\n\" --connect-timeout 3 http://localhost:8080)",
-      "Bash(curl -s -o /dev/null -w \"HTTP Status: %{http_code}\\\\n\" --connect-timeout 3 http://172.30.1.55:8080)"
+      "Bash(curl -s -o /dev/null -w \"HTTP Status: %{http_code}\\\\n\" --connect-timeout 3 http://172.30.1.55:8080)",
+      "Bash(git branch:*)",
+      "Bash(git status:*)",
+      "Bash(git add:*)"
     ]
   }
 }
