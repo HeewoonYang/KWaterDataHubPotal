@@ -2444,77 +2444,102 @@
   <div class="breadcrumb"><a href="#" onclick="navigate('home')">개인 대시보드</a> &gt; <a href="#" onclick="navigate('sys-widget-template')">위젯 템플릿 관리</a> &gt; <strong>위젯 등록</strong></div>
   <div class="page-title">위젯 템플릿 등록</div>
 
-  <div class="card">
-    <div class="card-title">📋 기본 정보</div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">위젯 ID <span class="required">*</span></label>
-        <input type="text" class="form-control" placeholder="예: w-new-widget (영문+하이픈)">
+  <div style="display:grid; grid-template-columns:1fr 340px; gap:16px; align-items:start;">
+    <!-- 왼쪽: 폼 영역 -->
+    <div>
+      <div class="card">
+        <div class="card-title">📋 기본 정보</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">위젯 ID <span class="required">*</span></label>
+            <input type="text" id="wtr-id" class="form-control" placeholder="예: w-new-widget (영문+하이픈)" oninput="updateWidgetRegPreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">위젯명 <span class="required">*</span></label>
+            <input type="text" id="wtr-name" class="form-control" placeholder="위젯 표시 이름" oninput="updateWidgetRegPreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">아이콘</label>
+            <input type="text" id="wtr-icon" class="form-control" placeholder="이모지 입력 (예: 📊)" oninput="updateWidgetRegPreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">카테고리 <span class="required">*</span></label>
+            <select id="wtr-category" class="form-control" onchange="updateWidgetRegPreview()">
+              <option value="">선택</option>
+              <option value="kpi">KPI</option>
+              <option value="card">카드</option>
+              <option value="list">리스트</option>
+              <option value="chart">차트</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column: span 2;">
+            <label class="form-label">설명</label>
+            <textarea id="wtr-desc" class="form-control" style="min-height:60px; resize:vertical;" placeholder="위젯에 대한 설명을 입력하세요" oninput="updateWidgetRegPreview()"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">색상</label>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="color" id="wtr-color-picker" value="#1677ff" style="width:40px; height:34px; border:1px solid #ddd; border-radius:6px; cursor:pointer;" oninput="document.getElementById('wtr-color-hex').value=this.value; updateWidgetRegPreview()">
+              <input type="text" id="wtr-color-hex" class="form-control" value="#1677ff" style="flex:1;" placeholder="#HEX" oninput="if(/^#[0-9a-fA-F]{6}$/.test(this.value)){document.getElementById('wtr-color-picker').value=this.value; updateWidgetRegPreview();}">
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">위젯명 <span class="required">*</span></label>
-        <input type="text" class="form-control" placeholder="위젯 표시 이름">
-      </div>
-      <div class="form-group">
-        <label class="form-label">아이콘</label>
-        <input type="text" class="form-control" placeholder="이모지 입력 (예: 📊)">
-      </div>
-      <div class="form-group">
-        <label class="form-label">카테고리 <span class="required">*</span></label>
-        <select class="form-control">
-          <option value="">선택</option>
-          <option value="kpi">KPI</option>
-          <option value="card">카드</option>
-          <option value="list">리스트</option>
-          <option value="chart">차트</option>
-        </select>
-      </div>
-      <div class="form-group" style="grid-column: span 2;">
-        <label class="form-label">설명</label>
-        <textarea class="form-control" style="min-height:60px; resize:vertical;" placeholder="위젯에 대한 설명을 입력하세요"></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">색상</label>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <input type="color" value="#1677ff" style="width:40px; height:34px; border:1px solid #ddd; border-radius:6px; cursor:pointer;">
-          <input type="text" class="form-control" value="#1677ff" style="flex:1;" placeholder="#HEX">
+
+      <div class="card">
+        <div class="card-title">🔐 접근 정책</div>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: span 2;">
+            <label class="form-label">접근 역할 <span class="required">*</span></label>
+            <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:4px;">
+              <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+                <input type="checkbox" id="wt-role-all" onchange="updateWidgetRegPreview()"> <span>전체 (all)</span>
+              </label>
+              <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+                <input type="checkbox" class="wtr-role-chk" value="employee" onchange="updateWidgetRegPreview()"> <span>수공직원 (employee)</span>
+              </label>
+              <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+                <input type="checkbox" class="wtr-role-chk" value="partner" onchange="updateWidgetRegPreview()"> <span>협력직원 (partner)</span>
+              </label>
+              <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+                <input type="checkbox" class="wtr-role-chk" value="engineer" onchange="updateWidgetRegPreview()"> <span>엔지니어 (engineer)</span>
+              </label>
+              <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+                <input type="checkbox" class="wtr-role-chk" value="admin" onchange="updateWidgetRegPreview()"> <span>관리자 (admin)</span>
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">데이터등급 <span class="required">*</span></label>
+            <select id="wtr-data-level" class="form-control" onchange="updateWidgetRegPreview()">
+              <option value="">선택</option>
+              <option value="public">공개</option>
+              <option value="internal">내부일반</option>
+              <option value="restricted">내부중요</option>
+              <option value="confidential">기밀</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="card-title">🔐 접근 정책</div>
-    <div class="form-grid">
-      <div class="form-group" style="grid-column: span 2;">
-        <label class="form-label">접근 역할 <span class="required">*</span></label>
-        <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:4px;">
-          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
-            <input type="checkbox" id="wt-role-all"> <span>전체 (all)</span>
-          </label>
-          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
-            <input type="checkbox"> <span>수공직원 (employee)</span>
-          </label>
-          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
-            <input type="checkbox"> <span>협력직원 (partner)</span>
-          </label>
-          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
-            <input type="checkbox"> <span>엔지니어 (engineer)</span>
-          </label>
-          <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
-            <input type="checkbox"> <span>관리자 (admin)</span>
-          </label>
+    <!-- 오른쪽: 실시간 미리보기 패널 -->
+    <div class="card wtr-preview-panel" style="position:sticky; top:80px;">
+      <div class="card-title">👁️ 위젯 미리보기</div>
+      <div id="wtr-preview-area" style="min-height:280px;">
+        <div id="wtr-preview-empty" style="text-align:center; padding:40px 16px; color:#94a3b8;">
+          <div style="font-size:36px; margin-bottom:8px;">🧩</div>
+          <div style="font-size:13px; font-weight:500;">카테고리를 선택하면<br>미리보기가 표시됩니다</div>
         </div>
+        <div id="wtr-preview-widget" style="display:none;"></div>
       </div>
-      <div class="form-group">
-        <label class="form-label">데이터등급 <span class="required">*</span></label>
-        <select class="form-control">
-          <option value="">선택</option>
-          <option value="public">공개</option>
-          <option value="internal">내부일반</option>
-          <option value="restricted">내부중요</option>
-          <option value="confidential">기밀</option>
-        </select>
+      <div style="border-top:1px solid #e5e7eb; padding:10px 0 0; margin-top:12px;">
+        <div style="font-size:11px; color:#94a3b8; font-weight:500; margin-bottom:6px;">미리보기 정보</div>
+        <div id="wtr-preview-meta" style="font-size:12px; color:#64748b; line-height:1.7;">
+          <div>카테고리: <span id="wtr-meta-cat" style="font-weight:600;">—</span></div>
+          <div>접근 역할: <span id="wtr-meta-roles" style="font-weight:600;">—</span></div>
+          <div>데이터등급: <span id="wtr-meta-level" style="font-weight:600;">—</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -2529,16 +2554,103 @@
 <div class="screen" id="screen-sys-widget-template-detail">
   <div class="breadcrumb"><a href="#" onclick="navigate('home')">개인 대시보드</a> &gt; <a href="#" onclick="navigate('sys-widget-template')">위젯 템플릿 관리</a> &gt; <strong>위젯 상세</strong></div>
   <div class="page-title" id="widget-detail-title">위젯 상세 정보</div>
-  <div class="card">
-    <div class="card-title">📋 속성 정보</div>
-    <div class="detail-info-grid" id="widget-detail-content">
-      <!-- 동적으로 채워짐 (showWidgetDetail) -->
+
+  <!-- 상단: 실시간 미리보기 영역 -->
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-title">👁️ 위젯 미리보기</div>
+    <div style="display:flex; justify-content:center; padding:20px; background:var(--bg-color); border-radius:8px;">
+      <div id="wd-preview-box" style="width:320px; min-height:120px;"></div>
     </div>
   </div>
+
+  <!-- 하단: 속성 편집 / 읽기전용 토글 -->
+  <div class="card">
+    <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>📋 속성 정보</span>
+      <button class="btn btn-sm btn-outline" id="wd-edit-toggle-btn" data-perm="write" onclick="wdToggleEditMode()">✏️ 수정</button>
+    </div>
+
+    <!-- 읽기전용 모드 -->
+    <div id="wd-view-mode">
+      <div class="detail-info-grid" id="widget-detail-content"></div>
+    </div>
+
+    <!-- 편집 모드 -->
+    <div id="wd-edit-mode" style="display:none;">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">위젯 ID</label>
+          <input type="text" class="form-control" id="wd-edit-id" readonly style="background:#f5f5f5; cursor:not-allowed;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">위젯명 <span class="required">*</span></label>
+          <input type="text" class="form-control" id="wd-edit-name" oninput="wdPreviewUpdate()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">아이콘</label>
+          <input type="text" class="form-control" id="wd-edit-icon" oninput="wdPreviewUpdate()" style="width:80px;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">카테고리 <span class="required">*</span></label>
+          <select class="form-control" id="wd-edit-cat" onchange="wdPreviewUpdate()">
+            <option value="kpi">KPI</option>
+            <option value="card">카드</option>
+            <option value="list">리스트</option>
+            <option value="chart">차트</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:span 2;">
+          <label class="form-label">설명</label>
+          <textarea class="form-control" id="wd-edit-desc" style="min-height:50px; resize:vertical;" oninput="wdPreviewUpdate()"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">색상</label>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <input type="color" id="wd-edit-color-picker" style="width:40px; height:34px; border:1px solid #ddd; border-radius:6px; cursor:pointer;" oninput="document.getElementById('wd-edit-color').value=this.value; wdPreviewUpdate();">
+            <input type="text" class="form-control" id="wd-edit-color" style="flex:1;" oninput="document.getElementById('wd-edit-color-picker').value=this.value; wdPreviewUpdate();">
+          </div>
+        </div>
+        <div class="form-group" style="grid-column:span 2;">
+          <label class="form-label">접근 역할 <span class="required">*</span></label>
+          <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:4px;">
+            <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+              <input type="checkbox" id="wd-role-all" onchange="wdRoleAllToggle(this)"> 전체
+            </label>
+            <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+              <input type="checkbox" class="wd-role-chk" value="employee"> 수공직원
+            </label>
+            <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+              <input type="checkbox" class="wd-role-chk" value="partner"> 협력직원
+            </label>
+            <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+              <input type="checkbox" class="wd-role-chk" value="engineer"> 엔지니어
+            </label>
+            <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+              <input type="checkbox" class="wd-role-chk" value="admin"> 관리자
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">데이터등급 <span class="required">*</span></label>
+          <select class="form-control" id="wd-edit-level">
+            <option value="public">공개</option>
+            <option value="internal">내부일반</option>
+            <option value="restricted">내부중요</option>
+            <option value="confidential">기밀</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 버튼 -->
   <div style="display:flex; gap:8px; margin-top:16px;">
-    <button class="btn btn-outline" onclick="navigate('sys-widget-template')">← 목록으로</button>
-    <button class="btn btn-outline" id="widget-detail-edit-btn" data-perm="write">수정</button>
-    <button class="btn btn-outline" style="color:#f44336; border-color:#f44336;" id="widget-detail-delete-btn" data-perm="manage">삭제</button>
+    <button class="btn btn-outline" onclick="wdCancelEdit(); navigate('sys-widget-template')">← 목록으로</button>
+    <div id="wd-save-btns" style="display:none; gap:8px;" >
+      <button class="btn btn-primary" onclick="wdSaveWidget()">💾 저장</button>
+      <button class="btn btn-outline" onclick="wdCancelEdit()">취소</button>
+    </div>
+    <button class="btn btn-outline" style="color:#f44336; border-color:#f44336; margin-left:auto;" id="widget-detail-delete-btn" data-perm="manage" onclick="wdDeleteWidget()">삭제</button>
   </div>
 </div>
 

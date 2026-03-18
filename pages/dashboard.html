@@ -2544,16 +2544,19 @@
     <div style="display:flex; gap:8px; align-items:center;">
       <span style="font-size:12px; color:var(--text-secondary);">배치 위젯: <strong id="ws-placed-count" style="color:#1677ff;">0</strong>개</span>
       <button class="btn btn-outline" onclick="wsClearCanvas()">전체 비우기</button>
-      <button class="btn btn-outline" onclick="wsLoadDefault()">기본 구성 불러오기</button>
+      <button class="btn btn-outline" onclick="wsShowTemplateSelector()">📋 템플릿 선택</button>
       <button class="btn btn-primary" onclick="wsSaveLayout()">💾 저장</button>
     </div>
   </div>
 
-  <!-- ===== 템플릿 선택 ===== -->
-  <div class="card" style="margin-bottom:12px;">
-    <div class="card-title">📋 템플릿 선택 <span style="font-size:12px; font-weight:400; color:var(--text-secondary);">— 사전 구성된 레이아웃을 바로 적용할 수 있습니다</span></div>
-    <div id="ws-template-list" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:4px;">
-      <!-- JS에서 wsRenderTemplates()로 렌더링 -->
+  <!-- ===== 템플릿 선택 영역 ===== -->
+  <div id="ws-template-box" class="card" style="display:none; margin-bottom:16px; border:2px solid #1677ff;">
+    <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>📋 맞춤형 대시보드 템플릿 <span style="font-size:12px; font-weight:400; color:var(--text-secondary);">— 템플릿을 선택하면 위젯이 자동 배치됩니다. 이후 자유롭게 수정할 수 있습니다.</span></span>
+      <button class="btn btn-outline" style="font-size:11px; padding:3px 10px;" onclick="document.getElementById('ws-template-box').style.display='none'">접기 ▲</button>
+    </div>
+    <div id="ws-template-grid" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px;">
+      <!-- 템플릿 카드는 JS wsRenderTemplates()에서 렌더링 -->
     </div>
   </div>
 

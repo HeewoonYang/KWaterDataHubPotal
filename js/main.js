@@ -765,6 +765,33 @@ function navigate(screen) {
   if (screen === 'meta-glossary') {
     setTimeout(initGlossaryScreen, 100);
   }
+
+  // 9) 데이터모델 목록 — 동적 ERD 미리보기 렌더링
+  if (screen === 'meta-model') {
+    setTimeout(function () {
+      var selector = document.getElementById('erd-model-selector');
+      // 셀렉터 옵션이 비어있으면 MODEL_ERD_DATA 키로 채우기
+      if (selector && selector.options.length === 0 && typeof MODEL_ERD_DATA !== 'undefined') {
+        Object.keys(MODEL_ERD_DATA).forEach(function(key) {
+          var opt = document.createElement('option');
+          opt.value = key;
+          opt.textContent = key;
+          selector.appendChild(opt);
+        });
+      }
+      var modelName = selector ? selector.value : '수자원관리_논리모델';
+      renderDynamicERD('erd-preview-container', modelName);
+    }, 150);
+  }
+
+  // 10) 데이터모델 상세 — 동적 ERD + 논리/물리 매핑 렌더링
+  if (screen === 'meta-model-detail') {
+    setTimeout(function () {
+      var model = window.currentDetailModel || '수자원관리_논리모델';
+      renderDynamicERD('erd-detail-container', model);
+      renderModelMapping(model);
+    }, 150);
+  }
 }
 
 // Process step highlight + filter table
@@ -1307,6 +1334,23 @@ var GAL_CHARTS = [
 ];
 
 var galPlacedCharts = [];
+// localStorage에서 저장된 갤러리 배치 복원
+(function restoreGalLayout() {
+  try {
+    var saved = localStorage.getItem('portal-gal-charts');
+    if (saved) {
+      galPlacedCharts = JSON.parse(saved);
+      var sizes = localStorage.getItem('portal-gal-sizes');
+      if (sizes) {
+        var sizeMap = JSON.parse(sizes);
+        Object.keys(sizeMap).forEach(function(cid) {
+          var c = GAL_CHARTS.find(function(x) { return x.id === cid; });
+          if (c) { c._gw = sizeMap[cid].gw; c._gh = sizeMap[cid].gh; }
+        });
+      }
+    }
+  } catch (e) { /* 파싱 실패 시 기본값 유지 */ }
+})();
 var galCurrentTab = 'all';
 var galDragSrcIdx = null;
 
@@ -1586,7 +1630,19 @@ function galSaveLayout() {
     alert('갤러리에 배치된 차트가 없습니다.\n차트를 먼저 배치해 주세요.');
     return;
   }
-  alert('차트 갤러리가 저장되었습니다.\n\n배치 차트: ' + galPlacedCharts.length + '개\n갤러리에 즉시 반영됩니다.');
+  // 차트 크기 정보도 함께 저장
+  var sizeMap = {};
+  galPlacedCharts.forEach(function(cid) {
+    var c = GAL_CHARTS.find(function(x) { return x.id === cid; });
+    if (c && (c._gw || c._gh)) {
+      sizeMap[cid] = { gw: c._gw || 1, gh: c._gh || 1 };
+    }
+  });
+  try {
+    localStorage.setItem('portal-gal-charts', JSON.stringify(galPlacedCharts));
+    localStorage.setItem('portal-gal-sizes', JSON.stringify(sizeMap));
+  } catch (e) { /* quota 초과 무시 */ }
+  showToast('차트 갤러리가 저장되었습니다. (배치 ' + galPlacedCharts.length + '개)', 'success');
 }
 
 function showProcessDetail(id) {
@@ -3805,6 +3861,421 @@ function initDistributeGrids() {
   });
 }
 
+// ========== 003: 동적 ERD 렌더링 + 논리/물리 매핑 + 버전 비교 ==========
+var MODEL_ERD_DATA = {
+  '수자원관리_논리모델': {
+    tables: [
+      { name: '댐_기본정보', physName: 'TB_DAM_BASIC', color: '#1677ff', cols: [
+        { name: '댐ID', type: 'VARCHAR(10)', pk: true }, { name: '댐명', type: 'VARCHAR(100)' },
+        { name: '유역코드', type: 'VARCHAR(10)', fk: true, fkRef: '유역_정보.유역코드' }, { name: '준공년도', type: 'INTEGER' }, { name: '총저수량', type: 'DECIMAL(15,2)' }
+      ]},
+      { name: '수위_관측', physName: 'TB_WATER_LVL', color: '#1677ff', cols: [
+        { name: '관측ID', type: 'BIGINT', pk: true }, { name: '댐ID', type: 'VARCHAR(10)', fk: true, fkRef: '댐_기본정보.댐ID' },
+        { name: '관측일시', type: 'TIMESTAMP' }, { name: '수위', type: 'DECIMAL(8,3)' }, { name: '유입량', type: 'DECIMAL(12,2)' }
+      ]},
+      { name: '유역_정보', physName: 'TB_BASIN_INFO', color: '#52c41a', cols: [
+        { name: '유역코드', type: 'VARCHAR(10)', pk: true }, { name: '유역명', type: 'VARCHAR(100)' },
+        { name: '유역면적', type: 'DECIMAL(12,2)' }, { name: '관할지사', type: 'VARCHAR(50)' }
+      ]},
+      { name: '강우_관측', physName: 'TB_RAINFALL', color: '#1677ff', cols: [
+        { name: '관측ID', type: 'BIGINT', pk: true }, { name: '유역코드', type: 'VARCHAR(10)', fk: true, fkRef: '유역_정보.유역코드' },
+        { name: '관측일시', type: 'TIMESTAMP' }, { name: '강우량', type: 'DECIMAL(8,2)' }
+      ]},
+      { name: '방류_이력', physName: 'TB_DISCHARGE', color: '#fa8c16', cols: [
+        { name: '방류ID', type: 'BIGINT', pk: true }, { name: '댐ID', type: 'VARCHAR(10)', fk: true, fkRef: '댐_기본정보.댐ID' },
+        { name: '방류일시', type: 'TIMESTAMP' }, { name: '방류량', type: 'DECIMAL(12,2)' }, { name: '방류사유', type: 'VARCHAR(200)' }
+      ]}
+    ],
+    relations: [
+      { from: '수위_관측', fromCol: '댐ID', to: '댐_기본정보', toCol: '댐ID' },
+      { from: '댐_기본정보', fromCol: '유역코드', to: '유역_정보', toCol: '유역코드' },
+      { from: '강우_관측', fromCol: '유역코드', to: '유역_정보', toCol: '유역코드' },
+      { from: '방류_이력', fromCol: '댐ID', to: '댐_기본정보', toCol: '댐ID' }
+    ]
+  },
+  '수자원관리_물리모델': {
+    tables: [
+      { name: 'TB_DAM_BASIC', physName: 'TB_DAM_BASIC', color: '#fa8c16', cols: [
+        { name: 'DAM_ID', type: 'VARCHAR(10)', pk: true }, { name: 'DAM_NM', type: 'VARCHAR(100)' },
+        { name: 'BSN_CD', type: 'VARCHAR(10)', fk: true, fkRef: 'TB_BASIN_INFO.BSN_CD' }, { name: 'CMPL_YR', type: 'INTEGER' }, { name: 'TOT_STRG_QTY', type: 'DECIMAL(15,2)' }
+      ]},
+      { name: 'TB_WATER_LVL', physName: 'TB_WATER_LVL', color: '#fa8c16', cols: [
+        { name: 'OBSRV_ID', type: 'BIGINT', pk: true }, { name: 'DAM_ID', type: 'VARCHAR(10)', fk: true, fkRef: 'TB_DAM_BASIC.DAM_ID' },
+        { name: 'OBSRV_DT', type: 'TIMESTAMP' }, { name: 'WTR_LVL', type: 'DECIMAL(8,3)' }, { name: 'INFLW_QTY', type: 'DECIMAL(12,2)' }
+      ]},
+      { name: 'TB_BASIN_INFO', physName: 'TB_BASIN_INFO', color: '#52c41a', cols: [
+        { name: 'BSN_CD', type: 'VARCHAR(10)', pk: true }, { name: 'BSN_NM', type: 'VARCHAR(100)' },
+        { name: 'BSN_AREA', type: 'DECIMAL(12,2)' }, { name: 'JRSD_OFFC', type: 'VARCHAR(50)' }
+      ]},
+      { name: 'TB_RAINFALL', physName: 'TB_RAINFALL', color: '#fa8c16', cols: [
+        { name: 'OBSRV_ID', type: 'BIGINT', pk: true }, { name: 'BSN_CD', type: 'VARCHAR(10)', fk: true, fkRef: 'TB_BASIN_INFO.BSN_CD' },
+        { name: 'OBSRV_DT', type: 'TIMESTAMP' }, { name: 'RNFL_QTY', type: 'DECIMAL(8,2)' }
+      ]},
+      { name: 'TB_DISCHARGE', physName: 'TB_DISCHARGE', color: '#fa8c16', cols: [
+        { name: 'DSCHRG_ID', type: 'BIGINT', pk: true }, { name: 'DAM_ID', type: 'VARCHAR(10)', fk: true, fkRef: 'TB_DAM_BASIC.DAM_ID' },
+        { name: 'DSCHRG_DT', type: 'TIMESTAMP' }, { name: 'DSCHRG_QTY', type: 'DECIMAL(12,2)' }, { name: 'DSCHRG_RSN', type: 'VARCHAR(200)' }
+      ]}
+    ],
+    relations: [
+      { from: 'TB_WATER_LVL', fromCol: 'DAM_ID', to: 'TB_DAM_BASIC', toCol: 'DAM_ID' },
+      { from: 'TB_DAM_BASIC', fromCol: 'BSN_CD', to: 'TB_BASIN_INFO', toCol: 'BSN_CD' },
+      { from: 'TB_RAINFALL', fromCol: 'BSN_CD', to: 'TB_BASIN_INFO', toCol: 'BSN_CD' },
+      { from: 'TB_DISCHARGE', fromCol: 'DAM_ID', to: 'TB_DAM_BASIC', toCol: 'DAM_ID' }
+    ]
+  },
+  '상수도관리_논리모델': {
+    tables: [
+      { name: '관로_기본정보', physName: 'TB_PIPE_BASIC', color: '#1677ff', cols: [
+        { name: '관로ID', type: 'VARCHAR(15)', pk: true }, { name: '관로명', type: 'VARCHAR(100)' },
+        { name: '관경', type: 'DECIMAL(8,2)' }, { name: '관종', type: 'VARCHAR(20)' }, { name: '매설년도', type: 'INTEGER' }
+      ]},
+      { name: '수압_관측', physName: 'TB_PRESSURE', color: '#1677ff', cols: [
+        { name: '관측ID', type: 'BIGINT', pk: true }, { name: '관로ID', type: 'VARCHAR(15)', fk: true, fkRef: '관로_기본정보.관로ID' },
+        { name: '관측일시', type: 'TIMESTAMP' }, { name: '수압', type: 'DECIMAL(8,3)' }
+      ]},
+      { name: '밸브_정보', physName: 'TB_VALVE', color: '#52c41a', cols: [
+        { name: '밸브ID', type: 'VARCHAR(15)', pk: true }, { name: '관로ID', type: 'VARCHAR(15)', fk: true, fkRef: '관로_기본정보.관로ID' },
+        { name: '밸브종류', type: 'VARCHAR(20)' }, { name: '설치일', type: 'DATE' }
+      ]}
+    ],
+    relations: [
+      { from: '수압_관측', fromCol: '관로ID', to: '관로_기본정보', toCol: '관로ID' },
+      { from: '밸브_정보', fromCol: '관로ID', to: '관로_기본정보', toCol: '관로ID' }
+    ]
+  }
+};
+
+function renderDynamicERD(containerId, modelName) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  var data = MODEL_ERD_DATA[modelName];
+  if (!data) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:#888;">선택한 모델의 ERD 데이터가 없습니다.</div>';
+    return;
+  }
+  // 레이아웃 계산: 3열 그리드 배치
+  var tableWidth = 200;
+  var tableGap = 40;
+  var colCount = Math.min(3, data.tables.length);
+  var positions = [];
+  data.tables.forEach(function(t, i) {
+    var col = i % colCount;
+    var row = Math.floor(i / colCount);
+    positions.push({ x: col * (tableWidth + tableGap) + 20, y: row * 220 + 20 });
+  });
+  var totalW = colCount * (tableWidth + tableGap) + 20;
+  var totalH = (Math.ceil(data.tables.length / colCount)) * 220 + 40;
+
+  var html = '<div style="position:relative; width:' + totalW + 'px; min-height:' + totalH + 'px;">';
+  // SVG 관계선 오버레이
+  html += '<svg class="erd-svg-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;">';
+  html += '<defs><marker id="arrowhead-' + containerId + '" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#999"/></marker></defs>';
+  // 관계선 렌더링
+  data.relations.forEach(function(rel) {
+    var fromIdx = -1, toIdx = -1;
+    data.tables.forEach(function(t, i) { if (t.name === rel.from) fromIdx = i; if (t.name === rel.to) toIdx = i; });
+    if (fromIdx < 0 || toIdx < 0) return;
+    var fp = positions[fromIdx];
+    var tp = positions[toIdx];
+    // FK 컬럼 인덱스로 Y 오프셋 계산
+    var fromColIdx = 0;
+    data.tables[fromIdx].cols.forEach(function(c, ci) { if (c.name === rel.fromCol) fromColIdx = ci; });
+    var toColIdx = 0;
+    data.tables[toIdx].cols.forEach(function(c, ci) { if (c.name === rel.toCol) toColIdx = ci; });
+    var x1 = fp.x + tableWidth;
+    var y1 = fp.y + 36 + fromColIdx * 26 + 13;
+    var x2 = tp.x;
+    var y2 = tp.y + 36 + toColIdx * 26 + 13;
+    // 같은 열이면 좌측으로 우회
+    if (Math.abs(fp.x - tp.x) < 10) {
+      x1 = fp.x;
+      x2 = tp.x;
+      html += '<path d="M' + x1 + ',' + y1 + ' C' + (x1 - 60) + ',' + y1 + ' ' + (x2 - 60) + ',' + y2 + ' ' + x2 + ',' + y2 + '" fill="none" stroke="#999" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowhead-' + containerId + ')"/>';
+    } else {
+      var midX = (x1 + x2) / 2;
+      html += '<path d="M' + x1 + ',' + y1 + ' C' + midX + ',' + y1 + ' ' + midX + ',' + y2 + ' ' + x2 + ',' + y2 + '" fill="none" stroke="#999" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowhead-' + containerId + ')"/>';
+    }
+  });
+  html += '</svg>';
+  // 테이블 박스 렌더링
+  data.tables.forEach(function(t, i) {
+    var pos = positions[i];
+    html += '<div class="erd-table" style="position:absolute;left:' + pos.x + 'px;top:' + pos.y + 'px;width:' + tableWidth + 'px;z-index:2;">';
+    html += '<div class="erd-header" style="background:' + (t.color || '#1677ff') + ';">' + t.name + '</div>';
+    html += '<div class="erd-cols">';
+    t.cols.forEach(function(c) {
+      html += '<div class="erd-col">';
+      if (c.pk) html += '<span class="pk">PK</span>';
+      else if (c.fk) html += '<span class="fk">FK</span>';
+      else html += '<span style="display:inline-block;width:24px;"></span>';
+      html += '<span style="flex:1;">' + c.name + '</span>';
+      html += '<span style="color:#999;font-size:10px;">' + c.type + '</span>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function updateERDPreview(modelName) {
+  var titleEl = document.getElementById('erd-preview-title');
+  if (titleEl) titleEl.textContent = modelName;
+  renderDynamicERD('erd-preview-container', modelName);
+}
+
+// 모델 상세 진입 시 ERD 렌더링
+var currentDetailModel = '수자원관리_논리모델';
+function openModelDetail(modelName) {
+  currentDetailModel = modelName || '수자원관리_논리모델';
+  navigate('meta-model-detail');
+  setTimeout(function() {
+    renderDynamicERD('erd-detail-container', currentDetailModel);
+    renderModelMapping(currentDetailModel);
+  }, 100);
+}
+
+// ========== 논리/물리 매핑 ==========
+var MODEL_MAPPING_DATA = {
+  '수자원관리_논리모델': [
+    { logical: '댐_기본정보', physical: 'TB_DAM_BASIC', status: 'full', matchRate: 100, diff: '-' },
+    { logical: '수위_관측', physical: 'TB_WATER_LVL', status: 'full', matchRate: 100, diff: '-' },
+    { logical: '유역_정보', physical: 'TB_BASIN_INFO', status: 'full', matchRate: 100, diff: '-' },
+    { logical: '강우_관측', physical: 'TB_RAINFALL', status: 'partial', matchRate: 85, diff: '물리모델에 인덱스 컬럼 추가' },
+    { logical: '방류_이력', physical: 'TB_DISCHARGE', status: 'full', matchRate: 100, diff: '-' }
+  ]
+};
+
+function renderModelMapping(modelName) {
+  var container = document.getElementById('model-mapping-container');
+  if (!container) return;
+  var data = MODEL_MAPPING_DATA[modelName] || MODEL_MAPPING_DATA['수자원관리_논리모델'];
+  var html = '<table class="data-table"><thead><tr>';
+  html += '<th>논리 엔티티명</th><th>물리 테이블명</th><th>매핑 상태</th><th>컬럼 일치율</th><th>차이점 요약</th>';
+  html += '</tr></thead><tbody>';
+  data.forEach(function(row) {
+    var statusBadge = row.status === 'full'
+      ? '<span class="badge badge-success" style="font-size:11px;">완전일치</span>'
+      : row.status === 'partial'
+        ? '<span class="badge badge-warning" style="font-size:11px;">부분일치</span>'
+        : '<span class="badge badge-error" style="font-size:11px;">미매핑</span>';
+    var rateColor = row.matchRate >= 95 ? '#2e7d32' : row.matchRate >= 80 ? '#f57c00' : '#c62828';
+    html += '<tr>';
+    html += '<td><strong>' + row.logical + '</strong></td>';
+    html += '<td><code style="background:#f5f5f5;padding:2px 6px;border-radius:3px;font-size:12px;">' + row.physical + '</code></td>';
+    html += '<td>' + statusBadge + '</td>';
+    html += '<td style="text-align:center;"><span style="font-weight:700;color:' + rateColor + ';">' + row.matchRate + '%</span></td>';
+    html += '<td style="font-size:12px;color:#666;">' + row.diff + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+// ========== 버전 비교 ==========
+var MODEL_VERSION_DATA = {
+  '수자원관리_논리모델': {
+    versions: ['v3.1', 'v3.0', 'v2.5', 'v2.0'],
+    diffs: {
+      'v3.1_v3.0': [
+        { type: 'add', entity: '방류_이력', detail: '신규 엔티티 추가' },
+        { type: 'modify', entity: '수위_관측', detail: '유입량 컬럼 데이터타입 변경 (DECIMAL(10,2)→DECIMAL(12,2))' }
+      ],
+      'v3.0_v2.5': [
+        { type: 'modify', entity: '댐_기본정보', detail: '총저수량 컬럼 추가' },
+        { type: 'delete', entity: '임시_관측', detail: '불필요 엔티티 삭제' }
+      ],
+      'v2.5_v2.0': [
+        { type: 'add', entity: '강우_관측', detail: '신규 엔티티 추가' },
+        { type: 'modify', entity: '유역_정보', detail: '관할지사 컬럼 추가' },
+        { type: 'modify', entity: '댐_기본정보', detail: '유역코드 FK 관계 추가' }
+      ]
+    }
+  }
+};
+
+function openVersionCompareModal() {
+  var modal = document.getElementById('version-compare-modal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  var data = MODEL_VERSION_DATA[currentDetailModel] || MODEL_VERSION_DATA['수자원관리_논리모델'];
+  var sel1 = document.getElementById('version-select-from');
+  var sel2 = document.getElementById('version-select-to');
+  if (sel1 && sel2) {
+    sel1.innerHTML = '';
+    sel2.innerHTML = '';
+    data.versions.forEach(function(v, i) {
+      sel1.innerHTML += '<option value="' + v + '"' + (i === 0 ? ' selected' : '') + '>' + v + '</option>';
+      sel2.innerHTML += '<option value="' + v + '"' + (i === 1 ? ' selected' : '') + '>' + v + '</option>';
+    });
+  }
+  compareModelVersions();
+}
+
+function compareModelVersions() {
+  var sel1 = document.getElementById('version-select-from');
+  var sel2 = document.getElementById('version-select-to');
+  var resultEl = document.getElementById('version-diff-result');
+  if (!sel1 || !sel2 || !resultEl) return;
+  var v1 = sel1.value;
+  var v2 = sel2.value;
+  var data = MODEL_VERSION_DATA[currentDetailModel] || MODEL_VERSION_DATA['수자원관리_논리모델'];
+  var diffKey = v1 + '_' + v2;
+  var diffs = data.diffs[diffKey] || [];
+  if (diffs.length === 0) {
+    resultEl.innerHTML = '<div style="text-align:center;padding:30px;color:#888;">선택한 두 버전 간 차이가 없거나 비교 데이터가 없습니다.</div>';
+    return;
+  }
+  var html = '<table class="data-table"><thead><tr><th style="width:80px;">변경유형</th><th style="width:150px;">엔티티</th><th>변경 내용</th></tr></thead><tbody>';
+  diffs.forEach(function(d) {
+    var typeStyle = '', typeLabel = '';
+    if (d.type === 'add') { typeStyle = 'background:#e8f5e9;color:#2e7d32;'; typeLabel = '➕ 추가'; }
+    else if (d.type === 'delete') { typeStyle = 'background:#ffebee;color:#c62828;'; typeLabel = '🗑️ 삭제'; }
+    else { typeStyle = 'background:#fff8e1;color:#f57c00;'; typeLabel = '✏️ 변경'; }
+    html += '<tr style="' + typeStyle + '">';
+    html += '<td style="font-weight:600;">' + typeLabel + '</td>';
+    html += '<td><strong>' + d.entity + '</strong></td>';
+    html += '<td style="font-size:12px;">' + d.detail + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  resultEl.innerHTML = html;
+}
+
+// ========== 004: 데이터 분류 관리 — 자동 분류 / 벌크 분류 / 승인 워크플로우 ==========
+var AUTO_CLASSIFY_RESULTS = [
+  { asset: 'TB_DAM_BASIC_INFO', currentDomain: '미분류', suggestDomain: '수자원', confidence: 95, rule: '수자원 도메인 자동분류', selected: true },
+  { asset: 'TB_RIVER_FLOW_DATA', currentDomain: '미분류', suggestDomain: '수자원', confidence: 92, rule: '수자원 도메인 자동분류', selected: true },
+  { asset: 'TB_PIPE_PRESSURE', currentDomain: '미분류', suggestDomain: '상수도', confidence: 88, rule: '상수도 도메인 분류', selected: true },
+  { asset: 'TB_CUST_PERSONAL', currentDomain: '3등급', suggestDomain: '1등급', confidence: 98, rule: 'PII 보안등급 자동설정', selected: true },
+  { asset: 'TB_ENERGY_PROD', currentDomain: '미분류', suggestDomain: '에너지', confidence: 85, rule: '키워드 기반 분류', selected: false },
+  { asset: 'TB_VALVE_STATUS', currentDomain: '미분류', suggestDomain: '상수도', confidence: 78, rule: '상수도 도메인 분류', selected: false },
+  { asset: 'TB_WATER_QUALITY_RAW', currentDomain: '미분류', suggestDomain: '수질', confidence: 91, rule: '키워드 기반 분류', selected: true },
+  { asset: 'TB_SENSOR_CONFIG', currentDomain: '미분류', suggestDomain: '계측', confidence: 86, rule: '계측 업무영역 태그', selected: true }
+];
+
+function runAutoClassify() {
+  var resultDiv = document.getElementById('auto-classify-result');
+  if (!resultDiv) return;
+  resultDiv.style.display = 'block';
+  var colDefs = [
+    { headerCheckboxSelection: true, checkboxSelection: true, width: 50, headerCheckboxSelectionFilteredOnly: true },
+    { headerName: '데이터 자산', field: 'asset', flex: 1.5, cellRenderer: function(p) { return '<strong>' + p.value + '</strong>'; } },
+    { headerName: '현재 분류', field: 'currentDomain', width: 100, cellRenderer: function(p) { return '<span class="badge badge-ghost" style="font-size:11px;">' + p.value + '</span>'; } },
+    { headerName: '제안 분류', field: 'suggestDomain', width: 100, cellRenderer: function(p) { return '<span class="badge badge-info" style="font-size:11px;">' + p.value + '</span>'; } },
+    { headerName: '신뢰도', field: 'confidence', width: 90, cellRenderer: function(p) {
+      var color = p.value >= 90 ? '#2e7d32' : p.value >= 80 ? '#f57c00' : '#c62828';
+      return '<span style="font-weight:700; color:' + color + ';">' + p.value + '%</span>';
+    }},
+    { headerName: '근거 규칙', field: 'rule', flex: 1, cellStyle: { fontSize: '12px', color: '#666' } }
+  ];
+  initAGGrid('ag-grid-auto-classify', colDefs, AUTO_CLASSIFY_RESULTS, {
+    pagination: false, domLayout: 'autoHeight',
+    rowSelection: 'multiple', suppressRowClickSelection: true
+  });
+  showToast('자동 분류 분석이 완료되었습니다. (' + AUTO_CLASSIFY_RESULTS.length + '건)', 'success');
+}
+
+function applyClassifyResults() {
+  var grid = agGridInstances['ag-grid-auto-classify'];
+  var selected = grid ? grid.getSelectedRows() : [];
+  if (selected.length === 0) { showToast('적용할 항목을 선택해 주세요.', 'error'); return; }
+  showToast(selected.length + '건의 분류가 적용되었습니다.', 'success');
+  document.getElementById('auto-classify-result').style.display = 'none';
+}
+
+var UNCLASSIFIED_ASSETS = [
+  { no:1, asset:'TB_UNKNOWN_DATA_01', source:'RWIS', tables:12, cols:87, lastMod:'2026-03-15' },
+  { no:2, asset:'TB_LEGACY_BACKUP', source:'SAP', tables:1, cols:23, lastMod:'2026-03-10' },
+  { no:3, asset:'TB_TEMP_IMPORT_2025', source:'기상청', tables:3, cols:45, lastMod:'2026-02-28' },
+  { no:4, asset:'TB_RAW_SENSOR_BUF', source:'RWIS', tables:1, cols:15, lastMod:'2026-03-16' },
+  { no:5, asset:'TB_WATER_TEST_RESULT', source:'수질DB', tables:5, cols:62, lastMod:'2026-03-14' },
+  { no:6, asset:'TB_PUMP_CTRL_LOG', source:'SCADA', tables:2, cols:31, lastMod:'2026-03-12' },
+  { no:7, asset:'TB_BILLING_RAW', source:'SAP', tables:4, cols:58, lastMod:'2026-03-11' },
+  { no:8, asset:'TB_GIS_LAYER_TEMP', source:'GIS', tables:1, cols:19, lastMod:'2026-03-09' },
+  { no:9, asset:'TB_ENERGY_MONITOR', source:'발전', tables:2, cols:28, lastMod:'2026-03-13' },
+  { no:10, asset:'TB_RAINFALL_STAGE', source:'기상청', tables:1, cols:11, lastMod:'2026-03-17' }
+];
+
+function openBulkClassifyModal() {
+  var modal = document.getElementById('bulk-classify-modal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  var colDefs = [
+    { headerCheckboxSelection: true, checkboxSelection: true, width: 50 },
+    { headerName: '#', field: 'no', width: 50 },
+    { headerName: '데이터 자산', field: 'asset', flex: 1.5, cellRenderer: function(p) { return '<strong style="color:#1967d2;">' + p.value + '</strong>'; } },
+    { headerName: '소스', field: 'source', width: 80 },
+    { headerName: '테이블', field: 'tables', width: 70, cellStyle: { textAlign: 'center' } },
+    { headerName: '컬럼', field: 'cols', width: 70, cellStyle: { textAlign: 'center' } },
+    { headerName: '최종 수정', field: 'lastMod', width: 110 }
+  ];
+  setTimeout(function() {
+    initAGGrid('ag-grid-bulk-classify', colDefs, UNCLASSIFIED_ASSETS, {
+      pagination: false, rowSelection: 'multiple', suppressRowClickSelection: true,
+      onSelectionChanged: function(event) {
+        var cnt = event.api.getSelectedRows().length;
+        var el = document.getElementById('bulk-selected-count');
+        if (el) el.textContent = '선택: ' + cnt + '건';
+        validateBulkClassification();
+      }
+    });
+  }, 100);
+}
+
+function validateBulkClassification() {
+  var domain = (document.getElementById('bulk-domain') || {}).value;
+  var security = (document.getElementById('bulk-security') || {}).value;
+  var warningEl = document.getElementById('bulk-conflict-warning');
+  if (!warningEl) return;
+  if (!domain && security) {
+    warningEl.style.display = 'block';
+    warningEl.innerHTML = '⚠️ 충돌 규칙 위반: 도메인 미할당 자산은 보안등급 설정 불가';
+  } else {
+    warningEl.style.display = 'none';
+  }
+}
+
+function applyBulkClassify() {
+  var grid = agGridInstances['ag-grid-bulk-classify'];
+  var selected = grid ? grid.getSelectedRows() : [];
+  if (selected.length === 0) { showToast('적용할 자산을 선택해 주세요.', 'error'); return; }
+  var domain = (document.getElementById('bulk-domain') || {}).value;
+  var security = (document.getElementById('bulk-security') || {}).value;
+  var area = (document.getElementById('bulk-area') || {}).value;
+  if (!domain && !security && !area) { showToast('최소 하나의 분류를 선택해 주세요.', 'error'); return; }
+  // 충돌 검증
+  if (!domain && security) { showToast('충돌 규칙 위반: 도메인 미할당 자산은 보안등급 설정 불가', 'error'); return; }
+  showToast(selected.length + '건의 자산에 분류가 일괄 적용되었습니다.', 'success');
+  closeModalHelper('bulk-classify-modal');
+}
+
+function approveClassifyChange(btn) {
+  var row = btn.closest('tr');
+  if (!row) return;
+  var statusCell = row.querySelector('.badge');
+  if (statusCell) { statusCell.className = 'badge badge-success'; statusCell.style.fontSize = '11px'; statusCell.textContent = '승인 완료'; }
+  btn.disabled = true;
+  btn.nextElementSibling.disabled = true;
+  btn.textContent = '완료';
+  btn.style.opacity = '0.5';
+  btn.nextElementSibling.style.opacity = '0.5';
+  showToast('분류 변경이 승인되었습니다.', 'success');
+}
+
+function rejectClassifyChange(btn) {
+  var row = btn.closest('tr');
+  if (!row) return;
+  var statusCell = row.querySelector('.badge');
+  if (statusCell) { statusCell.className = 'badge badge-error'; statusCell.style.fontSize = '11px'; statusCell.textContent = '반려'; }
+  btn.disabled = true;
+  btn.previousElementSibling.disabled = true;
+  btn.textContent = '반려됨';
+  btn.style.opacity = '0.5';
+  btn.previousElementSibling.style.opacity = '0.5';
+  showToast('분류 변경이 반려되었습니다.', 'error');
+}
+
 var glossaryInitialized = false;
 function initGlossaryScreen() {
   if (glossaryInitialized) return;
@@ -3813,6 +4284,8 @@ function initGlossaryScreen() {
   loadDomainGroups();
   loadDomainDistribution();
   initGlossaryFilters();
+  loadSyncStatus();
+  initAdvancedSearchDomains();
   switchGlossaryTab('word');
 }
 
@@ -3873,7 +4346,7 @@ function initMetadataGrids() {
 
   // 데이터모델 목록 (meta-model)
   initAGGrid('ag-grid-meta-model', [
-    { field: 'name', headerName: '모델명', flex: 1, cellRenderer: function (p) { return '<strong>' + p.value + '</strong>'; } },
+    { field: 'name', headerName: '모델명', flex: 1, cellRenderer: function (p) { return '<a href="#" onclick="openModelDetail(\'' + p.value + '\');return false;" style="color:#1a1a2e;text-decoration:none;font-weight:700;cursor:pointer;">' + p.value + '</a>'; } },
     {
       field: 'type', headerName: '유형', width: 80, cellRenderer: function (p) {
         var m = { '논리': { bg: '#e8f0fe', c: '#1967d2' }, '물리': { bg: '#fff3e0', c: '#ef6c00' } };
@@ -4160,6 +4633,129 @@ function initGlossaryFilters() {
   }
 }
 
+// ========== 고급 검색 기능 ==========
+function toggleAdvancedSearch() {
+  var panel = document.getElementById('advanced-search-panel');
+  var btn = document.getElementById('advanced-search-toggle');
+  if (!panel) return;
+  var isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  if (btn) btn.textContent = isOpen ? '🔍 고급 검색' : '🔍 고급 검색 ▲';
+}
+
+function initAdvancedSearchDomains() {
+  var sel = document.getElementById('adv-domain-group');
+  if (!sel) return;
+  var groups = glossaryState.domainGroups || [];
+  if (groups.length > 0) {
+    groups.forEach(function(g) {
+      var opt = document.createElement('option');
+      opt.value = g.group_id || g.id;
+      opt.textContent = g.group_name || g.name;
+      sel.appendChild(opt);
+    });
+  } else {
+    // 목업 데이터 추가
+    ['수자원', '에너지', '상수도', '수질', '고객', '계측'].forEach(function(name) {
+      var opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      sel.appendChild(opt);
+    });
+  }
+}
+
+function collectAdvancedFilters() {
+  return {
+    logicalName: (document.getElementById('adv-logical-name') || {}).value || '',
+    physicalName: (document.getElementById('adv-physical-name') || {}).value || '',
+    dataType: (document.getElementById('adv-data-type') || {}).value || '',
+    domainGroup: (document.getElementById('adv-domain-group') || {}).value || '',
+    dateFrom: (document.getElementById('adv-date-from') || {}).value || '',
+    dateTo: (document.getElementById('adv-date-to') || {}).value || ''
+  };
+}
+
+function applyAdvancedSearch() {
+  var filters = collectAdvancedFilters();
+  glossaryState.advancedFilters = filters;
+  // 기존 검색어에 논리명+물리명을 합쳐서 적용
+  var combinedSearch = [filters.logicalName, filters.physicalName].filter(Boolean).join(' ');
+  var tab = glossaryState.activeTab;
+  if (tab === 'word') {
+    glossaryState.wordSearch = combinedSearch;
+    glossaryState.wordPage = 1;
+    loadWordGrid();
+  } else if (tab === 'term') {
+    glossaryState.termSearch = combinedSearch;
+    if (filters.domainGroup) glossaryState.termDomainGroupId = filters.domainGroup;
+    glossaryState.termPage = 1;
+    loadTermGrid();
+  } else {
+    glossaryState.codeSearch = combinedSearch;
+    glossaryState.codePage = 1;
+    loadCodeGroupGrid();
+  }
+  showToast('고급 검색 조건이 적용되었습니다.', 'success');
+}
+
+function resetAdvancedSearch() {
+  ['adv-logical-name', 'adv-physical-name'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  ['adv-data-type', 'adv-domain-group'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.selectedIndex = 0;
+  });
+  ['adv-date-from', 'adv-date-to'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  glossaryState.advancedFilters = null;
+  var searchInput = document.getElementById('glossary-search-input');
+  if (searchInput) searchInput.value = '';
+  var tab = glossaryState.activeTab;
+  if (tab === 'word') { glossaryState.wordSearch = ''; glossaryState.wordPage = 1; loadWordGrid(); }
+  else if (tab === 'term') { glossaryState.termSearch = ''; glossaryState.termDomainGroupId = null; glossaryState.termPage = 1; loadTermGrid(); }
+  else { glossaryState.codeSearch = ''; glossaryState.codePage = 1; loadCodeGroupGrid(); }
+  showToast('검색 조건이 초기화되었습니다.', 'success');
+}
+
+// ========== 동기화 상태 표시 ==========
+function loadSyncStatus() {
+  // 프로토타입 목업 - 동기화 상태 데이터
+  var syncData = {
+    status: 'normal', // normal | syncing | error
+    lastSync: '2026-03-17 09:00:15',
+    systems: [
+      { name: 'RWIS', status: 'ok' },
+      { name: 'SAP', status: 'ok' },
+      { name: '기상청API', status: 'ok' },
+      { name: '수질DB', status: 'syncing' }
+    ]
+  };
+  var bar = document.getElementById('sync-status-bar');
+  if (!bar) return;
+  var badge = document.getElementById('sync-status-badge');
+  var timeEl = document.getElementById('sync-last-time');
+  if (badge) {
+    if (syncData.status === 'normal') { badge.className = 'badge badge-success'; badge.textContent = '● 정상'; }
+    else if (syncData.status === 'syncing') { badge.className = 'badge badge-warning'; badge.textContent = '● 동기화 중'; }
+    else { badge.className = 'badge badge-error'; badge.textContent = '● 오류'; }
+  }
+  if (timeEl) timeEl.textContent = '마지막 동기화: ' + syncData.lastSync;
+}
+
+function runSyncNow() {
+  var badge = document.getElementById('sync-status-badge');
+  if (badge) { badge.className = 'badge badge-warning'; badge.textContent = '● 동기화 중...'; }
+  showToast('동기화를 실행합니다...', 'success');
+  setTimeout(function() {
+    if (badge) { badge.className = 'badge badge-success'; badge.textContent = '● 정상'; }
+    var timeEl = document.getElementById('sync-last-time');
+    if (timeEl) timeEl.textContent = '마지막 동기화: ' + new Date().toISOString().replace('T', ' ').substring(0, 19);
+    showToast('동기화가 완료되었습니다.', 'success');
+  }, 2000);
+}
+
 // 커스텀 페이지네이션 UI
 function updateGlossaryPagination(containerId, currentPage, totalPages, totalItems, pageSize, tabKey) {
   var el = document.getElementById(containerId);
@@ -4423,6 +5019,153 @@ function openCodeGroupDetail(groupId) {
   });
 }
 
+// ===== 위젯 템플릿 등록 — 실시간 미리보기 =====
+function updateWidgetRegPreview() {
+  var name = (document.getElementById('wtr-name') || {}).value || '';
+  var icon = (document.getElementById('wtr-icon') || {}).value || '🧩';
+  var cat = (document.getElementById('wtr-category') || {}).value || '';
+  var desc = (document.getElementById('wtr-desc') || {}).value || '';
+  var color = (document.getElementById('wtr-color-hex') || {}).value || '#1677ff';
+  var dataLevel = (document.getElementById('wtr-data-level') || {}).value || '';
+  var emptyEl = document.getElementById('wtr-preview-empty');
+  var widgetEl = document.getElementById('wtr-preview-widget');
+  if (!emptyEl || !widgetEl) return;
+
+  // 접근 역할 수집
+  var allChk = document.getElementById('wt-role-all');
+  var roleChks = document.querySelectorAll('.wtr-role-chk:checked');
+  var roles = [];
+  if (allChk && allChk.checked) { roles = ['전체']; }
+  else {
+    var roleMap = { employee: '수공직원', partner: '협력직원', engineer: '엔지니어', admin: '관리자' };
+    roleChks.forEach(function(c) { roles.push(roleMap[c.value] || c.value); });
+  }
+
+  // 데이터등급 라벨
+  var lvlMap = { public: '공개', internal: '내부일반', restricted: '내부중요', confidential: '기밀' };
+  var lvlLabel = lvlMap[dataLevel] || '—';
+  var catLabel = { kpi: 'KPI', card: '카드', list: '리스트', chart: '차트' }[cat] || '—';
+
+  // 메타 정보 업데이트
+  var metaCat = document.getElementById('wtr-meta-cat');
+  var metaRoles = document.getElementById('wtr-meta-roles');
+  var metaLevel = document.getElementById('wtr-meta-level');
+  if (metaCat) metaCat.textContent = catLabel;
+  if (metaRoles) metaRoles.textContent = roles.length ? roles.join(', ') : '—';
+  if (metaLevel) metaLevel.textContent = lvlLabel;
+
+  if (!cat) {
+    emptyEl.style.display = 'block';
+    widgetEl.style.display = 'none';
+    return;
+  }
+  emptyEl.style.display = 'none';
+  widgetEl.style.display = 'block';
+
+  // 카테고리별 샘플 SVG 생성
+  var svgContent = _generatePreviewSVG(cat, color, name || '새 위젯');
+
+  // 데이터등급 배지
+  var lvlBadge = '';
+  if (dataLevel) {
+    var lvlColors = { public: { bg: '#e8f5e9', c: '#2e7d32' }, internal: { bg: '#e3f2fd', c: '#1565c0' }, restricted: { bg: '#fff3e0', c: '#ef6c00' }, confidential: { bg: '#ffebee', c: '#c62828' } };
+    var lc = lvlColors[dataLevel] || { bg: '#f5f5f5', c: '#666' };
+    lvlBadge = '<span style="background:' + lc.bg + ';color:' + lc.c + ';padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600;">' + lvlLabel + '</span>';
+  }
+
+  // 위젯 카드 렌더링
+  var html = '<div class="wtr-preview-card" style="border:1px solid #e5e7eb; border-radius:10px; overflow:hidden; background:#fff;">';
+  // 헤더
+  html += '<div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid #f0f0f0;">';
+  html += '<div style="display:flex; align-items:center; gap:8px;">';
+  html += '<span style="font-size:18px;">' + icon + '</span>';
+  html += '<span style="font-size:13px; font-weight:700; color:#1a1a2e;">' + (name || '위젯명 미입력') + '</span>';
+  html += '</div>';
+  html += lvlBadge;
+  html += '</div>';
+  // SVG 미리보기 본문
+  html += '<div style="padding:12px 14px; min-height:80px;">' + svgContent + '</div>';
+  // 설명 + 카테고리 태그
+  if (desc || cat) {
+    html += '<div style="padding:8px 14px 12px; border-top:1px solid #f0f0f0; display:flex; align-items:center; justify-content:space-between;">';
+    html += '<span style="font-size:11px; color:#94a3b8; max-width:70%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + (desc || '') + '</span>';
+    var catBg = { kpi: '#e8f0fe', card: '#fff7e6', list: '#e6fffb', chart: '#f9f0ff' };
+    var catC = { kpi: '#1967d2', card: '#d48806', list: '#13c2c2', chart: '#722ed1' };
+    html += '<span style="background:' + (catBg[cat] || '#f5f5f5') + ';color:' + (catC[cat] || '#666') + ';padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;">' + catLabel + '</span>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // 대시보드 배치 미리보기 (축소판)
+  html += '<div style="margin-top:14px;">';
+  html += '<div style="font-size:11px; color:#94a3b8; font-weight:500; margin-bottom:6px;">대시보드 배치 미리보기</div>';
+  html += '<div style="background:#f8fafc; border:1px solid #e5e7eb; border-radius:8px; padding:10px; display:grid; grid-template-columns:repeat(3,1fr); gap:6px;">';
+  // 3x2 그리드 중 하나를 색상 표시
+  for (var gi = 0; gi < 6; gi++) {
+    if (gi === 0) {
+      html += '<div style="background:' + color + '15; border:2px solid ' + color + '; border-radius:6px; padding:8px; text-align:center;">';
+      html += '<span style="font-size:14px;">' + icon + '</span>';
+      html += '<div style="font-size:9px; color:' + color + '; font-weight:600; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + (name || '새 위젯') + '</div>';
+      html += '</div>';
+    } else {
+      html += '<div style="background:#f0f0f0; border:1px dashed #d1d5db; border-radius:6px; padding:8px; text-align:center;">';
+      html += '<div style="font-size:9px; color:#bbb;">빈 슬롯</div>';
+      html += '</div>';
+    }
+  }
+  html += '</div>';
+  html += '</div>';
+
+  widgetEl.innerHTML = html;
+}
+
+// 카테고리별 샘플 SVG 생성 (미리보기용)
+function _generatePreviewSVG(cat, color, name) {
+  var lighten = color + '33';
+  if (cat === 'kpi') {
+    return '<svg viewBox="0 0 280 70" style="width:100%;height:auto;">'
+      + '<text x="10" y="28" font-size="26" font-weight="700" fill="' + color + '">1,247</text>'
+      + '<text x="10" y="48" font-size="12" fill="#52c41a">▲ 12.5%</text>'
+      + '<text x="85" y="48" font-size="10" fill="#888">전일 대비</text>'
+      + '<polyline points="140,55 165,48 190,52 215,38 240,42 265,30" fill="none" stroke="' + color + '" stroke-width="2"/>'
+      + '<circle cx="265" cy="30" r="3" fill="' + color + '"/>'
+      + '</svg>';
+  }
+  if (cat === 'card') {
+    return '<svg viewBox="0 0 280 70" style="width:100%;height:auto;">'
+      + '<text x="8" y="16" font-size="10" fill="' + color + '" font-weight="600">항목 A</text>'
+      + '<rect x="65" y="8" width="80" height="10" fill="' + lighten + '" rx="3"/><rect x="65" y="8" width="60" height="10" fill="' + color + '" rx="3"/><text x="150" y="17" font-size="9" fill="#666">24건</text>'
+      + '<text x="8" y="36" font-size="10" fill="' + color + '" font-weight="600">항목 B</text>'
+      + '<rect x="65" y="28" width="80" height="10" fill="' + lighten + '" rx="3"/><rect x="65" y="28" width="48" height="10" fill="' + color + '" rx="3"/><text x="150" y="37" font-size="9" fill="#666">18건</text>'
+      + '<text x="8" y="56" font-size="10" fill="' + color + '" font-weight="600">항목 C</text>'
+      + '<rect x="65" y="48" width="80" height="10" fill="' + lighten + '" rx="3"/><rect x="65" y="48" width="72" height="10" fill="' + color + '" rx="3"/><text x="150" y="57" font-size="9" fill="#666">32건</text>'
+      + '</svg>';
+  }
+  if (cat === 'list') {
+    return '<svg viewBox="0 0 280 70" style="width:100%;height:auto;">'
+      + '<rect x="4" y="4" width="272" height="16" fill="' + lighten + '" rx="3"/>'
+      + '<text x="10" y="15" font-size="9" fill="' + color + '">● 샘플 항목 1 — 최근 업데이트됨</text>'
+      + '<rect x="4" y="24" width="272" height="16" fill="#f8fafc" rx="3"/>'
+      + '<text x="10" y="35" font-size="9" fill="#475569">● 샘플 항목 2 — 정상 처리 완료</text>'
+      + '<rect x="4" y="44" width="272" height="16" fill="' + lighten + '" rx="3"/>'
+      + '<text x="10" y="55" font-size="9" fill="' + color + '">● 샘플 항목 3 — 검토 대기중</text>'
+      + '</svg>';
+  }
+  if (cat === 'chart') {
+    return '<svg viewBox="0 0 280 70" style="width:100%;height:auto;">'
+      + '<rect x="20" y="40" width="24" height="25" fill="' + lighten + '" rx="2"/><rect x="20" y="48" width="24" height="17" fill="' + color + '" rx="2"/>'
+      + '<rect x="52" y="30" width="24" height="35" fill="' + lighten + '" rx="2"/><rect x="52" y="38" width="24" height="27" fill="' + color + '" rx="2"/>'
+      + '<rect x="84" y="20" width="24" height="45" fill="' + lighten + '" rx="2"/><rect x="84" y="30" width="24" height="35" fill="' + color + '" rx="2"/>'
+      + '<rect x="116" y="35" width="24" height="30" fill="' + lighten + '" rx="2"/><rect x="116" y="42" width="24" height="23" fill="' + color + '" rx="2"/>'
+      + '<rect x="148" y="15" width="24" height="50" fill="' + lighten + '" rx="2"/><rect x="148" y="22" width="24" height="43" fill="' + color + '" rx="2"/>'
+      + '<rect x="180" y="25" width="24" height="40" fill="' + lighten + '" rx="2"/><rect x="180" y="32" width="24" height="33" fill="' + color + '" rx="2"/>'
+      + '<rect x="212" y="10" width="24" height="55" fill="' + lighten + '" rx="2"/><rect x="212" y="18" width="24" height="47" fill="' + color + '" rx="2"/>'
+      + '<line x1="12" y1="65" x2="244" y2="65" stroke="#e5e7eb" stroke-width="1"/>'
+      + '</svg>';
+  }
+  return '<div style="text-align:center;padding:20px;color:#94a3b8;">미리보기 없음</div>';
+}
+
 // ===== 위젯 템플릿 관리 AG Grid =====
 function initWidgetTemplateGrid() {
   var catLabels = { kpi:'KPI', card:'카드', list:'리스트', chart:'차트' };
@@ -4556,9 +5299,23 @@ function initChartContentGrid() {
 }
 
 // ===== 위젯 상세보기 =====
+var _wdCurrentWidget = null; // 현재 상세보기 중인 위젯
+
 function showWidgetDetail(id) {
   var w = WS_WIDGETS.find(function(x) { return x.id === id; });
   if (!w) { alert('위젯을 찾을 수 없습니다.'); return; }
+  _wdCurrentWidget = w;
+
+  // 읽기 모드로 초기화
+  wdCancelEdit();
+  wdRenderView(w);
+  wdRenderPreview(w);
+  document.getElementById('widget-detail-title').textContent = w.icon + ' ' + w.name + ' — 위젯 상세';
+  navigate('sys-widget-template-detail');
+}
+
+// 읽기전용 뷰 렌더링
+function wdRenderView(w) {
   var catLabels = { kpi:'KPI', card:'카드', list:'리스트', chart:'차트' };
   var catColors = { kpi:{ bg:'#e8f0fe', c:'#1967d2' }, card:{ bg:'#fff7e6', c:'#d48806' }, list:{ bg:'#e6fffb', c:'#13c2c2' }, chart:{ bg:'#f9f0ff', c:'#722ed1' } };
   var roleLabels = { employee:'수공직원', partner:'협력직원', engineer:'엔지니어', admin:'관리자' };
@@ -4569,7 +5326,7 @@ function showWidgetDetail(id) {
   var dlLbl = DATA_LEVEL_LABELS[w.dataLevel] || w.dataLevel;
   var dlBg = DATA_LEVEL_BG[w.dataLevel] || '#f5f5f5';
   var dlC = DATA_LEVEL_COLORS[w.dataLevel] || '#666';
-  var html = ''
+  document.getElementById('widget-detail-content').innerHTML = ''
     + '<div class="detail-info-item"><div class="dil">위젯 ID</div><div class="div"><code style="background:#f5f5f5;padding:2px 8px;border-radius:4px;font-size:12px;">'+w.id+'</code></div></div>'
     + '<div class="detail-info-item"><div class="dil">위젯명</div><div class="div"><strong>'+w.icon+' '+w.name+'</strong></div></div>'
     + '<div class="detail-info-item"><div class="dil">카테고리</div><div class="div"><span style="background:'+cs.bg+';color:'+cs.c+';padding:2px 10px;border-radius:4px;font-size:12px;">'+(catLabels[w.cat]||w.cat)+'</span></div></div>'
@@ -4579,11 +5336,169 @@ function showWidgetDetail(id) {
     + '<div class="detail-info-item"><div class="dil">색상</div><div class="div"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:'+w.color+';border:1px solid #ddd;vertical-align:middle;margin-right:6px;"></span>'+w.color+'</div></div>'
     + '<div class="detail-info-item"><div class="dil">등록일</div><div class="div">2026-01-15</div></div>'
     + '<div class="detail-info-item"><div class="dil">최종수정</div><div class="div">2026-02-28</div></div>';
-  document.getElementById('widget-detail-content').innerHTML = html;
+}
+
+// 미리보기 렌더링 (실시간)
+function wdRenderPreview(w) {
+  var box = document.getElementById('wd-preview-box');
+  if (!box) return;
+  // contentMap에서 실제 콘텐츠 가져오기 (renderHomeWidgets와 동일)
+  var content = wdGetWidgetContent(w.id);
+  var borderColor = w.color || '#1677ff';
+  box.innerHTML = '<div class="card" style="padding:0; overflow:hidden; border-top:3px solid ' + borderColor + ';">'
+    + '<div class="card-head" style="padding:10px 16px; display:flex; justify-content:space-between; align-items:center;">'
+    + '  <div class="card-title" style="font-size:13px; font-weight:600;">' + (w.icon || '') + ' ' + (w.name || '') + '</div>'
+    + '  <span style="font-size:9px; background:#f5f5f5; color:#888; padding:2px 6px; border-radius:3px;">' + ({ kpi:'KPI', card:'카드', list:'리스트', chart:'차트' }[w.cat] || w.cat) + '</span>'
+    + '</div>'
+    + '<div class="card-body" style="padding:12px 16px;">' + content + '</div>'
+    + '<div style="padding:6px 16px; border-top:1px solid var(--border-color); font-size:9px; color:var(--text-secondary); display:flex; justify-content:space-between;">'
+    + '  <span>' + (w.desc || '') + '</span>'
+    + '  <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + borderColor + ';"></span>'
+    + '</div></div>';
+}
+
+// 위젯 콘텐츠 가져오기 (renderHomeWidgets의 contentMap 재활용)
+function wdGetWidgetContent(wid) {
+  var contentMap = {
+    'w-active-users': function() { return '<div style="font-size:28px; font-weight:700; color:#1677ff;">847</div><div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">전일 대비 +3.2% · 동시접속 156</div>'; },
+    'w-availability': function() { return '<div style="font-size:28px; font-weight:700; color:#52c41a;">99.97%</div><div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">월간 SLA 충족</div>'; },
+    'w-security': function() { return '<div style="font-size:28px; font-weight:700; color:#ff4d4f;">12</div><div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">금주 탐지 · 비정상접근 3</div>'; },
+    'w-storage': function() { return '<div style="font-size:28px; font-weight:700; color:#722ed1;">78.4%</div><div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">4.7TB / 6.0TB</div>'; },
+    'w-pipeline': function() { return '<div style="font-size:28px; font-weight:700; color:#00acc1;">97.8%</div><div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">142/145 성공</div>'; },
+    'w-collection': function() { return '<div style="font-size:28px; font-weight:700; color:#26a69a;">1.24M</div><div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">전일 대비 +8.3%</div>'; },
+    'w-quality': function() { return '<div style="font-size:28px; font-weight:700; color:#52c41a;">94.2</div><div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">완전성 96.8 · 정합성 93.1</div>'; },
+    'w-api-calls': function() { return '<div style="font-size:28px; font-weight:700; color:#42a5f5;">1,840</div><div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">일평균 · 응답률 99.2%</div>'; },
+    'w-quality-bar': function() { return buildQualityBars([{label:"완전성",value:96.8,color:"#52c41a"},{label:"정합성",value:93.1,color:"#1677ff"},{label:"유효성",value:92.7,color:"#fa8c16"},{label:"적시성",value:94.8,color:"#722ed1"}]); },
+    'w-resource': function() { return buildQualityBars([{label:"CPU",value:62,color:"#52c41a"},{label:"메모리",value:78,color:"#fa8c16"},{label:"디스크",value:45,color:"#1677ff"},{label:"네트워크",value:33,color:"#722ed1"}]); },
+    'w-link-progress': function() { return buildQualityBars([{label:"SAP-ETL",value:90,color:"#1677ff"},{label:"RWIS-CDC",value:80,color:"#40a9ff"},{label:"SCADA",value:96,color:"#096dd9"},{label:"기상청API",value:70,color:"#fa8c16"},{label:"환경부API",value:88,color:"#52c41a"}]); },
+    'w-link-error': function() { return '<div style="font-size:11px;"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:#f5222d; font-weight:700; font-size:16px;">14<span style="font-size:10px; font-weight:400;"> 건</span></span><span style="background:#fff1f0; color:#cf1322; padding:2px 6px; border-radius:3px; font-size:9px;">실시간</span></div><div style="padding:3px 0; border-bottom:1px solid var(--border-color); font-size:10px;"><span style="color:#cf1322;">●</span> SAP-ETL 타임아웃 <span style="float:right; color:#888;">5건</span></div><div style="padding:3px 0; border-bottom:1px solid var(--border-color); font-size:10px;"><span style="color:#cf1322;">●</span> RWIS 인증오류 <span style="float:right; color:#888;">3건</span></div><div style="padding:3px 0; font-size:10px;"><span style="color:#fa8c16;">▲</span> 기상청API 응답지연 <span style="float:right; color:#888;">4건</span></div></div>'; },
+    'w-load-stage': function() { return '<div style="font-size:11px;"><div style="margin-bottom:4px;"><span style="color:#13c2c2; font-size:9px;">수집</span><div style="display:flex; align-items:center; gap:4px;"><div style="flex:1; height:6px; background:#e6fffb; border-radius:3px;"><div style="width:95%; height:100%; background:#13c2c2; border-radius:3px;"></div></div><span style="font-size:9px; color:#13c2c2; min-width:36px;">1.24M</span></div></div><div style="margin-bottom:4px;"><span style="color:#36cfc9; font-size:9px;">정제</span><div style="display:flex; align-items:center; gap:4px;"><div style="flex:1; height:6px; background:#e6fffb; border-radius:3px;"><div style="width:83%; height:100%; background:#36cfc9; border-radius:3px;"></div></div><span style="font-size:9px; color:#36cfc9; min-width:36px;">1.08M</span></div></div><div style="margin-bottom:4px;"><span style="color:#08979c; font-size:9px;">적재</span><div style="display:flex; align-items:center; gap:4px;"><div style="flex:1; height:6px; background:#e6fffb; border-radius:3px;"><div style="width:75%; height:100%; background:#08979c; border-radius:3px;"></div></div><span style="font-size:9px; color:#08979c; min-width:36px;">982K</span></div></div><div><span style="color:#006d75; font-size:9px;">분석</span><div style="display:flex; align-items:center; gap:4px;"><div style="flex:1; height:6px; background:#e6fffb; border-radius:3px;"><div style="width:67%; height:100%; background:#006d75; border-radius:3px;"></div></div><span style="font-size:9px; color:#006d75; min-width:36px;">874K</span></div></div></div>'; },
+    'w-load-error': function() { return '<div style="font-size:11px;"><div style="display:flex; gap:8px; margin-bottom:6px;"><div style="flex:1; text-align:center; padding:4px; background:#fff1f0; border-radius:4px;"><div style="font-size:14px; font-weight:700; color:#cf1322;">23</div><div style="font-size:8px; color:#888;">수집오류</div></div><div style="flex:1; text-align:center; padding:4px; background:#fff7e6; border-radius:4px;"><div style="font-size:14px; font-weight:700; color:#fa8c16;">15</div><div style="font-size:8px; color:#888;">정제오류</div></div><div style="flex:1; text-align:center; padding:4px; background:#fff1f0; border-radius:4px;"><div style="font-size:14px; font-weight:700; color:#cf1322;">8</div><div style="font-size:8px; color:#888;">적재오류</div></div><div style="flex:1; text-align:center; padding:4px; background:#e6f7ff; border-radius:4px;"><div style="font-size:14px; font-weight:700; color:#1677ff;">4</div><div style="font-size:8px; color:#888;">스키마</div></div></div><div style="font-size:9px; color:#52c41a;">↘ 전주 대비 -18% 감소세</div></div>'; },
+    'w-system-data': function() { return '<div style="font-size:11px;"><div style="padding:3px 0; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between;"><span>🗄️ 수문DB</span><span><strong style="color:#2f54eb;">842K</strong> <span style="font-size:9px; color:#52c41a;">▲2.1%</span></span></div><div style="padding:3px 0; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between;"><span>🧪 수질DB</span><span><strong style="color:#597ef7;">621K</strong> <span style="font-size:9px; color:#52c41a;">▲1.5%</span></span></div><div style="padding:3px 0; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between;"><span>🌤️ 기상DB</span><span><strong style="color:#85a5ff;">487K</strong> <span style="font-size:9px; color:#fa8c16;">-0.3%</span></span></div><div style="padding:3px 0; display:flex; justify-content:space-between;"><span>⚡ 에너지DB</span><span><strong style="color:#adc6ff;">356K</strong> <span style="font-size:9px; color:#52c41a;">▲3.8%</span></span></div></div>'; }
+  };
+  var fn = contentMap[wid];
+  if (fn) return fn();
+  // SVG 미리보기 fallback
+  var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
+  if (w && w.svg) return w.svg;
+  return '<div style="font-size:12px; color:var(--text-secondary); text-align:center; padding:16px;">미리보기 데이터</div>';
+}
+
+// 수정 모드 토글
+function wdToggleEditMode() {
+  var w = _wdCurrentWidget;
+  if (!w) return;
+  var viewEl = document.getElementById('wd-view-mode');
+  var editEl = document.getElementById('wd-edit-mode');
+  var saveBtns = document.getElementById('wd-save-btns');
+  var toggleBtn = document.getElementById('wd-edit-toggle-btn');
+
+  viewEl.style.display = 'none';
+  editEl.style.display = '';
+  saveBtns.style.display = 'flex';
+  toggleBtn.style.display = 'none';
+
+  // 폼에 현재 값 채우기
+  document.getElementById('wd-edit-id').value = w.id;
+  document.getElementById('wd-edit-name').value = w.name;
+  document.getElementById('wd-edit-icon').value = w.icon;
+  document.getElementById('wd-edit-cat').value = w.cat;
+  document.getElementById('wd-edit-desc').value = w.desc;
+  document.getElementById('wd-edit-color').value = w.color;
+  document.getElementById('wd-edit-color-picker').value = w.color;
+  document.getElementById('wd-edit-level').value = w.dataLevel;
+
+  // 역할 체크박스
+  var allChk = document.getElementById('wd-role-all');
+  var roleChks = document.querySelectorAll('.wd-role-chk');
+  if (w.roles === 'all') {
+    allChk.checked = true;
+    roleChks.forEach(function(c) { c.checked = false; c.disabled = true; });
+  } else {
+    allChk.checked = false;
+    roleChks.forEach(function(c) { c.checked = w.roles.indexOf(c.value) !== -1; c.disabled = false; });
+  }
+}
+
+// 수정 취소 → 읽기 모드
+function wdCancelEdit() {
+  var viewEl = document.getElementById('wd-view-mode');
+  var editEl = document.getElementById('wd-edit-mode');
+  var saveBtns = document.getElementById('wd-save-btns');
+  var toggleBtn = document.getElementById('wd-edit-toggle-btn');
+  if (viewEl) viewEl.style.display = '';
+  if (editEl) editEl.style.display = 'none';
+  if (saveBtns) saveBtns.style.display = 'none';
+  if (toggleBtn) toggleBtn.style.display = '';
+
+  // 원래 위젯으로 미리보기 복원
+  if (_wdCurrentWidget) wdRenderPreview(_wdCurrentWidget);
+}
+
+// 전체 역할 체크박스 토글
+function wdRoleAllToggle(el) {
+  var roleChks = document.querySelectorAll('.wd-role-chk');
+  roleChks.forEach(function(c) { c.checked = false; c.disabled = el.checked; });
+}
+
+// 실시간 미리보기 업데이트 (입력 시마다 호출)
+function wdPreviewUpdate() {
+  var w = _wdCurrentWidget;
+  if (!w) return;
+  // 임시 위젯 객체 생성
+  var temp = {
+    id: w.id,
+    name: document.getElementById('wd-edit-name').value || w.name,
+    icon: document.getElementById('wd-edit-icon').value || w.icon,
+    cat: document.getElementById('wd-edit-cat').value || w.cat,
+    desc: document.getElementById('wd-edit-desc').value || w.desc,
+    color: document.getElementById('wd-edit-color').value || w.color,
+    svg: w.svg
+  };
+  wdRenderPreview(temp);
+  document.getElementById('widget-detail-title').textContent = temp.icon + ' ' + temp.name + ' — 위젯 상세';
+}
+
+// 저장: WS_WIDGETS 배열에 반영
+function wdSaveWidget() {
+  var w = _wdCurrentWidget;
+  if (!w) return;
+  w.name = document.getElementById('wd-edit-name').value;
+  w.icon = document.getElementById('wd-edit-icon').value;
+  w.cat = document.getElementById('wd-edit-cat').value;
+  w.desc = document.getElementById('wd-edit-desc').value;
+  w.color = document.getElementById('wd-edit-color').value;
+  w.dataLevel = document.getElementById('wd-edit-level').value;
+
+  // 역할 수집
+  var allChk = document.getElementById('wd-role-all');
+  if (allChk.checked) {
+    w.roles = 'all';
+  } else {
+    var roles = [];
+    document.querySelectorAll('.wd-role-chk:checked').forEach(function(c) { roles.push(c.value); });
+    w.roles = roles.length > 0 ? roles : 'all';
+  }
+
+  // 읽기 모드로 전환 & 뷰 갱신
+  wdCancelEdit();
+  wdRenderView(w);
+  wdRenderPreview(w);
   document.getElementById('widget-detail-title').textContent = w.icon + ' ' + w.name + ' — 위젯 상세';
-  document.getElementById('widget-detail-edit-btn').onclick = function() { alert('위젯 수정: ' + w.id); };
-  document.getElementById('widget-detail-delete-btn').onclick = function() { alert('위젯 삭제: ' + w.id); };
-  navigate('sys-widget-template-detail');
+  showToast('위젯 "' + w.name + '"이 수정되었습니다. 대시보드에 즉시 반영됩니다.', 'success');
+}
+
+// 삭제
+function wdDeleteWidget() {
+  var w = _wdCurrentWidget;
+  if (!w) return;
+  if (!confirm('"' + w.name + '" 위젯을 삭제하시겠습니까?')) return;
+  var idx = WS_WIDGETS.indexOf(w);
+  if (idx !== -1) WS_WIDGETS.splice(idx, 1);
+  wsPlacedWidgets = wsPlacedWidgets.filter(function(id) { return id !== w.id; });
+  _wdCurrentWidget = null;
+  showToast('위젯이 삭제되었습니다.', 'success');
+  navigate('sys-widget-template');
 }
 
 // ===== 차트 상세보기 =====
@@ -5394,10 +6309,15 @@ function buildAdminCards() {
 function renderHomeWidgets() {
   var area = document.getElementById('home-widget-area');
   if (!area) return;
-  // localStorage에서 저장된 레이아웃 복원 시도 (메모리에 없을 때)
-  if (wsPlacedWidgets.length === 0) wsLoadSavedLayout();
   // 위젯설정에서 배치한 위젯 목록 가져옴 (없으면 기본값)
-  var placed = wsPlacedWidgets.length > 0 ? wsPlacedWidgets.slice() : ['w-active-users','w-availability','w-security','w-storage','w-my-work','w-notices','w-quality-bar'];
+  var defaultWidgets = {
+    employee: ['w-my-work','w-quality','w-quality-bar','w-notices','w-popular','w-collection-trend','w-system-data'],
+    partner:  ['w-quality','w-popular','w-notices','w-download-stats','w-data-catalog','w-system-data'],
+    engineer: ['w-pipeline','w-collection','w-link-progress','w-link-error','w-load-stage','w-load-error','w-system-data','w-error-log','w-collection-trend'],
+    admin:    ['w-active-users','w-availability','w-security','w-storage','w-link-progress','w-link-error','w-system-data','w-load-stage','w-quality-bar']
+  };
+  var group = getLoginGroup(window.currentRoleKey);
+  var placed = wsPlacedWidgets.length > 0 ? wsPlacedWidgets.slice() : (defaultWidgets[group] || defaultWidgets.employee);
   if (placed.length === 0) {
     area.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-secondary); font-size:12px; border:2px dashed var(--border-color); border-radius:10px;">위젯이 없습니다. <a href="#" onclick="navigate(\'widget-settings\'); return false;" style="color:#1677ff;">위젯 설정</a>에서 위젯을 추가하세요.</div>';
     return;
@@ -5422,7 +6342,12 @@ function renderHomeWidgets() {
     'w-quality-bar': function() { return buildQualityBars([{label:"완전성",value:96.8,color:"#52c41a"},{label:"정합성",value:93.1,color:"#1677ff"},{label:"유효성",value:92.7,color:"#fa8c16"},{label:"적시성",value:94.8,color:"#722ed1"}]); },
     'w-resource': function() { return buildQualityBars([{label:"CPU",value:62,color:"#52c41a"},{label:"메모리",value:78,color:"#fa8c16"},{label:"디스크",value:45,color:"#1677ff"},{label:"네트워크",value:33,color:"#722ed1"}]); },
     'w-approval': function() { return '<ul class="mini-list" style="margin:0; font-size:12px;"><li onclick="navigate(\'process\')" style="cursor:pointer"><span style="color:#fa8c16;">● 결재대기</span><span style="color:#fa8c16; font-weight:600;">2건</span></li><li><span style="color:#52c41a;">● 승인완료</span><span>15건</span></li><li><span style="color:#cf1322;">● 반려</span><span style="color:#cf1322;">1건</span></li></ul>'; },
-    'w-collection-trend': function() { return '<svg viewBox="0 0 200 60" style="width:100%;"><defs><linearGradient id="hct" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1677ff" stop-opacity="0.15"/><stop offset="100%" stop-color="#1677ff" stop-opacity="0.02"/></linearGradient></defs><polygon points="5,30 25,22 45,28 65,18 85,24 105,20 125,15 145,22 165,12 185,18 200,14 200,55 5,55" fill="url(#hct)"/><polyline points="5,30 25,22 45,28 65,18 85,24 105,20 125,15 145,22 165,12 185,18 200,14" fill="none" stroke="#1677ff" stroke-width="1.5"/></svg>'; }
+    'w-collection-trend': function() { return '<svg viewBox="0 0 200 60" style="width:100%;"><defs><linearGradient id="hct" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1677ff" stop-opacity="0.15"/><stop offset="100%" stop-color="#1677ff" stop-opacity="0.02"/></linearGradient></defs><polygon points="5,30 25,22 45,28 65,18 85,24 105,20 125,15 145,22 165,12 185,18 200,14 200,55 5,55" fill="url(#hct)"/><polyline points="5,30 25,22 45,28 65,18 85,24 105,20 125,15 145,22 165,12 185,18 200,14" fill="none" stroke="#1677ff" stroke-width="1.5"/></svg>'; },
+    'w-link-progress': function() { return buildQualityBars([{label:"SAP-ETL",value:90,color:"#1677ff"},{label:"RWIS-CDC",value:80,color:"#40a9ff"},{label:"SCADA",value:96,color:"#096dd9"},{label:"기상청API",value:70,color:"#fa8c16"},{label:"환경부API",value:88,color:"#52c41a"}]); },
+    'w-link-error': function() { return '<div style="font-size:11px;"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="color:#f5222d; font-weight:700; font-size:16px;">14<span style="font-size:10px; font-weight:400;"> 건</span></span><span style="background:#fff1f0; color:#cf1322; padding:2px 6px; border-radius:3px; font-size:9px;">실시간</span></div><div style="padding:3px 0; border-bottom:1px solid var(--border-color); font-size:10px;"><span style="color:#cf1322;">●</span> SAP-ETL 타임아웃 <span style="float:right; color:#888;">5건</span></div><div style="padding:3px 0; border-bottom:1px solid var(--border-color); font-size:10px;"><span style="color:#cf1322;">●</span> RWIS 인증오류 <span style="float:right; color:#888;">3건</span></div><div style="padding:3px 0; border-bottom:1px solid var(--border-color); font-size:10px;"><span style="color:#fa8c16;">▲</span> 기상청API 응답지연 <span style="float:right; color:#888;">4건</span></div><div style="padding:3px 0; font-size:10px;"><span style="color:#fa8c16;">▲</span> SCADA 연결끊김 <span style="float:right; color:#888;">2건</span></div></div>'; },
+    'w-load-stage': function() { return '<div style="font-size:11px;"><div style="margin-bottom:4px;"><span style="color:#13c2c2; font-size:9px;">수집</span><div style="display:flex; align-items:center; gap:4px;"><div style="flex:1; height:6px; background:#e6fffb; border-radius:3px;"><div style="width:95%; height:100%; background:#13c2c2; border-radius:3px;"></div></div><span style="font-size:9px; color:#13c2c2; min-width:36px;">1.24M</span></div></div><div style="margin-bottom:4px;"><span style="color:#36cfc9; font-size:9px;">정제</span><div style="display:flex; align-items:center; gap:4px;"><div style="flex:1; height:6px; background:#e6fffb; border-radius:3px;"><div style="width:83%; height:100%; background:#36cfc9; border-radius:3px;"></div></div><span style="font-size:9px; color:#36cfc9; min-width:36px;">1.08M</span></div></div><div style="margin-bottom:4px;"><span style="color:#08979c; font-size:9px;">적재</span><div style="display:flex; align-items:center; gap:4px;"><div style="flex:1; height:6px; background:#e6fffb; border-radius:3px;"><div style="width:75%; height:100%; background:#08979c; border-radius:3px;"></div></div><span style="font-size:9px; color:#08979c; min-width:36px;">982K</span></div></div><div><span style="color:#006d75; font-size:9px;">분석</span><div style="display:flex; align-items:center; gap:4px;"><div style="flex:1; height:6px; background:#e6fffb; border-radius:3px;"><div style="width:67%; height:100%; background:#006d75; border-radius:3px;"></div></div><span style="font-size:9px; color:#006d75; min-width:36px;">874K</span></div></div></div>'; },
+    'w-load-error': function() { return '<div style="font-size:11px;"><div style="display:flex; gap:8px; margin-bottom:6px;"><div style="flex:1; text-align:center; padding:4px; background:#fff1f0; border-radius:4px;"><div style="font-size:14px; font-weight:700; color:#cf1322;">23</div><div style="font-size:8px; color:#888;">수집오류</div></div><div style="flex:1; text-align:center; padding:4px; background:#fff7e6; border-radius:4px;"><div style="font-size:14px; font-weight:700; color:#fa8c16;">15</div><div style="font-size:8px; color:#888;">정제오류</div></div><div style="flex:1; text-align:center; padding:4px; background:#fff1f0; border-radius:4px;"><div style="font-size:14px; font-weight:700; color:#cf1322;">8</div><div style="font-size:8px; color:#888;">적재오류</div></div><div style="flex:1; text-align:center; padding:4px; background:#e6f7ff; border-radius:4px;"><div style="font-size:14px; font-weight:700; color:#1677ff;">4</div><div style="font-size:8px; color:#888;">스키마</div></div></div><div style="font-size:9px; color:#52c41a;">↘ 전주 대비 -18% 감소세</div></div>'; },
+    'w-system-data': function() { return '<div style="font-size:11px;"><div style="padding:3px 0; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between;"><span>🗄️ 수문DB</span><span><strong style="color:#2f54eb;">842K</strong> <span style="font-size:9px; color:#52c41a;">▲2.1%</span></span></div><div style="padding:3px 0; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between;"><span>🧪 수질DB</span><span><strong style="color:#597ef7;">621K</strong> <span style="font-size:9px; color:#52c41a;">▲1.5%</span></span></div><div style="padding:3px 0; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between;"><span>🌤️ 기상DB</span><span><strong style="color:#85a5ff;">487K</strong> <span style="font-size:9px; color:#fa8c16;">-0.3%</span></span></div><div style="padding:3px 0; display:flex; justify-content:space-between;"><span>⚡ 에너지DB</span><span><strong style="color:#adc6ff;">356K</strong> <span style="font-size:9px; color:#52c41a;">▲3.8%</span></span></div></div>'; }
   };
   placed.forEach(function(wid) {
     var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
@@ -5678,18 +6603,43 @@ var WS_WIDGETS = [
   { id: 'w-api-latency', icon: '⏱️', name: 'API 응답시간', cat: 'chart', desc: 'API 엔드포인트별 평균 응답시간', color: '#e91e63', roles: ['engineer','admin'], dataLevel: 'restricted',
     svg:'<svg viewBox="0 0 180 50"><polyline points="5,30 25,28 45,35 65,22 85,25 105,18 125,32 145,15 165,20" fill="none" stroke="#e91e63" stroke-width="2"/><line x1="5" y1="35" x2="175" y2="35" stroke="#f5222d" stroke-width="1" stroke-dasharray="4,3"/><text x="140" y="44" font-size="6" fill="#f5222d">SLA 200ms</text></svg>' },
   { id: 'w-disk-trend', icon: '💽', name: '디스크 사용 추이', cat: 'chart', desc: 'HDFS/DB 디스크 사용량 변화 추이', color: '#6d4c41', roles: ['engineer','admin'], dataLevel: 'restricted',
-    svg:'<svg viewBox="0 0 180 50"><path d="M5,42 Q30,40 55,38 T105,32 T155,24 L175,22 V48 H5Z" fill="#efebe9" stroke="#6d4c41" stroke-width="1.5"/><path d="M5,46 Q30,44 55,43 T105,40 T155,36 L175,34 V48 H5Z" fill="#d7ccc850" stroke="#8d6e63" stroke-width="1" stroke-dasharray="3,2"/><line x1="5" y1="15" x2="175" y2="15" stroke="#f5222d" stroke-width="1" stroke-dasharray="4,3"/><text x="140" y="13" font-size="6" fill="#f5222d">임계 90%</text></svg>' }
+    svg:'<svg viewBox="0 0 180 50"><path d="M5,42 Q30,40 55,38 T105,32 T155,24 L175,22 V48 H5Z" fill="#efebe9" stroke="#6d4c41" stroke-width="1.5"/><path d="M5,46 Q30,44 55,43 T105,40 T155,36 L175,34 V48 H5Z" fill="#d7ccc850" stroke="#8d6e63" stroke-width="1" stroke-dasharray="3,2"/><line x1="5" y1="15" x2="175" y2="15" stroke="#f5222d" stroke-width="1" stroke-dasharray="4,3"/><text x="140" y="13" font-size="6" fill="#f5222d">임계 90%</text></svg>' },
+  // ── 연계·적재 모니터링 (Sub_No 001~005 보강) ──
+  { id: 'w-link-progress', icon: '🔗', name: '연계 데이터 진행상태', cat: 'chart', desc: '시스템별 데이터 수집/처리 상태 실시간 집계', color: '#1677ff', roles: ['employee','engineer','admin'], dataLevel: 'internal',
+    svg:'<svg viewBox="0 0 180 50"><text x="5" y="10" font-size="6" fill="#888">SAP</text><rect x="28" y="4" width="70" height="7" fill="#e6f7ff" rx="2"/><rect x="28" y="4" width="63" height="7" fill="#1677ff" rx="2"/><text x="102" y="10" font-size="6" fill="#52c41a">90%</text><text x="5" y="22" font-size="6" fill="#888">RWIS</text><rect x="28" y="16" width="70" height="7" fill="#e6f7ff" rx="2"/><rect x="28" y="16" width="56" height="7" fill="#40a9ff" rx="2"/><text x="102" y="22" font-size="6" fill="#52c41a">80%</text><text x="5" y="34" font-size="6" fill="#888">SCADA</text><rect x="28" y="28" width="70" height="7" fill="#e6f7ff" rx="2"/><rect x="28" y="28" width="67" height="7" fill="#096dd9" rx="2"/><text x="102" y="34" font-size="6" fill="#52c41a">96%</text><text x="5" y="46" font-size="6" fill="#888">기상청</text><rect x="28" y="40" width="70" height="7" fill="#e6f7ff" rx="2"/><rect x="28" y="40" width="49" height="7" fill="#69b1ff" rx="2"/><text x="102" y="46" font-size="6" fill="#fa8c16">70%</text></svg>' },
+  { id: 'w-link-error', icon: '🚨', name: '연계 데이터 오류현황', cat: 'chart', desc: '연계 시스템별 오류 발생 건수 및 실시간 알림', color: '#f5222d', roles: ['employee','engineer','admin'], dataLevel: 'internal',
+    svg:'<svg viewBox="0 0 180 50"><text x="5" y="10" font-size="7" fill="#f5222d" font-weight="600">오류 합계: 14건</text><text x="100" y="10" font-size="6" fill="#fa8c16">경고: 8건</text><rect x="5" y="15" width="170" height="10" fill="#fff1f0" rx="2"/><text x="8" y="23" font-size="6" fill="#cf1322">SAP-ETL 타임아웃 5건 · RWIS 인증오류 3건</text><rect x="5" y="28" width="170" height="10" fill="#fff7e6" rx="2"/><text x="8" y="36" font-size="6" fill="#ad6800">기상청API 응답지연 4건 · SCADA 연결끊김 2건</text><text x="5" y="47" font-size="6" fill="#888">최근발생: 11:42 SAP-ETL NullPointerException</text></svg>' },
+  { id: 'w-load-stage', icon: '📦', name: '적재 단계별 진행현황', cat: 'chart', desc: '데이터 수집→정제→적재→분석 단계별 처리 실적 시각화', color: '#13c2c2', roles: ['employee','engineer','admin'], dataLevel: 'internal',
+    svg:'<svg viewBox="0 0 180 50"><text x="5" y="10" font-size="6" fill="#888">수집</text><rect x="28" y="4" width="55" height="7" fill="#e6fffb" rx="2"/><rect x="28" y="4" width="52" height="7" fill="#13c2c2" rx="2"/><text x="88" y="10" font-size="6" fill="#13c2c2">1.24M</text><text x="5" y="22" font-size="6" fill="#888">정제</text><rect x="28" y="16" width="55" height="7" fill="#e6fffb" rx="2"/><rect x="28" y="16" width="46" height="7" fill="#36cfc9" rx="2"/><text x="88" y="22" font-size="6" fill="#36cfc9">1.08M</text><text x="5" y="34" font-size="6" fill="#888">적재</text><rect x="28" y="28" width="55" height="7" fill="#e6fffb" rx="2"/><rect x="28" y="28" width="42" height="7" fill="#08979c" rx="2"/><text x="88" y="34" font-size="6" fill="#08979c">982K</text><text x="5" y="46" font-size="6" fill="#888">분석</text><rect x="28" y="40" width="55" height="7" fill="#e6fffb" rx="2"/><rect x="28" y="40" width="38" height="7" fill="#006d75" rx="2"/><text x="88" y="46" font-size="6" fill="#006d75">874K</text><polyline points="120,8 135,8 135,20" fill="none" stroke="#ccc" stroke-width="1" marker-end="url(#arr)"/><polyline points="120,20 135,20 135,32" fill="none" stroke="#ccc" stroke-width="1"/><polyline points="120,32 135,32 135,44" fill="none" stroke="#ccc" stroke-width="1"/></svg>' },
+  { id: 'w-load-error', icon: '⚠️', name: '적재 오류 시각화', cat: 'chart', desc: '적재 단계별 오류 발생 현황 모니터링 및 시각적 알림', color: '#eb2f96', roles: ['engineer','admin'], dataLevel: 'restricted',
+    svg:'<svg viewBox="0 0 180 50"><text x="5" y="10" font-size="6" fill="#888">수집오류</text><rect x="42" y="4" width="12" height="7" fill="#ff4d4f" rx="1"/><text x="58" y="10" font-size="6" fill="#cf1322">23</text><text x="80" y="10" font-size="6" fill="#888">정제오류</text><rect x="115" y="4" width="8" height="7" fill="#ff7875" rx="1"/><text x="127" y="10" font-size="6" fill="#cf1322">15</text><text x="5" y="24" font-size="6" fill="#888">적재오류</text><rect x="42" y="18" width="5" height="7" fill="#ffa39e" rx="1"/><text x="51" y="24" font-size="6" fill="#cf1322">8</text><text x="80" y="24" font-size="6" fill="#888">스키마</text><rect x="115" y="18" width="3" height="7" fill="#ffccc7" rx="1"/><text x="122" y="24" font-size="6" fill="#cf1322">4</text><polyline points="5,34 30,38 55,32 80,36 105,30 130,34 155,28 180,32" fill="none" stroke="#eb2f96" stroke-width="1.5"/><text x="5" y="48" font-size="6" fill="#eb2f96">7일 추이 ↘ 감소세 (전주 대비 -18%)</text></svg>' },
+  { id: 'w-system-data', icon: '🗄️', name: '시스템별 보유 데이터', cat: 'chart', desc: '시스템(분류)별 보유 데이터 양 및 최근 변동 내역 통계', color: '#2f54eb', roles: ['employee','engineer','admin'], dataLevel: 'internal',
+    svg:'<svg viewBox="0 0 180 50"><text x="5" y="10" font-size="6" fill="#888">수문DB</text><rect x="38" y="4" width="50" height="7" fill="#2f54eb" rx="2"/><text x="92" y="10" font-size="6" fill="#2f54eb">842K</text><text x="120" y="10" font-size="6" fill="#52c41a">▲2.1%</text><text x="5" y="22" font-size="6" fill="#888">수질DB</text><rect x="38" y="16" width="42" height="7" fill="#597ef7" rx="2"/><text x="84" y="22" font-size="6" fill="#597ef7">621K</text><text x="120" y="22" font-size="6" fill="#52c41a">▲1.5%</text><text x="5" y="34" font-size="6" fill="#888">기상DB</text><rect x="38" y="28" width="35" height="7" fill="#85a5ff" rx="2"/><text x="77" y="34" font-size="6" fill="#85a5ff">487K</text><text x="120" y="34" font-size="6" fill="#fa8c16">-0.3%</text><text x="5" y="46" font-size="6" fill="#888">에너지DB</text><rect x="38" y="40" width="28" height="7" fill="#adc6ff" rx="2"/><text x="70" y="46" font-size="6" fill="#adc6ff">356K</text><text x="120" y="46" font-size="6" fill="#52c41a">▲3.8%</text></svg>' }
 ];
 
 var wsPlacedWidgets = []; // IDs of widgets on canvas
+// localStorage에서 저장된 위젯 배치 복원
+(function restoreWsLayout() {
+  try {
+    var saved = localStorage.getItem('portal-ws-widgets');
+    if (saved) {
+      wsPlacedWidgets = JSON.parse(saved);
+      var sizes = localStorage.getItem('portal-ws-sizes');
+      if (sizes) {
+        var sizeMap = JSON.parse(sizes);
+        Object.keys(sizeMap).forEach(function(wid) {
+          var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
+          if (w) { w._size = sizeMap[wid].size; w._height = sizeMap[wid].height; }
+        });
+      }
+    }
+  } catch (e) { /* 파싱 실패 시 기본값 유지 */ }
+})();
 
 function initWidgetSettingsGrid() {
-  // localStorage에서 저장된 레이아웃 복원
-  if (wsPlacedWidgets.length === 0) wsLoadSavedLayout();
-  wsRenderTemplates();
-  wsRenderCanvas();
+  // no AG Grid needed; render widget library instead
   wsRenderLibrary();
-  wsUpdateCount();
+  wsRenderTemplates();
 }
 
 function wsRenderLibrary() {
@@ -6005,16 +6955,123 @@ function wsClearCanvas() {
   wsUpdateCount();
 }
 
+/* ===== 위젯 템플릿 정의 ===== */
+var WS_TEMPLATES = [
+  {
+    id: 'tpl-basic',
+    name: '기본형',
+    icon: '📊',
+    desc: '주요 KPI 지표와 기본 정보 카드로 구성된 범용 대시보드',
+    color: '#1677ff',
+    widgets: ['w-active-users', 'w-availability', 'w-security', 'w-storage', 'w-user-status', 'w-sys-monitor', 'w-audit-log']
+  },
+  {
+    id: 'tpl-stats',
+    name: '통계형',
+    icon: '📈',
+    desc: '데이터 품질·수집 추이·활용 통계 중심의 분석 대시보드',
+    color: '#52c41a',
+    widgets: ['w-quality', 'w-quality-bar', 'w-collection-trend', 'w-popular', 'w-download-stats', 'w-data-catalog', 'w-system-data']
+  },
+  {
+    id: 'tpl-monitor',
+    name: '모니터링형',
+    icon: '🖥️',
+    desc: '파이프라인·연계·적재 현황을 실시간 모니터링하는 대시보드',
+    color: '#fa8c16',
+    widgets: ['w-pipeline', 'w-collection', 'w-link-progress', 'w-link-error', 'w-load-stage', 'w-load-error', 'w-error-log', 'w-collection-trend']
+  },
+  {
+    id: 'tpl-admin',
+    name: '관리형',
+    icon: '🛡️',
+    desc: '보안·사용자·감사·시스템 관리 중심의 운영 대시보드',
+    color: '#722ed1',
+    widgets: ['w-active-users', 'w-security', 'w-availability', 'w-storage', 'w-audit-log', 'w-sys-monitor', 'w-user-status', 'w-notices']
+  }
+];
+
 function wsLoadDefault() {
-  // preset: 4 KPI + 3 cards
+  wsShowTemplateSelector();
+}
+
+/* 템플릿 선택 UI 토글 */
+function wsShowTemplateSelector() {
+  var box = document.getElementById('ws-template-box');
+  if (box) { box.style.display = box.style.display === 'none' ? 'block' : 'none'; }
+}
+
+/* 템플릿 적용 */
+function wsApplyTemplate(tplId) {
+  var tpl = WS_TEMPLATES.find(function(t) { return t.id === tplId; });
+  if (!tpl) return;
+  // 기존 위젯 초기화
   wsPlacedWidgets.forEach(function(wid) {
     var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
     if (w) { delete w._size; delete w._height; }
   });
-  wsPlacedWidgets = ['w-active-users', 'w-availability', 'w-security', 'w-storage', 'w-user-status', 'w-sys-monitor', 'w-audit-log'];
+  // 유효한 위젯만 필터
+  wsPlacedWidgets = tpl.widgets.filter(function(wid) {
+    return WS_WIDGETS.some(function(x) { return x.id === wid; });
+  });
   wsRenderCanvas();
   wsRenderLibrary();
   wsUpdateCount();
+  // 템플릿 선택 UI에서 선택 표시 업데이트
+  wsHighlightTemplate(tplId);
+  showToast('\"' + tpl.name + '\" 템플릿이 적용되었습니다. 원하는 대로 수정 후 저장하세요.', 'success');
+}
+
+/* 템플릿 카드 선택 상태 표시 */
+function wsHighlightTemplate(tplId) {
+  var cards = document.querySelectorAll('.ws-tpl-card');
+  cards.forEach(function(c) {
+    if (c.dataset.tplId === tplId) {
+      c.style.borderColor = '#1677ff';
+      c.style.background = '#f0f7ff';
+      c.querySelector('.ws-tpl-check').style.display = 'flex';
+    } else {
+      c.style.borderColor = '#e8e8e8';
+      c.style.background = '#fff';
+      c.querySelector('.ws-tpl-check').style.display = 'none';
+    }
+  });
+}
+
+/* 템플릿 선택 영역 렌더링 */
+function wsRenderTemplates() {
+  var container = document.getElementById('ws-template-grid');
+  if (!container) return;
+  container.innerHTML = '';
+  WS_TEMPLATES.forEach(function(tpl) {
+    var widgetNames = tpl.widgets.map(function(wid) {
+      var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
+      return w ? w.name : wid;
+    }).slice(0, 5);
+    var more = tpl.widgets.length > 5 ? ' 외 ' + (tpl.widgets.length - 5) + '개' : '';
+    var card = document.createElement('div');
+    card.className = 'ws-tpl-card';
+    card.dataset.tplId = tpl.id;
+    card.style.cssText = 'border:2px solid #e8e8e8; border-radius:12px; padding:16px; cursor:pointer; transition:all 0.2s; position:relative; background:#fff;';
+    card.onmouseenter = function() { if (this.style.borderColor !== 'rgb(22, 119, 255)') this.style.borderColor = '#91caff'; };
+    card.onmouseleave = function() { if (this.style.borderColor !== 'rgb(22, 119, 255)') this.style.borderColor = '#e8e8e8'; };
+    card.onclick = function() { wsApplyTemplate(tpl.id); };
+    card.innerHTML =
+      '<div class="ws-tpl-check" style="display:none; position:absolute; top:8px; right:8px; width:22px; height:22px; background:#1677ff; border-radius:50%; align-items:center; justify-content:center; color:#fff; font-size:13px; font-weight:700;">✓</div>' +
+      '<div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">' +
+        '<div style="width:40px; height:40px; background:' + tpl.color + '15; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px;">' + tpl.icon + '</div>' +
+        '<div>' +
+          '<div style="font-size:15px; font-weight:700; color:var(--text-color);">' + tpl.name + '</div>' +
+          '<div style="font-size:11px; color:' + tpl.color + '; font-weight:600;">' + tpl.widgets.length + '개 위젯</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="font-size:12px; color:var(--text-secondary); margin-bottom:10px; line-height:1.5;">' + tpl.desc + '</div>' +
+      '<div style="display:flex; flex-wrap:wrap; gap:4px;">' +
+        widgetNames.map(function(n) { return '<span style="font-size:10px; background:#f5f5f5; color:#666; padding:2px 7px; border-radius:10px; white-space:nowrap;">' + n + '</span>'; }).join('') +
+        (more ? '<span style="font-size:10px; color:#999; padding:2px 4px;">' + more + '</span>' : '') +
+      '</div>';
+    container.appendChild(card);
+  });
 }
 
 function wsSaveLayout() {
@@ -6022,125 +7079,19 @@ function wsSaveLayout() {
     alert('배치된 위젯이 없습니다.\n위젯을 먼저 배치해 주세요.');
     return;
   }
-  // 위젯 크기 정보 수집
-  var sizes = {};
+  // 위젯 크기 정보도 함께 저장
+  var sizeMap = {};
   wsPlacedWidgets.forEach(function(wid) {
     var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
     if (w && (w._size || w._height)) {
-      sizes[wid] = {};
-      if (w._size) sizes[wid].w = w._size;
-      if (w._height) sizes[wid].h = w._height;
+      sizeMap[wid] = { size: w._size || 1, height: w._height || 1 };
     }
   });
-  var colSel = document.getElementById('ws-col-select');
-  var columns = colSel ? parseInt(colSel.value) : 3;
-  var data = { widgets: wsPlacedWidgets.slice(), sizes: sizes, columns: columns };
   try {
-    localStorage.setItem('dhp_widget_layout', JSON.stringify(data));
-  } catch(e) { /* 저장 실패 무시 */ }
-  showToast('위젯 레이아웃이 저장되었습니다. (위젯 ' + wsPlacedWidgets.length + '개)', 'success');
-}
-
-// localStorage에서 위젯 레이아웃 복원
-function wsLoadSavedLayout() {
-  try {
-    var raw = localStorage.getItem('dhp_widget_layout');
-    if (!raw) return false;
-    var data = JSON.parse(raw);
-    if (!data || !Array.isArray(data.widgets)) return false;
-    // 기존 크기 초기화
-    wsPlacedWidgets.forEach(function(wid) {
-      var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
-      if (w) { delete w._size; delete w._height; }
-    });
-    wsPlacedWidgets = data.widgets.slice();
-    // 크기 복원
-    if (data.sizes) {
-      Object.keys(data.sizes).forEach(function(wid) {
-        var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
-        if (w && data.sizes[wid]) {
-          if (data.sizes[wid].w) w._size = data.sizes[wid].w;
-          if (data.sizes[wid].h) w._height = data.sizes[wid].h;
-        }
-      });
-    }
-    // 열 수 복원
-    if (data.columns) {
-      var colSel = document.getElementById('ws-col-select');
-      if (colSel) colSel.value = data.columns;
-      var canvas = document.getElementById('ws-canvas');
-      if (canvas) canvas.style.gridTemplateColumns = 'repeat(' + data.columns + ', 1fr)';
-    }
-    return true;
-  } catch(e) { return false; }
-}
-
-// ===== 대시보드 템플릿 =====
-var WS_TEMPLATES = [
-  { id: 'tpl-default', name: '기본', icon: '🏠', desc: '주요 KPI와 알림을 한눈에 확인',
-    widgets: ['w-active-users','w-availability','w-security','w-storage','w-my-work','w-notices','w-quality-bar'],
-    sizes: {}, columns: 3 },
-  { id: 'tpl-statistics', name: '통계 분석', icon: '📊', desc: '차트·KPI 중심의 데이터 분석 대시보드',
-    widgets: ['w-active-users','w-collection','w-quality','w-api-calls','w-quality-bar','w-resource','w-collection-trend','w-api-latency'],
-    sizes: { 'w-quality-bar': {w:2,h:1}, 'w-collection-trend': {w:2,h:1} }, columns: 3 },
-  { id: 'tpl-monitoring', name: '모니터링', icon: '🖥️', desc: '시스템 상태·알림·로그를 실시간 모니터링',
-    widgets: ['w-availability','w-sys-monitor','w-sys-alert','w-error-log','w-batch-status','w-disk-trend','w-login-stats'],
-    sizes: { 'w-sys-monitor': {w:2,h:1}, 'w-error-log': {w:2,h:1} }, columns: 3 },
-  { id: 'tpl-data-mgmt', name: '데이터 관리', icon: '🗄️', desc: '데이터 수집·품질·카탈로그 현황 중심',
-    widgets: ['w-pipeline','w-collection','w-quality','w-data-catalog','w-recent-update','w-popular','w-download-stats'],
-    sizes: {}, columns: 3 }
-];
-
-// 템플릿 목록 렌더링
-function wsRenderTemplates() {
-  var container = document.getElementById('ws-template-list');
-  if (!container) return;
-  container.innerHTML = '';
-  WS_TEMPLATES.forEach(function(tpl) {
-    var card = document.createElement('div');
-    card.className = 'ws-tpl-card';
-    card.onclick = function() { wsApplyTemplate(tpl.id); };
-    card.innerHTML = '<div style="font-size:24px; margin-bottom:6px;">' + tpl.icon + '</div>'
-      + '<div style="font-size:13px; font-weight:700; color:var(--text-color);">' + tpl.name + '</div>'
-      + '<div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">' + tpl.desc + '</div>'
-      + '<div style="font-size:10px; color:#1677ff; margin-top:6px;">위젯 ' + tpl.widgets.length + '개</div>';
-    container.appendChild(card);
-  });
-}
-
-// 템플릿 적용
-function wsApplyTemplate(tplId) {
-  var tpl = WS_TEMPLATES.find(function(t) { return t.id === tplId; });
-  if (!tpl) return;
-  if (wsPlacedWidgets.length > 0 && !confirm('"' + tpl.name + '" 템플릿을 적용하시겠습니까?\n현재 배치된 위젯이 교체됩니다.')) return;
-  // 기존 크기 초기화
-  wsPlacedWidgets.forEach(function(wid) {
-    var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
-    if (w) { delete w._size; delete w._height; }
-  });
-  // 템플릿 위젯 적용
-  wsPlacedWidgets = tpl.widgets.slice();
-  // 템플릿 크기 적용
-  if (tpl.sizes) {
-    Object.keys(tpl.sizes).forEach(function(wid) {
-      var w = WS_WIDGETS.find(function(x) { return x.id === wid; });
-      if (w && tpl.sizes[wid]) {
-        if (tpl.sizes[wid].w) w._size = tpl.sizes[wid].w;
-        if (tpl.sizes[wid].h) w._height = tpl.sizes[wid].h;
-      }
-    });
-  }
-  // 열 수 적용
-  if (tpl.columns) {
-    var colSel = document.getElementById('ws-col-select');
-    if (colSel) colSel.value = tpl.columns;
-    var canvas = document.getElementById('ws-canvas');
-    if (canvas) canvas.style.gridTemplateColumns = 'repeat(' + tpl.columns + ', 1fr)';
-  }
-  wsRenderCanvas();
-  wsRenderLibrary();
-  wsUpdateCount();
-  showToast('"' + tpl.name + '" 템플릿이 적용되었습니다.', 'success');
+    localStorage.setItem('portal-ws-widgets', JSON.stringify(wsPlacedWidgets));
+    localStorage.setItem('portal-ws-sizes', JSON.stringify(sizeMap));
+  } catch (e) { /* quota 초과 무시 */ }
+  showToast('위젯 레이아웃이 저장되었습니다. (배치 ' + wsPlacedWidgets.length + '개)', 'success');
 }
 
 // ===== 실시간 로그·알림 =====

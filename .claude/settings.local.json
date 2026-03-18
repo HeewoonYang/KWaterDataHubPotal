@@ -50,7 +50,23 @@
       "Bash(wc -l \"D:\\\\00_수공프로젝트\\\\datahubPotal\\\\pages\"/*.html)",
       "Bash(git init)",
       "Bash(git remote add origin https://github.com/HeewoonYang/KWaterDataHubPotal.git)",
-      "Bash(git add -A)"
+      "Bash(git add -A)",
+      "Bash(git commit:*)",
+      "Bash(git push -u origin master)",
+      "Bash(wc -l /d/00_수공프로젝트/datahubPotal/pages/*.html)",
+      "Bash(wc -l \"D:/00_수공프로젝트/datahubPotal/pages\"/*.html)",
+      "Bash(wc -l index.html pages/*.html js/main.js)",
+      "Bash(TEMPLATE=\"D:\\\\00_수공프로젝트\\\\20260224_설계단계_산출물\\\\산출물 템플릿_데이터허브\\(손이사님 제공\\)\\\\4. 데이터허브\\\\2. 설계\\\\\\(템플릿\\)KWDP-DH-DS-14-프로그램설계서-v0.docx\")",
+      "Bash(OUTPUT=\"/d/00_수공프로젝트/datahubPotal/docs/설계문서/KWDP-DH-DS-14-프로그램설계서-테스트-v0.6.docx\")",
+      "Bash(__NEW_LINE_cf11173d59d6347e__ python \"C:\\\\Users\\\\yhw\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\f9c59ea0-5834-4c5d-a25b-1c4ce806899a\\\\22b1ffd1-f916-45dd-98e3-ee3eece98d98\\\\skills\\\\docx\\\\scripts\\\\office\\\\pack.py\" /d/00_수공프로젝트/datahubPotal/tmp_template_unpack \"$OUTPUT\" --original \"$TEMPLATE\")",
+      "Bash(__NEW_LINE_e00aeea9ec2e3e97__ python \"C:\\\\Users\\\\yhw\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\f9c59ea0-5834-4c5d-a25b-1c4ce806899a\\\\22b1ffd1-f916-45dd-98e3-ee3eece98d98\\\\skills\\\\docx\\\\scripts\\\\office\\\\pack.py\" /d/00_수공프로젝트/datahubPotal/tmp_template_unpack \"$OUTPUT\" --original \"$TEMPLATE\" --validate false)",
+      "Bash(python -c \":*)",
+      "Bash(PYTHONIOENCODING=utf-8 python3 -c \":*)",
+      "Bash(PYTHONIOENCODING=utf-8 python3 << 'PYEOF':*)",
+      "Bash(PYTHONIOENCODING=utf-8 python3 scripts/fill_menu_perm.py)",
+      "Bash(curl -s -o /dev/null -w \"HTTP Status: %{http_code}\\\\nResponse Time: %{time_total}s\\\\nRedirect URL: %{redirect_url}\\\\n\" --connect-timeout 5 http://172.30.1.55:8080)",
+      "Bash(curl -s -o /dev/null -w \"HTTP Status: %{http_code}\\\\n\" --connect-timeout 3 http://localhost:8080)",
+      "Bash(curl -s -o /dev/null -w \"HTTP Status: %{http_code}\\\\n\" --connect-timeout 3 http://172.30.1.55:8080)"
     ]
   }
 }

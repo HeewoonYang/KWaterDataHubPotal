@@ -39,7 +39,68 @@
     <span class="glossary-status-pill" data-status="inactive">비활성</span>
     <span class="glossary-status-pill" data-status="deprecated">폐기</span>
     <select id="glossary-domain-filter" style="padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px;display:none;"></select>
+    <button class="btn btn-outline btn-sm" id="advanced-search-toggle" onclick="toggleAdvancedSearch()" style="font-size:12px;">🔍 고급 검색</button>
     <button class="btn btn-primary" data-perm="write" onclick="document.getElementById('glossary-register-modal').style.display='flex'">+ 등록</button>
+  </div>
+
+  <!-- 고급 검색 패널 -->
+  <div id="advanced-search-panel" style="display:none;margin-bottom:16px;padding:16px 20px;border:1px solid #e0e0e0;border-radius:8px;background:#fafbfc;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 16px;">
+      <div>
+        <label style="font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:4px;">논리명</label>
+        <input type="text" id="adv-logical-name" placeholder="논리명 검색" style="width:100%;padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:4px;">물리명</label>
+        <input type="text" id="adv-physical-name" placeholder="물리명 검색" style="width:100%;padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:4px;">데이터타입</label>
+        <select id="adv-data-type" style="width:100%;padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px;">
+          <option value="">전체</option>
+          <option value="VARCHAR">VARCHAR</option>
+          <option value="NUMBER">NUMBER</option>
+          <option value="INTEGER">INTEGER</option>
+          <option value="DECIMAL">DECIMAL</option>
+          <option value="DATE">DATE</option>
+          <option value="TIMESTAMP">TIMESTAMP</option>
+          <option value="CLOB">CLOB</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:4px;">도메인그룹</label>
+        <select id="adv-domain-group" style="width:100%;padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px;">
+          <option value="">전체</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:4px;">등록일 (시작)</label>
+        <input type="date" id="adv-date-from" style="width:100%;padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:4px;">등록일 (종료)</label>
+        <input type="date" id="adv-date-to" style="width:100%;padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px;">
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+      <button class="btn btn-outline btn-sm" onclick="resetAdvancedSearch()">초기화</button>
+      <button class="btn btn-primary btn-sm" onclick="applyAdvancedSearch()">검색</button>
+    </div>
+  </div>
+
+  <!-- 동기화 상태 바 -->
+  <div id="sync-status-bar" style="display:flex;align-items:center;gap:12px;padding:10px 16px;margin-bottom:16px;background:#f0f7ff;border:1px solid #d0e3f7;border-radius:8px;font-size:12px;">
+    <span style="font-weight:600;color:#1967d2;">🔗 외부 시스템 동기화</span>
+    <span class="badge badge-success" id="sync-status-badge" style="font-size:11px;">● 정상</span>
+    <span style="color:#666;" id="sync-last-time">마지막 동기화: 2026-03-17 09:00:15</span>
+    <div style="flex:1;"></div>
+    <span style="display:inline-flex;gap:6px;">
+      <span style="padding:3px 8px;border-radius:10px;background:#e8f5e9;color:#2e7d32;font-size:11px;">RWIS ✓</span>
+      <span style="padding:3px 8px;border-radius:10px;background:#e8f5e9;color:#2e7d32;font-size:11px;">SAP ✓</span>
+      <span style="padding:3px 8px;border-radius:10px;background:#e8f5e9;color:#2e7d32;font-size:11px;">기상청API ✓</span>
+      <span style="padding:3px 8px;border-radius:10px;background:#fff3e0;color:#e65100;font-size:11px;">수질DB ⏳</span>
+    </span>
+    <button class="btn btn-outline btn-sm" data-perm="admin" onclick="runSyncNow()" style="font-size:11px;padding:4px 10px;">동기화 실행</button>
   </div>
 
   <!-- 단어사전 섹션 -->
@@ -956,6 +1017,204 @@
     </div>
   </div>
 
+  <!-- 자동 분류 도구 -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div class="card-title" style="margin-bottom:0;">🤖 자동 분류 도구</div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-outline btn-sm" data-perm="manage" onclick="openBulkClassifyModal()" style="font-size:12px;">📦 일괄 분류</button>
+        <button class="btn btn-primary btn-sm" data-perm="write" onclick="runAutoClassify()" style="font-size:12px;">▶ 자동 분류 실행</button>
+      </div>
+    </div>
+    <!-- 분류 규칙 목록 -->
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px; font-weight:600; color:#555; margin-bottom:8px;">📋 분류 규칙 목록</div>
+      <table class="data-table">
+        <thead>
+          <tr><th>규칙명</th><th>분류 유형</th><th>조건</th><th>대상 범위</th><th>상태</th><th>최근 실행</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>수자원 도메인 자동분류</strong></td>
+            <td><span class="badge badge-info" style="font-size:11px;">도메인</span></td>
+            <td style="font-size:12px;">테이블명에 'WATER', 'DAM', 'RIVER' 포함</td>
+            <td style="font-size:12px;">전체 미분류 자산</td>
+            <td><span class="badge badge-success" style="font-size:11px;">활성</span></td>
+            <td style="font-size:12px; color:#888;">2026-03-16</td>
+          </tr>
+          <tr>
+            <td><strong>PII 보안등급 자동설정</strong></td>
+            <td><span class="badge badge-warning" style="font-size:11px;">보안등급</span></td>
+            <td style="font-size:12px;">PII 컬럼(주민번호, 전화번호 등) 포함 시 1등급</td>
+            <td style="font-size:12px;">개인정보 포함 테이블</td>
+            <td><span class="badge badge-success" style="font-size:11px;">활성</span></td>
+            <td style="font-size:12px; color:#888;">2026-03-17</td>
+          </tr>
+          <tr>
+            <td><strong>계측 업무영역 태그</strong></td>
+            <td><span class="badge badge-secondary" style="font-size:11px;">업무영역</span></td>
+            <td style="font-size:12px;">소스시스템이 RWIS/GIOS/HWS인 경우</td>
+            <td style="font-size:12px;">수집 데이터셋</td>
+            <td><span class="badge badge-success" style="font-size:11px;">활성</span></td>
+            <td style="font-size:12px; color:#888;">2026-03-15</td>
+          </tr>
+          <tr>
+            <td><strong>상수도 도메인 분류</strong></td>
+            <td><span class="badge badge-info" style="font-size:11px;">도메인</span></td>
+            <td style="font-size:12px;">테이블명에 'PIPE', 'SUPPLY', 'VALVE' 포함</td>
+            <td style="font-size:12px;">전체 미분류 자산</td>
+            <td><span class="badge badge-ghost" style="font-size:11px;">비활성</span></td>
+            <td style="font-size:12px; color:#888;">2026-03-10</td>
+          </tr>
+          <tr>
+            <td><strong>공개 데이터 3등급 설정</strong></td>
+            <td><span class="badge badge-warning" style="font-size:11px;">보안등급</span></td>
+            <td style="font-size:12px;">공공데이터포털 공개 대상 목록에 포함</td>
+            <td style="font-size:12px;">공개 데이터셋</td>
+            <td><span class="badge badge-success" style="font-size:11px;">활성</span></td>
+            <td style="font-size:12px; color:#888;">2026-03-14</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- 충돌 검증 규칙 -->
+    <div style="margin-bottom:16px; padding:12px 16px; background:#fff8e1; border:1px solid #ffe082; border-radius:8px;">
+      <div style="font-size:12px; font-weight:600; color:#f57c00; margin-bottom:8px;">⚠️ 분류 충돌 검증 규칙 <span class="badge badge-warning" style="font-size:10px; margin-left:6px;">3건 위반</span></div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:12px;">
+        <div style="display:flex; align-items:center; gap:6px;"><span style="color:#2e7d32;">✅</span> 1등급 보안자산은 '공개' 도메인에 배치 불가</div>
+        <div style="display:flex; align-items:center; gap:6px;"><span style="color:#2e7d32;">✅</span> PII 컬럼 포함 테이블은 3등급(공개) 불가</div>
+        <div style="display:flex; align-items:center; gap:6px;"><span style="color:#f44336;">❌</span> 도메인 미할당 자산은 보안등급 설정 불가 <strong style="color:#f44336;">(3건)</strong></div>
+        <div style="display:flex; align-items:center; gap:6px;"><span style="color:#2e7d32;">✅</span> 동일 자산에 중복 업무영역 태그 불가</div>
+      </div>
+    </div>
+    <!-- 자동 분류 결과 미리보기 (초기 숨김) -->
+    <div id="auto-classify-result" style="display:none;">
+      <div style="font-size:12px; font-weight:600; color:#1967d2; margin-bottom:8px;">📊 자동 분류 결과 미리보기</div>
+      <div id="ag-grid-auto-classify" class="ag-theme-alpine" style="width:100%;"></div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('auto-classify-result').style.display='none'">닫기</button>
+        <button class="btn btn-primary btn-sm" onclick="applyClassifyResults()">✅ 선택 항목 적용</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 분류 승인 워크플로우 -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div class="card-title" style="margin-bottom:0;">📋 분류 승인 워크플로우</div>
+      <span class="badge badge-warning" style="font-size:11px;">대기 3건</span>
+    </div>
+    <!-- 워크플로우 흐름도 -->
+    <div style="display:flex; align-items:center; gap:0; margin-bottom:16px; padding:12px 16px; background:#f8f9fb; border-radius:8px; font-size:12px;">
+      <div style="padding:6px 14px; background:#e3f2fd; color:#1565c0; border-radius:6px; font-weight:600;">분류 변경 요청</div>
+      <div style="padding:0 8px; color:#bbb;">→</div>
+      <div style="padding:6px 14px; background:#fff3e0; color:#e65100; border-radius:6px; font-weight:600;">데이터 스튜어드 검토</div>
+      <div style="padding:0 8px; color:#bbb;">→</div>
+      <div style="padding:6px 14px; background:#fce4ec; color:#c62828; border-radius:6px; font-weight:600;">감독원 협의</div>
+      <div style="padding:0 8px; color:#bbb;">→</div>
+      <div style="padding:6px 14px; background:#e8f5e9; color:#2e7d32; border-radius:6px; font-weight:600;">최종 승인</div>
+    </div>
+    <!-- 승인 대기 목록 -->
+    <table class="data-table" id="approval-queue-table">
+      <thead>
+        <tr><th>데이터 자산</th><th>변경 내용</th><th>요청자</th><th>요청일</th><th>상태</th><th>액션</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>TB_DAM_WATER_LVL</strong></td>
+          <td style="font-size:12px;">도메인: 미분류 → 수자원</td>
+          <td style="font-size:12px;">김수자</td>
+          <td style="font-size:12px;">2026-03-17</td>
+          <td><span class="badge badge-warning" style="font-size:11px;">검토 대기</span></td>
+          <td>
+            <button class="btn btn-primary btn-sm" style="font-size:11px; padding:2px 10px;" onclick="approveClassifyChange(this)">승인</button>
+            <button class="btn btn-outline btn-sm" style="font-size:11px; padding:2px 10px;" onclick="rejectClassifyChange(this)">반려</button>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>TB_SENSOR_RAW_DATA</strong></td>
+          <td style="font-size:12px;">보안등급: 3등급 → 2등급</td>
+          <td style="font-size:12px;">이계측</td>
+          <td style="font-size:12px;">2026-03-16</td>
+          <td><span class="badge badge-warning" style="font-size:11px;">감독원 협의</span></td>
+          <td>
+            <button class="btn btn-primary btn-sm" style="font-size:11px; padding:2px 10px;" onclick="approveClassifyChange(this)">승인</button>
+            <button class="btn btn-outline btn-sm" style="font-size:11px; padding:2px 10px;" onclick="rejectClassifyChange(this)">반려</button>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>TB_CUST_USAGE_HIST</strong></td>
+          <td style="font-size:12px;">업무영역: 기술 → 고객, 보안등급: 3등급 → 1등급</td>
+          <td style="font-size:12px;">박관리</td>
+          <td style="font-size:12px;">2026-03-15</td>
+          <td><span class="badge badge-info" style="font-size:11px;">검토 중</span></td>
+          <td>
+            <button class="btn btn-primary btn-sm" style="font-size:11px; padding:2px 10px;" onclick="approveClassifyChange(this)">승인</button>
+            <button class="btn btn-outline btn-sm" style="font-size:11px; padding:2px 10px;" onclick="rejectClassifyChange(this)">반려</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 벌크 분류 모달 -->
+  <div class="modal-overlay" id="bulk-classify-modal" style="display:none;">
+    <div class="modal-card" style="width:900px; max-height:90vh;">
+      <div class="modal-header">
+        <h3 class="modal-title">📦 일괄 분류 할당</h3>
+        <button class="modal-close" onclick="closeModalHelper('bulk-classify-modal')">×</button>
+      </div>
+      <div class="modal-body" style="display:grid; grid-template-columns:1.5fr 1fr; gap:20px;">
+        <!-- 좌측: 미분류 자산 목록 -->
+        <div>
+          <div style="font-size:12px; font-weight:600; color:#555; margin-bottom:8px;">미분류 자산 목록 <span class="badge badge-error" style="font-size:10px;">127건</span></div>
+          <div id="ag-grid-bulk-classify" class="ag-theme-alpine" style="width:100%; height:400px;"></div>
+        </div>
+        <!-- 우측: 분류 할당 폼 -->
+        <div style="padding:16px; background:#f8f9fb; border-radius:8px;">
+          <div style="font-size:12px; font-weight:600; color:#555; margin-bottom:12px;">분류 할당</div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:11px; font-weight:600; color:#555; display:block; margin-bottom:4px;">도메인</label>
+            <select id="bulk-domain" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px;">
+              <option value="">선택하세요</option>
+              <option>수자원</option><option>에너지</option><option>상수도</option>
+              <option>수질</option><option>고객</option><option>계측</option>
+            </select>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:11px; font-weight:600; color:#555; display:block; margin-bottom:4px;">보안등급</label>
+            <select id="bulk-security" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px;">
+              <option value="">선택하세요</option>
+              <option>1등급 (비밀)</option><option>2등급 (일반)</option><option>3등급 (공개)</option>
+            </select>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:11px; font-weight:600; color:#555; display:block; margin-bottom:4px;">업무영역</label>
+            <select id="bulk-area" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px;">
+              <option value="">선택하세요</option>
+              <option>계측</option><option>행정</option><option>재무</option>
+              <option>기술</option><option>운영</option>
+            </select>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:11px; font-weight:600; color:#555; display:block; margin-bottom:4px;">분류 사유</label>
+            <textarea id="bulk-reason" rows="3" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; resize:vertical;" placeholder="분류 할당 사유를 입력하세요"></textarea>
+          </div>
+          <div id="bulk-conflict-warning" style="display:none; padding:8px 12px; background:#fff3e0; border:1px solid #ffe082; border-radius:6px; font-size:11px; color:#e65100; margin-bottom:12px;">
+            ⚠️ 충돌 검증 경고가 표시됩니다
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <span id="bulk-selected-count" style="font-size:12px; color:#888;">선택: 0건</span>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-outline" onclick="closeModalHelper('bulk-classify-modal')">취소</button>
+          <button class="btn btn-primary" onclick="applyBulkClassify()">일괄 적용</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 태그 할당 현황 -->
   <div class="card">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1237,75 +1496,18 @@
   <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:12px; margin-bottom:14px;">
     <div class="card" style="padding:0; margin-bottom:0;">
       <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
-        <div class="card-title">🗂️ ERD 미리보기 — 수자원관리_논리모델</div>
-        <span style="font-size:10px; color:var(--text-secondary);">24 테이블 · 96 컬럼</span>
+        <div class="card-title">🗂️ ERD 미리보기 — <span id="erd-preview-title">수자원관리_논리모델</span></div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <select id="erd-model-selector" onchange="updateERDPreview(this.value)" style="padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:11px;">
+            <option value="수자원관리_논리모델">수자원관리_논리모델</option>
+            <option value="수자원관리_물리모델">수자원관리_물리모델</option>
+            <option value="상수도관리_논리모델">상수도관리_논리모델</option>
+          </select>
+        </div>
       </div>
-      <div class="card-body" style="padding:10px 14px;">
-        <div class="erd-container" style="gap:10px; padding:12px;">
-          <div class="erd-table" style="min-width:160px;">
-            <div class="erd-header" style="background:#1677ff;">댐_기본정보</div>
-            <div class="erd-cols">
-              <div class="erd-col"><span class="pk">PK</span> dam_id <span style="float:right;color:#aaa;font-size:10px;">INT</span></div>
-              <div class="erd-col">name <span style="float:right;color:#aaa;font-size:10px;">VARCHAR(100)</span></div>
-              <div class="erd-col">type <span style="float:right;color:#aaa;font-size:10px;">VARCHAR(20)</span></div>
-              <div class="erd-col">capacity <span style="float:right;color:#aaa;font-size:10px;">DECIMAL(12,2)</span></div>
-              <div class="erd-col">location <span style="float:right;color:#aaa;font-size:10px;">VARCHAR(200)</span></div>
-            </div>
-          </div>
-          <div class="erd-table" style="min-width:160px;">
-            <div class="erd-header" style="background:#1677ff;">수위_관측</div>
-            <div class="erd-cols">
-              <div class="erd-col"><span class="pk">PK</span> obs_id <span style="float:right;color:#aaa;font-size:10px;">BIGINT</span></div>
-              <div class="erd-col"><span class="fk">FK</span> dam_id <span style="float:right;color:#aaa;font-size:10px;">INT</span></div>
-              <div class="erd-col">level <span style="float:right;color:#aaa;font-size:10px;">DECIMAL(8,3)</span></div>
-              <div class="erd-col">measure_dt <span style="float:right;color:#aaa;font-size:10px;">TIMESTAMP</span></div>
-            </div>
-          </div>
-          <div class="erd-table" style="min-width:160px;">
-            <div class="erd-header" style="background:#1677ff;">유량_측정</div>
-            <div class="erd-cols">
-              <div class="erd-col"><span class="pk">PK</span> flow_id <span style="float:right;color:#aaa;font-size:10px;">BIGINT</span></div>
-              <div class="erd-col"><span class="fk">FK</span> dam_id <span style="float:right;color:#aaa;font-size:10px;">INT</span></div>
-              <div class="erd-col">rate <span style="float:right;color:#aaa;font-size:10px;">DECIMAL(10,2)</span></div>
-              <div class="erd-col">unit <span style="float:right;color:#aaa;font-size:10px;">VARCHAR(10)</span></div>
-            </div>
-          </div>
-          <div class="erd-table" style="min-width:160px;">
-            <div class="erd-header" style="background:#1677ff;">방류_이력</div>
-            <div class="erd-cols">
-              <div class="erd-col"><span class="pk">PK</span> release_id <span style="float:right;color:#aaa;font-size:10px;">BIGINT</span></div>
-              <div class="erd-col"><span class="fk">FK</span> dam_id <span style="float:right;color:#aaa;font-size:10px;">INT</span></div>
-              <div class="erd-col">volume <span style="float:right;color:#aaa;font-size:10px;">DECIMAL(12,2)</span></div>
-              <div class="erd-col">release_dt <span style="float:right;color:#aaa;font-size:10px;">TIMESTAMP</span></div>
-            </div>
-          </div>
-          <div class="erd-table" style="min-width:160px;">
-            <div class="erd-header" style="background:#1677ff;">기상_관측</div>
-            <div class="erd-cols">
-              <div class="erd-col"><span class="pk">PK</span> weather_id <span style="float:right;color:#aaa;font-size:10px;">BIGINT</span></div>
-              <div class="erd-col"><span class="fk">FK</span> station_id <span style="float:right;color:#aaa;font-size:10px;">INT</span></div>
-              <div class="erd-col">temp <span style="float:right;color:#aaa;font-size:10px;">DECIMAL(5,1)</span></div>
-              <div class="erd-col">humidity <span style="float:right;color:#aaa;font-size:10px;">DECIMAL(5,1)</span></div>
-            </div>
-          </div>
-          <div class="erd-table" style="min-width:160px;">
-            <div class="erd-header" style="background:#fa8c16;">취수장_기본</div>
-            <div class="erd-cols">
-              <div class="erd-col"><span class="pk">PK</span> intake_id <span style="float:right;color:#aaa;font-size:10px;">INT</span></div>
-              <div class="erd-col"><span class="fk">FK</span> dam_id <span style="float:right;color:#aaa;font-size:10px;">INT</span></div>
-              <div class="erd-col">name <span style="float:right;color:#aaa;font-size:10px;">VARCHAR(100)</span></div>
-              <div class="erd-col">capacity <span style="float:right;color:#aaa;font-size:10px;">DECIMAL(10,2)</span></div>
-            </div>
-          </div>
-          <div class="erd-table" style="min-width:160px;">
-            <div class="erd-header" style="background:#fa8c16;">관측소_메타</div>
-            <div class="erd-cols">
-              <div class="erd-col"><span class="pk">PK</span> station_id <span style="float:right;color:#aaa;font-size:10px;">INT</span></div>
-              <div class="erd-col">name <span style="float:right;color:#aaa;font-size:10px;">VARCHAR(100)</span></div>
-              <div class="erd-col">lat <span style="float:right;color:#aaa;font-size:10px;">DECIMAL(9,6)</span></div>
-              <div class="erd-col">lon <span style="float:right;color:#aaa;font-size:10px;">DECIMAL(9,6)</span></div>
-            </div>
-          </div>
+      <div class="card-body" style="padding:10px 14px; overflow-x:auto;">
+        <div id="erd-preview-container" style="min-height:200px;">
+          <div style="text-align:center;padding:40px;color:#888;">ERD를 로드 중입니다...</div>
         </div>
       </div>
     </div>
@@ -1863,68 +2065,31 @@
     </div>
   </div>
 
-  <!-- ERD 다이어그램 -->
+  <!-- ERD 다이어그램 (동적) -->
   <div class="card">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <div class="card-title" style="margin-bottom:0;">🗂️ ERD 다이어그램 (핵심 엔티티)</div>
-      <div style="display:flex; gap:6px;">
-        <span class="tag-pill active" style="font-size:11px;">핵심</span>
-        <span class="tag-pill" style="font-size:11px;">전체(24)</span>
+      <div class="card-title" style="margin-bottom:0;">🗂️ ERD 다이어그램 (FK 관계선 포함)</div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <span style="font-size:10px; color:#888;">테이블 간 FK 관계가 화살표로 표시됩니다</span>
       </div>
     </div>
-    <div class="erd-container">
-      <div class="erd-table" style="border-color:#1967d2;">
-        <div class="erd-header" style="background:#1967d2;">댐_기본정보 (DM_DAM_INFO)</div>
-        <div class="erd-cols">
-          <div class="erd-col"><span class="pk">PK</span> dam_id VARCHAR(10)</div>
-          <div class="erd-col">dam_name VARCHAR(100)</div>
-          <div class="erd-col">dam_type_cd VARCHAR(2)</div>
-          <div class="erd-col">total_capacity DECIMAL(12,2)</div>
-          <div class="erd-col">effective_cap DECIMAL(12,2)</div>
-          <div class="erd-col">location_addr VARCHAR(200)</div>
-          <div class="erd-col">latitude DECIMAL(10,7)</div>
-          <div class="erd-col">longitude DECIMAL(10,7)</div>
-        </div>
+    <div style="overflow-x:auto; padding:8px;">
+      <div id="erd-detail-container" style="min-height:200px;">
+        <div style="text-align:center;padding:40px;color:#888;">ERD를 로드 중입니다...</div>
       </div>
-      <div class="erd-table">
-        <div class="erd-header">수위_관측 (DM_WATER_LEVEL)</div>
-        <div class="erd-cols">
-          <div class="erd-col"><span class="pk">PK</span> obs_id BIGINT</div>
-          <div class="erd-col"><span class="fk">FK</span> dam_id VARCHAR(10)</div>
-          <div class="erd-col">water_level DECIMAL(8,2)</div>
-          <div class="erd-col">measured_at TIMESTAMP</div>
-          <div class="erd-col">measure_method VARCHAR(10)</div>
-        </div>
+    </div>
+  </div>
+
+  <!-- 논리/물리 매핑 -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <div class="card-title" style="margin-bottom:0;">🔗 논리/물리 모델 매핑</div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span style="font-size:11px; color:#888;">논리 엔티티 ↔ 물리 테이블 매핑 현황</span>
       </div>
-      <div class="erd-table">
-        <div class="erd-header">유량_측정 (DM_FLOW_RATE)</div>
-        <div class="erd-cols">
-          <div class="erd-col"><span class="pk">PK</span> flow_id BIGINT</div>
-          <div class="erd-col"><span class="fk">FK</span> dam_id VARCHAR(10)</div>
-          <div class="erd-col">flow_rate DECIMAL(10,3)</div>
-          <div class="erd-col">measured_at TIMESTAMP</div>
-        </div>
-      </div>
-      <div class="erd-table">
-        <div class="erd-header">방류_이력 (DM_DISCHARGE)</div>
-        <div class="erd-cols">
-          <div class="erd-col"><span class="pk">PK</span> discharge_id BIGINT</div>
-          <div class="erd-col"><span class="fk">FK</span> dam_id VARCHAR(10)</div>
-          <div class="erd-col">volume DECIMAL(12,2)</div>
-          <div class="erd-col">start_dt TIMESTAMP</div>
-          <div class="erd-col">end_dt TIMESTAMP</div>
-        </div>
-      </div>
-      <div class="erd-table">
-        <div class="erd-header">수질_측정 (DM_WATER_QUALITY)</div>
-        <div class="erd-cols">
-          <div class="erd-col"><span class="pk">PK</span> quality_id BIGINT</div>
-          <div class="erd-col"><span class="fk">FK</span> dam_id VARCHAR(10)</div>
-          <div class="erd-col">ph DECIMAL(4,2)</div>
-          <div class="erd-col">turbidity DECIMAL(8,2)</div>
-          <div class="erd-col">do_value DECIMAL(6,2)</div>
-        </div>
-      </div>
+    </div>
+    <div id="model-mapping-container">
+      <div style="text-align:center;padding:20px;color:#888;">매핑 데이터를 로드 중입니다...</div>
     </div>
   </div>
 
@@ -2081,7 +2246,10 @@
       </div>
     </div>
     <div class="card">
-      <div class="card-title">📜 변경 이력</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div class="card-title" style="margin-bottom:0;">📜 변경 이력</div>
+        <button class="btn btn-outline btn-sm" onclick="openVersionCompareModal()" style="font-size:11px;">📊 버전 비교</button>
+      </div>
       <table class="data-table" style="font-size:12px;">
         <thead>
           <tr>
@@ -2137,6 +2305,40 @@
         출력</button>
       <button class="btn btn-primary" data-perm="write" onclick="document.getElementById('model-edit-modal').style.display='flex'">✏️ 모델
         수정</button>
+    </div>
+  </div>
+</div>
+
+<!-- 버전 비교 모달 -->
+<div class="modal-overlay" id="version-compare-modal" style="display:none;">
+  <div class="modal-card" style="width:800px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">📊 모델 버전 비교</h3>
+      <button class="modal-close" onclick="closeModalHelper('version-compare-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex; gap:16px; align-items:center; margin-bottom:16px;">
+        <div style="flex:1;">
+          <label style="font-size:11px; font-weight:600; color:#555; display:block; margin-bottom:4px;">비교 원본 버전</label>
+          <select id="version-select-from" onchange="compareModelVersions()" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:13px;"></select>
+        </div>
+        <div style="font-size:18px; color:#999; margin-top:18px;">↔</div>
+        <div style="flex:1;">
+          <label style="font-size:11px; font-weight:600; color:#555; display:block; margin-bottom:4px;">비교 대상 버전</label>
+          <select id="version-select-to" onchange="compareModelVersions()" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:13px;"></select>
+        </div>
+      </div>
+      <div style="margin-bottom:12px; font-size:12px; color:#888;">
+        <span style="display:inline-block;width:12px;height:12px;background:#e8f5e9;border-radius:2px;margin-right:4px;vertical-align:middle;"></span> 추가
+        <span style="display:inline-block;width:12px;height:12px;background:#fff8e1;border-radius:2px;margin-left:12px;margin-right:4px;vertical-align:middle;"></span> 변경
+        <span style="display:inline-block;width:12px;height:12px;background:#ffebee;border-radius:2px;margin-left:12px;margin-right:4px;vertical-align:middle;"></span> 삭제
+      </div>
+      <div id="version-diff-result" style="min-height:100px;">
+        <div style="text-align:center;padding:30px;color:#888;">버전을 선택하면 비교 결과가 표시됩니다.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModalHelper('version-compare-modal')">닫기</button>
     </div>
   </div>
 </div>

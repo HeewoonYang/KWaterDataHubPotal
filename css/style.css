@@ -5790,6 +5790,23 @@ body {
 [data-theme="dark"] .glossary-page-btn:hover:not(:disabled) { background: #1b3a5c; border-color: #69b1ff; color: #69b1ff; }
 [data-theme="dark"] .glossary-page-btn.active { background: #1967d2; color: #fff; }
 
+/* ═══════ 고급 검색 패널 ═══════ */
+#advanced-search-panel { transition: all 0.2s ease; }
+[data-theme="dark"] #advanced-search-panel { background: #1e2a3a; border-color: #334155; }
+[data-theme="dark"] #advanced-search-panel label { color: #8899aa; }
+[data-theme="dark"] #advanced-search-panel input,
+[data-theme="dark"] #advanced-search-panel select { background: #0f1a2e; border-color: #334155; color: #e2e8f0; }
+
+/* ═══════ 분류 충돌 검증 ═══════ */
+[data-theme="dark"] div[style*="background:#fff8e1"] { background: #2e2a1a !important; border-color: #5a4a1a !important; }
+[data-theme="dark"] #bulk-conflict-warning { background: #2e2a1a !important; border-color: #5a4a1a !important; }
+[data-theme="dark"] #approval-queue-table tr td { border-color: #334155; }
+
+/* ═══════ 동기화 상태바 ═══════ */
+[data-theme="dark"] #sync-status-bar { background: #1a2332; border-color: #2a3a4a; }
+[data-theme="dark"] #sync-status-bar span[style*="background:#e8f5e9"] { background: #1a2e1a !important; color: #4caf50 !important; }
+[data-theme="dark"] #sync-status-bar span[style*="background:#fff3e0"] { background: #2e2a1a !important; color: #ff9800 !important; }
+
 /* ═══════ KPI 로딩 ═══════ */
 .kpi-loading {
   display: inline-block;
@@ -5818,3 +5835,180 @@ body {
 .modal-compact .data-table th,
 .modal-compact .data-table td { padding: 4px 8px; font-size: 11.5px; }
 [data-theme="dark"] .modal-compact .detail-section-title { color: #69b1ff; border-color: #334155; }
+
+/* ═══════ 동적 ERD — SVG 오버레이 + 컨테이너 ═══════ */
+.erd-dynamic-wrap {
+  position: relative;
+  min-height: 320px;
+  overflow: auto;
+  background: #fafbfc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 24px;
+}
+.erd-svg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+.erd-svg-overlay .erd-relation-line {
+  fill: none;
+  stroke: #94a3b8;
+  stroke-width: 1.5;
+}
+.erd-svg-overlay .erd-relation-line:hover {
+  stroke: #3b82f6;
+  stroke-width: 2.5;
+  pointer-events: stroke;
+}
+.erd-svg-overlay marker path {
+  fill: #94a3b8;
+}
+.erd-dynamic-wrap .erd-table {
+  position: absolute;
+  z-index: 2;
+}
+
+/* ERD 모델 선택기 */
+.erd-model-selector-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.erd-model-selector-wrap label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+.erd-model-selector-wrap select {
+  padding: 5px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 12.5px;
+  background: #fff;
+  color: #334155;
+}
+
+/* 버전 비교 diff 스타일 */
+.diff-added { background: #dcfce7; color: #166534; }
+.diff-removed { background: #fee2e2; color: #991b1b; text-decoration: line-through; }
+.diff-changed { background: #fef9c3; color: #854d0e; }
+
+/* 논리/물리 매핑 상태 */
+.mapping-match { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+.mapping-partial { background: #fef9c3; color: #854d0e; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+.mapping-mismatch { background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+
+/* ═══════ 동적 ERD 다크모드 ═══════ */
+[data-theme="dark"] .erd-dynamic-wrap {
+  background: #1e293b;
+  border-color: #334155;
+}
+[data-theme="dark"] .erd-svg-overlay .erd-relation-line {
+  stroke: #64748b;
+}
+[data-theme="dark"] .erd-svg-overlay .erd-relation-line:hover {
+  stroke: #60a5fa;
+}
+[data-theme="dark"] .erd-svg-overlay marker path {
+  fill: #64748b;
+}
+[data-theme="dark"] .erd-model-selector-wrap label {
+  color: #94a3b8;
+}
+[data-theme="dark"] .erd-model-selector-wrap select {
+  background: #1e293b;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+[data-theme="dark"] .diff-added { background: #052e16; color: #86efac; }
+[data-theme="dark"] .diff-removed { background: #450a0a; color: #fca5a5; text-decoration: line-through; }
+[data-theme="dark"] .diff-changed { background: #422006; color: #fde68a; }
+[data-theme="dark"] .mapping-match { background: #052e16; color: #86efac; }
+[data-theme="dark"] .mapping-partial { background: #422006; color: #fde68a; }
+[data-theme="dark"] .mapping-mismatch { background: #450a0a; color: #fca5a5; }
+
+/* ═══════ 004 자동 분류·워크플로우 추가 스타일 ═══════ */
+.auto-classify-card .confidence-high { color: #16a34a; font-weight: 700; }
+.auto-classify-card .confidence-mid { color: #d97706; font-weight: 700; }
+.auto-classify-card .confidence-low { color: #dc2626; font-weight: 700; }
+.workflow-flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 16px 8px;
+  overflow-x: auto;
+}
+.workflow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100px;
+  text-align: center;
+}
+.workflow-step-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+.workflow-step-label {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+.workflow-arrow {
+  font-size: 20px;
+  color: #94a3b8;
+  margin: 0 4px;
+  padding-bottom: 20px;
+}
+[data-theme="dark"] .workflow-step-label { color: #94a3b8; }
+[data-theme="dark"] .workflow-arrow { color: #64748b; }
+
+/* ═══════ 위젯 템플릿 등록 — 실시간 미리보기 ═══════ */
+.wtr-preview-panel {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+.wtr-preview-card {
+  transition: all 0.3s ease;
+}
+[data-theme="dark"] .wtr-preview-panel {
+  background: #1e293b;
+  border-color: #334155;
+}
+[data-theme="dark"] .wtr-preview-card {
+  border-color: #334155 !important;
+  background: #0f172a !important;
+}
+[data-theme="dark"] .wtr-preview-card div[style*="border-bottom"] {
+  border-color: #334155 !important;
+}
+[data-theme="dark"] .wtr-preview-card span[style*="color:#1a1a2e"] {
+  color: #e2e8f0 !important;
+}
+[data-theme="dark"] .wtr-preview-card div[style*="border-top:1px solid #f0f0f0"] {
+  border-color: #334155 !important;
+}
+[data-theme="dark"] #wtr-preview-empty {
+  color: #64748b;
+}
+[data-theme="dark"] #wtr-preview-meta {
+  color: #94a3b8;
+}
+[data-theme="dark"] #wtr-preview-meta div span {
+  color: #cbd5e1;
+}
+[data-theme="dark"] .wtr-preview-panel div[style*="border-top:1px solid #e5e7eb"] {
+  border-color: #334155 !important;
+}
