@@ -156,6 +156,14 @@
 | 142 | 복원 | RSTR | RESTORE | N | 데이터 복원 |
 | 143 | 크기 | SZ | SIZE | N | 데이터 크기 |
 | 144 | 차등 | DIFRL | DIFFERENTIAL | N | 차등 백업/복구 |
+| 145 | 스케줄 | SCHED | SCHEDULE | N | 백업 스케줄 |
+| 146 | 이관 | MIGRTN | MIGRATION | N | 데이터 이관 |
+| 147 | 주기 | CYCLE | CYCLE | N | 실행 주기 |
+| 148 | 접속설정 | CNCTN_CNFG | CONNECTION CONFIG | N | DB 접속 설정 |
+| 149 | 호스트 | HOST | HOST | N | 서버 호스트 주소 |
+| 150 | 포트 | PORT | PORT | N | 네트워크 포트 |
+| 151 | 경로 | PATH | PATH | N | 저장 경로 |
+| 152 | 복제됨 | REPLCD | REPLICATED | N | 복제 완료 레코드 |
 
 ## 보정 단어 (기존 표준사전 약어 수정 권고)
 

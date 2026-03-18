@@ -4121,6 +4121,388 @@
   </div>
 </div>
 
+<!-- ============================================================== -->
+<!--  연계 DB 설정 (sys-db-config)                                    -->
+<!-- ============================================================== -->
+<div class="screen" id="screen-sys-db-config">
+  <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>연계 DB 설정</strong></div>
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <div>
+      <div class="page-title">연계 DB 설정</div>
+      <div style="font-size:13px; color:#888;">SAP/Oracle/PostgreSQL/Tibero 등 데이터허브 연계 DB 접속 설정 관리</div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-outline" onclick="testAllDbConnections()" data-perm="write">🔗 연결 테스트 일괄</button>
+      <button class="btn btn-primary" onclick="openDbConfigModal()" data-perm="write">+ 신규 등록</button>
+    </div>
+  </div>
+
+  <!-- KPI 4개 -->
+  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px;">
+    <div class="kpi-card" style="border-left:3px solid #1967d2;">
+      <div class="kpi-label">전체 DB</div>
+      <div class="kpi-value" style="color:#1967d2;">8<span style="font-size:12px;font-weight:400;">개</span></div>
+      <div class="kpi-sub">6개 DBMS 유형</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #52c41a;">
+      <div class="kpi-label">정상 연결</div>
+      <div class="kpi-value" style="color:#52c41a;">6<span style="font-size:12px;font-weight:400;">개</span></div>
+      <div class="kpi-sub">75% 연결 상태</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #f5222d;">
+      <div class="kpi-label">오류</div>
+      <div class="kpi-value" style="color:#f5222d;">1<span style="font-size:12px;font-weight:400;">개</span></div>
+      <div class="kpi-sub">SAP-HANA-DR 연결 실패</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #fa8c16;">
+      <div class="kpi-label">미연결</div>
+      <div class="kpi-value" style="color:#fa8c16;">1<span style="font-size:12px;font-weight:400;">개</span></div>
+      <div class="kpi-sub">신규 등록 후 미테스트</div>
+    </div>
+  </div>
+
+  <!-- AG Grid -->
+  <div class="card">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>🗄️ 연계 DB 목록</span>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <select id="dbcfg-filter-dbms" onchange="filterDbConfig()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체 DBMS</option>
+          <option>SAP HANA</option><option>Oracle</option><option>PostgreSQL</option><option>Tibero</option><option>MySQL</option><option>MSSQL</option>
+        </select>
+        <select id="dbcfg-filter-stat" onchange="filterDbConfig()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체 상태</option>
+          <option value="정상">정상</option><option value="오류">오류</option><option value="미연결">미연결</option>
+        </select>
+        <input id="dbcfg-filter-search" onkeyup="filterDbConfig()" type="text" placeholder="설정명·호스트 검색…" style="padding:4px 10px; border:1px solid #ddd; border-radius:4px; width:160px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+      </div>
+    </div>
+    <div class="card-body" style="padding:0;">
+      <div id="ag-grid-sys-db-config" class="ag-theme-alpine" style="width:100%;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 연계 DB 등록/수정 모달 -->
+<div class="modal-overlay" id="db-config-modal" style="display:none;">
+  <div class="modal-card" style="width:600px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title" id="db-config-modal-title">🗄️ 연계 DB 등록</h3>
+      <button class="modal-close" onclick="closeDbConfigModal()">×</button>
+    </div>
+    <div class="modal-body" style="padding:16px 20px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">설정명 <span style="color:#f5222d;">*</span></label>
+          <input type="text" id="dbcfg-form-name" placeholder="예: SAP-HANA-운영" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; background:var(--card-bg); color:var(--text-color);"></div>
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">DBMS 유형 <span style="color:#f5222d;">*</span></label>
+          <select id="dbcfg-form-dbms" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; background:var(--card-bg); color:var(--text-color);">
+            <option value="">선택</option><option>SAP HANA</option><option>Oracle</option><option>PostgreSQL</option><option>Tibero</option><option>MySQL</option><option>MSSQL</option>
+          </select></div>
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">호스트 주소 <span style="color:#f5222d;">*</span></label>
+          <input type="text" id="dbcfg-form-host" placeholder="예: db-sap.kwater.or.kr" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; background:var(--card-bg); color:var(--text-color);"></div>
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">포트 <span style="color:#f5222d;">*</span></label>
+          <input type="number" id="dbcfg-form-port" placeholder="예: 30013" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; background:var(--card-bg); color:var(--text-color);"></div>
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">데이터베이스명</label>
+          <input type="text" id="dbcfg-form-db" placeholder="예: KWATER_PROD" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; background:var(--card-bg); color:var(--text-color);"></div>
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">스키마명</label>
+          <input type="text" id="dbcfg-form-schema" placeholder="예: PUBLIC" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; background:var(--card-bg); color:var(--text-color);"></div>
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">접속 계정</label>
+          <input type="text" id="dbcfg-form-user" placeholder="예: datahub_sync" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; background:var(--card-bg); color:var(--text-color);"></div>
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">네트워크 존</label>
+          <select id="dbcfg-form-zone" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; background:var(--card-bg); color:var(--text-color);">
+            <option value="">선택</option><option>FA</option><option>OA</option><option>DMZ</option><option>IoT</option>
+          </select></div>
+        <div style="grid-column:span 2;"><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">보안등급</label>
+          <select id="dbcfg-form-security" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; background:var(--card-bg); color:var(--text-color);">
+            <option value="internal">내부일반</option><option value="restricted">내부중요</option><option value="confidential">기밀</option><option value="public">공개</option>
+          </select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeDbConfigModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveDbConfig()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================== -->
+<!--  백업 복구 스케줄 (sys-backup-schedule)                           -->
+<!-- ============================================================== -->
+<div class="screen" id="screen-sys-backup-schedule">
+  <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>백업 복구 스케줄</strong></div>
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <div>
+      <div class="page-title">백업 복구 스케줄</div>
+      <div style="font-size:13px; color:#888;">백업 데이터 복구 자동화 스케줄러 · 복구 주기 및 정책 메타데이터 관리</div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-primary" onclick="openScheduleModal()" data-perm="write">+ 스케줄 등록</button>
+    </div>
+  </div>
+
+  <!-- KPI 5개 -->
+  <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:20px;">
+    <div class="kpi-card" style="border-left:3px solid #1967d2;">
+      <div class="kpi-label">전체 스케줄</div>
+      <div class="kpi-value" style="color:#1967d2;">12<span style="font-size:12px;font-weight:400;">개</span></div>
+      <div class="kpi-sub">8개 DB 대상</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #52c41a;">
+      <div class="kpi-label">활성</div>
+      <div class="kpi-value" style="color:#52c41a;">10<span style="font-size:12px;font-weight:400;">개</span></div>
+      <div class="kpi-sub">83.3% 가동률</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #888;">
+      <div class="kpi-label">비활성</div>
+      <div class="kpi-value" style="color:#888;">2<span style="font-size:12px;font-weight:400;">개</span></div>
+      <div class="kpi-sub">일시 중지 상태</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #fa8c16;">
+      <div class="kpi-label">금일 예정</div>
+      <div class="kpi-value" style="color:#fa8c16;">5<span style="font-size:12px;font-weight:400;">건</span></div>
+      <div class="kpi-sub">다음 실행 02:00</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #f5222d;">
+      <div class="kpi-label">최근 실패</div>
+      <div class="kpi-value" style="color:#f5222d;">1<span style="font-size:12px;font-weight:400;">건</span></div>
+      <div class="kpi-sub">SAP-HANA 증분 백업</div>
+    </div>
+  </div>
+
+  <!-- AG Grid -->
+  <div class="card">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>📅 백업 스케줄 목록</span>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <select id="sched-filter-type" onchange="filterBackupSchedule()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체 유형</option>
+          <option value="Full">Full</option><option value="Incremental">Incremental</option><option value="Differential">Differential</option>
+        </select>
+        <select id="sched-filter-active" onchange="filterBackupSchedule()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체</option><option value="활성">활성</option><option value="비활성">비활성</option>
+        </select>
+        <input id="sched-filter-search" onkeyup="filterBackupSchedule()" type="text" placeholder="스케줄명·DB 검색…" style="padding:4px 10px; border:1px solid #ddd; border-radius:4px; width:160px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+      </div>
+    </div>
+    <div class="card-body" style="padding:0;">
+      <div id="ag-grid-sys-backup-schedule" class="ag-theme-alpine" style="width:100%;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 스케줄 등록/수정 모달 -->
+<div class="modal-overlay" id="schedule-modal" style="display:none;">
+  <div class="modal-card" style="width:600px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title" id="schedule-modal-title">📅 스케줄 등록</h3>
+      <button class="modal-close" onclick="closeScheduleModal()">×</button>
+    </div>
+    <div class="modal-body" style="padding:16px 20px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div style="grid-column:span 2;"><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">스케줄명 <span style="color:#f5222d;">*</span></label>
+          <input type="text" id="sched-form-name" placeholder="예: DataHub-Prod 일일 전체백업" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; background:var(--card-bg); color:var(--text-color);"></div>
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">대상 DB <span style="color:#f5222d;">*</span></label>
+          <select id="sched-form-db" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; background:var(--card-bg); color:var(--text-color);">
+            <option value="">선택</option><option>SAP-HANA-운영</option><option>SAP-HANA-DR</option><option>Oracle-수자원</option><option>Oracle-수질</option><option>PG-DataHub</option><option>PG-Analytics</option><option>Tibero-ERP</option><option>MySQL-Portal</option>
+          </select></div>
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">백업 유형 <span style="color:#f5222d;">*</span></label>
+          <select id="sched-form-type" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; background:var(--card-bg); color:var(--text-color);">
+            <option value="">선택</option><option value="Full">Full (전체)</option><option value="Incremental">Incremental (증분)</option><option value="Differential">Differential (차등)</option>
+          </select></div>
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">크론 표현식 <span style="color:#f5222d;">*</span></label>
+          <input type="text" id="sched-form-cron" placeholder="0 2 * * *" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; font-family:monospace; background:var(--card-bg); color:var(--text-color);">
+          <div style="display:flex; gap:4px; margin-top:4px;">
+            <button class="btn btn-outline" style="padding:1px 6px; font-size:10px;" onclick="document.getElementById('sched-form-cron').value='0 2 * * *'">매일 02시</button>
+            <button class="btn btn-outline" style="padding:1px 6px; font-size:10px;" onclick="document.getElementById('sched-form-cron').value='0 */6 * * *'">6시간마다</button>
+            <button class="btn btn-outline" style="padding:1px 6px; font-size:10px;" onclick="document.getElementById('sched-form-cron').value='0 3 * * 0'">매주 일요일</button>
+            <button class="btn btn-outline" style="padding:1px 6px; font-size:10px;" onclick="document.getElementById('sched-form-cron').value='0 1 1 * *'">매월 1일</button>
+          </div></div>
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">보존 기간 (일)</label>
+          <input type="number" id="sched-form-retention" value="30" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; background:var(--card-bg); color:var(--text-color);"></div>
+        <div style="grid-column:span 2;"><label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">저장 경로</label>
+          <input type="text" id="sched-form-path" placeholder="예: s3://kwater-backup/datahub-prod/" style="width:100%; padding:6px 10px; border:1px solid #ddd; border-radius:4px; font-size:13px; background:var(--card-bg); color:var(--text-color);"></div>
+        <div><label style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; cursor:pointer;">
+          <input type="checkbox" id="sched-form-noti" checked> 실패 시 알림 발송</label></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeScheduleModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveSchedule()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================== -->
+<!--  백업 데이터 복제·이관 (sys-backup-repl)                          -->
+<!-- ============================================================== -->
+<div class="screen" id="screen-sys-backup-repl">
+  <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>백업 데이터 복제·이관</strong></div>
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <div>
+      <div class="page-title">백업 데이터 복제·이관</div>
+      <div style="font-size:13px; color:#888;">증분/전체 복제 모드 지원 · 검증 절차 내장 · 복제·이관 중 모니터링 및 감사 로그</div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-outline" onclick="exportReplHist()">📥 내보내기</button>
+      <button class="btn btn-outline" onclick="resetReplFilter()">↺ 초기화</button>
+    </div>
+  </div>
+
+  <!-- KPI 6개 -->
+  <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-bottom:20px;">
+    <div class="kpi-card" style="border-left:3px solid #1967d2;">
+      <div class="kpi-label">전체 이력</div>
+      <div class="kpi-value" style="color:#1967d2;">186<span style="font-size:12px;font-weight:400;">건</span></div>
+      <div class="kpi-sub">최근 30일 기준</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #52c41a;">
+      <div class="kpi-label">성공률</div>
+      <div class="kpi-value" style="color:#52c41a;">97.3<span style="font-size:12px;font-weight:400;">%</span></div>
+      <div class="kpi-sub">목표 95% 달성</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #f5222d;">
+      <div class="kpi-label">실패</div>
+      <div class="kpi-value" style="color:#f5222d;">5<span style="font-size:12px;font-weight:400;">건</span></div>
+      <div class="kpi-sub">▼ 전월 대비 -2건</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #fa8c16;">
+      <div class="kpi-label">진행중</div>
+      <div class="kpi-value" style="color:#fa8c16;">2<span style="font-size:12px;font-weight:400;">건</span></div>
+      <div class="kpi-sub">예상 완료 15분</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #13c2c2;">
+      <div class="kpi-label">총 전송 용량</div>
+      <div class="kpi-value" style="color:#13c2c2;">2.4<span style="font-size:12px;font-weight:400;">TB</span></div>
+      <div class="kpi-sub">최근 30일</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #722ed1;">
+      <div class="kpi-label">검증 완료율</div>
+      <div class="kpi-value" style="color:#722ed1;">91.2<span style="font-size:12px;font-weight:400;">%</span></div>
+      <div class="kpi-sub">미검증 16건</div>
+    </div>
+  </div>
+
+  <!-- 메인 그리드 -->
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <span>📋 복제·이관 이력</span>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <input type="date" id="repl-date-from" onchange="filterReplHist()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+        <span style="font-size:12px; color:#888;">~</span>
+        <input type="date" id="repl-date-to" onchange="filterReplHist()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+        <select id="repl-filter-db" onchange="filterReplHist()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체 DB</option>
+          <option>SAP-HANA-운영</option><option>Oracle-수자원</option><option>PG-DataHub</option><option>PG-Analytics</option><option>Tibero-ERP</option>
+        </select>
+        <select id="repl-filter-type" onchange="filterReplHist()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체 유형</option><option value="전체">전체</option><option value="증분">증분</option>
+        </select>
+        <select id="repl-filter-stat" onchange="filterReplHist()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체 상태</option><option value="성공">성공</option><option value="실패">실패</option><option value="진행중">진행중</option>
+        </select>
+        <input id="repl-filter-search" onkeyup="filterReplHist()" type="text" placeholder="검색…" style="padding:4px 10px; border:1px solid #ddd; border-radius:4px; width:130px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+      </div>
+    </div>
+    <div class="card-body" style="padding:0;">
+      <div id="ag-grid-sys-backup-repl" class="ag-theme-alpine" style="width:100%;"></div>
+    </div>
+  </div>
+
+  <!-- 하단 2분할 -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+    <div class="card">
+      <div class="card-head">📊 복제 유형별 분포</div>
+      <div class="card-body" style="padding:14px 16px;">
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="width:80px; font-size:12px; font-weight:600;">전체(Full)</span>
+            <div style="flex:1; height:20px; background:#f0f0f0; border-radius:4px; overflow:hidden;">
+              <div style="width:62%; height:100%; background:#1967d2; border-radius:4px; display:flex; align-items:center; padding-left:8px;">
+                <span style="font-size:10px; color:#fff; font-weight:600;">115건</span>
+              </div>
+            </div>
+            <span style="font-size:11px; color:#888; width:40px; text-align:right;">61.8%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="width:80px; font-size:12px; font-weight:600;">증분(Incr)</span>
+            <div style="flex:1; height:20px; background:#f0f0f0; border-radius:4px; overflow:hidden;">
+              <div style="width:38%; height:100%; background:#52c41a; border-radius:4px; display:flex; align-items:center; padding-left:8px;">
+                <span style="font-size:10px; color:#fff; font-weight:600;">71건</span>
+              </div>
+            </div>
+            <span style="font-size:11px; color:#888; width:40px; text-align:right;">38.2%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">🗄️ DB별 복제 통계</div>
+      <div class="card-body" style="padding:0;">
+        <table class="data-table" style="font-size:12px;">
+          <thead><tr><th>DB명</th><th>전체</th><th>성공</th><th>실패</th><th>성공률</th></tr></thead>
+          <tbody>
+            <tr><td><strong>SAP-HANA-운영</strong></td><td>52</td><td>50</td><td>2</td><td><span style="color:#52c41a;font-weight:600;">96.2%</span></td></tr>
+            <tr><td><strong>Oracle-수자원</strong></td><td>38</td><td>37</td><td>1</td><td><span style="color:#52c41a;font-weight:600;">97.4%</span></td></tr>
+            <tr><td><strong>PG-DataHub</strong></td><td>45</td><td>45</td><td>0</td><td><span style="color:#52c41a;font-weight:600;">100%</span></td></tr>
+            <tr><td><strong>PG-Analytics</strong></td><td>30</td><td>29</td><td>1</td><td><span style="color:#52c41a;font-weight:600;">96.7%</span></td></tr>
+            <tr><td><strong>Tibero-ERP</strong></td><td>21</td><td>20</td><td>1</td><td><span style="color:#fa8c16;font-weight:600;">95.2%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 복제·이관 상세 모달 -->
+<div class="modal-overlay" id="repl-detail-modal" style="display:none;">
+  <div class="modal-card" style="width:640px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">📋 복제·이관 상세</h3>
+      <button class="modal-close" onclick="closeReplDetailModal()">×</button>
+    </div>
+    <div class="modal-body" style="padding:16px 20px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">원본 DB</span> <strong id="repl-dtl-db">-</strong></div>
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">복제 유형</span> <span id="repl-dtl-type">-</span></div>
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">방향</span> <span id="repl-dtl-drct">-</span></div>
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">스케줄</span> <span id="repl-dtl-sched">-</span></div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">상태</span> <span id="repl-dtl-stat">-</span></div>
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">시작시간</span> <span id="repl-dtl-start">-</span></div>
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">종료시간</span> <span id="repl-dtl-end">-</span></div>
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">소요시간</span> <span id="repl-dtl-dur">-</span></div>
+        </div>
+      </div>
+      <div style="margin-bottom:16px; padding:10px 12px; background:#f8f9fa; border-radius:6px; border-left:3px solid #1967d2;">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+          <div><div style="font-size:10px; color:#888;">전체 레코드</div><div style="font-size:13px; font-weight:600;" id="repl-dtl-total">-</div></div>
+          <div><div style="font-size:10px; color:#888;">복제 완료</div><div style="font-size:13px; font-weight:600;" id="repl-dtl-replcd">-</div></div>
+          <div><div style="font-size:10px; color:#888;">용량</div><div style="font-size:13px; font-weight:600;" id="repl-dtl-sz">-</div></div>
+        </div>
+      </div>
+      <div style="margin-bottom:16px; padding:10px 12px; border:1px solid var(--border-color); border-radius:6px;">
+        <div style="font-size:12px; font-weight:700; margin-bottom:8px;">🔍 검증 상태</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <div style="font-size:12px;"><span style="color:#888;">검증</span> <strong id="repl-dtl-vrfy">-</strong></div>
+          <div style="font-size:12px;"><span style="color:#888;">오류 레코드</span> <span id="repl-dtl-err" style="color:#f5222d;">-</span></div>
+        </div>
+      </div>
+      <div id="repl-dtl-error-box" style="display:none; margin-top:12px; padding:10px 12px; background:#fff1f0; border:1px solid #ffa39e; border-radius:6px;">
+        <div style="font-size:12px; font-weight:700; color:#cf1322; margin-bottom:4px;">⚠️ 오류 메시지</div>
+        <div id="repl-dtl-err-msg" style="font-size:12px; color:#cf1322; font-family:monospace;"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeReplDetailModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
 <!-- 복구 로그 상세 모달 -->
 <div class="modal-overlay" id="recovery-detail-modal" style="display:none;">
   <div class="modal-card" style="width:720px; max-height:90vh;">

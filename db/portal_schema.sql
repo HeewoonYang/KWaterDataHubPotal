@@ -1485,6 +1485,92 @@ COMMENT ON TABLE db_rcvry_dtl IS 'DB 복구 상세 내역, 테이블 단위 복�
 
 
 -- ============================================================================
+-- 11-3. 연계 DB 접속 설정 / 백업 스케줄 / 복제·이관
+-- ============================================================================
+
+-- 연계 DB 접속 설정
+CREATE TABLE db_cnctn_cnfg (
+    cnctn_cnfg_id   SERIAL          PRIMARY KEY,
+    cnfg_nm         VARCHAR(200)    NOT NULL,
+    dbms_ty         VARCHAR(30)     NOT NULL,
+    host_addr       VARCHAR(200)    NOT NULL,
+    port_no         INT             NOT NULL,
+    db_nm           VARCHAR(100),
+    schma_nm        VARCHAR(100),
+    usr_nm          VARCHAR(100),
+    ntwk_zone       VARCHAR(20)     CHECK (ntwk_zone IN ('FA','OA','DMZ','IoT')),
+    scrty_lvl       data_security_level DEFAULT 'internal',
+    cnctn_stat      VARCHAR(20)     DEFAULT 'disconnected' CHECK (cnctn_stat IN ('connected','disconnected','error')),
+    last_test_at    TIMESTAMPTZ,
+    dc              TEXT,
+    crtd_at         TIMESTAMPTZ     DEFAULT now(),
+    crtd_by         UUID,
+    updtd_at        TIMESTAMPTZ     DEFAULT now(),
+    updtd_by        UUID
+);
+
+CREATE INDEX idx_cnctn_cnfg_dbms ON db_cnctn_cnfg (dbms_ty);
+CREATE INDEX idx_cnctn_cnfg_stat ON db_cnctn_cnfg (cnctn_stat);
+
+COMMENT ON TABLE db_cnctn_cnfg IS '연계 DB 접속 설정, DBMS별 접속 정보 관리';
+
+-- 백업 복구 스케줄 설정
+CREATE TABLE bkup_sched (
+    sched_id        SERIAL          PRIMARY KEY,
+    cnctn_cnfg_id   INT             NOT NULL REFERENCES db_cnctn_cnfg(cnctn_cnfg_id),
+    sched_nm        VARCHAR(200)    NOT NULL,
+    bkup_ty         VARCHAR(30)     NOT NULL CHECK (bkup_ty IN ('full','incremental','differential')),
+    cron_expr       VARCHAR(50)     NOT NULL,
+    rtntn_days      INT             DEFAULT 30,
+    bkup_path       VARCHAR(500),
+    is_actv         BOOLEAN         DEFAULT true,
+    last_exec_at    TIMESTAMPTZ,
+    next_exec_at    TIMESTAMPTZ,
+    fail_noti       BOOLEAN         DEFAULT true,
+    dc              TEXT,
+    crtd_at         TIMESTAMPTZ     DEFAULT now(),
+    crtd_by         UUID,
+    updtd_at        TIMESTAMPTZ     DEFAULT now(),
+    updtd_by        UUID
+);
+
+CREATE INDEX idx_bkup_sched_cnfg ON bkup_sched (cnctn_cnfg_id);
+CREATE INDEX idx_bkup_sched_actv ON bkup_sched (is_actv);
+
+COMMENT ON TABLE bkup_sched IS '백업 복구 스케줄 설정, 크론 기반 자동 백업 관리';
+
+-- 백업 복제·이관 이력
+CREATE TABLE bkup_repl_hist (
+    repl_id         BIGSERIAL       PRIMARY KEY,
+    sched_id        INT             REFERENCES bkup_sched(sched_id),
+    cnctn_cnfg_id   INT             REFERENCES db_cnctn_cnfg(cnctn_cnfg_id),
+    repl_ty         VARCHAR(30)     NOT NULL CHECK (repl_ty IN ('full','incremental')),
+    repl_drct       VARCHAR(20)     DEFAULT 'inbound' CHECK (repl_drct IN ('inbound','outbound')),
+    stat            VARCHAR(20)     DEFAULT 'running' CHECK (stat IN ('running','success','failed','cancelled')),
+    strtd_at        TIMESTAMPTZ     NOT NULL DEFAULT now(),
+    fnshed_at       TIMESTAMPTZ,
+    dur_secnd       INT,
+    tot_rcrds       BIGINT          DEFAULT 0,
+    replcd_rcrds    BIGINT          DEFAULT 0,
+    err_rcrds       BIGINT          DEFAULT 0,
+    data_sz_mb      NUMERIC(12,2),
+    vrfy_stat       VARCHAR(20)     DEFAULT 'pending' CHECK (vrfy_stat IN ('pending','verified','failed')),
+    err_msg         TEXT,
+    err_dtl         JSONB,
+    crtd_at         TIMESTAMPTZ     DEFAULT now(),
+    crtd_by         UUID,
+    updtd_at        TIMESTAMPTZ     DEFAULT now(),
+    updtd_by        UUID
+);
+
+CREATE INDEX idx_repl_hist_sched ON bkup_repl_hist (sched_id, strtd_at DESC);
+CREATE INDEX idx_repl_hist_cnfg  ON bkup_repl_hist (cnctn_cnfg_id, strtd_at DESC);
+CREATE INDEX idx_repl_hist_stat  ON bkup_repl_hist (stat);
+
+COMMENT ON TABLE bkup_repl_hist IS '백업 복제·이관 이력, 증분/전체 복제 실행 결과';
+
+
+-- ============================================================================
 -- 12. 초기 데이터
 -- ============================================================================
 

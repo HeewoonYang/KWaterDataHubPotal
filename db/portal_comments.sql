@@ -1223,5 +1223,71 @@ COMMENT ON COLUMN db_rcvry_dtl.updtd_at IS '수정일시';
 COMMENT ON COLUMN db_rcvry_dtl.updtd_by IS '수정자 ID';
 
 -- ============================================================================
+-- 11-3. 연계 DB 접속 설정 / 백업 스케줄 / 복제·이관
+-- ============================================================================
+
+-- db_cnctn_cnfg
+COMMENT ON TABLE  db_cnctn_cnfg IS '연계 DB 접속 설정, DBMS별 접속 정보 관리';
+COMMENT ON COLUMN db_cnctn_cnfg.cnctn_cnfg_id IS '접속 설정 고유 ID (PK, 자동증가)';
+COMMENT ON COLUMN db_cnctn_cnfg.cnfg_nm IS '설정명';
+COMMENT ON COLUMN db_cnctn_cnfg.dbms_ty IS 'DBMS 유형: SAP_HANA/ORACLE/POSTGRESQL/TIBERO/MYSQL/MSSQL';
+COMMENT ON COLUMN db_cnctn_cnfg.host_addr IS '호스트 주소';
+COMMENT ON COLUMN db_cnctn_cnfg.port_no IS '포트 번호';
+COMMENT ON COLUMN db_cnctn_cnfg.db_nm IS '데이터베이스명';
+COMMENT ON COLUMN db_cnctn_cnfg.schma_nm IS '스키마명';
+COMMENT ON COLUMN db_cnctn_cnfg.usr_nm IS '접속 계정';
+COMMENT ON COLUMN db_cnctn_cnfg.ntwk_zone IS '네트워크 존: FA/OA/DMZ/IoT';
+COMMENT ON COLUMN db_cnctn_cnfg.scrty_lvl IS '보안등급';
+COMMENT ON COLUMN db_cnctn_cnfg.cnctn_stat IS '연결 상태: connected/disconnected/error';
+COMMENT ON COLUMN db_cnctn_cnfg.last_test_at IS '최종 연결 테스트 일시';
+COMMENT ON COLUMN db_cnctn_cnfg.dc IS '비고';
+COMMENT ON COLUMN db_cnctn_cnfg.crtd_at IS '등록일시';
+COMMENT ON COLUMN db_cnctn_cnfg.crtd_by IS '등록자 ID';
+COMMENT ON COLUMN db_cnctn_cnfg.updtd_at IS '수정일시';
+COMMENT ON COLUMN db_cnctn_cnfg.updtd_by IS '수정자 ID';
+
+-- bkup_sched
+COMMENT ON TABLE  bkup_sched IS '백업 복구 스케줄 설정, 크론 기반 자동 백업 관리';
+COMMENT ON COLUMN bkup_sched.sched_id IS '스케줄 고유 ID (PK, 자동증가)';
+COMMENT ON COLUMN bkup_sched.cnctn_cnfg_id IS '대상 DB FK → db_cnctn_cnfg';
+COMMENT ON COLUMN bkup_sched.sched_nm IS '스케줄명';
+COMMENT ON COLUMN bkup_sched.bkup_ty IS '백업 유형: full/incremental/differential';
+COMMENT ON COLUMN bkup_sched.cron_expr IS '크론 표현식 (예: 0 2 * * *)';
+COMMENT ON COLUMN bkup_sched.rtntn_days IS '보존 기간 (일)';
+COMMENT ON COLUMN bkup_sched.bkup_path IS '백업 저장 경로';
+COMMENT ON COLUMN bkup_sched.is_actv IS '활성 여부';
+COMMENT ON COLUMN bkup_sched.last_exec_at IS '최종 실행 일시';
+COMMENT ON COLUMN bkup_sched.next_exec_at IS '다음 실행 예정 일시';
+COMMENT ON COLUMN bkup_sched.fail_noti IS '실패 시 알림 여부';
+COMMENT ON COLUMN bkup_sched.dc IS '비고';
+COMMENT ON COLUMN bkup_sched.crtd_at IS '등록일시';
+COMMENT ON COLUMN bkup_sched.crtd_by IS '등록자 ID';
+COMMENT ON COLUMN bkup_sched.updtd_at IS '수정일시';
+COMMENT ON COLUMN bkup_sched.updtd_by IS '수정자 ID';
+
+-- bkup_repl_hist
+COMMENT ON TABLE  bkup_repl_hist IS '백업 복제·이관 이력, 증분/전체 복제 실행 결과';
+COMMENT ON COLUMN bkup_repl_hist.repl_id IS '복제 이력 고유 ID (PK, 자동증가)';
+COMMENT ON COLUMN bkup_repl_hist.sched_id IS '스케줄 FK → bkup_sched';
+COMMENT ON COLUMN bkup_repl_hist.cnctn_cnfg_id IS '원본 DB FK → db_cnctn_cnfg';
+COMMENT ON COLUMN bkup_repl_hist.repl_ty IS '복제 유형: full/incremental';
+COMMENT ON COLUMN bkup_repl_hist.repl_drct IS '복제 방향: inbound/outbound';
+COMMENT ON COLUMN bkup_repl_hist.stat IS '상태: running/success/failed/cancelled';
+COMMENT ON COLUMN bkup_repl_hist.strtd_at IS '시작 일시';
+COMMENT ON COLUMN bkup_repl_hist.fnshed_at IS '종료 일시';
+COMMENT ON COLUMN bkup_repl_hist.dur_secnd IS '소요 시간 (초)';
+COMMENT ON COLUMN bkup_repl_hist.tot_rcrds IS '전체 레코드 수';
+COMMENT ON COLUMN bkup_repl_hist.replcd_rcrds IS '복제 완료 레코드 수';
+COMMENT ON COLUMN bkup_repl_hist.err_rcrds IS '오류 레코드 수';
+COMMENT ON COLUMN bkup_repl_hist.data_sz_mb IS '데이터 용량 (MB)';
+COMMENT ON COLUMN bkup_repl_hist.vrfy_stat IS '검증 상태: pending/verified/failed';
+COMMENT ON COLUMN bkup_repl_hist.err_msg IS '오류 메시지';
+COMMENT ON COLUMN bkup_repl_hist.err_dtl IS '오류 상세 (JSON)';
+COMMENT ON COLUMN bkup_repl_hist.crtd_at IS '등록일시';
+COMMENT ON COLUMN bkup_repl_hist.crtd_by IS '등록자 ID';
+COMMENT ON COLUMN bkup_repl_hist.updtd_at IS '수정일시';
+COMMENT ON COLUMN bkup_repl_hist.updtd_by IS '수정자 ID';
+
+-- ============================================================================
 -- 끝
 -- ============================================================================

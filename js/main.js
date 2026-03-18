@@ -380,6 +380,7 @@ var RBAC_MATRIX = {
       'meta-glossary', 'meta-tag', 'meta-model', 'meta-dq', 'meta-ontology',
       'meta-std-dashboard', 'meta-std-words', 'meta-std-domains', 'meta-std-terms', 'meta-std-codes', 'meta-std-import',
       'dist-product', 'dist-approval', 'dist-stats',
+      'sys-db-config', 'sys-backup-schedule', 'sys-backup-repl', 'sys-recovery-log',
       'comm-notice', 'comm-internal', 'comm-archive'],
     topNav: ['dashboard', 'catalog', 'collect', 'distribute', 'meta', 'community', 'system']
   },
@@ -388,7 +389,7 @@ var RBAC_MATRIX = {
       'cat-search', 'cat-detail', 'cat-graph', 'cat-lineage', 'cat-bookmark', 'cat-request',
       'col-pipeline', 'col-register', 'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt',
       'dist-product', 'dist-approval', 'dist-stats', 'dist-chart-content',
-      'sys-user', 'sys-role', 'sys-security', 'sys-interface', 'sys-audit', 'sys-widget-template', 'sys-perm', 'sys-engine', 'sys-k8s', 'sys-erp-sync', 'sys-ext-register', 'sys-recovery-log',
+      'sys-user', 'sys-role', 'sys-security', 'sys-interface', 'sys-audit', 'sys-widget-template', 'sys-perm', 'sys-engine', 'sys-k8s', 'sys-erp-sync', 'sys-ext-register', 'sys-db-config', 'sys-backup-schedule', 'sys-backup-repl', 'sys-recovery-log',
       'comm-notice', 'comm-internal', 'comm-external', 'comm-archive'],
     topNav: ['dashboard', 'catalog', 'collect', 'distribute', 'community', 'system']
   },
@@ -397,7 +398,7 @@ var RBAC_MATRIX = {
       'cat-search', 'cat-detail', 'cat-graph', 'cat-lineage', 'cat-bookmark', 'cat-request',
       'col-arch', 'col-log',
       'dist-deidentify', 'dist-approval', 'dist-stats', 'dist-chart-content',
-      'sys-user', 'sys-role', 'sys-security', 'sys-audit', 'sys-widget-template', 'sys-perm', 'sys-engine', 'sys-k8s', 'sys-erp-sync', 'sys-ext-register', 'sys-recovery-log',
+      'sys-user', 'sys-role', 'sys-security', 'sys-audit', 'sys-widget-template', 'sys-perm', 'sys-engine', 'sys-k8s', 'sys-erp-sync', 'sys-ext-register', 'sys-db-config', 'sys-backup-schedule', 'sys-backup-repl', 'sys-recovery-log',
       'comm-notice', 'comm-archive'],
     topNav: ['dashboard', 'catalog', 'collect', 'distribute', 'community', 'system']
   },
@@ -440,8 +441,8 @@ var RBAC_SCREEN_PERMS = {
   '데이터엔지니어|파이프라인관리자': { _default: 'manage' },
   '데이터엔지니어|ETL운영자':      { _default: 'manage' },
   '데이터엔지니어|DBA':            { _default: 'manage' },
-  '관리자|시스템관리자':           { _default: 'manage', 'sys-user': 'admin', 'sys-role': 'admin', 'sys-security': 'admin', 'sys-perm': 'admin', 'sys-erp-sync': 'admin', 'sys-ext-register': 'admin', 'sys-recovery-log': 'admin', 'dist-approval': 'read' },
-  '관리자|보안관리자':             { _default: 'manage', 'sys-security': 'admin', 'sys-audit': 'admin', 'sys-ext-register': 'admin', 'sys-recovery-log': 'admin', 'dist-approval': 'read', 'dist-stats': 'read' },
+  '관리자|시스템관리자':           { _default: 'manage', 'sys-user': 'admin', 'sys-role': 'admin', 'sys-security': 'admin', 'sys-perm': 'admin', 'sys-erp-sync': 'admin', 'sys-ext-register': 'admin', 'sys-recovery-log': 'admin', 'sys-db-config': 'admin', 'sys-backup-schedule': 'admin', 'sys-backup-repl': 'admin', 'dist-approval': 'read' },
+  '관리자|보안관리자':             { _default: 'manage', 'sys-security': 'admin', 'sys-audit': 'admin', 'sys-ext-register': 'admin', 'sys-recovery-log': 'admin', 'sys-db-config': 'admin', 'sys-backup-schedule': 'admin', 'sys-backup-repl': 'admin', 'dist-approval': 'read', 'dist-stats': 'read' },
   '관리자|슈퍼관리자':             { _default: 'admin' }
 };
 
@@ -767,6 +768,15 @@ function navigate(screen) {
   }
   if (screen === 'sys-recovery-log') {
     setTimeout(initRecoveryLogScreen, 100);
+  }
+  if (screen === 'sys-db-config') {
+    setTimeout(initDbConfigScreen, 100);
+  }
+  if (screen === 'sys-backup-schedule') {
+    setTimeout(initBackupScheduleScreen, 100);
+  }
+  if (screen === 'sys-backup-repl') {
+    setTimeout(initBackupReplScreen, 100);
   }
 
   // 9) 데이터모델 목록 — 동적 ERD 미리보기 렌더링 + 모델 화면 초기화
@@ -8388,7 +8398,7 @@ var SCREEN_GROUP_MAP = {
   'meta-glossary': '메타데이터', 'meta-tag': '메타데이터', 'meta-model': '메타데이터',
   'meta-dq': '메타데이터', 'meta-ontology': '메타데이터',
   'sys-user': '시스템관리', 'sys-role': '시스템관리', 'sys-security': '시스템관리',
-  'sys-interface': '시스템관리', 'sys-audit': '시스템관리', 'sys-perm': '시스템관리', 'sys-engine': '시스템관리', 'sys-erp-sync': '시스템관리', 'sys-recovery-log': '시스템관리', 'llmops': '시스템관리',
+  'sys-interface': '시스템관리', 'sys-audit': '시스템관리', 'sys-perm': '시스템관리', 'sys-engine': '시스템관리', 'sys-erp-sync': '시스템관리', 'sys-db-config': '시스템관리', 'sys-backup-schedule': '시스템관리', 'sys-backup-repl': '시스템관리', 'sys-recovery-log': '시스템관리', 'llmops': '시스템관리',
   'sys-widget-template': '대시보드',
   'comm-notice': '커뮤니티', 'comm-internal': '커뮤니티', 'comm-external': '커뮤니티', 'comm-archive': '커뮤니티'
 };
@@ -8408,7 +8418,7 @@ var SCREEN_LABEL_MAP = {
   'meta-dq': '데이터 품질', 'meta-ontology': '온톨로지',
   'sys-user': '조직 및 사용자관리', 'sys-role': '권한 및 역할관리', 'sys-security': '데이터등급·보안정책',
   'sys-interface': '연계인터페이스 모니터링', 'sys-audit': '접속통계·감사로그',
-  'sys-widget-template': '위젯 템플릿 관리', 'sys-perm': '화면별 권한설정', 'sys-engine': '데이터허브 엔진관리', 'sys-erp-sync': 'ERP 인사정보 동기화', 'sys-ext-register': '외부사용자 관리', 'sys-recovery-log': '복구 로그 조회', 'llmops': 'LLMOps 관리',
+  'sys-widget-template': '위젯 템플릿 관리', 'sys-perm': '화면별 권한설정', 'sys-engine': '데이터허브 엔진관리', 'sys-erp-sync': 'ERP 인사정보 동기화', 'sys-ext-register': '외부사용자 관리', 'sys-db-config': '연계 DB 설정', 'sys-backup-schedule': '백업 복구 스케줄', 'sys-backup-repl': '백업 데이터 복제·이관', 'sys-recovery-log': '복구 로그 조회', 'llmops': 'LLMOps 관리',
   'comm-notice': '공지사항', 'comm-internal': '내부게시판', 'comm-external': '외부협력게시판', 'comm-archive': '자료실'
 };
 
@@ -10574,4 +10584,326 @@ function verifyRecoveryLog() {
 
   // 모달 갱신
   openRecoveryDetail(data);
+}
+
+// ===== 연계 DB 설정 (sys-db-config) =====
+
+var dbConfigData = [
+  { name: 'SAP-HANA-운영', dbms: 'SAP HANA', host: 'db-sap.kwater.or.kr', port: 30013, db: 'KWATER_PROD', schema: 'PUBLIC', user: 'datahub_sync', zone: 'FA', security: '내부중요', status: '정상', lastTest: '03-19 11:30' },
+  { name: 'SAP-HANA-DR', dbms: 'SAP HANA', host: 'db-sap-dr.kwater.or.kr', port: 30013, db: 'KWATER_DR', schema: 'PUBLIC', user: 'datahub_sync', zone: 'FA', security: '내부중요', status: '오류', lastTest: '03-19 09:00' },
+  { name: 'Oracle-수자원', dbms: 'Oracle', host: 'db-ora-water.kwater.or.kr', port: 1521, db: 'WATERDB', schema: 'WATER_SCH', user: 'water_read', zone: 'OA', security: '내부일반', status: '정상', lastTest: '03-19 11:25' },
+  { name: 'Oracle-수질', dbms: 'Oracle', host: 'db-ora-quality.kwater.or.kr', port: 1521, db: 'QUALDB', schema: 'QUAL_SCH', user: 'qual_sync', zone: 'OA', security: '내부중요', status: '정상', lastTest: '03-19 11:20' },
+  { name: 'PG-DataHub', dbms: 'PostgreSQL', host: 'db-pg-hub.kwater.or.kr', port: 5432, db: 'datahub', schema: 'public', user: 'hub_admin', zone: 'FA', security: '기밀', status: '정상', lastTest: '03-19 11:35' },
+  { name: 'PG-Analytics', dbms: 'PostgreSQL', host: 'db-pg-analytics.kwater.or.kr', port: 5432, db: 'analytics', schema: 'public', user: 'analytics_rw', zone: 'OA', security: '내부일반', status: '정상', lastTest: '03-19 11:15' },
+  { name: 'Tibero-ERP', dbms: 'Tibero', host: 'db-tibero-erp.kwater.or.kr', port: 8629, db: 'ERPDB', schema: 'ERP_SCH', user: 'erp_sync', zone: 'FA', security: '내부중요', status: '정상', lastTest: '03-19 10:45' },
+  { name: 'MySQL-Portal', dbms: 'MySQL', host: 'db-mysql-portal.kwater.or.kr', port: 3306, db: 'portal_db', schema: '-', user: 'portal_rw', zone: 'DMZ', security: '내부일반', status: '미연결', lastTest: '-' }
+];
+
+function initDbConfigScreen() {
+  if (agGridInstances['ag-grid-sys-db-config']) { return; }
+  var cols = [
+    { field: 'name', headerName: '설정명', flex: 1, minWidth: 140, cellRenderer: function(p) { return '<strong>' + p.value + '</strong>'; } },
+    { field: 'dbms', headerName: 'DBMS', width: 100, cellRenderer: function(p) {
+      var m = {'SAP HANA':{bg:'#e6f7ff',c:'#0958d9'},'Oracle':{bg:'#fff1f0',c:'#cf1322'},'PostgreSQL':{bg:'#f6ffed',c:'#389e0d'},'Tibero':{bg:'#f9f0ff',c:'#722ed1'},'MySQL':{bg:'#fff7e6',c:'#d48806'},'MSSQL':{bg:'#e8eaf6',c:'#3949ab'}};
+      var s = m[p.value]||{bg:'#f5f5f5',c:'#666'};
+      return '<span style="background:'+s.bg+';color:'+s.c+';padding:1px 8px;border-radius:4px;font-size:11px;font-weight:600;">'+p.value+'</span>';
+    }},
+    { field: 'host', headerName: '호스트', width: 200, cellStyle: { fontSize: '11px', fontFamily: 'monospace' } },
+    { field: 'port', headerName: '포트', width: 65, cellStyle: { fontSize: '11px', fontFamily: 'monospace' } },
+    { field: 'db', headerName: 'DB명', width: 120 },
+    { field: 'schema', headerName: '스키마', width: 90 },
+    { field: 'zone', headerName: '네트워크', width: 75, cellRenderer: function(p) {
+      var m = {'FA':{bg:'#fff1f0',c:'#cf1322'},'OA':{bg:'#e6f7ff',c:'#1677ff'},'DMZ':{bg:'#fff7e6',c:'#d48806'},'IoT':{bg:'#f6ffed',c:'#389e0d'}};
+      var s = m[p.value]||{bg:'#f5f5f5',c:'#666'};
+      return '<span style="background:'+s.bg+';color:'+s.c+';padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;">'+p.value+'</span>';
+    }},
+    { field: 'security', headerName: '보안등급', width: 80, cellRenderer: function(p) {
+      var m = {'기밀':{c:'#f5222d'},'내부중요':{c:'#fa8c16'},'내부일반':{c:'#1677ff'},'공개':{c:'#52c41a'}};
+      var s = m[p.value]||{c:'#666'};
+      return '<span style="color:'+s.c+';font-size:11px;font-weight:600;">'+p.value+'</span>';
+    }},
+    { field: 'status', headerName: '연결상태', width: 80, cellRenderer: function(p) {
+      var m = {'정상':{icon:'🟢',c:'#52c41a'},'오류':{icon:'🔴',c:'#f5222d'},'미연결':{icon:'⚪',c:'#888'}};
+      var s = m[p.value]||{icon:'',c:'#666'};
+      return '<span style="color:'+s.c+';font-size:11px;font-weight:600;">'+s.icon+' '+p.value+'</span>';
+    }},
+    { field: 'lastTest', headerName: '최종테스트', width: 100, cellStyle: { fontSize: '11px', color: '#888' } },
+    { field: 'action', headerName: '관리', width: 100, sortable: false, filter: false, cellRenderer: function() {
+      return '<button class="btn btn-outline" style="padding:1px 5px;font-size:10px;margin-right:2px;">테스트</button><button class="btn btn-outline" style="padding:1px 5px;font-size:10px;">수정</button>';
+    }}
+  ];
+  initAGGrid('ag-grid-sys-db-config', cols, dbConfigData, {
+    domLayout: 'autoHeight',
+    getRowStyle: function(p) {
+      if (p.data.status === '오류') { return { background: '#fff5f5' }; }
+      if (p.data.status === '미연결') { return { background: '#fafafa' }; }
+    },
+    onCellClicked: function(e) {
+      if (e.colDef.field === 'action') {
+        if (e.event.target.textContent === '테스트') { testDbConnection(e.data); }
+        else if (e.event.target.textContent === '수정') { openDbConfigModal(e.data); }
+      }
+    }
+  });
+}
+
+function filterDbConfig() {
+  var grid = agGridInstances['ag-grid-sys-db-config'];
+  if (!grid) { return; }
+  var dbmsVal = document.getElementById('dbcfg-filter-dbms').value;
+  var statVal = document.getElementById('dbcfg-filter-stat').value;
+  var searchVal = document.getElementById('dbcfg-filter-search').value.trim().toLowerCase();
+  grid.setGridOption('isExternalFilterPresent', function() { return dbmsVal !== '' || statVal !== '' || searchVal !== ''; });
+  grid.setGridOption('doesExternalFilterPass', function(node) {
+    var d = node.data;
+    if (dbmsVal && d.dbms !== dbmsVal) { return false; }
+    if (statVal && d.status !== statVal) { return false; }
+    if (searchVal && d.name.toLowerCase().indexOf(searchVal) < 0 && d.host.toLowerCase().indexOf(searchVal) < 0) { return false; }
+    return true;
+  });
+  grid.onFilterChanged();
+}
+
+function openDbConfigModal(data) {
+  var modal = document.getElementById('db-config-modal');
+  if (!modal) { return; }
+  document.getElementById('db-config-modal-title').textContent = data ? '🗄️ 연계 DB 수정' : '🗄️ 연계 DB 등록';
+  if (data) {
+    document.getElementById('dbcfg-form-name').value = data.name || '';
+    document.getElementById('dbcfg-form-dbms').value = data.dbms || '';
+    document.getElementById('dbcfg-form-host').value = data.host || '';
+    document.getElementById('dbcfg-form-port').value = data.port || '';
+    document.getElementById('dbcfg-form-db').value = data.db || '';
+    document.getElementById('dbcfg-form-schema').value = data.schema || '';
+    document.getElementById('dbcfg-form-user').value = data.user || '';
+  }
+  modal.style.display = 'flex';
+}
+
+function closeDbConfigModal() {
+  var modal = document.getElementById('db-config-modal');
+  if (!modal) { return; }
+  modal.style.display = 'none';
+  var card = modal.querySelector('.modal-card');
+  if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+}
+
+function saveDbConfig() { showToast('연계 DB 설정이 저장되었습니다.', 'success'); closeDbConfigModal(); }
+function testDbConnection(data) { showToast(data.name + ' 연결 테스트 성공', 'success'); }
+function testAllDbConnections() { showToast('전체 DB 연결 테스트를 실행합니다.', 'success'); }
+
+// ===== 백업 복구 스케줄 (sys-backup-schedule) =====
+
+var backupScheduleData = [
+  { name: 'DataHub-Prod 일일 전체백업', db: 'PG-DataHub', type: 'Full', cron: '0 2 * * *', cronDesc: '매일 02:00', retention: '30일', path: 's3://kwater-backup/hub-prod/', active: '활성', lastExec: '03-19 02:00', nextExec: '03-20 02:00', lastResult: '성공' },
+  { name: 'DataHub-Prod 6시간 증분', db: 'PG-DataHub', type: 'Incremental', cron: '0 */6 * * *', cronDesc: '6시간마다', retention: '7일', path: 's3://kwater-backup/hub-prod/incr/', active: '활성', lastExec: '03-19 12:00', nextExec: '03-19 18:00', lastResult: '성공' },
+  { name: 'SAP-HANA 주간 전체백업', db: 'SAP-HANA-운영', type: 'Full', cron: '0 3 * * 0', cronDesc: '매주 일 03:00', retention: '90일', path: '/nfs/backup/sap-hana/', active: '활성', lastExec: '03-16 03:00', nextExec: '03-23 03:00', lastResult: '성공' },
+  { name: 'SAP-HANA 일일 증분', db: 'SAP-HANA-운영', type: 'Incremental', cron: '0 1 * * *', cronDesc: '매일 01:00', retention: '14일', path: '/nfs/backup/sap-hana/incr/', active: '활성', lastExec: '03-19 01:00', nextExec: '03-20 01:00', lastResult: '실패' },
+  { name: 'Oracle-수자원 일일 전체', db: 'Oracle-수자원', type: 'Full', cron: '0 3 * * *', cronDesc: '매일 03:00', retention: '30일', path: 's3://kwater-backup/ora-water/', active: '활성', lastExec: '03-19 03:00', nextExec: '03-20 03:00', lastResult: '성공' },
+  { name: 'Oracle-수질 차등백업', db: 'Oracle-수질', type: 'Differential', cron: '0 4 * * 1-5', cronDesc: '평일 04:00', retention: '14일', path: 's3://kwater-backup/ora-qual/diff/', active: '활성', lastExec: '03-19 04:00', nextExec: '03-20 04:00', lastResult: '성공' },
+  { name: 'Analytics-DB 주간 전체', db: 'PG-Analytics', type: 'Full', cron: '0 5 * * 6', cronDesc: '매주 토 05:00', retention: '60일', path: 's3://kwater-backup/analytics/', active: '활성', lastExec: '03-15 05:00', nextExec: '03-22 05:00', lastResult: '성공' },
+  { name: 'Tibero-ERP 월간 전체', db: 'Tibero-ERP', type: 'Full', cron: '0 1 1 * *', cronDesc: '매월 1일 01:00', retention: '365일', path: '/nfs/backup/tibero/', active: '활성', lastExec: '03-01 01:00', nextExec: '04-01 01:00', lastResult: '성공' },
+  { name: 'DR 동기화 (중지)', db: 'SAP-HANA-DR', type: 'Full', cron: '0 6 * * *', cronDesc: '매일 06:00', retention: '7일', path: '/nfs/backup/dr/', active: '비활성', lastExec: '03-10 06:00', nextExec: '-', lastResult: '성공' },
+  { name: 'Portal-DB 주간 (중지)', db: 'MySQL-Portal', type: 'Full', cron: '0 4 * * 0', cronDesc: '매주 일 04:00', retention: '30일', path: 's3://kwater-backup/portal/', active: '비활성', lastExec: '03-09 04:00', nextExec: '-', lastResult: '성공' }
+];
+
+function initBackupScheduleScreen() {
+  if (agGridInstances['ag-grid-sys-backup-schedule']) { return; }
+  var cols = [
+    { field: 'name', headerName: '스케줄명', flex: 1, minWidth: 180, cellRenderer: function(p) { return '<strong>' + p.value + '</strong>'; } },
+    { field: 'db', headerName: '대상 DB', width: 130 },
+    { field: 'type', headerName: '백업유형', width: 100, cellRenderer: function(p) {
+      var m = {'Full':{bg:'#e8f0fe',c:'#1967d2'},'Incremental':{bg:'#e8f5e9',c:'#2e7d32'},'Differential':{bg:'#f9f0ff',c:'#722ed1'}};
+      var s = m[p.value]||{bg:'#f5f5f5',c:'#666'};
+      return '<span style="background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">'+p.value+'</span>';
+    }},
+    { field: 'cronDesc', headerName: '주기', width: 110 },
+    { field: 'retention', headerName: '보존', width: 60 },
+    { field: 'active', headerName: '활성', width: 65, cellRenderer: function(p) {
+      if (p.value === '활성') { return '<span style="color:#52c41a;font-weight:600;font-size:11px;">● 활성</span>'; }
+      return '<span style="color:#888;font-size:11px;">○ 비활성</span>';
+    }},
+    { field: 'lastExec', headerName: '최종실행', width: 105, cellStyle: { fontSize: '11px', color: '#888' } },
+    { field: 'nextExec', headerName: '다음실행', width: 105, cellStyle: { fontSize: '11px' } },
+    { field: 'lastResult', headerName: '결과', width: 65, cellRenderer: function(p) {
+      if (p.value === '성공') { return '<span style="color:#52c41a;font-weight:600;font-size:11px;">✅</span>'; }
+      if (p.value === '실패') { return '<span style="color:#f5222d;font-weight:600;font-size:11px;">❌</span>'; }
+      return p.value;
+    }},
+    { field: 'action', headerName: '관리', width: 60, sortable: false, filter: false, cellRenderer: function() { return '<button class="btn btn-outline" style="padding:1px 5px;font-size:10px;">수정</button>'; } }
+  ];
+  initAGGrid('ag-grid-sys-backup-schedule', cols, backupScheduleData, {
+    domLayout: 'autoHeight',
+    getRowStyle: function(p) {
+      if (p.data.active === '비활성') { return { background: '#fafafa', color: '#aaa' }; }
+      if (p.data.lastResult === '실패') { return { background: '#fff5f5' }; }
+    },
+    onCellClicked: function(e) {
+      if (e.colDef.field === 'action') { openScheduleModal(e.data); }
+    }
+  });
+}
+
+function filterBackupSchedule() {
+  var grid = agGridInstances['ag-grid-sys-backup-schedule'];
+  if (!grid) { return; }
+  var typeVal = document.getElementById('sched-filter-type').value;
+  var activeVal = document.getElementById('sched-filter-active').value;
+  var searchVal = document.getElementById('sched-filter-search').value.trim().toLowerCase();
+  grid.setGridOption('isExternalFilterPresent', function() { return typeVal !== '' || activeVal !== '' || searchVal !== ''; });
+  grid.setGridOption('doesExternalFilterPass', function(node) {
+    var d = node.data;
+    if (typeVal && d.type !== typeVal) { return false; }
+    if (activeVal && d.active !== activeVal) { return false; }
+    if (searchVal && d.name.toLowerCase().indexOf(searchVal) < 0 && d.db.toLowerCase().indexOf(searchVal) < 0) { return false; }
+    return true;
+  });
+  grid.onFilterChanged();
+}
+
+function openScheduleModal(data) {
+  var modal = document.getElementById('schedule-modal');
+  if (!modal) { return; }
+  document.getElementById('schedule-modal-title').textContent = data ? '📅 스케줄 수정' : '📅 스케줄 등록';
+  if (data) {
+    document.getElementById('sched-form-name').value = data.name || '';
+    document.getElementById('sched-form-cron').value = data.cron || '';
+  }
+  modal.style.display = 'flex';
+}
+
+function closeScheduleModal() {
+  var modal = document.getElementById('schedule-modal');
+  if (!modal) { return; }
+  modal.style.display = 'none';
+  var card = modal.querySelector('.modal-card');
+  if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+}
+
+function saveSchedule() { showToast('백업 스케줄이 저장되었습니다.', 'success'); closeScheduleModal(); }
+
+// ===== 백업 데이터 복제·이관 (sys-backup-repl) =====
+
+var backupReplData = [
+  { date: '2026-03-19', time: '12:00:00', db: 'PG-DataHub', type: '증분', direction: 'Inbound', status: '성공', duration: '1분 45초', records: '5,240', sizeMb: '320', verify: '검증완료', schedule: '6시간 증분' },
+  { date: '2026-03-19', time: '11:30:00', db: 'SAP-HANA-운영', type: '전체', direction: 'Inbound', status: '진행중', duration: '-', records: '-', sizeMb: '-', verify: '미검증', schedule: '일일 증분' },
+  { date: '2026-03-19', time: '06:00:00', db: 'PG-DataHub', type: '증분', direction: 'Inbound', status: '성공', duration: '2분 10초', records: '8,120', sizeMb: '480', verify: '검증완료', schedule: '6시간 증분' },
+  { date: '2026-03-19', time: '03:00:00', db: 'Oracle-수자원', type: '전체', direction: 'Inbound', status: '성공', duration: '8분 32초', records: '125,400', sizeMb: '6,200', verify: '검증완료', schedule: '일일 전체' },
+  { date: '2026-03-19', time: '02:00:00', db: 'PG-DataHub', type: '전체', direction: 'Inbound', status: '성공', duration: '5분 20초', records: '68,500', sizeMb: '4,100', verify: '검증완료', schedule: '일일 전체백업' },
+  { date: '2026-03-19', time: '01:00:00', db: 'SAP-HANA-운영', type: '증분', direction: 'Inbound', status: '실패', duration: '3분 12초', records: '0', sizeMb: '0', verify: '검증실패', schedule: '일일 증분', errMsg: '체크포인트 불일치: delta merge 진행 중 충돌 (HANA Error 131)' },
+  { date: '2026-03-18', time: '22:00:00', db: 'PG-Analytics', type: '전체', direction: 'Outbound', status: '성공', duration: '12분 05초', records: '245,000', sizeMb: '15,800', verify: '검증완료', schedule: '주간 전체' },
+  { date: '2026-03-18', time: '18:00:00', db: 'PG-DataHub', type: '증분', direction: 'Inbound', status: '성공', duration: '1분 30초', records: '3,800', sizeMb: '210', verify: '미검증', schedule: '6시간 증분' },
+  { date: '2026-03-18', time: '12:00:00', db: 'Tibero-ERP', type: '전체', direction: 'Inbound', status: '성공', duration: '15분 40초', records: '310,200', sizeMb: '22,400', verify: '검증완료', schedule: '월간 전체' },
+  { date: '2026-03-18', time: '04:00:00', db: 'Oracle-수질', type: '증분', direction: 'Inbound', status: '성공', duration: '4분 22초', records: '42,600', sizeMb: '2,800', verify: '검증완료', schedule: '차등백업' }
+];
+
+function initBackupReplScreen() {
+  if (agGridInstances['ag-grid-sys-backup-repl']) { return; }
+  var cols = [
+    { field: 'date', headerName: '날짜', width: 100, cellStyle: { fontSize: '12px', color: '#888' } },
+    { field: 'time', headerName: '시간', width: 80, cellStyle: { fontSize: '12px', color: '#888', fontFamily: 'monospace' } },
+    { field: 'db', headerName: '원본 DB', width: 130, cellRenderer: function(p) { return '<strong>' + p.value + '</strong>'; } },
+    { field: 'type', headerName: '복제유형', width: 80, cellRenderer: function(p) {
+      var m = {'전체':{bg:'#e8f0fe',c:'#1967d2'},'증분':{bg:'#e8f5e9',c:'#2e7d32'}};
+      var s = m[p.value]||{bg:'#f5f5f5',c:'#666'};
+      return '<span style="background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">'+p.value+'</span>';
+    }},
+    { field: 'direction', headerName: '방향', width: 80, cellRenderer: function(p) {
+      return p.value === 'Inbound' ? '<span style="color:#1677ff;font-size:11px;">⬇ Inbound</span>' : '<span style="color:#fa8c16;font-size:11px;">⬆ Outbound</span>';
+    }},
+    { field: 'status', headerName: '상태', width: 75, cellRenderer: function(p) {
+      var m = {'성공':{icon:'✅',c:'#52c41a'},'실패':{icon:'❌',c:'#f5222d'},'진행중':{icon:'🔄',c:'#fa8c16'}};
+      var s = m[p.value]||{icon:'',c:'#666'};
+      return '<span style="color:'+s.c+';font-weight:600;font-size:11px;">'+s.icon+' '+p.value+'</span>';
+    }},
+    { field: 'duration', headerName: '소요시간', width: 90 },
+    { field: 'records', headerName: '레코드', width: 85, cellStyle: { fontSize: '12px', textAlign: 'right' } },
+    { field: 'sizeMb', headerName: '용량(MB)', width: 85, cellStyle: { fontSize: '12px', textAlign: 'right' } },
+    { field: 'verify', headerName: '검증', width: 80, cellRenderer: function(p) {
+      var m = {'검증완료':{bg:'#e8f5e9',c:'#2e7d32'},'미검증':{bg:'#fff7e6',c:'#d48806'},'검증실패':{bg:'#fff1f0',c:'#cf1322'}};
+      var s = m[p.value]||{bg:'#f5f5f5',c:'#666'};
+      return '<span style="background:'+s.bg+';color:'+s.c+';padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;">'+p.value+'</span>';
+    }},
+    { field: 'detail', headerName: '상세', width: 55, sortable: false, filter: false, cellRenderer: function() { return '<button class="btn btn-outline" style="padding:1px 5px;font-size:10px;">보기</button>'; } }
+  ];
+  initAGGrid('ag-grid-sys-backup-repl', cols, backupReplData, {
+    domLayout: 'autoHeight',
+    getRowStyle: function(p) {
+      if (p.data.status === '실패') { return { background: '#fff5f5' }; }
+      if (p.data.status === '진행중') { return { background: '#fffbe6' }; }
+    },
+    onCellClicked: function(e) {
+      if (e.colDef.field === 'detail') { openReplDetail(e.data); }
+    }
+  });
+}
+
+function filterReplHist() {
+  var grid = agGridInstances['ag-grid-sys-backup-repl'];
+  if (!grid) { return; }
+  var dateFrom = document.getElementById('repl-date-from').value;
+  var dateTo = document.getElementById('repl-date-to').value;
+  var dbVal = document.getElementById('repl-filter-db').value;
+  var typeVal = document.getElementById('repl-filter-type').value;
+  var statVal = document.getElementById('repl-filter-stat').value;
+  var searchVal = document.getElementById('repl-filter-search').value.trim().toLowerCase();
+  grid.setGridOption('isExternalFilterPresent', function() { return dateFrom !== '' || dateTo !== '' || dbVal !== '' || typeVal !== '' || statVal !== '' || searchVal !== ''; });
+  grid.setGridOption('doesExternalFilterPass', function(node) {
+    var d = node.data;
+    if (dateFrom && d.date < dateFrom) { return false; }
+    if (dateTo && d.date > dateTo) { return false; }
+    if (dbVal && d.db !== dbVal) { return false; }
+    if (typeVal && d.type !== typeVal) { return false; }
+    if (statVal && d.status !== statVal) { return false; }
+    if (searchVal && d.db.toLowerCase().indexOf(searchVal) < 0 && d.schedule.toLowerCase().indexOf(searchVal) < 0) { return false; }
+    return true;
+  });
+  grid.onFilterChanged();
+}
+
+function resetReplFilter() {
+  document.getElementById('repl-date-from').value = '';
+  document.getElementById('repl-date-to').value = '';
+  document.getElementById('repl-filter-db').value = '';
+  document.getElementById('repl-filter-type').value = '';
+  document.getElementById('repl-filter-stat').value = '';
+  document.getElementById('repl-filter-search').value = '';
+  filterReplHist();
+}
+
+function exportReplHist() { showToast('복제·이관 이력을 CSV로 내보냅니다.', 'success'); }
+
+function openReplDetail(data) {
+  var modal = document.getElementById('repl-detail-modal');
+  if (!modal) { return; }
+  var el = function(id) { return document.getElementById(id); };
+  el('repl-dtl-db').textContent = data.db || '-';
+  el('repl-dtl-type').textContent = data.type || '-';
+  el('repl-dtl-drct').textContent = data.direction || '-';
+  el('repl-dtl-sched').textContent = data.schedule || '-';
+  var sm = {'성공':{icon:'✅',c:'#52c41a'},'실패':{icon:'❌',c:'#f5222d'},'진행중':{icon:'🔄',c:'#fa8c16'}};
+  var st = sm[data.status]||{icon:'',c:'#666'};
+  el('repl-dtl-stat').innerHTML = '<span style="color:'+st.c+';font-weight:600;">'+st.icon+' '+(data.status||'-')+'</span>';
+  el('repl-dtl-start').textContent = (data.date||'')+' '+(data.time||'');
+  el('repl-dtl-end').textContent = data.status === '성공' ? data.date + ' (완료)' : '-';
+  el('repl-dtl-dur').textContent = data.duration || '-';
+  el('repl-dtl-total').textContent = data.records || '-';
+  el('repl-dtl-replcd').textContent = data.status === '성공' ? data.records : '0';
+  el('repl-dtl-sz').textContent = (data.sizeMb || '-') + ' MB';
+  var vm = {'검증완료':{c:'#52c41a',icon:'✅'},'미검증':{c:'#d48806',icon:'⏳'},'검증실패':{c:'#cf1322',icon:'❌'}};
+  var vs = vm[data.verify]||{c:'#666',icon:''};
+  el('repl-dtl-vrfy').innerHTML = '<span style="color:'+vs.c+';font-weight:600;">'+vs.icon+' '+(data.verify||'-')+'</span>';
+  el('repl-dtl-err').textContent = data.status === '실패' ? (data.records || '0') : '0';
+  var errBox = el('repl-dtl-error-box');
+  if (data.errMsg) { errBox.style.display = 'block'; el('repl-dtl-err-msg').textContent = data.errMsg; }
+  else { errBox.style.display = 'none'; }
+  modal.style.display = 'flex';
+}
+
+function closeReplDetailModal() {
+  var modal = document.getElementById('repl-detail-modal');
+  if (!modal) { return; }
+  modal.style.display = 'none';
+  var card = modal.querySelector('.modal-card');
+  if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
 }
