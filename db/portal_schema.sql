@@ -1313,6 +1313,114 @@ $$;
 
 
 -- ============================================================================
+-- 11-A. K-water 데이터표준 사전 (데이터관리포탈 연동)
+-- ============================================================================
+-- 기존 데이터관리포탈에서 관리하는 표준 사전 4종(단어/도메인/용어/코드)을 수용한다.
+-- 시드 데이터는 별도 파일로 관리: seed_std_word.sql, seed_std_domn_dict.sql,
+--   seed_std_term.sql, seed_std_cd.sql
+
+-- 표준단어사전
+CREATE TABLE std_word (
+    word_id      SERIAL        PRIMARY KEY,
+    lgc_nm       VARCHAR(100)  NOT NULL,               -- 논리명 (한글)
+    phys_nm      VARCHAR(50)   NOT NULL,               -- 물리명 (영문약어)
+    phys_mean    VARCHAR(200),                          -- 물리의미 (영문풀네임)
+    attr_cls     VARCHAR(5)    DEFAULT 'N',             -- 속성분류어 여부 (Y/N)
+    synm         VARCHAR(200),                          -- 동의어
+    dc           TEXT,                                  -- 설명
+    crtd_at      TIMESTAMPTZ   DEFAULT now(),
+    crtd_by      UUID,
+    updtd_at     TIMESTAMPTZ   DEFAULT now(),
+    updtd_by     UUID
+);
+CREATE UNIQUE INDEX uix_std_word_phys ON std_word (phys_nm);
+COMMENT ON TABLE std_word IS '표준단어사전 – K-water 데이터관리포탈 기준';
+
+-- 표준도메인사전
+CREATE TABLE std_domn_dict (
+    std_domn_id  SERIAL        PRIMARY KEY,
+    domn_grp_nm  VARCHAR(100),                          -- 도메인그룹명
+    domn_nm      VARCHAR(200)  NOT NULL,                -- 도메인명
+    domn_lgc_nm  VARCHAR(200),                          -- 도메인논리명
+    data_ty      VARCHAR(30),                           -- 데이터유형 (NUMERIC, VARCHAR 등)
+    data_len     NUMERIC,                               -- 길이
+    deci_point   NUMERIC,                               -- 소수점
+    psnl_info_yn VARCHAR(5),                            -- 개인정보여부
+    enc_yn       VARCHAR(5),                            -- 암호화여부
+    scrbl        VARCHAR(50),                           -- 스크램블
+    dc           TEXT,                                  -- 설명
+    crtd_at      TIMESTAMPTZ   DEFAULT now(),
+    crtd_by      UUID,
+    updtd_at     TIMESTAMPTZ   DEFAULT now(),
+    updtd_by     UUID
+);
+CREATE UNIQUE INDEX uix_std_domn_dict_nm ON std_domn_dict (domn_nm);
+COMMENT ON TABLE std_domn_dict IS '표준도메인사전 – K-water 데이터관리포탈 기준';
+
+-- 표준용어사전
+CREATE TABLE std_term (
+    std_term_id   SERIAL        PRIMARY KEY,
+    lgc_nm        VARCHAR(200)  NOT NULL,               -- 논리명 (한글)
+    phys_nm       VARCHAR(200)  NOT NULL,               -- 물리명 (영문약어 조합)
+    eng_mean      VARCHAR(500),                         -- 영문의미
+    domn_lgc_nm   VARCHAR(200),                         -- 도메인논리명
+    domn_lgc_abbr VARCHAR(50),                          -- 도메인논리약어
+    domn_grp      VARCHAR(100),                         -- 도메인그룹
+    data_ty       VARCHAR(30),                          -- 데이터유형
+    data_len      NUMERIC,                              -- 길이
+    deci_point    NUMERIC,                              -- 소수점
+    psnl_info_yn  VARCHAR(5),                           -- 개인정보여부
+    enc_yn        VARCHAR(5),                           -- 암호화여부
+    scrbl         VARCHAR(50),                          -- 스크램블
+    dc            TEXT,                                 -- 설명
+    crtd_at       TIMESTAMPTZ   DEFAULT now(),
+    crtd_by       UUID,
+    updtd_at      TIMESTAMPTZ   DEFAULT now(),
+    updtd_by      UUID
+);
+CREATE UNIQUE INDEX uix_std_term_phys ON std_term (phys_nm);
+COMMENT ON TABLE std_term IS '표준용어사전 – K-water 데이터관리포탈 기준';
+
+-- 표준코드그룹사전
+CREATE TABLE std_cd_grp (
+    std_cd_grp_id SERIAL        PRIMARY KEY,
+    sys_grp       VARCHAR(50),                          -- 코드그룹 (시스템구분): ADT(감사), SCM(공통) 등
+    lgc_nm        VARCHAR(200)  NOT NULL,               -- 논리명
+    phys_nm       VARCHAR(200),                         -- 물리명
+    cd_desc       TEXT,                                 -- 코드설명
+    cd_cls        VARCHAR(30),                          -- 코드구분
+    cd_len        INT,                                  -- 길이
+    cd_id         VARCHAR(50)   NOT NULL,               -- 코드ID (원본 키)
+    crtd_at       TIMESTAMPTZ   DEFAULT now(),
+    crtd_by       UUID,
+    updtd_at      TIMESTAMPTZ   DEFAULT now(),
+    updtd_by      UUID
+);
+CREATE UNIQUE INDEX uix_std_cd_grp_cd_id ON std_cd_grp (cd_id);
+COMMENT ON TABLE std_cd_grp IS '표준코드그룹사전 – K-water 데이터관리포탈 기준';
+
+-- 표준코드사전
+CREATE TABLE std_cd (
+    std_cd_id     SERIAL        PRIMARY KEY,
+    std_cd_grp_id INT           NOT NULL REFERENCES std_cd_grp(std_cd_grp_id) ON DELETE CASCADE,
+    cd_val        VARCHAR(100)  NOT NULL,               -- 코드값
+    cd_val_nm     VARCHAR(200),                         -- 코드값명
+    sort_ord      INT           DEFAULT 0,              -- 정렬순서
+    prnt_cd_nm    VARCHAR(200),                         -- 부모코드명
+    prnt_cd_val   VARCHAR(100),                         -- 부모코드값
+    dc            TEXT,                                 -- 설명
+    aply_bgn_dt   DATE,                                 -- 적용시작일자
+    aply_end_dt   DATE,                                 -- 적용종료일자
+    crtd_at       TIMESTAMPTZ   DEFAULT now(),
+    crtd_by       UUID,
+    updtd_at      TIMESTAMPTZ   DEFAULT now(),
+    updtd_by      UUID,
+    UNIQUE (std_cd_grp_id, cd_val)
+);
+COMMENT ON TABLE std_cd IS '표준코드사전 – K-water 데이터관리포탈 기준';
+
+
+-- ============================================================================
 -- 12. 초기 데이터
 -- ============================================================================
 

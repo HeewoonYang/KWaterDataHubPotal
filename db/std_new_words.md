@@ -117,6 +117,38 @@
 | 108 | 값복수 | VALS | VALUES | N | 복수형 |
 | 109 | 표시여부 | VSBL | VISIBLE | N | 위젯 표시 |
 
+## 신규 등록 필요 단어 (데이터표준 사전 연동 특화)
+
+| # | 한글명 | 영문약어 | 영문풀명 | 속성분류 | 비고 |
+|---|--------|----------|----------|----------|------|
+| 110 | 표준단어 | STD_WORD | STANDARD WORD | N | 표준단어사전 테이블 |
+| 111 | 표준도메인사전 | STD_DOMN_DICT | STANDARD DOMAIN DICTIONARY | N | 표준도메인사전 테이블 |
+| 112 | 표준용어 | STD_TERM | STANDARD TERM | N | 표준용어사전 테이블 |
+| 113 | 표준코드그룹 | STD_CD_GRP | STANDARD CODE GROUP | N | 표준코드그룹사전 테이블 |
+| 114 | 표준코드 | STD_CD | STANDARD CODE | N | 표준코드사전 테이블 |
+| 115 | 논리명 | LGC_NM | LOGICAL NAME | Y | 표준사전 공통 |
+| 116 | 물리명 | PHYS_NM | PHYSICAL NAME | Y | 표준사전 공통 |
+| 117 | 물리의미 | PHYS_MEAN | PHYSICAL MEANING | N | 표준단어 영문풀네임 |
+| 118 | 속성분류어 | ATTR_CLS | ATTRIBUTE CLASSIFIER | N | 분류단어 여부(Y/N) |
+| 119 | 동의어 | SYNM | SYNONYM | N | 표준단어 동의어 |
+| 120 | 도메인논리명 | DOMN_LGC_NM | DOMAIN LOGICAL NAME | N | 표준용어 도메인 참조 |
+| 121 | 도메인논리약어 | DOMN_LGC_ABBR | DOMAIN LOGICAL ABBREVIATION | N | 표준용어 도메인약어 |
+| 122 | 도메인그룹 | DOMN_GRP | DOMAIN GROUP | N | 표준도메인 그룹명 |
+| 123 | 영문의미 | ENG_MEAN | ENGLISH MEANING | N | 표준용어 영문풀네임 |
+| 124 | 소수점 | DECI_POINT | DECIMAL POINT | N | 도메인/용어 소수점 자리 |
+| 125 | 개인정보여부 | PSNL_INFO_YN | PERSONAL INFORMATION YES NO | N | 개인정보 포함 여부 |
+| 126 | 암호화여부 | ENC_YN | ENCRYPTION YES NO | N | 암호화 적용 여부 |
+| 127 | 스크램블 | SCRBL | SCRAMBLE | N | 데이터 스크램블 방식 |
+| 128 | 코드설명 | CD_DESC | CODE DESCRIPTION | N | 코드그룹 설명 |
+| 129 | 코드구분 | CD_CLS | CODE CLASSIFIER | N | 코드 구분 (공통코드 등) |
+| 130 | 코드값명 | CD_VAL_NM | CODE VALUE NAME | Y | 코드값 표시명 |
+| 131 | 부모코드명 | PRNT_CD_NM | PARENT CODE NAME | N | 계층코드 부모 참조 |
+| 132 | 부모코드값 | PRNT_CD_VAL | PARENT CODE VALUE | N | 계층코드 부모 값 |
+| 133 | 적용시작일자 | APLY_BGN_DT | APPLY BEGIN DATE | Y | 코드 유효기간 시작 |
+| 134 | 적용종료일자 | APLY_END_DT | APPLY END DATE | Y | 코드 유효기간 종료 |
+| 135 | 시스템그룹 | SYS_GRP | SYSTEM GROUP | N | 코드 시스템 구분 |
+| 136 | 데이터길이 | DATA_LEN | DATA LENGTH | N | 도메인/용어 데이터 길이 |
+
 ## 보정 단어 (기존 표준사전 약어 수정 권고)
 
 | # | 한글명 | 현재약어 | 권고약어 | 사유 |
