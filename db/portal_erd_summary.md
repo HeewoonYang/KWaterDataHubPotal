@@ -18,9 +18,9 @@
 | 온톨로지 | 3 | — |
 | 모니터링 | 5 | — |
 | 커뮤니티 | 3 | — |
-| 시스템관리 | 13 | noti_type |
+| 시스템관리 | 15 | noti_type |
 | K-water 데이터표준 사전 | 5 | — |
-| **합계** | **73** | **7 ENUM** |
+| **합계** | **75** | **7 ENUM** |
 
 공통 ENUM: `entity_status`, `approval_status`
 
@@ -136,7 +136,7 @@
 > 시드 데이터 원본: K-water 데이터관리포탈 표준 데이터 조회 엑셀 4종
 > (`seed_std_word.sql`, `seed_std_domn_dict.sql`, `seed_std_term.sql`, `seed_std_cd.sql`)
 
-### 2-9. 시스템관리 (13개)
+### 2-9. 시스템관리 (15개)
 
 | # | 테이블 | PK | 핵심 FK/관계 | 설명 |
 |---|--------|-----|-------------|------|
@@ -153,6 +153,8 @@
 | 66 | `daly_dist_stats` | stat_id | → product | 일별 유통 통계 |
 | 67 | `dept_usg_stats` | stat_id | → dept | 부서별 활용 통계 |
 | 68 | `erp_sync_hist` | sync_id | — | ERP 동기화 이력 |
+| 69 | `db_rcvry_log` | rcvry_log_id | → asset_db, user (×2) | DB 복구 로그 이력 |
+| 70 | `db_rcvry_dtl` | rcvry_dtl_id | → db_rcvry_log | DB 복구 상세 내역 |
 
 ---
 
@@ -243,6 +245,8 @@
 │  daly_dist_stats / dept_usg_stats (통계 집계)                    │
 │  erp_sync_hist (ERP 동기화 이력)                                 │
 │  sys_intrfc / scrty_polcy                                 │
+│  asset_db ──1:N──▸ db_rcvry_log ──1:N──▸ db_rcvry_dtl     │
+│              (DB 복구 로그 이력 → 테이블 단위 복구 상세)            │
 └─────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────┐

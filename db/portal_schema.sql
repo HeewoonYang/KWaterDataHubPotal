@@ -1421,6 +1421,70 @@ COMMENT ON TABLE std_cd IS '표준코드사전 – K-water 데이터관리포탈
 
 
 -- ============================================================================
+-- 11-2. DB 복구 로그 관리
+-- ============================================================================
+
+-- DB 복구 로그 이력 (메인)
+CREATE TABLE db_rcvry_log (
+    rcvry_log_id    BIGSERIAL       PRIMARY KEY,
+    asset_db_id     INT             REFERENCES asset_db(asset_db_id),
+    rcvry_ty        VARCHAR(30)     NOT NULL CHECK (rcvry_ty IN ('full','incremental','point_in_time','differential')),
+    stat            VARCHAR(20)     DEFAULT 'running' CHECK (stat IN ('running','success','failed','cancelled')),
+    strtd_at        TIMESTAMPTZ     NOT NULL DEFAULT now(),
+    fnshed_at       TIMESTAMPTZ,
+    dur_secnd       INT,
+    bkup_src        VARCHAR(200),
+    bkup_dt         TIMESTAMPTZ,
+    tot_rcrds       BIGINT          DEFAULT 0,
+    rcvrd_rcrds     BIGINT          DEFAULT 0,
+    err_rcrds       BIGINT          DEFAULT 0,
+    data_sz_mb      NUMERIC(12,2),
+    exec_usr_id     UUID            REFERENCES usr_acnt(usr_id),
+    vrfy_stat       VARCHAR(20)     DEFAULT 'pending' CHECK (vrfy_stat IN ('pending','verified','failed')),
+    vrfy_at         TIMESTAMPTZ,
+    vrfy_by         UUID            REFERENCES usr_acnt(usr_id),
+    vrfy_rslt       TEXT,
+    err_msg         TEXT,
+    err_dtl         JSONB,
+    dc              TEXT,
+    crtd_at         TIMESTAMPTZ     DEFAULT now(),
+    crtd_by         UUID,
+    updtd_at        TIMESTAMPTZ     DEFAULT now(),
+    updtd_by        UUID
+);
+
+CREATE INDEX idx_rcvry_log_asset ON db_rcvry_log (asset_db_id, strtd_at DESC);
+CREATE INDEX idx_rcvry_log_stat  ON db_rcvry_log (stat);
+CREATE INDEX idx_rcvry_log_vrfy  ON db_rcvry_log (vrfy_stat);
+CREATE INDEX idx_rcvry_log_dt    ON db_rcvry_log (strtd_at DESC);
+
+COMMENT ON TABLE db_rcvry_log IS 'DB별 복구 로그 이력, 복구 실행·검증 관리';
+
+-- DB 복구 상세 내역 (테이블 단위)
+CREATE TABLE db_rcvry_dtl (
+    rcvry_dtl_id    BIGSERIAL       PRIMARY KEY,
+    rcvry_log_id    BIGINT          NOT NULL REFERENCES db_rcvry_log(rcvry_log_id) ON DELETE CASCADE,
+    trget_table     VARCHAR(200)    NOT NULL,
+    tot_rcrds       BIGINT          DEFAULT 0,
+    rcvrd_rcrds     BIGINT          DEFAULT 0,
+    err_rcrds       BIGINT          DEFAULT 0,
+    stat            VARCHAR(20)     DEFAULT 'running' CHECK (stat IN ('running','success','failed','cancelled')),
+    strtd_at        TIMESTAMPTZ     DEFAULT now(),
+    fnshed_at       TIMESTAMPTZ,
+    dur_secnd       INT,
+    err_msg         TEXT,
+    crtd_at         TIMESTAMPTZ     DEFAULT now(),
+    crtd_by         UUID,
+    updtd_at        TIMESTAMPTZ     DEFAULT now(),
+    updtd_by        UUID
+);
+
+CREATE INDEX idx_rcvry_dtl_log ON db_rcvry_dtl (rcvry_log_id);
+
+COMMENT ON TABLE db_rcvry_dtl IS 'DB 복구 상세 내역, 테이블 단위 복구 결과';
+
+
+-- ============================================================================
 -- 12. 초기 데이터
 -- ============================================================================
 

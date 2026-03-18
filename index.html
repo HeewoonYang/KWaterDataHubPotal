@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/styles/ag-theme-alpine.min.css">
   <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/dist/ag-grid-community.min.js"></script>
   <!-- Custom CSS (gradually replaced) -->
-  <link rel="stylesheet" href="css/style.css?v=20260318a">
+  <link rel="stylesheet" href="css/style.css?v=20260319a">
 </head>
 
 <body>
@@ -655,6 +655,9 @@
         <div class="menu-item" data-screen="sys-engine" onclick="navigate('sys-engine')">
           <span class="icon">🖥️</span> 데이터허브 엔진관리
         </div>
+        <div class="menu-item" data-screen="sys-recovery-log" onclick="navigate('sys-recovery-log')">
+          <span class="icon">🔄</span> 복구 로그 조회
+        </div>
         <div class="menu-item" data-screen="sys-k8s" onclick="navigate('sys-k8s')">
           <span class="icon">☸️</span> K8S 인프라 모니터링
         </div>
@@ -671,7 +674,7 @@
 
   </div> <!-- /layout -->
 
-  <script src="js/main.js?v=20260318a"></script>
+  <script src="js/main.js?v=20260319a"></script>
   <script>
     // 페이지 로드 시 모든 섹션 HTML을 순차적으로 로드 (순서 보장)
     (async function () {

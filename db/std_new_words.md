@@ -148,6 +148,14 @@
 | 134 | 적용종료일자 | APLY_END_DT | APPLY END DATE | Y | 코드 유효기간 종료 |
 | 135 | 시스템그룹 | SYS_GRP | SYSTEM GROUP | N | 코드 시스템 구분 |
 | 136 | 데이터길이 | DATA_LEN | DATA LENGTH | N | 도메인/용어 데이터 길이 |
+| 137 | 복구 | RCVRY | RECOVERY | N | DB 복구 작업 |
+| 138 | 백업 | BKUP | BACKUP | N | 데이터 백업 |
+| 139 | 검증 | VRFY | VERIFY | N | 복구 결과 검증 |
+| 140 | 결과 | RSLT | RESULT | N | 처리 결과 |
+| 141 | 용량 | CAPCY | CAPACITY | N | 데이터 용량 |
+| 142 | 복원 | RSTR | RESTORE | N | 데이터 복원 |
+| 143 | 크기 | SZ | SIZE | N | 데이터 크기 |
+| 144 | 차등 | DIFRL | DIFFERENTIAL | N | 차등 백업/복구 |
 
 ## 보정 단어 (기존 표준사전 약어 수정 권고)
 

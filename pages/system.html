@@ -3942,3 +3942,250 @@
     </div>
   </div>
 </div>
+
+<!-- ============================================================== -->
+<!--  복구 로그 조회 (sys-recovery-log)                              -->
+<!-- ============================================================== -->
+<div class="screen" id="screen-sys-recovery-log">
+  <div class="breadcrumb"><a href="#" onclick="navigate('sys-user')">시스템관리</a> &gt; <strong>복구 로그 조회</strong></div>
+
+  <!-- 헤더 -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <div>
+      <div class="page-title">복구 로그 조회</div>
+      <div style="font-size:13px; color:#888;">DB별 복구 로그 이력 및 상세 내역 조회 · 결과 검증 · 필터링</div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-outline" onclick="exportRecoveryLog()">📥 내보내기</button>
+      <button class="btn btn-outline" onclick="resetRecoveryFilter()">↺ 초기화</button>
+    </div>
+  </div>
+
+  <!-- KPI 카드 6개 -->
+  <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-bottom:20px;">
+    <div class="kpi-card" style="border-left:3px solid #1967d2;">
+      <div class="kpi-label">전체 복구 건수</div>
+      <div class="kpi-value" style="color:#1967d2;">248<span style="font-size:12px;font-weight:400;">건</span></div>
+      <div class="kpi-sub">▲ 전월 대비 +12건</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #52c41a;">
+      <div class="kpi-label">성공률</div>
+      <div class="kpi-value" style="color:#52c41a;">96.8<span style="font-size:12px;font-weight:400;">%</span></div>
+      <div class="kpi-sub">목표 95% 달성</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #f5222d;">
+      <div class="kpi-label">실패 건수</div>
+      <div class="kpi-value" style="color:#f5222d;">8<span style="font-size:12px;font-weight:400;">건</span></div>
+      <div class="kpi-sub">▼ 전월 대비 -3건</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #fa8c16;">
+      <div class="kpi-label">평균 소요시간</div>
+      <div class="kpi-value" style="color:#fa8c16;">3:12<span style="font-size:12px;font-weight:400;">분</span></div>
+      <div class="kpi-sub">RTO 15분 이내</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #13c2c2;">
+      <div class="kpi-label">검증 완료율</div>
+      <div class="kpi-value" style="color:#13c2c2;">89.5<span style="font-size:12px;font-weight:400;">%</span></div>
+      <div class="kpi-sub">미검증 26건</div>
+    </div>
+    <div class="kpi-card" style="border-left:3px solid #722ed1;">
+      <div class="kpi-label">금일 복구</div>
+      <div class="kpi-value" style="color:#722ed1;">12<span style="font-size:12px;font-weight:400;">건</span></div>
+      <div class="kpi-sub">진행중 1건</div>
+    </div>
+  </div>
+
+  <!-- 메인 그리드 카드 -->
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-head" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <span>📋 복구 로그</span>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <input type="date" id="rcvry-date-from" onchange="filterRecoveryLog()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+        <span style="font-size:12px; color:#888;">~</span>
+        <input type="date" id="rcvry-date-to" onchange="filterRecoveryLog()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+        <select id="rcvry-filter-db" onchange="filterRecoveryLog()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체 DB</option>
+          <option>DataHub-Prod</option>
+          <option>DataHub-DR</option>
+          <option>Analytics-DB</option>
+          <option>Archive-DB</option>
+          <option>SAP-HANA</option>
+        </select>
+        <select id="rcvry-filter-type" onchange="filterRecoveryLog()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체 유형</option>
+          <option value="Full">Full</option>
+          <option value="Incremental">Incremental</option>
+          <option value="Point-in-time">Point-in-time</option>
+          <option value="Differential">Differential</option>
+        </select>
+        <select id="rcvry-filter-status" onchange="filterRecoveryLog()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체 상태</option>
+          <option value="성공">성공</option>
+          <option value="실패">실패</option>
+          <option value="진행중">진행중</option>
+          <option value="취소">취소</option>
+        </select>
+        <select id="rcvry-filter-vrfy" onchange="filterRecoveryLog()" style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+          <option value="">전체 검증</option>
+          <option value="검증완료">검증완료</option>
+          <option value="미검증">미검증</option>
+          <option value="검증실패">검증실패</option>
+        </select>
+        <input id="rcvry-filter-search" onkeyup="filterRecoveryLog()" type="text" placeholder="복구ID·테이블 검색…" style="padding:4px 10px; border:1px solid #ddd; border-radius:4px; width:160px; font-size:12px; background:var(--card-bg); color:var(--text-color);">
+      </div>
+    </div>
+    <div class="card-body" style="padding:0;">
+      <div id="ag-grid-sys-recovery-log" class="ag-theme-alpine" style="width:100%;"></div>
+    </div>
+  </div>
+
+  <!-- 하단 2분할: 유형별 분포 + DB별 통계 -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+    <!-- 왼쪽: 복구 유형별 분포 -->
+    <div class="card">
+      <div class="card-head">📊 복구 유형별 분포</div>
+      <div class="card-body" style="padding:14px 16px;">
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="width:100px; font-size:12px; font-weight:600;">Full</span>
+            <div style="flex:1; height:20px; background:#f0f0f0; border-radius:4px; overflow:hidden;">
+              <div style="width:48.4%; height:100%; background:#1967d2; border-radius:4px; display:flex; align-items:center; padding-left:8px;">
+                <span style="font-size:10px; color:#fff; font-weight:600;">120건</span>
+              </div>
+            </div>
+            <span style="font-size:11px; color:#888; width:40px; text-align:right;">48.4%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="width:100px; font-size:12px; font-weight:600;">Incremental</span>
+            <div style="flex:1; height:20px; background:#f0f0f0; border-radius:4px; overflow:hidden;">
+              <div style="width:34.3%; height:100%; background:#52c41a; border-radius:4px; display:flex; align-items:center; padding-left:8px;">
+                <span style="font-size:10px; color:#fff; font-weight:600;">85건</span>
+              </div>
+            </div>
+            <span style="font-size:11px; color:#888; width:40px; text-align:right;">34.3%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="width:100px; font-size:12px; font-weight:600;">Point-in-time</span>
+            <div style="flex:1; height:20px; background:#f0f0f0; border-radius:4px; overflow:hidden;">
+              <div style="width:13.7%; height:100%; background:#fa8c16; border-radius:4px; display:flex; align-items:center; padding-left:8px;">
+                <span style="font-size:10px; color:#fff; font-weight:600;">34건</span>
+              </div>
+            </div>
+            <span style="font-size:11px; color:#888; width:40px; text-align:right;">13.7%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="width:100px; font-size:12px; font-weight:600;">Differential</span>
+            <div style="flex:1; height:20px; background:#f0f0f0; border-radius:4px; overflow:hidden;">
+              <div style="width:3.6%; height:100%; background:#722ed1; border-radius:4px; display:flex; align-items:center; padding-left:8px;">
+                <span style="font-size:10px; color:#fff; font-weight:600;">9건</span>
+              </div>
+            </div>
+            <span style="font-size:11px; color:#888; width:40px; text-align:right;">3.6%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 오른쪽: DB별 복구 통계 -->
+    <div class="card">
+      <div class="card-head">🗄️ DB별 복구 통계</div>
+      <div class="card-body" style="padding:0;">
+        <table class="data-table" style="font-size:12px;">
+          <thead>
+            <tr><th>DB명</th><th>전체</th><th>성공</th><th>실패</th><th>성공률</th><th>평균시간</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>DataHub-Prod</strong></td><td>98</td><td>96</td><td>2</td>
+              <td><span style="color:#52c41a; font-weight:600;">98.0%</span></td><td>3분 45초</td>
+            </tr>
+            <tr>
+              <td><strong>DataHub-DR</strong></td><td>62</td><td>62</td><td>0</td>
+              <td><span style="color:#52c41a; font-weight:600;">100%</span></td><td>2분 18초</td>
+            </tr>
+            <tr>
+              <td><strong>Analytics-DB</strong></td><td>45</td><td>43</td><td>2</td>
+              <td><span style="color:#fa8c16; font-weight:600;">95.6%</span></td><td>4분 02초</td>
+            </tr>
+            <tr>
+              <td><strong>Archive-DB</strong></td><td>28</td><td>26</td><td>2</td>
+              <td><span style="color:#fa8c16; font-weight:600;">92.9%</span></td><td>5분 30초</td>
+            </tr>
+            <tr>
+              <td><strong>SAP-HANA</strong></td><td>15</td><td>13</td><td>2</td>
+              <td><span style="color:#f5222d; font-weight:600;">86.7%</span></td><td>6분 15초</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 복구 로그 상세 모달 -->
+<div class="modal-overlay" id="recovery-detail-modal" style="display:none;">
+  <div class="modal-card" style="width:720px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">🔄 복구 로그 상세</h3>
+      <button class="modal-close" onclick="closeRecoveryDetailModal()">×</button>
+    </div>
+    <div class="modal-body" style="padding:16px 20px;">
+      <!-- 기본 정보 2열 -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">복구ID</span> <strong id="rcvry-dtl-id">-</strong></div>
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">대상 DB</span> <span id="rcvry-dtl-db">-</span></div>
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">복구 유형</span> <span id="rcvry-dtl-type">-</span></div>
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">실행자</span> <span id="rcvry-dtl-user">-</span></div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">상태</span> <span id="rcvry-dtl-status">-</span></div>
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">시작시간</span> <span id="rcvry-dtl-start">-</span></div>
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">종료시간</span> <span id="rcvry-dtl-end">-</span></div>
+          <div style="font-size:12px;"><span style="color:#888; width:80px; display:inline-block;">소요시간</span> <span id="rcvry-dtl-duration">-</span></div>
+        </div>
+      </div>
+
+      <!-- 복구 요약 박스 -->
+      <div style="margin-bottom:16px; padding:10px 12px; background:#f8f9fa; border-radius:6px; border-left:3px solid #1967d2;">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px;">
+          <div><div style="font-size:10px; color:#888;">백업 소스</div><div style="font-size:13px; font-weight:600;" id="rcvry-dtl-bkup-src">-</div></div>
+          <div><div style="font-size:10px; color:#888;">백업 시점</div><div style="font-size:13px; font-weight:600;" id="rcvry-dtl-bkup-dt">-</div></div>
+          <div><div style="font-size:10px; color:#888;">전체 레코드</div><div style="font-size:13px; font-weight:600;" id="rcvry-dtl-total-rcrds">-</div></div>
+          <div><div style="font-size:10px; color:#888;">데이터 용량</div><div style="font-size:13px; font-weight:600;" id="rcvry-dtl-data-sz">-</div></div>
+        </div>
+      </div>
+
+      <!-- 검증 결과 박스 -->
+      <div style="margin-bottom:16px; padding:10px 12px; border:1px solid var(--border-color); border-radius:6px;">
+        <div style="font-size:12px; font-weight:700; margin-bottom:8px;">🔍 검증 결과</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+          <div style="font-size:12px;"><span style="color:#888;">검증 상태</span><br><strong id="rcvry-dtl-vrfy-stat">-</strong></div>
+          <div style="font-size:12px;"><span style="color:#888;">검증자</span><br><span id="rcvry-dtl-vrfy-by">-</span></div>
+          <div style="font-size:12px;"><span style="color:#888;">검증 시간</span><br><span id="rcvry-dtl-vrfy-at">-</span></div>
+        </div>
+        <div style="margin-top:8px; font-size:12px;"><span style="color:#888;">검증 결과:</span> <span id="rcvry-dtl-vrfy-rslt">-</span></div>
+      </div>
+
+      <!-- 테이블별 복구 내역 -->
+      <div style="margin-bottom:8px; font-size:12px; font-weight:700; color:#333;">📋 테이블별 복구 내역</div>
+      <table class="data-table" style="font-size:12px;">
+        <thead>
+          <tr><th>테이블명</th><th>전체 레코드</th><th>복구 레코드</th><th>오류</th><th>상태</th><th>소요시간</th></tr>
+        </thead>
+        <tbody id="rcvry-dtl-table-tbody">
+          <tr><td colspan="6" style="text-align:center; color:#999; font-size:11px;">데이터 없음</td></tr>
+        </tbody>
+      </table>
+
+      <!-- 오류 메시지 (실패 시에만 표시) -->
+      <div id="rcvry-dtl-error-box" style="display:none; margin-top:12px; padding:10px 12px; background:#fff1f0; border:1px solid #ffa39e; border-radius:6px;">
+        <div style="font-size:12px; font-weight:700; color:#cf1322; margin-bottom:4px;">⚠️ 오류 메시지</div>
+        <div id="rcvry-dtl-err-msg" style="font-size:12px; color:#cf1322; font-family:monospace;"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="verifyRecoveryLog()" id="rcvry-dtl-vrfy-btn" data-perm="write" style="display:none;">🔍 검증 실행</button>
+      <button class="btn btn-outline" onclick="closeRecoveryDetailModal()">닫기</button>
+    </div>
+  </div>
+</div>

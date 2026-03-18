@@ -1173,5 +1173,55 @@ COMMENT ON COLUMN erp_sync_hist.updtd_at IS '수정일시';
 COMMENT ON COLUMN erp_sync_hist.updtd_by IS '수정자 ID';
 
 -- ============================================================================
+-- 11-2. DB 복구 로그 관리
+-- ============================================================================
+
+-- db_rcvry_log
+COMMENT ON TABLE  db_rcvry_log IS 'DB별 복구 로그 이력, 복구 실행·검증 관리';
+COMMENT ON COLUMN db_rcvry_log.rcvry_log_id IS '복구 로그 고유 ID (PK, 자동증가)';
+COMMENT ON COLUMN db_rcvry_log.asset_db_id IS 'DB 자산 FK → asset_db';
+COMMENT ON COLUMN db_rcvry_log.rcvry_ty IS '복구 유형: full/incremental/point_in_time/differential';
+COMMENT ON COLUMN db_rcvry_log.stat IS '복구 상태: running/success/failed/cancelled';
+COMMENT ON COLUMN db_rcvry_log.strtd_at IS '복구 시작 일시';
+COMMENT ON COLUMN db_rcvry_log.fnshed_at IS '복구 종료 일시';
+COMMENT ON COLUMN db_rcvry_log.dur_secnd IS '소요 시간 (초)';
+COMMENT ON COLUMN db_rcvry_log.bkup_src IS '백업 소스 (S3, NFS, Local 등)';
+COMMENT ON COLUMN db_rcvry_log.bkup_dt IS '백업 시점 (복구 기준 시점)';
+COMMENT ON COLUMN db_rcvry_log.tot_rcrds IS '전체 레코드 수';
+COMMENT ON COLUMN db_rcvry_log.rcvrd_rcrds IS '복구 완료 레코드 수';
+COMMENT ON COLUMN db_rcvry_log.err_rcrds IS '오류 레코드 수';
+COMMENT ON COLUMN db_rcvry_log.data_sz_mb IS '복구 데이터 용량 (MB)';
+COMMENT ON COLUMN db_rcvry_log.exec_usr_id IS '실행자 FK → usr_acnt';
+COMMENT ON COLUMN db_rcvry_log.vrfy_stat IS '검증 상태: pending/verified/failed';
+COMMENT ON COLUMN db_rcvry_log.vrfy_at IS '검증 수행 일시';
+COMMENT ON COLUMN db_rcvry_log.vrfy_by IS '검증자 FK → usr_acnt';
+COMMENT ON COLUMN db_rcvry_log.vrfy_rslt IS '검증 결과 상세 설명';
+COMMENT ON COLUMN db_rcvry_log.err_msg IS '오류 메시지';
+COMMENT ON COLUMN db_rcvry_log.err_dtl IS '오류 상세 (JSON)';
+COMMENT ON COLUMN db_rcvry_log.dc IS '비고';
+COMMENT ON COLUMN db_rcvry_log.crtd_at IS '등록일시';
+COMMENT ON COLUMN db_rcvry_log.crtd_by IS '등록자 ID';
+COMMENT ON COLUMN db_rcvry_log.updtd_at IS '수정일시';
+COMMENT ON COLUMN db_rcvry_log.updtd_by IS '수정자 ID';
+
+-- db_rcvry_dtl
+COMMENT ON TABLE  db_rcvry_dtl IS 'DB 복구 상세 내역, 테이블 단위 복구 결과';
+COMMENT ON COLUMN db_rcvry_dtl.rcvry_dtl_id IS '복구 상세 고유 ID (PK, 자동증가)';
+COMMENT ON COLUMN db_rcvry_dtl.rcvry_log_id IS '복구 로그 FK → db_rcvry_log';
+COMMENT ON COLUMN db_rcvry_dtl.trget_table IS '대상 테이블명';
+COMMENT ON COLUMN db_rcvry_dtl.tot_rcrds IS '전체 레코드 수';
+COMMENT ON COLUMN db_rcvry_dtl.rcvrd_rcrds IS '복구 완료 레코드 수';
+COMMENT ON COLUMN db_rcvry_dtl.err_rcrds IS '오류 레코드 수';
+COMMENT ON COLUMN db_rcvry_dtl.stat IS '상태: running/success/failed/cancelled';
+COMMENT ON COLUMN db_rcvry_dtl.strtd_at IS '시작 일시';
+COMMENT ON COLUMN db_rcvry_dtl.fnshed_at IS '종료 일시';
+COMMENT ON COLUMN db_rcvry_dtl.dur_secnd IS '소요 시간 (초)';
+COMMENT ON COLUMN db_rcvry_dtl.err_msg IS '오류 메시지';
+COMMENT ON COLUMN db_rcvry_dtl.crtd_at IS '등록일시';
+COMMENT ON COLUMN db_rcvry_dtl.crtd_by IS '등록자 ID';
+COMMENT ON COLUMN db_rcvry_dtl.updtd_at IS '수정일시';
+COMMENT ON COLUMN db_rcvry_dtl.updtd_by IS '수정자 ID';
+
+-- ============================================================================
 -- 끝
 -- ============================================================================
