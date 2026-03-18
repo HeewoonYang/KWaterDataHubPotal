@@ -26,6 +26,9 @@ pgdata/
 .DS_Store
 Thumbs.db
 
+# Docs (산출물/문서)
+docs/
+
 # Temp
 *.tmp
 *.bak
