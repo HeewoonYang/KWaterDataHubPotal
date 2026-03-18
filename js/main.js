@@ -766,9 +766,12 @@ function navigate(screen) {
     setTimeout(initGlossaryScreen, 100);
   }
 
-  // 9) 데이터모델 목록 — 동적 ERD 미리보기 렌더링
+  // 9) 데이터모델 목록 — 동적 ERD 미리보기 렌더링 + 모델 화면 초기화
   if (screen === 'meta-model') {
     setTimeout(function () {
+      // 모델 화면 초기화 (그리드, KPI, 필터 등)
+      if (typeof initMetaModelScreen === 'function') initMetaModelScreen();
+      // 동적 ERD 미리보기
       var selector = document.getElementById('erd-model-selector');
       // 셀렉터 옵션이 비어있으면 MODEL_ERD_DATA 키로 채우기
       if (selector && selector.options.length === 0 && typeof MODEL_ERD_DATA !== 'undefined') {
@@ -780,16 +783,24 @@ function navigate(screen) {
         });
       }
       var modelName = selector ? selector.value : '수자원관리_논리모델';
-      renderDynamicERD('erd-preview-container', modelName);
+      if (typeof renderDynamicERD === 'function') renderDynamicERD('erd-preview-container', modelName);
     }, 150);
+  }
+
+  // 9-1) 분류체계·태그 화면 초기화
+  if (screen === 'meta-tag') {
+    setTimeout(function () {
+      if (typeof initMetaTagScreen === 'function') initMetaTagScreen();
+    }, 100);
   }
 
   // 10) 데이터모델 상세 — 동적 ERD + 논리/물리 매핑 렌더링
   if (screen === 'meta-model-detail') {
     setTimeout(function () {
       var model = window.currentDetailModel || '수자원관리_논리모델';
-      renderDynamicERD('erd-detail-container', model);
-      renderModelMapping(model);
+      if (typeof renderDynamicERD === 'function') renderDynamicERD('erd-detail-container', model);
+      if (typeof renderModelMapping === 'function') renderModelMapping(model);
+      if (typeof renderModelDetailContent === 'function') renderModelDetailContent();
     }, 150);
   }
 }
@@ -4026,12 +4037,26 @@ function updateERDPreview(modelName) {
 
 // 모델 상세 진입 시 ERD 렌더링
 var currentDetailModel = '수자원관리_논리모델';
-function openModelDetail(modelName) {
-  currentDetailModel = modelName || '수자원관리_논리모델';
+function openModelDetail(modelNameOrId) {
+  // modelId (MDL-xxx) 형식이면 modelData에서 조회
+  var model = null;
+  if (typeof modelData !== 'undefined' && modelNameOrId && modelNameOrId.indexOf('MDL-') === 0) {
+    model = modelData.find(function(d) { return d.id === modelNameOrId; });
+    if (model) {
+      selectedModelId = modelNameOrId;
+      currentDetailModel = model.name;
+    }
+  }
+  if (!model) {
+    currentDetailModel = modelNameOrId || '수자원관리_논리모델';
+  }
   navigate('meta-model-detail');
   setTimeout(function() {
-    renderDynamicERD('erd-detail-container', currentDetailModel);
-    renderModelMapping(currentDetailModel);
+    // 기존 동적 ERD 렌더링
+    if (typeof renderDynamicERD === 'function') renderDynamicERD('erd-detail-container', currentDetailModel);
+    if (typeof renderModelMapping === 'function') renderModelMapping(currentDetailModel);
+    // 새 모델 상세 콘텐츠 렌더링
+    if (model && typeof renderModelDetailContent === 'function') renderModelDetailContent(model);
   }, 100);
 }
 
@@ -4286,6 +4311,7 @@ function initGlossaryScreen() {
   initGlossaryFilters();
   loadSyncStatus();
   initAdvancedSearchDomains();
+  if (typeof loadGlossaryChangeEvents === 'function') loadGlossaryChangeEvents();
   switchGlossaryTab('word');
 }
 
@@ -4463,11 +4489,12 @@ function glossaryStatusRenderer(p) {
 }
 
 function getWordColumnDefs() {
+  var q = typeof getGlossarySearchTerm === 'function' ? getGlossarySearchTerm() : '';
   return [
     { field: 'word_id', headerName: 'ID', width: 60, hide: true },
-    { field: 'logical_name', headerName: '논리명', width: 140, cellRenderer: function(p) { return '<a href="#" onclick="openWordDetail(' + p.data.word_id + ');return false;" style="color:#1677ff;font-weight:600;text-decoration:none;">' + (p.value || '') + '</a>'; } },
-    { field: 'physical_name', headerName: '물리명', width: 120, cellStyle: { fontFamily: 'monospace', fontSize: '12px' } },
-    { field: 'physical_desc', headerName: '물리의미', flex: 1, cellStyle: { fontSize: '12px' } },
+    { field: 'logical_name', headerName: '논리명', width: 140, cellRenderer: function(p) { return '<a href="#" onclick="openWordDetail(' + p.data.word_id + ');return false;" style="color:#1677ff;font-weight:600;text-decoration:none;">' + highlightSearchText(p.value, q) + '</a>'; } },
+    { field: 'physical_name', headerName: '물리명', width: 120, cellRenderer: function(p) { return '<span style="font-family:monospace;font-size:12px;">' + highlightSearchText(p.value, q) + '</span>'; } },
+    { field: 'physical_desc', headerName: '물리의미', flex: 1, cellRenderer: function(p) { return '<span style="font-size:12px;">' + highlightSearchText(p.value, q) + '</span>'; } },
     { field: 'is_class_word', headerName: '분류어', width: 70, cellRenderer: function(p) { return p.value ? '<span style="color:#1967d2;font-weight:600;">Y</span>' : '<span style="color:#aaa;">N</span>'; } },
     { field: 'synonym', headerName: '동의어', width: 100 },
     { field: 'description', headerName: '설명', flex: 1 },
@@ -4476,11 +4503,12 @@ function getWordColumnDefs() {
 }
 
 function getTermColumnDefs() {
+  var q = typeof getGlossarySearchTerm === 'function' ? getGlossarySearchTerm() : '';
   return [
     { field: 'term_id', headerName: 'ID', width: 60, hide: true },
-    { field: 'logical_name', headerName: '논리명', width: 140, cellRenderer: function(p) { return '<a href="#" onclick="openTermDetail(' + p.data.term_id + ');return false;" style="color:#1677ff;font-weight:600;text-decoration:none;">' + (p.value || '') + '</a>'; } },
-    { field: 'physical_name', headerName: '물리명', width: 140, cellStyle: { fontFamily: 'monospace', fontSize: '12px' } },
-    { field: 'english_name', headerName: '영문의미', flex: 1, cellStyle: { fontSize: '12px' } },
+    { field: 'logical_name', headerName: '논리명', width: 140, cellRenderer: function(p) { return '<a href="#" onclick="openTermDetail(' + p.data.term_id + ');return false;" style="color:#1677ff;font-weight:600;text-decoration:none;">' + highlightSearchText(p.value, q) + '</a>'; } },
+    { field: 'physical_name', headerName: '물리명', width: 140, cellRenderer: function(p) { return '<span style="font-family:monospace;font-size:12px;">' + highlightSearchText(p.value, q) + '</span>'; } },
+    { field: 'english_name', headerName: '영문의미', flex: 1, cellRenderer: function(p) { return '<span style="font-size:12px;">' + highlightSearchText(p.value, q) + '</span>'; } },
     { field: 'group_name', headerName: '도메인그룹', width: 110 },
     { field: 'data_type', headerName: '데이터타입', width: 100, cellStyle: { fontFamily: 'monospace', fontSize: '11px' } },
     { field: 'data_length', headerName: '길이', width: 60, type: 'numericColumn' },
@@ -4491,11 +4519,12 @@ function getTermColumnDefs() {
 }
 
 function getCodeGroupColumnDefs() {
+  var q = typeof getGlossarySearchTerm === 'function' ? getGlossarySearchTerm() : '';
   return [
     { field: 'group_id', headerName: 'ID', width: 60, hide: true },
     { field: 'system_prefix', headerName: '시스템', width: 80, cellStyle: { fontFamily: 'monospace', fontSize: '11px', color: '#7b1fa2' } },
-    { field: 'logical_name', headerName: '코드그룹명', width: 150, cellRenderer: function(p) { return '<a href="#" onclick="openCodeGroupDetail(' + p.data.group_id + ');return false;" style="color:#1677ff;font-weight:600;text-decoration:none;">' + (p.value || '') + '</a>'; } },
-    { field: 'physical_name', headerName: '물리명', width: 150, cellStyle: { fontFamily: 'monospace', fontSize: '12px' } },
+    { field: 'logical_name', headerName: '코드그룹명', width: 150, cellRenderer: function(p) { return '<a href="#" onclick="openCodeGroupDetail(' + p.data.group_id + ');return false;" style="color:#1677ff;font-weight:600;text-decoration:none;">' + highlightSearchText(p.value, q) + '</a>'; } },
+    { field: 'physical_name', headerName: '물리명', width: 150, cellRenderer: function(p) { return '<span style="font-family:monospace;font-size:12px;">' + highlightSearchText(p.value, q) + '</span>'; } },
     { field: 'code_id', headerName: '코드ID', width: 120, cellStyle: { fontFamily: 'monospace', fontSize: '11px' } },
     { field: 'code_count', headerName: '코드 수', width: 80, type: 'numericColumn', cellStyle: { fontWeight: '700' } },
     { field: 'description', headerName: '설명', flex: 1 },
@@ -4927,6 +4956,7 @@ function openWordDetail(wordId) {
     html += '<div class="detail-divider"></div>';
     html += buildInfoRow('등록일시', formatDateTime(data.created_at));
     html += buildInfoRow('수정일시', formatDateTime(data.updated_at));
+    if (typeof buildSyncInfoSection === 'function') html += buildSyncInfoSection('word');
     body.innerHTML = html;
   }).catch(function(err) {
     body.innerHTML = '<div style="text-align:center;padding:20px;color:#f44336;">조회 실패: ' + err.message + '</div>';
@@ -4963,6 +4993,7 @@ function openTermDetail(termId) {
     html += '<div class="detail-divider"></div>';
     html += buildInfoRow('등록일시', formatDateTime(data.created_at));
     html += buildInfoRow('수정일시', formatDateTime(data.updated_at));
+    if (typeof buildSyncInfoSection === 'function') html += buildSyncInfoSection('term');
     body.innerHTML = html;
   }).catch(function(err) {
     body.innerHTML = '<div style="text-align:center;padding:20px;color:#f44336;">조회 실패: ' + err.message + '</div>';
@@ -5013,10 +5044,814 @@ function openCodeGroupDetail(groupId) {
       });
       html += '</tbody></table></div>';
     }
+    if (typeof buildSyncInfoSection === 'function') html += buildSyncInfoSection('code');
     body.innerHTML = html;
   }).catch(function(err) {
     body.innerHTML = '<div style="text-align:center;padding:20px;color:#f44336;">조회 실패: ' + err.message + '</div>';
   });
+}
+
+// ===== 분류체계·태그관리 데이터 =====
+
+var tagDomainData = [
+  { no: 1, name: '수자원', desc: '댐·하천·지하수 등 수자원 관련 데이터', assets: '2,847', color: '#1976d2', manager: '김수자원', status: '활성' },
+  { no: 2, name: '에너지', desc: '수력발전·태양광·ESS 에너지 관련 데이터', assets: '1,256', color: '#ff9800', manager: '한에너지', status: '활성' },
+  { no: 3, name: '상수도', desc: '정수장·배수지·광역관로 상수도 운영 데이터', assets: '3,421', color: '#00bcd4', manager: '김수도', status: '활성' },
+  { no: 4, name: '수질', desc: '수질측정·분석·등급판정 관련 데이터', assets: '1,892', color: '#4caf50', manager: '최수질', status: '활성' },
+  { no: 5, name: '고객', desc: '요금·고객관리·민원 관련 데이터', assets: '986', color: '#9c27b0', manager: '이관리', status: '활성' },
+  { no: 6, name: '계측', desc: 'TM/TC·IoT 센서·원격계측 시스템 데이터', assets: '4,531', color: '#e91e63', manager: '박계측', status: '활성' }
+];
+
+var tagBusinessAreas = [
+  { name: '계측', count: 4531, bg: '#e3f2fd', border: '#90caf9', color: '#1565c0', subColor: '#42a5f5' },
+  { name: '행정', count: 1823, bg: '#fce4ec', border: '#f48fb1', color: '#c62828', subColor: '#e57373' },
+  { name: '재무', count: 952, bg: '#fff3e0', border: '#ffcc80', color: '#e65100', subColor: '#ff9800' },
+  { name: '기술', count: 3127, bg: '#e8f5e9', border: '#a5d6a7', color: '#2e7d32', subColor: '#66bb6a' },
+  { name: '운영', count: 2456, bg: '#ede7f6', border: '#b39ddb', color: '#4527a0', subColor: '#7e57c2' }
+];
+
+var tagHistoryData = [
+  { asset: '광역상수도 유량실시간', domain: '상수도', domBg: '#e0f7fa', domColor: '#00838f', grade: '2등급', area: '계측', changeType: '변경', detail: '보안등급 3→2 상향', changer: '김수도', date: '02-25 14:30' },
+  { asset: 'RWIS 수위센서데이터', domain: '수자원', domBg: '#e3f2fd', domColor: '#1565c0', grade: '3등급', area: '계측', changeType: '신규', detail: '업무영역 태그 추가', changer: '박계측', date: '02-24 11:20' },
+  { asset: 'SAP 재무 일일마감', domain: '고객', domBg: '#f3e5f5', domColor: '#7b1fa2', grade: '1등급', area: '재무', changeType: '변경', detail: '도메인 행정→고객 이관', changer: '이관리', date: '02-23 16:45' },
+  { asset: '수력발전 일간통계', domain: '에너지', domBg: '#fff8e1', domColor: '#f57f17', grade: '2등급', area: '운영', changeType: '신규', detail: '신규 태그 할당', changer: '한에너지', date: '02-22 09:15' },
+  { asset: '정수장 약품투입량', domain: '상수도', domBg: '#e0f7fa', domColor: '#00838f', grade: '2등급', area: '기술', changeType: '변경', detail: '업무영역 운영→기술 변경', changer: '김수도', date: '02-21 13:50' },
+  { asset: '고객 요금 청구내역', domain: '고객', domBg: '#f3e5f5', domColor: '#7b1fa2', grade: '1등급', area: '행정', changeType: '삭제', detail: '업무영역 재무 태그 제거', changer: '이관리', date: '02-20 15:30' },
+  { asset: '댐 수위관측 원시데이터', domain: '수자원', domBg: '#e3f2fd', domColor: '#1565c0', grade: '3등급', area: '계측', changeType: '신규', detail: '도메인·보안·업무 태그 일괄 할당', changer: '박계측', date: '02-19 10:00' },
+  { asset: 'IoT 센서 상태모니터링', domain: '계측', domBg: '#fce4ec', domColor: '#c62828', grade: '2등급', area: '기술', changeType: '변경', detail: '보안등급 3→2 상향 조정', changer: '최수질', date: '02-18 11:40' }
+];
+
+var tagUnassignedCount = 127;
+
+// ===== 동기화 상태 표시 =====
+
+function manualSync() {
+  var bar = document.getElementById('glossary-sync-bar');
+  var icon = document.getElementById('sync-status-icon');
+  var text = document.getElementById('sync-status-text');
+  var detail = document.getElementById('sync-status-detail');
+  if (!bar) return;
+  bar.classList.add('syncing');
+  if (icon) icon.textContent = '⏳';
+  if (text) text.textContent = 'K-water 표준사전 동기화 진행 중...';
+  if (detail) detail.textContent = '서버와 연결 중입니다. 잠시만 기다려주세요.';
+  setTimeout(function () {
+    bar.classList.remove('syncing');
+    if (icon) icon.textContent = '✅';
+    if (text) text.textContent = 'K-water 표준사전 동기화 완료';
+    var now = new Date();
+    var ts = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    if (detail) detail.textContent = '마지막 동기화: ' + ts + ' · 소스: K-water 표준사전 v3.2 · 변경사항 없음';
+    var conflictBadge = document.getElementById('sync-badge-conflict');
+    if (conflictBadge) {
+      conflictBadge.innerHTML = '충돌 <strong>0</strong>';
+      conflictBadge.className = 'sync-badge sync-badge-success';
+    }
+    showToast('K-water 표준사전 동기화가 완료되었습니다', 'success');
+    setTimeout(function () {
+      if (icon) icon.textContent = '🔄';
+      if (text) text.textContent = 'K-water 표준사전 연동 상태';
+    }, 3000);
+  }, 2000);
+}
+
+// ===== 변경 이벤트 알림 =====
+
+var glossaryChangeEvents = [
+  { id: 'EVT-001', type: '단어 추가', desc: '"탄소중립(CRBN_NTRL)" 표준단어 신규 등록', time: '10분 전', read: false, icon: '🆕' },
+  { id: 'EVT-002', type: '용어 변경', desc: '"수질등급" 용어 정의 변경 (환경부 기준 반영)', time: '25분 전', read: false, icon: '✏️' },
+  { id: 'EVT-003', type: '코드 폐기', desc: '"WQ_OLD_GRADE" 코드그룹 비활성 처리', time: '1시간 전', read: false, icon: '🗑️' },
+  { id: 'EVT-004', type: '동기화', desc: 'K-water 표준사전 v3.2 자동 동기화 완료 (변경 12건)', time: '3시간 전', read: true, icon: '🔄' },
+  { id: 'EVT-005', type: '충돌 감지', desc: '"유량(FLRT)" 약어가 기존 "FLOW_RT"와 충돌', time: '5시간 전', read: true, icon: '⚠️' }
+];
+
+function loadGlossaryChangeEvents() {
+  var container = document.getElementById('change-event-list');
+  if (!container) return;
+  var html = '';
+  for (var i = 0; i < glossaryChangeEvents.length; i++) {
+    var e = glossaryChangeEvents[i];
+    var bg = e.read ? 'transparent' : '#fffde7';
+    var fw = e.read ? '400' : '600';
+    html += '<div class="change-event-item" style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-radius:6px; background:' + bg + '; cursor:pointer;" onclick="markChangeEventRead(\'' + e.id + '\')">';
+    html += '  <span style="font-size:14px; flex-shrink:0;">' + e.icon + '</span>';
+    html += '  <span style="font-size:11px; font-weight:' + fw + '; color:var(--text-color); flex:1;">' + e.desc + '</span>';
+    html += '  <span style="font-size:10px; color:#888; flex-shrink:0; white-space:nowrap;">' + e.time + '</span>';
+    if (!e.read) html += '  <span style="width:6px; height:6px; background:#f44336; border-radius:50%; flex-shrink:0;"></span>';
+    html += '</div>';
+  }
+  container.innerHTML = html;
+}
+
+function markChangeEventRead(id) {
+  for (var i = 0; i < glossaryChangeEvents.length; i++) {
+    if (glossaryChangeEvents[i].id === id) {
+      glossaryChangeEvents[i].read = true;
+      loadGlossaryChangeEvents();
+      return;
+    }
+  }
+}
+
+function markAllChangeEventsRead() {
+  for (var i = 0; i < glossaryChangeEvents.length; i++) {
+    glossaryChangeEvents[i].read = true;
+  }
+  loadGlossaryChangeEvents();
+  showToast('모든 변경 알림을 읽음 처리했습니다', 'success');
+}
+
+// ===== 분류체계·태그 화면 초기화 =====
+
+function initMetaTagScreen() {
+  renderDomainGrid();
+  renderTagHistoryGrid();
+  renderBusinessTags();
+  renderAutoClassification();
+  renderClassificationReviews();
+  updateTagKPIs();
+}
+
+function renderDomainGrid() {
+  initAGGrid('ag-grid-meta-domain', [
+    { field: 'no', headerName: '#', width: 45 },
+    { field: 'name', headerName: '도메인명', width: 102, cellRenderer: function (p) { return '<strong>' + p.value + '</strong>'; } },
+    { field: 'desc', headerName: '설명', flex: 1 },
+    { field: 'assets', headerName: '연결 자산', width: 96, type: 'numericColumn', cellStyle: { fontWeight: '700' } },
+    { field: 'color', headerName: '색상', width: 70, cellRenderer: function (p) { return '<span style="display:inline-block;width:24px;height:14px;background:' + p.value + ';border-radius:4px;"></span>'; } },
+    { field: 'manager', headerName: '관리자', width: 84 },
+    { field: 'status', headerName: '상태', width: 70, cellRenderer: function (p) { return '<span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:4px;font-size:11px;">' + p.value + '</span>'; } },
+    { field: 'action', headerName: '액션', width: 70, sortable: false, filter: false, cellRenderer: function (p) {
+      return '<button onclick="editDomain(' + p.data.no + ')" style="padding:3px 8px;border:1px solid #ddd;background:#fff;border-radius:6px;font-size:11px;cursor:pointer;margin-right:4px;">✏️</button>' +
+        '<button onclick="deleteDomain(' + p.data.no + ')" style="padding:3px 8px;border:1px solid #fcc;background:#fff;border-radius:6px;font-size:11px;cursor:pointer;color:#f44336;">🗑</button>';
+    }}
+  ], tagDomainData);
+
+  var summary = document.getElementById('domain-summary');
+  var totalAssets = tagDomainData.reduce(function(s, d) { return s + parseInt(String(d.assets).replace(/,/g, '')); }, 0);
+  if (summary) summary.textContent = '총 ' + tagDomainData.length + '개 도메인 · 연결 자산 합계: ' + totalAssets.toLocaleString() + '건';
+}
+
+function renderTagHistoryGrid() {
+  initAGGrid('ag-grid-meta-tag-history', [
+    { field: 'asset', headerName: '데이터 자산', flex: 1, cellRenderer: function (p) { return '<strong>' + p.value + '</strong>'; } },
+    { field: 'domain', headerName: '도메인', width: 90, cellRenderer: function (p) { return '<span style="background:' + p.data.domBg + ';color:' + p.data.domColor + ';padding:2px 8px;border-radius:4px;font-size:11px;">' + p.value + '</span>'; } },
+    { field: 'grade', headerName: '보안등급', width: 102, cellRenderer: function (p) {
+        var m = { '1등급': { bg: '#ffebee', c: '#c62828' }, '2등급': { bg: '#fff3e0', c: '#f57c00' }, '3등급': { bg: '#e8f5e9', c: '#2e7d32' } };
+        var s = m[p.value] || { bg: '#f5f5f5', c: '#666' };
+        return '<span style="background:' + s.bg + ';color:' + s.c + ';padding:2px 6px;border-radius:4px;font-size:11px;">' + p.value + '</span>';
+      }
+    },
+    { field: 'area', headerName: '업무영역', width: 102 },
+    { field: 'changeType', headerName: '변경 유형', width: 102, cellRenderer: function (p) {
+        var m = { '변경': { bg: '#fff3e0', c: '#e65100', icon: '🔄' }, '신규': { bg: '#e8f5e9', c: '#2e7d32', icon: '✅' }, '삭제': { bg: '#ffebee', c: '#c62828', icon: '🔴' } };
+        var s = m[p.value] || { bg: '#f5f5f5', c: '#666', icon: '' };
+        return '<span style="background:' + s.bg + ';color:' + s.c + ';padding:2px 8px;border-radius:10px;font-size:11px;">' + s.icon + ' ' + p.value + '</span>';
+      }
+    },
+    { field: 'detail', headerName: '변경내용', flex: 1 },
+    { field: 'changer', headerName: '변경자', width: 84 },
+    { field: 'date', headerName: '일시', width: 90 }
+  ], tagHistoryData);
+}
+
+function renderBusinessTags() {
+  var container = document.getElementById('business-tag-container');
+  if (!container) return;
+  var html = '';
+  tagBusinessAreas.forEach(function(tag, idx) {
+    html += '<div style="display:flex;align-items:center;gap:8px;background:' + tag.bg + ';border:1px solid ' + tag.border + ';padding:8px 16px;border-radius:20px;">' +
+      '<span style="font-weight:600;color:' + tag.color + ';">' + tag.name + '</span>' +
+      '<span style="font-size:11px;color:' + tag.subColor + ';">' + tag.count.toLocaleString() + '건</span>' +
+      '<button onclick="removeBusinessTag(' + idx + ')" style="background:none;border:none;color:' + tag.border + ';cursor:pointer;font-size:14px;padding:0 2px;" title="삭제">✕</button>' +
+      '</div>';
+  });
+  html += '<div style="display:flex;align-items:center;gap:6px;border:1px dashed #1967d2;padding:6px 14px;border-radius:20px;cursor:pointer;background:#f0f5ff;">' +
+    '<input id="new-business-tag-input" type="text" placeholder="새 태그명 입력" style="border:none;background:transparent;font-size:12px;width:100px;outline:none;color:#1967d2;">' +
+    '<button onclick="addBusinessTag()" style="background:#1967d2;border:none;color:#fff;border-radius:12px;width:22px;height:22px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button></div>';
+  container.innerHTML = html;
+
+  var totalAssets = tagBusinessAreas.reduce(function(s, t) { return s + t.count; }, 0);
+  var summary = document.getElementById('business-tag-summary');
+  if (summary) summary.innerHTML = '<span>총 ' + tagBusinessAreas.length + '개 업무영역 태그 · 연결 자산 합계: <strong>' + totalAssets.toLocaleString() + '건</strong></span>' +
+    '<span>미분류 자산: <strong style="color:#f44336;">' + tagUnassignedCount + '건</strong> (도메인 할당 필요)</span>';
+}
+
+function addBusinessTag() {
+  var input = document.getElementById('new-business-tag-input');
+  if (!input || !input.value.trim()) return;
+  var name = input.value.trim();
+  var colors = ['#0277bd', '#558b2f', '#6a1b9a', '#bf360c', '#00695c', '#4e342e'];
+  var ci = tagBusinessAreas.length % colors.length;
+  tagBusinessAreas.push({ name: name, count: 0, bg: '#f5f5f5', border: '#bdbdbd', color: colors[ci], subColor: '#999' });
+  renderBusinessTags();
+  updateTagKPIs();
+  showToast('"' + name + '" 업무영역 태그가 추가되었습니다', 'success');
+}
+
+function removeBusinessTag(idx) {
+  if (!confirm('"' + tagBusinessAreas[idx].name + '" 태그를 삭제하시겠습니까?')) return;
+  var removed = tagBusinessAreas.splice(idx, 1)[0];
+  tagUnassignedCount += removed.count;
+  renderBusinessTags();
+  updateTagKPIs();
+  showToast('"' + removed.name + '" 태그가 삭제되었습니다', 'success');
+}
+
+function addDomain() {
+  var nameEl = document.getElementById('domain-add-name');
+  var descEl = document.getElementById('domain-add-desc');
+  var managerEl = document.getElementById('domain-add-manager');
+  var colorEl = document.querySelector('input[name="domain-color"]:checked');
+  if (!nameEl || !nameEl.value.trim()) { showToast('도메인명을 입력해주세요', 'error'); return; }
+
+  tagDomainData.push({
+    no: tagDomainData.length + 1,
+    name: nameEl.value.trim(),
+    desc: descEl ? descEl.value.trim() : '',
+    assets: '0',
+    color: colorEl ? colorEl.value : '#607d8b',
+    manager: managerEl ? managerEl.value.trim() : '-',
+    status: '활성'
+  });
+
+  renderDomainGrid();
+  updateTagKPIs();
+  var modal = document.getElementById('domain-add-modal');
+  if (modal) modal.style.display = 'none';
+  showToast('"' + nameEl.value.trim() + '" 도메인이 추가되었습니다', 'success');
+  if (nameEl) nameEl.value = '';
+  if (descEl) descEl.value = '';
+  if (managerEl) managerEl.value = '';
+  var idEl = document.getElementById('domain-add-id');
+  if (idEl) idEl.value = '';
+}
+
+function editDomain(no) {
+  showToast('도메인 편집 기능 — 프로토타입에서는 추가 모달을 활용하세요', 'success');
+}
+
+function deleteDomain(no) {
+  var idx = tagDomainData.findIndex(function(d) { return d.no === no; });
+  if (idx < 0) return;
+  if (!confirm('"' + tagDomainData[idx].name + '" 도메인을 삭제하시겠습니까?')) return;
+  tagDomainData.splice(idx, 1);
+  tagDomainData.forEach(function(d, i) { d.no = i + 1; });
+  renderDomainGrid();
+  updateTagKPIs();
+  showToast('도메인이 삭제되었습니다', 'success');
+}
+
+function updateTagKPIs() {
+  var totalTags = tagDomainData.length + 3 + tagBusinessAreas.length;
+  var el;
+  el = document.getElementById('tag-kpi-total');
+  if (el) el.textContent = totalTags + '개';
+  el = document.getElementById('tag-kpi-total-sub');
+  if (el) el.textContent = '도메인 ' + tagDomainData.length + ' + 보안 3 + 업무 ' + tagBusinessAreas.length;
+  el = document.getElementById('tag-kpi-unassigned');
+  if (el) el.textContent = tagUnassignedCount + '건';
+}
+
+// ===== 자동 분류 제안 =====
+
+var autoClassifyData = [
+  { id: 'AC-001', asset: 'RAW_SENSOR_LOG_2026', type: 'table', suggestDomain: '계측', suggestSecurity: '내부', suggestArea: 'IoT센서', confidence: 94.2, reason: '센서(SENSOR), 로그(LOG) 키워드 + 컬럼 패턴 매칭' },
+  { id: 'AC-002', asset: 'EXT_WEATHER_API_RESP', type: 'api', suggestDomain: '수자원', suggestSecurity: '공개', suggestArea: '기상', confidence: 88.7, reason: '기상(WEATHER), API 응답 패턴 + 외부 연동 스키마 일치' },
+  { id: 'AC-003', asset: 'CUST_COMPLAINT_HIST', type: 'table', suggestDomain: '고객', suggestSecurity: '제한', suggestArea: '고객지원', confidence: 91.3, reason: '고객(CUST), 민원(COMPLAINT) 키워드 + PII 컬럼 감지' },
+  { id: 'AC-004', asset: 'WQ_SAMPLING_RESULT', type: 'table', suggestDomain: '수질', suggestSecurity: '내부', suggestArea: '수질검사', confidence: 76.5, reason: '수질(WQ) 접두사 + 샘플링 관련 컬럼 구조' },
+  { id: 'AC-005', asset: 'PIPE_MAINT_SCHEDULE', type: 'file', suggestDomain: '상수도', suggestSecurity: '내부', suggestArea: '시설관리', confidence: 86.1, reason: '관로(PIPE), 유지보수(MAINT) 키워드 + 시설코드 참조' }
+];
+
+function renderAutoClassification() {
+  var container = document.getElementById('auto-classify-list');
+  if (!container) return;
+  if (autoClassifyData.length === 0) {
+    container.innerHTML = '<div style="text-align:center; padding:24px; color:#888; font-size:13px;">분류 대기 중인 자산이 없습니다</div>';
+    updateAutoClassifySummary();
+    return;
+  }
+  var typeIcon = { table: '🗃️', api: '🔗', file: '📄', view: '👁️', stream: '📡' };
+  var secColor = { '공개': '#4caf50', '내부': '#1976d2', '제한': '#ff9800', '기밀': '#f44336' };
+  var html = '';
+  for (var i = 0; i < autoClassifyData.length; i++) {
+    var item = autoClassifyData[i];
+    var icon = typeIcon[item.type] || '📦';
+    var sc = secColor[item.suggestSecurity] || '#666';
+    var confColor = item.confidence >= 90 ? '#4caf50' : item.confidence >= 80 ? '#1976d2' : '#ff9800';
+    html += '<div class="auto-classify-row" id="ac-row-' + item.id + '" style="display:flex; align-items:center; gap:12px; padding:12px 16px; background:#fafbfc; border-radius:10px; border:1px solid #e8e8e8;">';
+    html += '  <div style="font-size:20px;">' + icon + '</div>';
+    html += '  <div style="flex:1; min-width:0;">';
+    html += '    <div style="font-weight:600; font-size:13px; color:var(--text-color);">' + item.asset + '</div>';
+    html += '    <div style="font-size:11px; color:#888; margin-top:2px;">' + item.reason + '</div>';
+    html += '  </div>';
+    html += '  <div style="display:flex; gap:6px; align-items:center; flex-shrink:0;">';
+    html += '    <span class="badge badge-info" style="font-size:10px;">' + item.suggestDomain + '</span>';
+    html += '    <span class="badge" style="font-size:10px; background:' + sc + '20; color:' + sc + '; border:1px solid ' + sc + '40;">' + item.suggestSecurity + '</span>';
+    html += '    <span class="badge badge-ghost" style="font-size:10px;">' + item.suggestArea + '</span>';
+    html += '  </div>';
+    html += '  <div style="width:80px; flex-shrink:0; text-align:center;">';
+    html += '    <div style="font-size:13px; font-weight:700; color:' + confColor + ';">' + item.confidence + '%</div>';
+    html += '    <div class="confidence-gauge" style="margin-top:4px;"><div class="confidence-fill" style="width:' + item.confidence + '%; background:' + confColor + ';"></div></div>';
+    html += '  </div>';
+    html += '  <div style="display:flex; gap:4px; flex-shrink:0;">';
+    html += '    <button class="btn btn-primary" style="font-size:10px; padding:3px 10px;" data-perm="write" onclick="applyClassification(\'' + item.id + '\')">적용</button>';
+    html += '    <button class="btn btn-outline" style="font-size:10px; padding:3px 10px;" onclick="rejectClassification(\'' + item.id + '\')">거부</button>';
+    html += '  </div>';
+    html += '</div>';
+  }
+  container.innerHTML = html;
+  updateAutoClassifySummary();
+}
+
+function applyClassification(id) {
+  for (var i = 0; i < autoClassifyData.length; i++) {
+    if (autoClassifyData[i].id === id) {
+      var item = autoClassifyData[i];
+      autoClassifyData.splice(i, 1);
+      tagUnassignedCount = Math.max(0, tagUnassignedCount - 1);
+      renderAutoClassification();
+      updateTagKPIs();
+      showToast('"' + item.asset + '" → ' + item.suggestDomain + '/' + item.suggestSecurity + ' 분류 적용 완료', 'success');
+      tagHistoryData.unshift({ date: '2026-03-18', asset: item.asset, change: '자동분류 적용', from: '미분류', to: item.suggestDomain + ' > ' + item.suggestSecurity + ' > ' + item.suggestArea, user: '시스템(AI)' });
+      renderTagHistoryGrid();
+      return;
+    }
+  }
+}
+
+function rejectClassification(id) {
+  for (var i = 0; i < autoClassifyData.length; i++) {
+    if (autoClassifyData[i].id === id) {
+      var item = autoClassifyData[i];
+      autoClassifyData.splice(i, 1);
+      renderAutoClassification();
+      showToast('"' + item.asset + '" 분류 제안 거부됨', 'error');
+      tagHistoryData.unshift({ date: '2026-03-18', asset: item.asset, change: '자동분류 거부', from: item.suggestDomain + '(제안)', to: '미분류 유지', user: '시스템(AI)' });
+      renderTagHistoryGrid();
+      return;
+    }
+  }
+}
+
+function applyAllClassifications() {
+  if (autoClassifyData.length === 0) { showToast('적용할 제안이 없습니다', 'error'); return; }
+  var count = autoClassifyData.length;
+  for (var i = 0; i < count; i++) {
+    tagHistoryData.unshift({ date: '2026-03-18', asset: autoClassifyData[i].asset, change: '자동분류 일괄적용', from: '미분류', to: autoClassifyData[i].suggestDomain + ' > ' + autoClassifyData[i].suggestSecurity + ' > ' + autoClassifyData[i].suggestArea, user: '시스템(AI)' });
+  }
+  tagUnassignedCount = Math.max(0, tagUnassignedCount - count);
+  autoClassifyData = [];
+  renderAutoClassification();
+  renderTagHistoryGrid();
+  updateTagKPIs();
+  showToast(count + '건 자동 분류 일괄 적용 완료', 'success');
+}
+
+function updateAutoClassifySummary() {
+  var el;
+  el = document.getElementById('ac-total-count');
+  if (el) el.textContent = autoClassifyData.length;
+  var avg = 0;
+  if (autoClassifyData.length > 0) {
+    var sum = 0;
+    for (var i = 0; i < autoClassifyData.length; i++) sum += autoClassifyData[i].confidence;
+    avg = (sum / autoClassifyData.length).toFixed(1);
+  }
+  el = document.getElementById('ac-avg-confidence');
+  if (el) el.textContent = avg;
+}
+
+// ===== 분류 설계 협의 =====
+
+var classificationReviews = [
+  { id: 'REV-001', title: '환경모니터링 도메인 신설', type: '도메인 신설', requester: '한에너지', date: '2026-03-15', status: '검토중', reviewers: '김수자원, 이관리', scope: '수자원 도메인 하위 43건 자산 이관', desc: '신재생에너지 관련 데이터가 증가하여 별도 도메인 필요' },
+  { id: 'REV-002', title: '고객정보 보안등급 상향', type: '보안등급 변경', requester: '이관리', date: '2026-03-12', status: '승인', reviewers: '정보보안팀장, 김수자원', scope: '고객 도메인 전체 256건', desc: '개인정보보호법 개정에 따른 보안등급 재분류' },
+  { id: 'REV-003', title: '계측·IoT 도메인 통합', type: '도메인 통합', requester: '박계측', date: '2026-03-10', status: '반려', reviewers: '김수자원, 한에너지', scope: '계측 + IoT 도메인 합산 312건', desc: '중복 센서 데이터 관리 효율화를 위한 도메인 통합 제안' }
+];
+
+function renderClassificationReviews() {
+  var container = document.getElementById('classification-reviews');
+  if (!container) return;
+  if (classificationReviews.length === 0) {
+    container.innerHTML = '<div style="text-align:center; padding:24px; color:#888; font-size:13px;">진행 중인 협의가 없습니다</div>';
+    return;
+  }
+  var statusStyle = {
+    '검토중': { bg: '#fff8e1', c: '#f57f17', icon: '⏳' },
+    '승인': { bg: '#e8f5e9', c: '#2e7d32', icon: '✅' },
+    '반려': { bg: '#ffebee', c: '#c62828', icon: '❌' }
+  };
+  var html = '';
+  for (var i = 0; i < classificationReviews.length; i++) {
+    var r = classificationReviews[i];
+    var ss = statusStyle[r.status] || { bg: '#f5f5f5', c: '#666', icon: '📋' };
+    html += '<div class="review-row" style="display:flex; align-items:center; gap:12px; padding:14px 16px; background:#fafbfc; border-radius:10px; border:1px solid #e8e8e8;">';
+    html += '  <div style="font-size:20px;">' + ss.icon + '</div>';
+    html += '  <div style="flex:1; min-width:0;">';
+    html += '    <div style="display:flex; gap:8px; align-items:center; margin-bottom:4px;">';
+    html += '      <span style="font-weight:600; font-size:13px; color:var(--text-color);">' + r.title + '</span>';
+    html += '      <span class="badge badge-ghost" style="font-size:10px;">' + r.type + '</span>';
+    html += '      <span style="background:' + ss.bg + '; color:' + ss.c + '; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:600;">' + r.status + '</span>';
+    html += '    </div>';
+    html += '    <div style="font-size:11px; color:#888;">요청: ' + r.requester + ' · ' + r.date + ' · 영향 범위: ' + r.scope + '</div>';
+    html += '    <div style="font-size:11px; color:#888; margin-top:2px;">검토자: ' + r.reviewers + '</div>';
+    html += '  </div>';
+    if (r.status === '검토중') {
+      html += '  <div style="display:flex; gap:4px; flex-shrink:0;">';
+      html += '    <button class="btn btn-primary" style="font-size:10px; padding:3px 10px;" data-perm="manage" onclick="approveReview(\'' + r.id + '\')">승인</button>';
+      html += '    <button class="btn btn-outline" style="font-size:10px; padding:3px 10px;" onclick="rejectReview(\'' + r.id + '\')">반려</button>';
+      html += '  </div>';
+    }
+    html += '</div>';
+  }
+  container.innerHTML = html;
+}
+
+function approveReview(id) {
+  for (var i = 0; i < classificationReviews.length; i++) {
+    if (classificationReviews[i].id === id) {
+      classificationReviews[i].status = '승인';
+      renderClassificationReviews();
+      showToast('"' + classificationReviews[i].title + '" 협의 승인 완료', 'success');
+      return;
+    }
+  }
+}
+
+function rejectReview(id) {
+  for (var i = 0; i < classificationReviews.length; i++) {
+    if (classificationReviews[i].id === id) {
+      classificationReviews[i].status = '반려';
+      renderClassificationReviews();
+      showToast('"' + classificationReviews[i].title + '" 협의 반려', 'error');
+      return;
+    }
+  }
+}
+
+function createReviewRequest() {
+  var title = document.getElementById('review-req-title');
+  var type = document.getElementById('review-req-type');
+  var scope = document.getElementById('review-req-scope');
+  var desc = document.getElementById('review-req-desc');
+  var reviewer = document.getElementById('review-req-reviewer');
+  if (!title || !title.value.trim()) { showToast('제목을 입력해주세요', 'error'); return; }
+  if (!desc || !desc.value.trim()) { showToast('설명을 입력해주세요', 'error'); return; }
+  var newReview = {
+    id: 'REV-' + String(classificationReviews.length + 1).padStart(3, '0'),
+    title: title.value.trim(),
+    type: type ? type.value : '도메인 신설',
+    requester: window.currentRoleKey === 'admin' ? '관리자' : '현재 사용자',
+    date: '2026-03-18',
+    status: '검토중',
+    reviewers: reviewer ? reviewer.value.trim() || '미지정' : '미지정',
+    scope: scope ? scope.value.trim() || '-' : '-',
+    desc: desc.value.trim()
+  };
+  classificationReviews.unshift(newReview);
+  renderClassificationReviews();
+  var modal = document.getElementById('review-request-modal');
+  if (modal) {
+    modal.style.display = 'none';
+    var card = modal.querySelector('.modal-card');
+    if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+  }
+  if (title) title.value = '';
+  if (scope) scope.value = '';
+  if (desc) desc.value = '';
+  if (reviewer) reviewer.value = '';
+  showToast('협의 요청 "' + newReview.title + '" 등록 완료', 'success');
+}
+
+// ===== 데이터모델 관리 =====
+
+var modelData = [
+  { id: 'MDL-001', name: '수자원관리_논리모델', type: '논리', domain: '수자원', tables: 48, columns: 412, piiCols: 0, pkfk: '48/96', compliance: '95.2', status: '승인', lastMod: '2026-02-28', manager: '김수자원' },
+  { id: 'MDL-002', name: '수자원관리_물리모델', type: '물리', domain: '수자원', tables: 52, columns: 468, piiCols: 0, pkfk: '52/104', compliance: '93.8', status: '승인', lastMod: '2026-02-27', manager: '김수자원' },
+  { id: 'MDL-003', name: '상수도관리_논리모델', type: '논리', domain: '상수도', tables: 38, columns: 324, piiCols: 0, pkfk: '38/72', compliance: '96.1', status: '승인', lastMod: '2026-02-26', manager: '김수도' },
+  { id: 'MDL-004', name: '상수도관리_물리모델', type: '물리', domain: '상수도', tables: 42, columns: 378, piiCols: 6, pkfk: '42/86', compliance: '91.5', status: '검토중', lastMod: '2026-02-25', manager: '김수도' },
+  { id: 'MDL-005', name: '고객관리_물리모델', type: '물리', domain: '고객', tables: 28, columns: 256, piiCols: 12, pkfk: '28/52', compliance: '94.3', status: '승인', lastMod: '2026-02-24', manager: '이관리' },
+  { id: 'MDL-006', name: '발전관리_논리모델', type: '논리', domain: '에너지', tables: 32, columns: 284, piiCols: 0, pkfk: '32/64', compliance: '92.7', status: '승인', lastMod: '2026-02-23', manager: '한에너지' },
+  { id: 'MDL-007', name: '수질관리_물리모델', type: '물리', domain: '수질', tables: 44, columns: 396, piiCols: 4, pkfk: '44/92', compliance: '89.4', status: '초안', lastMod: '2026-02-22', manager: '최수질' },
+  { id: 'MDL-008', name: '계측통합_물리모델', type: '물리', domain: '계측', tables: 56, columns: 512, piiCols: 3, pkfk: '56/118', compliance: '90.6', status: '검토중', lastMod: '2026-02-21', manager: '박계측' },
+  { id: 'MDL-009', name: 'GIS공간_논리모델', type: '논리', domain: '수자원', tables: 36, columns: 298, piiCols: 0, pkfk: '36/68', compliance: '97.2', status: '승인', lastMod: '2026-02-20', manager: '김수자원' },
+  { id: 'MDL-010', name: 'IoT센서_물리모델', type: '물리', domain: '계측', tables: 46, columns: 519, piiCols: 2, pkfk: '46/98', compliance: '87.1', status: '반려', lastMod: '2026-02-19', manager: '박계측' }
+];
+
+var selectedModelId = null;
+
+function getModelColumnDefs() {
+  return [
+    { field: 'name', headerName: '모델명', flex: 1, cellRenderer: function (p) { return '<strong style="cursor:pointer;">' + p.value + '</strong>'; } },
+    { field: 'type', headerName: '유형', width: 80, cellRenderer: function (p) {
+        var m = { '논리': { bg: '#e8f0fe', c: '#1967d2' }, '물리': { bg: '#fff3e0', c: '#ef6c00' } };
+        var s = m[p.value] || { bg: '#f5f5f5', c: '#666' };
+        return '<span style="background:' + s.bg + ';color:' + s.c + ';padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">' + p.value + '</span>';
+      }
+    },
+    { field: 'domain', headerName: '도메인', width: 90, cellRenderer: function (p) {
+        var m = { '수자원': { bg: '#e3f2fd', c: '#1565c0' }, '상수도': { bg: '#e0f7fa', c: '#00838f' }, '수질': { bg: '#e8f5e9', c: '#2e7d32' }, '에너지': { bg: '#fff8e1', c: '#f57f17' }, '고객': { bg: '#f3e5f5', c: '#7b1fa2' }, '계측': { bg: '#fce4ec', c: '#c62828' } };
+        var s = m[p.value] || { bg: '#f5f5f5', c: '#666' };
+        return '<span style="background:' + s.bg + ';color:' + s.c + ';padding:2px 8px;border-radius:4px;font-size:11px;">' + p.value + '</span>';
+      }
+    },
+    { field: 'tables', headerName: '테이블수', width: 90, type: 'numericColumn', cellStyle: { fontWeight: '600', fontFamily: 'monospace' } },
+    { field: 'columns', headerName: '컬럼수', width: 85, type: 'numericColumn', cellStyle: { fontWeight: '600', fontFamily: 'monospace' } },
+    { field: 'piiCols', headerName: 'PII', width: 60, cellRenderer: function (p) {
+        if (!p.value || p.value === 0) return '<span style="color:#ccc; font-size:11px;">—</span>';
+        return '<span style="background:#fff1f0; color:#cf1322; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:600;">🔒 ' + p.value + '</span>';
+      }
+    },
+    { field: 'pkfk', headerName: 'PK/FK', width: 80, cellStyle: { fontFamily: 'monospace', textAlign: 'center' } },
+    { field: 'compliance', headerName: '표준준수율', width: 100, cellRenderer: function (p) {
+        var v = parseFloat(p.value);
+        var c = v >= 95 ? '#2e7d32' : v >= 90 ? '#ef6c00' : '#c62828';
+        var bg = v >= 95 ? '#e8f5e9' : v >= 90 ? '#fff3e0' : '#ffebee';
+        return '<span style="background:' + bg + ';color:' + c + ';padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">' + p.value + '%</span>';
+      }
+    },
+    { field: 'status', headerName: '상태', width: 90, cellRenderer: function (p) {
+        var m = { '승인': { bg: '#e8f5e9', c: '#2e7d32', dot: '#52c41a' }, '검토중': { bg: '#e8f0fe', c: '#1967d2', dot: '#1677ff' }, '초안': { bg: '#fff8e1', c: '#d48806', dot: '#faad14' }, '반려': { bg: '#ffebee', c: '#c62828', dot: '#ff4d4f' } };
+        var s = m[p.value] || { bg: '#f5f5f5', c: '#666', dot: '#999' };
+        return '<span style="display:inline-flex;align-items:center;gap:4px;background:' + s.bg + ';color:' + s.c + ';padding:2px 8px;border-radius:4px;font-size:11px;"><span style="width:6px;height:6px;border-radius:50%;background:' + s.dot + ';"></span>' + p.value + '</span>';
+      }
+    },
+    { field: 'lastMod', headerName: '최종수정', width: 96 },
+    { field: 'manager', headerName: '담당자', width: 80 }
+  ];
+}
+
+function initMetaModelScreen() {
+  filterMetaModelGrid();
+  var firstModel = modelData[0];
+  if (firstModel) {
+    var entities = modelEntityData[firstModel.id] || [];
+    var relations = modelRelations[firstModel.id] || [];
+    if (entities.length) {
+      renderModelERD('model-erd-preview', entities, relations);
+      var titleEl = document.getElementById('model-erd-title');
+      if (titleEl) titleEl.textContent = '🗂️ ERD 미리보기 — ' + firstModel.name;
+      var subEl = document.getElementById('model-erd-subtitle');
+      if (subEl) subEl.textContent = entities.length + ' 테이블 · ' + entities.reduce(function(s,e){return s+e.attrs;},0) + ' 컬럼';
+    }
+  }
+}
+
+function filterMetaModelGrid() {
+  var typeFilter = document.getElementById('model-type-filter');
+  var domainFilter = document.getElementById('model-domain-filter');
+  var searchInput = document.getElementById('model-search-input');
+  var typeVal = typeFilter ? typeFilter.value : '';
+  var domainVal = domainFilter ? domainFilter.value : '';
+  var searchVal = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+  var filtered = modelData.filter(function(d) {
+    if (typeVal && typeVal !== '전체 유형' && d.type !== typeVal) return false;
+    if (domainVal && domainVal !== '전체 도메인' && d.domain !== domainVal) return false;
+    if (searchVal && d.name.toLowerCase().indexOf(searchVal) < 0) return false;
+    return true;
+  });
+
+  initAGGrid('ag-grid-meta-model', getModelColumnDefs(), filtered, {
+    domLayout: 'autoHeight',
+    getRowStyle: function (params) {
+      if (params.data.status === '반려') return { background: '#fff5f5' };
+      if (params.data.status === '초안') return { background: '#fffbe6' };
+      return null;
+    },
+    onRowClicked: function(event) {
+      selectedModelId = event.data.id;
+      openModelDetail(event.data.id);
+    }
+  });
+
+  updateModelKPIs(filtered);
+}
+
+function updateModelKPIs(data) {
+  var total = data.length;
+  var logical = data.filter(function(d) { return d.type === '논리'; }).length;
+  var physical = data.filter(function(d) { return d.type === '물리'; }).length;
+  var approved = data.filter(function(d) { return d.status === '승인'; }).length;
+
+  var el;
+  el = document.getElementById('model-kpi-total');
+  if (el) el.innerHTML = total + '<span style="font-size:12px; font-weight:400;">개</span>';
+  el = document.getElementById('model-kpi-total-sub');
+  if (el) el.textContent = '논리 ' + logical + ' · 물리 ' + physical;
+}
+
+// 모델별 엔티티 데이터
+var modelEntityData = {
+  'MDL-001': [
+    { name: '댐_기본정보', physical: 'DM_DAM_INFO', subject: '댐관리', attrs: 8, pk: 1, fk: 0, desc: '전국 다목적댐·용수댐 기본 정보', std: '100%' },
+    { name: '수위_관측', physical: 'DM_WATER_LEVEL', subject: '수문관측', attrs: 5, pk: 1, fk: 1, desc: '실시간 수위 관측 데이터', std: '100%' },
+    { name: '유량_측정', physical: 'DM_FLOW_RATE', subject: '수문관측', attrs: 4, pk: 1, fk: 1, desc: '유입량/방류량 측정 기록', std: '100%' },
+    { name: '방류_이력', physical: 'DM_DISCHARGE', subject: '방류관리', attrs: 5, pk: 1, fk: 1, desc: '방류 시행 및 계획 이력', std: '80%' },
+    { name: '수질_측정', physical: 'DM_WATER_QUALITY', subject: '수질관리', attrs: 9, pk: 1, fk: 1, desc: '수질 항목별 분석 결과', std: '100%' },
+    { name: '기상_관측', physical: 'DM_WEATHER_OBS', subject: '기상연계', attrs: 7, pk: 1, fk: 0, desc: '기상청 관측소별 기온/강수량', std: '100%' },
+    { name: '관측소_정보', physical: 'DM_STATION_INFO', subject: '수문관측', attrs: 10, pk: 1, fk: 0, desc: '수문 관측소 위치 및 장비 정보', std: '90%' },
+    { name: '저수량_일통계', physical: 'DM_STORAGE_DAILY', subject: '댐관리', attrs: 6, pk: 1, fk: 1, desc: '댐별 일일 저수량 집계', std: '100%' }
+  ],
+  'MDL-003': [
+    { name: '정수장_기본정보', physical: 'WS_PLANT_INFO', subject: '정수관리', attrs: 12, pk: 1, fk: 0, desc: '정수장 시설 기본 정보', std: '96%' },
+    { name: '배수지_현황', physical: 'WS_RESERVOIR', subject: '배수관리', attrs: 8, pk: 1, fk: 1, desc: '배수지 용량 및 현황', std: '100%' },
+    { name: '관로_정보', physical: 'WS_PIPELINE', subject: '관로관리', attrs: 10, pk: 1, fk: 0, desc: '광역관로 노선 및 사양', std: '94%' },
+    { name: '약품투입_이력', physical: 'WS_CHEMICAL', subject: '정수관리', attrs: 7, pk: 1, fk: 1, desc: '약품 투입량 및 시간 기록', std: '100%' }
+  ],
+  'MDL-006': [
+    { name: '발전소_기본정보', physical: 'EN_PLANT_INFO', subject: '발전관리', attrs: 11, pk: 1, fk: 0, desc: '수력발전소 시설 정보', std: '95%' },
+    { name: '발전량_실적', physical: 'EN_GENERATION', subject: '발전실적', attrs: 6, pk: 1, fk: 1, desc: '일별/시간별 발전량 기록', std: '100%' },
+    { name: 'ESS_운영현황', physical: 'EN_ESS_STATUS', subject: 'ESS', attrs: 8, pk: 1, fk: 1, desc: '에너지 저장 시스템 충방전 현황', std: '88%' }
+  ]
+};
+
+// 모델별 관계 정보
+var modelRelations = {
+  'MDL-001': [
+    { from: '수위_관측', to: '댐_기본정보', type: '1:N', fkCol: 'dam_id' },
+    { from: '유량_측정', to: '댐_기본정보', type: '1:N', fkCol: 'dam_id' },
+    { from: '방류_이력', to: '댐_기본정보', type: '1:N', fkCol: 'dam_id' },
+    { from: '수질_측정', to: '댐_기본정보', type: '1:N', fkCol: 'dam_id' },
+    { from: '저수량_일통계', to: '댐_기본정보', type: '1:N', fkCol: 'dam_id' }
+  ],
+  'MDL-003': [
+    { from: '배수지_현황', to: '정수장_기본정보', type: '1:N', fkCol: 'plant_id' },
+    { from: '약품투입_이력', to: '정수장_기본정보', type: '1:N', fkCol: 'plant_id' }
+  ],
+  'MDL-006': [
+    { from: '발전량_실적', to: '발전소_기본정보', type: '1:N', fkCol: 'plant_id' },
+    { from: 'ESS_운영현황', to: '발전소_기본정보', type: '1:N', fkCol: 'plant_id' }
+  ]
+};
+
+// ERD 시각화 렌더링 (동적 카드 + SVG 관계선)
+function renderModelERD(containerId, entities, relations) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+
+  var html = '';
+  entities.forEach(function(entity, idx) {
+    var headerColor = idx === 0 ? '#1967d2' : '#556b8d';
+    var cols = [];
+    cols.push('<div class="erd-col"><span class="pk">PK</span> ' + entity.physical.toLowerCase() + '_id</div>');
+    if (entity.fk > 0) {
+      var rel = relations.find(function(r) { return r.from === entity.name; });
+      if (rel) cols.push('<div class="erd-col"><span class="fk">FK</span> ' + rel.fkCol + '</div>');
+    }
+    var remaining = entity.attrs - cols.length;
+    if (remaining > 0) cols.push('<div class="erd-col" style="color:#999;font-size:10px;">... 외 ' + remaining + '개 속성</div>');
+
+    html += '<div class="erd-table" data-entity="' + entity.name + '" style="border-color:' + headerColor + ';">' +
+      '<div class="erd-header" style="background:' + headerColor + ';">' + entity.name + ' (' + entity.physical + ')</div>' +
+      '<div class="erd-cols">' + cols.join('') + '</div></div>';
+  });
+
+  html += '<svg class="erd-svg-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;">' +
+    '<defs><marker id="arrowhead-' + containerId + '" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#ff9800"/></marker></defs></svg>';
+
+  container.innerHTML = html;
+  container.style.position = 'relative';
+
+  setTimeout(function() {
+    var svg = container.querySelector('.erd-svg-overlay');
+    if (!svg || !relations.length) return;
+
+    var containerRect = container.getBoundingClientRect();
+    var paths = '';
+
+    relations.forEach(function(rel) {
+      var fromEl = container.querySelector('[data-entity="' + rel.from + '"]');
+      var toEl = container.querySelector('[data-entity="' + rel.to + '"]');
+      if (!fromEl || !toEl) return;
+
+      var fromRect = fromEl.getBoundingClientRect();
+      var toRect = toEl.getBoundingClientRect();
+
+      var x1 = fromRect.left + fromRect.width / 2 - containerRect.left;
+      var y1 = fromRect.top - containerRect.top;
+      var x2 = toRect.left + toRect.width / 2 - containerRect.left;
+      var y2 = toRect.bottom - containerRect.top;
+
+      var midY = (y1 + y2) / 2;
+      paths += '<path d="M' + x1 + ',' + y1 + ' C' + x1 + ',' + midY + ' ' + x2 + ',' + midY + ' ' + x2 + ',' + y2 + '" ' +
+        'fill="none" stroke="#ff9800" stroke-width="1.5" stroke-dasharray="4,3" ' +
+        'marker-end="url(#arrowhead-' + containerId + ')"/>';
+
+      var labelX = (x1 + x2) / 2;
+      var labelY = midY - 4;
+      paths += '<text x="' + labelX + '" y="' + labelY + '" text-anchor="middle" fill="#ff9800" font-size="9" font-weight="600">' + rel.type + '</text>';
+    });
+
+    svg.innerHTML = svg.innerHTML + paths;
+  }, 200);
+}
+
+// 모델 상세 화면 콘텐츠 렌더링
+function renderModelDetailContent(model) {
+  if (!model && selectedModelId) {
+    model = modelData.find(function(d) { return d.id === selectedModelId; });
+  }
+  if (!model) return;
+
+  var titleEl = document.getElementById('model-detail-title');
+  if (titleEl) {
+    var typeMap = { '논리': { bg: '#e8f0fe', c: '#1967d2' }, '물리': { bg: '#fff3e0', c: '#ef6c00' } };
+    var statusMap = { '승인': 'approved', '검토중': 'pending', '초안': 'draft', '반려': 'rejected' };
+    var ts = typeMap[model.type] || { bg: '#f5f5f5', c: '#666' };
+    titleEl.innerHTML = model.name +
+      ' <span class="ds-tag" style="background:' + ts.bg + ';color:' + ts.c + ';font-size:12px;">' + model.type + '</span>' +
+      ' <span class="glossary-status ' + (statusMap[model.status] || '') + '" style="font-size:12px;"><span class="gs-dot"></span>' + model.status + '</span>';
+  }
+
+  var setEl = function(id, val) { var e = document.getElementById(id); if (e) e.textContent = val; };
+  var setHtml = function(id, val) { var e = document.getElementById(id); if (e) e.innerHTML = val; };
+  setEl('md-info-id', model.id);
+  setEl('md-info-name', model.name);
+  var ts2 = { '논리': { bg: '#e8f0fe', c: '#1967d2' }, '물리': { bg: '#fff3e0', c: '#ef6c00' } }[model.type] || { bg: '#f5f5f5', c: '#666' };
+  setHtml('md-info-type', '<span class="ds-tag" style="background:' + ts2.bg + ';color:' + ts2.c + ';">' + model.type + '모델</span>');
+  setEl('md-info-domain', model.domain);
+  setEl('md-info-version', 'v1.0');
+  setEl('md-info-created', '2024-09-01');
+  setEl('md-info-modified', model.lastMod);
+  setEl('md-info-manager', model.manager);
+  setEl('md-info-desc', model.name + ' — ' + model.domain + ' 도메인의 ' + model.type + ' 데이터 모델');
+
+  var linkedType = model.type === '논리' ? '물리' : '논리';
+  var linked = modelData.find(function(d) { return d.domain === model.domain && d.type === linkedType; });
+  if (linked) {
+    setHtml('md-info-linked', '<a href="#" onclick="openModelDetail(\'' + linked.id + '\');return false;" style="color:#1967d2;text-decoration:none;">' + linked.name + ' →</a>');
+  } else {
+    setEl('md-info-linked', '-');
+  }
+
+  var entities = modelEntityData[model.id] || [];
+  var totalAttrs = entities.reduce(function(s, e) { return s + e.attrs; }, 0);
+  var totalFks = entities.reduce(function(s, e) { return s + e.fk; }, 0);
+  var subjects = {};
+  entities.forEach(function(e) { subjects[e.subject] = true; });
+  setEl('md-stat-entities', entities.length || model.tables);
+  setEl('md-stat-attrs', totalAttrs || model.columns);
+  setEl('md-stat-fks', totalFks || model.pkfk.split('/')[1]);
+  setEl('md-stat-subjects', Object.keys(subjects).length || '-');
+
+  var tbody = document.getElementById('md-entity-tbody');
+  if (tbody && entities.length > 0) {
+    var html = '';
+    entities.forEach(function(e) {
+      var stdColor = parseFloat(e.std) >= 95 ? '#4caf50' : parseFloat(e.std) >= 90 ? '#ff9800' : '#f44336';
+      html += '<tr><td><strong>' + e.name + '</strong></td>' +
+        '<td style="font-family:monospace;font-size:11px;">' + e.physical + '</td>' +
+        '<td>' + e.subject + '</td>' +
+        '<td>' + e.attrs + '</td><td>' + e.pk + '</td><td>' + e.fk + '</td>' +
+        '<td style="font-size:11px;">' + e.desc + '</td>' +
+        '<td><span style="color:' + stdColor + ';font-weight:600;">' + e.std + '</span></td></tr>';
+    });
+    tbody.innerHTML = html;
+    var countEl = document.getElementById('md-entity-count');
+    if (countEl) countEl.innerHTML = '총 <strong>' + entities.length + '</strong>개 엔티티 · <strong>' + totalAttrs + '</strong>개 속성';
+  }
+
+  var erdContainer = document.getElementById('model-detail-erd');
+  if (erdContainer && entities.length > 0) {
+    renderModelERD('model-detail-erd', entities, modelRelations[model.id] || []);
+  }
+}
+
+// ===== 연동 시스템 정보 (상세 모달용) =====
+
+function buildSyncInfoSection(type) {
+  var systems = {
+    word: { source: 'K-water 표준사전 시스템', syncTime: '2026-03-18 09:15', match: true, version: 'v3.2.1' },
+    term: { source: 'K-water 표준사전 시스템', syncTime: '2026-03-18 09:15', match: true, version: 'v3.2.1' },
+    code: { source: 'K-water 공통코드 관리', syncTime: '2026-03-17 22:00', match: false, version: 'v2.8.4' }
+  };
+  var info = systems[type] || systems.word;
+  var matchBadge = info.match
+    ? '<span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">일치</span>'
+    : '<span style="background:#fff3e0;color:#e65100;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">차이 있음</span>';
+  var html = '<div class="detail-section-title" style="margin-top:10px;">🔗 연동 시스템 정보</div>';
+  html += buildInfoRow('소스 시스템', info.source);
+  html += buildInfoRow('시스템 버전', '<code style="background:#f0f2f5;padding:1px 6px;border-radius:3px;font-size:12px;">' + info.version + '</code>');
+  html += buildInfoRow('최종 동기화', info.syncTime);
+  html += buildInfoRow('데이터 일치 여부', matchBadge);
+  return html;
+}
+
+// ===== 검색 하이라이트 =====
+
+function highlightSearchText(text, searchTerm) {
+  if (!text || !searchTerm) return text || '';
+  var escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return String(text).replace(new RegExp('(' + escaped + ')', 'gi'), '<mark style="background:#fff176;padding:0 1px;border-radius:2px;">$1</mark>');
+}
+
+function getGlossarySearchTerm() {
+  var tab = glossaryState.activeTab;
+  if (tab === 'word') return glossaryState.wordSearch || '';
+  if (tab === 'term') return glossaryState.termSearch || '';
+  return glossaryState.codeSearch || '';
 }
 
 // ===== 위젯 템플릿 등록 — 실시간 미리보기 =====

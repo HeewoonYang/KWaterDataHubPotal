@@ -23,6 +23,35 @@
     </div>
   </div>
 
+  <!-- 동기화 상태 바 (K-water 표준사전 연동) -->
+  <div class="sync-status-bar" id="glossary-sync-bar">
+    <div style="display:flex; align-items:center; gap:10px; flex:1;">
+      <span style="font-size:14px;" id="sync-status-icon">🔄</span>
+      <div>
+        <div style="font-size:12px; font-weight:600; color:var(--text-color);" id="sync-status-text">K-water 표준사전 연동 상태</div>
+        <div style="font-size:11px; color:var(--text-secondary);" id="sync-status-detail">마지막 동기화: 2026-03-18 09:15 · 소스: K-water 표준사전 v3.2</div>
+      </div>
+    </div>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <span class="sync-badge sync-badge-success" id="sync-badge-word">단어 <strong>2,847</strong></span>
+      <span class="sync-badge sync-badge-success" id="sync-badge-term">용어 <strong>1,523</strong></span>
+      <span class="sync-badge sync-badge-success" id="sync-badge-code">코드 <strong>892</strong></span>
+      <span class="sync-badge sync-badge-warn" id="sync-badge-conflict">충돌 <strong>3</strong></span>
+      <button class="btn btn-outline" style="font-size:11px; padding:4px 12px;" data-perm="manage" onclick="manualSync()">🔄 수동 동기화</button>
+    </div>
+  </div>
+
+  <!-- 최근 변경 알림 -->
+  <div class="card" id="glossary-change-events" style="margin-bottom:16px; padding:12px 16px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <div class="card-title" style="margin-bottom:0; font-size:13px;">🔔 최근 변경 알림</div>
+      <button class="btn btn-outline" style="font-size:10px; padding:3px 10px;" onclick="markAllChangeEventsRead()">모두 읽음</button>
+    </div>
+    <div id="change-event-list" style="display:flex; flex-direction:column; gap:4px; max-height:160px; overflow-y:auto;">
+      <!-- 동적 렌더링 -->
+    </div>
+  </div>
+
   <!-- 탭 네비게이션 -->
   <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e8e8e8;">
     <button class="glossary-tab-btn active" data-tab="word" onclick="switchGlossaryTab('word')">단어사전</button>
@@ -854,25 +883,25 @@
     <div
       style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); border-radius:12px; padding:20px; color:#fff;">
       <div style="font-size:12px; opacity:0.85; margin-bottom:6px;">📂 총 분류체계</div>
-      <div style="font-size:28px; font-weight:800;">3개</div>
+      <div id="tag-kpi-systems" style="font-size:28px; font-weight:800;">3개</div>
       <div style="font-size:11px; opacity:0.7; margin-top:4px;">도메인 · 보안등급 · 업무영역</div>
     </div>
     <div
       style="background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%); border-radius:12px; padding:20px; color:#fff;">
       <div style="font-size:12px; opacity:0.85; margin-bottom:6px;">🏷️ 총 태그 수</div>
-      <div style="font-size:28px; font-weight:800;">14개</div>
-      <div style="font-size:11px; opacity:0.7; margin-top:4px;">도메인 6 + 보안 3 + 업무 5</div>
+      <div id="tag-kpi-total" style="font-size:28px; font-weight:800;">14개</div>
+      <div id="tag-kpi-total-sub" style="font-size:11px; opacity:0.7; margin-top:4px;">도메인 6 + 보안 3 + 업무 5</div>
     </div>
     <div
       style="background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%); border-radius:12px; padding:20px; color:#fff;">
       <div style="font-size:12px; opacity:0.85; margin-bottom:6px;">⚠️ 태그 미할당 자산</div>
-      <div style="font-size:28px; font-weight:800;">127건</div>
+      <div id="tag-kpi-unassigned" style="font-size:28px; font-weight:800;">127건</div>
       <div style="font-size:11px; opacity:0.7; margin-top:4px;">전체 자산 대비 0.8%</div>
     </div>
     <div
       style="background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%); border-radius:12px; padding:20px; color:#fff;">
       <div style="font-size:12px; opacity:0.85; margin-bottom:6px;">🔄 최근 변경</div>
-      <div style="font-size:28px; font-weight:800;">23건/주</div>
+      <div id="tag-kpi-changes" style="font-size:28px; font-weight:800;">23건/주</div>
       <div style="font-size:11px; opacity:0.7; margin-top:4px;">전주 대비 ▲ 12%</div>
     </div>
   </div>
@@ -885,7 +914,7 @@
         data-perm="write" onclick="document.getElementById('domain-add-modal').style.display='flex'">+ 도메인 추가</button>
     </div>
     <div id="ag-grid-meta-domain" class="ag-theme-alpine" style="width:100%;"></div>
-    <div style="text-align:right; font-size:11px; color:#888; margin-top:8px;">총 6개 도메인 · 연결 자산 합계: 14,933건</div>
+    <div id="domain-summary" style="text-align:right; font-size:11px; color:#888; margin-top:8px;">총 6개 도메인 · 연결 자산 합계: 14,933건</div>
   </div>
 
   <!-- 보안등급 분류 관리 -->
@@ -966,7 +995,7 @@
         <span style="font-size:12px; color:#888;">태그조합: 도메인 + 보안등급 + 업무영역 → 자산에 자동부여</span>
       </div>
     </div>
-    <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+    <div id="business-tag-container" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
       <div
         style="display:flex; align-items:center; gap:8px; background:#e3f2fd; border:1px solid #90caf9; padding:8px 16px; border-radius:20px;">
         <span style="font-weight:600; color:#1565c0;">계측</span>
@@ -1010,10 +1039,42 @@
           style="background:#1967d2; border:none; color:#fff; border-radius:12px; width:22px; height:22px; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center;">+</button>
       </div>
     </div>
-    <div
+    <div id="business-tag-summary"
       style="padding:10px 14px; background:#f8f9fb; border-radius:8px; font-size:12px; color:#555; display:flex; justify-content:space-between;">
       <span>총 5개 업무영역 태그 · 연결 자산 합계: <strong>12,889건</strong></span>
       <span>미분류 자산: <strong style="color:#f44336;">127건</strong> (도메인 할당 필요)</span>
+    </div>
+  </div>
+
+  <!-- 자동 분류 제안 (AI 기반) -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div class="card-title" style="margin-bottom:0;">🤖 자동 분류 제안</div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span style="font-size:12px; color:#888;">AI 기반 미분류 자산 자동 분류 추천</span>
+        <button class="btn btn-primary" style="font-size:11px; padding:4px 12px;" data-perm="write" onclick="applyAllClassifications()">✅ 전체 적용</button>
+      </div>
+    </div>
+    <div id="auto-classify-list" style="display:flex; flex-direction:column; gap:8px;">
+      <!-- 동적 렌더링 -->
+    </div>
+    <div id="auto-classify-summary" style="margin-top:12px; padding:10px 14px; background:#f0f7ff; border-radius:8px; font-size:12px; color:#1967d2; display:flex; justify-content:space-between;">
+      <span>총 <strong id="ac-total-count">5</strong>건 제안 대기 · 평균 신뢰도 <strong id="ac-avg-confidence">87.4</strong>%</span>
+      <span style="color:#888;">신뢰도 80% 이상 자동 승인 권장</span>
+    </div>
+  </div>
+
+  <!-- 분류 설계 협의 -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div class="card-title" style="margin-bottom:0;">📋 분류 설계 협의</div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span style="font-size:12px; color:#888;">분류 체계 변경 시 관계자 합의 프로세스</span>
+        <button class="btn btn-primary" style="font-size:11px; padding:4px 12px;" data-perm="write" onclick="document.getElementById('review-request-modal').style.display='flex'">📝 협의 요청</button>
+      </div>
+    </div>
+    <div id="classification-reviews" style="display:flex; flex-direction:column; gap:8px;">
+      <!-- 동적 렌더링 -->
     </div>
   </div>
 
@@ -1254,13 +1315,13 @@
     <div style="flex:1; overflow-y:auto; padding:24px;">
       <div style="display:grid; grid-template-columns:120px 1fr; gap:16px; align-items:center; font-size:13px;">
         <label style="font-weight:600; color:#555;">도메인 ID *</label>
-        <input type="text" placeholder="예: DOMAIN_ENV (대문자)"
+        <input id="domain-add-id" type="text" placeholder="예: DOMAIN_ENV (대문자)"
           style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; font-family:monospace;">
         <label style="font-weight:600; color:#555;">도메인명 *</label>
-        <input type="text" placeholder="예: 환경"
+        <input id="domain-add-name" type="text" placeholder="예: 환경"
           style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px;">
         <label style="font-weight:600; color:#555; align-self:start; padding-top:8px;">설명 *</label>
-        <textarea rows="2" placeholder="도메인의 관할 범위와 포함 데이터 유형을 기술하세요"
+        <textarea id="domain-add-desc" rows="2" placeholder="도메인의 관할 범위와 포함 데이터 유형을 기술하세요"
           style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; resize:vertical;"></textarea>
         <label style="font-weight:600; color:#555;">대표 색상 *</label>
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
@@ -1287,10 +1348,10 @@
               style="display:inline-block; width:28px; height:28px; background:#607d8b; border-radius:50%; border:3px solid #e0e0e0; cursor:pointer;"></span></label>
         </div>
         <label style="font-weight:600; color:#555;">관리자</label>
-        <input type="text" placeholder="담당자 이름"
+        <input id="domain-add-manager" type="text" placeholder="담당자 이름"
           style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px;">
         <label style="font-weight:600; color:#555;">상태</label>
-        <select style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; background:#fff;">
+        <select id="domain-add-status" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; background:#fff;">
           <option selected>활성</option>
           <option>비활성</option>
         </select>
@@ -1305,6 +1366,46 @@
         <button data-perm="write"
           style="padding:8px 20px; border:none; background:#1967d2; color:#fff; border-radius:8px; font-size:13px; cursor:pointer; font-weight:600;">✅
           등록</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 협의 요청 모달 -->
+<div class="modal-overlay" id="review-request-modal" style="display:none;">
+  <div class="modal-card" style="width:560px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">📝 분류 체계 협의 요청</h3>
+      <button class="modal-close" onclick="document.getElementById('review-request-modal').style.display='none'">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid; grid-template-columns:100px 1fr; gap:14px; align-items:center; font-size:13px;">
+        <label style="font-weight:600; color:#555;">제목 *</label>
+        <input id="review-req-title" type="text" placeholder="예: 환경 도메인 신설 검토"
+          style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px;">
+        <label style="font-weight:600; color:#555;">유형</label>
+        <select id="review-req-type" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; background:#fff;">
+          <option>도메인 신설</option>
+          <option>도메인 통합</option>
+          <option>보안등급 변경</option>
+          <option>분류체계 개편</option>
+        </select>
+        <label style="font-weight:600; color:#555;">영향 범위</label>
+        <input id="review-req-scope" type="text" placeholder="예: 수자원 도메인 하위 127건 자산"
+          style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px;">
+        <label style="font-weight:600; color:#555; align-self:start; padding-top:8px;">설명 *</label>
+        <textarea id="review-req-desc" rows="3" placeholder="변경 사유와 기대 효과를 기술하세요"
+          style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; resize:vertical;"></textarea>
+        <label style="font-weight:600; color:#555;">검토자</label>
+        <input id="review-req-reviewer" type="text" placeholder="예: 김수자원, 이관리"
+          style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px;">
+      </div>
+    </div>
+    <div class="modal-footer" style="justify-content:space-between;">
+      <div style="font-size:11px; color:#f44336;">* 필수 입력 항목</div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-outline" onclick="document.getElementById('review-request-modal').style.display='none'">취소</button>
+        <button class="btn btn-primary" data-perm="write" onclick="createReviewRequest()">📤 협의 요청</button>
       </div>
     </div>
   </div>
@@ -1329,8 +1430,8 @@
   <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-bottom:14px;">
     <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #1677ff;">
       <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">전체 모델</div>
-      <div style="font-size:22px; font-weight:700; color:#1677ff;">14<span style="font-size:12px; font-weight:400;">개</span></div>
-      <div style="font-size:11px; margin-top:4px; color:var(--text-secondary);">논리 6 · 물리 8</div>
+      <div style="font-size:22px; font-weight:700; color:#1677ff;" id="model-kpi-total">14<span style="font-size:12px; font-weight:400;">개</span></div>
+      <div style="font-size:11px; margin-top:4px; color:var(--text-secondary);" id="model-kpi-total-sub">논리 6 · 물리 8</div>
     </div>
     <div class="card" style="padding:14px; margin-bottom:0; border-left:3px solid #52c41a;">
       <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">총 테이블</div>
@@ -1364,13 +1465,13 @@
     <div class="card-head" style="display:flex; justify-content:space-between; align-items:center;">
       <div class="card-title">📋 데이터모델 목록</div>
       <div style="display:flex; gap:8px; align-items:center;">
-        <select style="padding:3px 8px; border:1px solid var(--border-color); border-radius:4px; font-size:11px; background:var(--card-bg); color:var(--text-color);">
+        <select id="model-type-filter" onchange="filterMetaModelGrid()" style="padding:3px 8px; border:1px solid var(--border-color); border-radius:4px; font-size:11px; background:var(--card-bg); color:var(--text-color);">
           <option>전체 유형</option><option>논리</option><option>물리</option>
         </select>
-        <select style="padding:3px 8px; border:1px solid var(--border-color); border-radius:4px; font-size:11px; background:var(--card-bg); color:var(--text-color);">
+        <select id="model-domain-filter" onchange="filterMetaModelGrid()" style="padding:3px 8px; border:1px solid var(--border-color); border-radius:4px; font-size:11px; background:var(--card-bg); color:var(--text-color);">
           <option>전체 도메인</option><option>수자원</option><option>상수도</option><option>수질</option><option>에너지</option><option>고객</option><option>계측</option>
         </select>
-        <input type="text" placeholder="모델명 검색..." style="padding:3px 8px; border:1px solid var(--border-color); border-radius:4px; font-size:11px; width:140px; background:var(--card-bg); color:var(--text-color);">
+        <input id="model-search-input" type="text" placeholder="모델명 검색..." oninput="filterMetaModelGrid()" style="padding:3px 8px; border:1px solid var(--border-color); border-radius:4px; font-size:11px; width:140px; background:var(--card-bg); color:var(--text-color);">
       </div>
     </div>
     <div class="card-body" style="padding:0;">
@@ -1974,7 +2075,7 @@
 <!-- ========== META SCREEN 3-1: 데이터모델 상세 ========== -->
 <div class="screen" id="screen-meta-model-detail">
   <div class="breadcrumb"><a href="#" onclick="navigate('meta-glossary')">메타데이터 관리</a> &gt; <a href="#" onclick="navigate('meta-model')">데이터모델관리</a> &gt; <strong>모델 상세</strong></div>
-  <div class="page-title" style="display:flex; align-items:center; gap:12px;">
+  <div id="model-detail-title" class="page-title" style="display:flex; align-items:center; gap:12px;">
     수자원관리_논리모델
     <span class="ds-tag" style="background:#e8f0fe; color:#1967d2; font-size:12px;">논리</span>
     <span class="glossary-status approved" style="font-size:12px;"><span class="gs-dot"></span>승인</span>
@@ -1988,44 +2089,44 @@
         <tbody>
           <tr>
             <td style="width:120px; font-weight:600; color:#555;">모델 ID</td>
-            <td>MDL-LGC-001</td>
+            <td id="md-info-id">MDL-LGC-001</td>
           </tr>
           <tr>
             <td style="font-weight:600; color:#555;">모델명</td>
-            <td>수자원관리_논리모델</td>
+            <td id="md-info-name">수자원관리_논리모델</td>
           </tr>
           <tr>
             <td style="font-weight:600; color:#555;">유형</td>
-            <td><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">논리모델</span></td>
+            <td id="md-info-type"><span class="ds-tag" style="background:#e8f0fe; color:#1967d2;">논리모델</span></td>
           </tr>
           <tr>
             <td style="font-weight:600; color:#555;">도메인</td>
-            <td>수자원</td>
+            <td id="md-info-domain">수자원</td>
           </tr>
           <tr>
             <td style="font-weight:600; color:#555;">버전</td>
-            <td>v3.2</td>
+            <td id="md-info-version">v3.2</td>
           </tr>
           <tr>
             <td style="font-weight:600; color:#555;">등록일</td>
-            <td>2024-09-01</td>
+            <td id="md-info-created">2024-09-01</td>
           </tr>
           <tr>
             <td style="font-weight:600; color:#555;">최종수정</td>
-            <td>2025-02-20 14:35</td>
+            <td id="md-info-modified">2025-02-20 14:35</td>
           </tr>
           <tr>
             <td style="font-weight:600; color:#555;">담당자</td>
-            <td>김수자원 (수자원관리팀)</td>
+            <td id="md-info-manager">김수자원 (수자원관리팀)</td>
           </tr>
           <tr>
             <td style="font-weight:600; color:#555;">물리모델</td>
-            <td><a href="#" onclick="navigate('meta-model-detail')"
+            <td id="md-info-linked"><a href="#" onclick="navigate('meta-model-detail')"
                 style="color:#1967d2; text-decoration:none;">수자원관리_물리모델 →</a></td>
           </tr>
           <tr>
             <td style="font-weight:600; color:#555;">설명</td>
-            <td style="font-size:12px; color:#666;">K-water 수자원 관리 업무의 핵심 데이터를 논리적으로 구조화한 모델. 댐, 수위, 유량, 방류, 수질 등 주요
+            <td id="md-info-desc" style="font-size:12px; color:#666;">K-water 수자원 관리 업무의 핵심 데이터를 논리적으로 구조화한 모델. 댐, 수위, 유량, 방류, 수질 등 주요
               엔티티를 포함합니다.</td>
           </tr>
         </tbody>
