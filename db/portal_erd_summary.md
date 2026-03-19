@@ -18,9 +18,9 @@
 | 온톨로지 | 3 | — |
 | 모니터링 | 5 | — |
 | 커뮤니티 | 3 | — |
-| 시스템관리 | 18 | noti_type |
+| 시스템관리 | 21 | noti_type |
 | K-water 데이터표준 사전 | 5 | — |
-| **합계** | **78** | **7 ENUM** |
+| **합계** | **81** | **7 ENUM** |
 
 공통 ENUM: `entity_status`, `approval_status`
 
@@ -144,7 +144,7 @@
 > 시드 데이터 원본: K-water 데이터관리포탈 표준 데이터 조회 엑셀 4종
 > (`seed_std_word.sql`, `seed_std_domn_dict.sql`, `seed_std_term.sql`, `seed_std_cd.sql`)
 
-### 2-9. 시스템관리 (18개)
+### 2-9. 시스템관리 (21개)
 
 | # | 테이블 | PK | 핵심 FK/관계 | 설명 |
 |---|--------|-----|-------------|------|
@@ -166,6 +166,9 @@
 | 71 | `db_cnctn_cnfg` | cnctn_cnfg_id | — | 연계 DB 접속 설정 |
 | 72 | `bkup_sched` | sched_id | → db_cnctn_cnfg | 백업 복구 스케줄 |
 | 73 | `bkup_repl_hist` | repl_id | → bkup_sched, db_cnctn_cnfg | 백업 복제·이관 이력 |
+| 74 | `intfc_endpt` | endpt_id | — | 연계 엔드포인트 등록 |
+| 75 | `intfc_chk_hist` | chk_id | → intfc_endpt | 연계 점검 이력 |
+| 76 | `intfc_log` | log_id | → intfc_endpt | 연계 송수신 로그 |
 
 ---
 
@@ -260,6 +263,9 @@
 │              (DB 복구 로그 이력 → 테이블 단위 복구 상세)            │
 │  db_cnctn_cnfg ──1:N──▸ bkup_sched ──1:N──▸ bkup_repl_hist│
 │  (연계 DB 설정 → 백업 스케줄 → 복제·이관 이력)                     │
+│  intfc_endpt ──1:N──▸ intfc_chk_hist                         │
+│              ──1:N──▸ intfc_log                              │
+│  (연계 엔드포인트 → 점검이력 / 송수신 로그)                        │
 └─────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────┐
