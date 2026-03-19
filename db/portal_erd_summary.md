@@ -12,7 +12,7 @@
 |------|:---------:|:---------:|
 | 사용자·조직·권한 | 8 | login_type |
 | 카탈로그·메타데이터 | 14 | data_asset_type, data_security_level |
-| 수집 관리 | 16 | collect_method |
+| 수집 관리 | 18 | collect_method |
 | 유통·활용 | 11 | deidentify_rule_type |
 | 데이터 품질 | 4 | — |
 | 온톨로지 | 3 | — |
@@ -20,7 +20,7 @@
 | 커뮤니티 | 3 | — |
 | 시스템관리 | 21 | noti_type |
 | K-water 데이터표준 사전 | 5 | — |
-| **합계** | **81** | **7 ENUM** |
+| **합계** | **83** | **7 ENUM** |
 
 공통 ENUM: `entity_status`, `approval_status`
 
@@ -59,7 +59,7 @@
 | 20 | `model_entty` | entty_id | → data_model | 모델 엔티티 |
 | 21 | `model_atrb` | atrb_id | → model_entty | 모델 속성 |
 
-### 2-3. 수집 관리 (16개)
+### 2-3. 수집 관리 (18개)
 
 | # | 테이블 | PK | 핵심 FK/관계 | 설명 |
 |---|--------|-----|-------------|------|
@@ -79,6 +79,8 @@
 | 30f | `migr_job` | migr_job_id | → db_conn | 마이그레이션 작업 (요구사항 007) |
 | 30g | `migr_exec` | migr_exec_id | → migr_job | 마이그레이션 실행 (요구사항 007+008) |
 | 30h | `migr_exec_dtl` | migr_exec_dtl_id | → migr_exec | 마이그레이션 상세 (요구사항 008) |
+| 30i | `colct_fbck` | fbck_id | → ppln, usr_acnt | 수집 피드백 (REQ-DHUB-005-008/003) |
+| 30j | `colct_fbck_rply` | rply_id | → colct_fbck | 피드백 답변 (REQ-DHUB-005-008/003) |
 
 ### 2-4. 유통·활용 (11개)
 

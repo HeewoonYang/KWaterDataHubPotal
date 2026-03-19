@@ -182,6 +182,10 @@
 | 168 | 방향 | DRCTN | DIRECTION | N | 데이터 송수신 방향 |
 | 169 | 요청 | REQ | REQUEST | N | HTTP 요청 |
 | 170 | 관리자명 | MGR_NM | MANAGER NAME | Y | 담당자 이름 |
+| 171 | 피드백 | FBCK | FEEDBACK | N | 수집 피드백 |
+| 172 | 답변 | RPLY | REPLY | N | 피드백 답변 |
+| 173 | 만족도 | STSFCTN | SATISFACTION | N | 만족도 점수 |
+| 174 | 별점 | RATNG | RATING | N | 별점 평가 |
 
 ## 보정 단어 (기존 표준사전 약어 수정 권고)
 

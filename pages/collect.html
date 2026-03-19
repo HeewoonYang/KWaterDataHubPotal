@@ -115,6 +115,17 @@
           ✅ PII 자동탐지 완료 — 본 파이프라인에서 개인정보 항목이 감지되지 않았습니다.
         </div>
       </div>
+      <!-- 파일 업로드 (Drag & Drop) -->
+      <div class="card">
+        <div class="card-title">📁 소스 파일 업로드</div>
+        <div class="drag-drop-zone" id="col-register-dropzone">
+          <div class="drag-icon">📂</div>
+          <div class="drag-text">파일을 이곳에 드래그하거나 클릭하여 선택하세요</div>
+          <div class="drag-hint">CSV, Excel(.xlsx), JSON, XML 파일 지원 · 최대 100MB</div>
+          <input type="file" id="col-register-file-input" multiple accept=".csv,.xlsx,.xls,.json,.xml" style="display:none;">
+        </div>
+        <div class="upload-file-list" id="col-register-file-list"></div>
+      </div>
       <!-- 개인정보 보호 설정 -->
       <div class="card">
         <div class="card-title">🔒 수집 시 개인정보 필터링 설정</div>
@@ -4328,6 +4339,269 @@ WHERE wq.measure_date >= CURRENT_DATE - INTERVAL '30 days'</textarea>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeMigrationLogDetailModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== COLLECT SCREEN: 수집 피드백 관리 ========== -->
+<div class="screen" id="screen-col-feedback">
+  <div class="breadcrumb"><a href="#" onclick="navigate('col-pipeline')">데이터 수집·통합</a> &gt; <strong>수집 피드백</strong></div>
+  <div class="page-title">수집 피드백 관리</div>
+
+  <!-- KPI 카드 -->
+  <div class="grid-4" style="margin-bottom:16px;">
+    <div class="kpi-card">
+      <div class="kpi-label">전체 피드백</div>
+      <div class="kpi-value" style="color:#1677ff;">47</div>
+      <div class="kpi-sub">이번 달 +12</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">처리 완료</div>
+      <div class="kpi-value" style="color:#52c41a;">38</div>
+      <div class="kpi-sub">완료율 80.9%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">처리 중</div>
+      <div class="kpi-value" style="color:#faad14;">6</div>
+      <div class="kpi-sub">평균 처리일 2.3일</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">평균 만족도</div>
+      <div class="kpi-value" style="color:#722ed1;">4.2<span style="font-size:14px; color:#999;">/5</span></div>
+      <div class="kpi-sub">전월 대비 +0.3</div>
+    </div>
+  </div>
+
+  <!-- 필터 바 -->
+  <div class="filter-bar">
+    <input type="text" id="col-feedback-search" placeholder="제목, 파이프라인명, 작성자 검색..."
+      style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;" onkeyup="filterColFeedback()">
+    <select id="col-feedback-type-filter" onchange="filterColFeedback()">
+      <option value="">유형: 전체</option>
+      <option>수집결과 평가</option>
+      <option>개선 요청</option>
+      <option>오류 신고</option>
+    </select>
+    <select id="col-feedback-status-filter" onchange="filterColFeedback()">
+      <option value="">상태: 전체</option>
+      <option>접수</option>
+      <option>처리중</option>
+      <option>완료</option>
+      <option>반려</option>
+    </select>
+    <select id="col-feedback-pipeline-filter" onchange="filterColFeedback()">
+      <option value="">파이프라인: 전체</option>
+      <option>SAP 재무수집_월별정산</option>
+      <option>RWIS 수위데이터 수집</option>
+      <option>환경부 수질측정 API</option>
+      <option>고객정보 CDC 동기화</option>
+      <option>기상청 날씨 API</option>
+    </select>
+    <button class="btn btn-primary" data-perm="write" onclick="openColFeedbackModal()">➕ 피드백 등록</button>
+  </div>
+
+  <!-- AG Grid -->
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div id="ag-grid-col-feedback" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+
+  <!-- 하단 통계: 유형별·파이프라인별 분포 -->
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="card">
+      <div class="card-title">유형별 피드백 분포</div>
+      <div style="display:flex; flex-direction:column; gap:10px; padding:8px 0;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:12px; width:90px;">수집결과 평가</span>
+          <div style="flex:1; background:#f0f0f0; border-radius:4px; height:18px; overflow:hidden;">
+            <div style="width:55%; height:100%; background:#1677ff; border-radius:4px;"></div>
+          </div>
+          <span style="font-size:12px; font-weight:600; width:30px; text-align:right;">26건</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:12px; width:90px;">개선 요청</span>
+          <div style="flex:1; background:#f0f0f0; border-radius:4px; height:18px; overflow:hidden;">
+            <div style="width:32%; height:100%; background:#faad14; border-radius:4px;"></div>
+          </div>
+          <span style="font-size:12px; font-weight:600; width:30px; text-align:right;">15건</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:12px; width:90px;">오류 신고</span>
+          <div style="flex:1; background:#f0f0f0; border-radius:4px; height:18px; overflow:hidden;">
+            <div style="width:13%; height:100%; background:#ff4d4f; border-radius:4px;"></div>
+          </div>
+          <span style="font-size:12px; font-weight:600; width:30px; text-align:right;">6건</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">만족도 추이 (최근 6개월)</div>
+      <table class="data-table">
+        <thead><tr><th>월</th><th>피드백 수</th><th>평균 만족도</th><th>개선 반영률</th></tr></thead>
+        <tbody>
+          <tr><td>2025-10</td><td>6</td><td>3.8</td><td>67%</td></tr>
+          <tr><td>2025-11</td><td>8</td><td>3.9</td><td>75%</td></tr>
+          <tr><td>2025-12</td><td>7</td><td>4.0</td><td>71%</td></tr>
+          <tr><td>2026-01</td><td>9</td><td>4.1</td><td>78%</td></tr>
+          <tr><td>2026-02</td><td>5</td><td>3.9</td><td>80%</td></tr>
+          <tr><td>2026-03</td><td>12</td><td>4.2</td><td>83%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 피드백 등록 모달 ===== -->
+<div class="modal-overlay" id="col-feedback-modal" style="display:none;">
+  <div class="modal-card" style="width:640px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">수집 피드백 등록</h3>
+      <button class="modal-close" onclick="closeColFeedbackModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; overflow-y:auto;">
+      <div class="form-group">
+        <label>대상 파이프라인 *</label>
+        <select id="fbck-pipeline">
+          <option value="">— 파이프라인 선택 —</option>
+          <option>SAP 재무수집_월별정산</option>
+          <option>RWIS 수위데이터 수집</option>
+          <option>환경부 수질측정 API</option>
+          <option>고객정보 CDC 동기화</option>
+          <option>기상청 날씨 API</option>
+          <option>IoT 센서데이터 스트리밍</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>피드백 유형 *</label>
+        <select id="fbck-type">
+          <option value="">— 유형 선택 —</option>
+          <option>수집결과 평가</option>
+          <option>개선 요청</option>
+          <option>오류 신고</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>만족도</label>
+        <div class="star-rating" id="fbck-star-rating">
+          <input type="radio" name="fbck-star" id="fbck-star5" value="5"><label for="fbck-star5">★</label>
+          <input type="radio" name="fbck-star" id="fbck-star4" value="4"><label for="fbck-star4">★</label>
+          <input type="radio" name="fbck-star" id="fbck-star3" value="3" checked><label for="fbck-star3">★</label>
+          <input type="radio" name="fbck-star" id="fbck-star2" value="2"><label for="fbck-star2">★</label>
+          <input type="radio" name="fbck-star" id="fbck-star1" value="1"><label for="fbck-star1">★</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>제목 *</label>
+        <input type="text" id="fbck-title" placeholder="피드백 제목을 입력하세요">
+      </div>
+      <div class="form-group">
+        <label>상세 내용 *</label>
+        <textarea id="fbck-content" rows="5" placeholder="수집 결과에 대한 의견, 개선 요청사항 또는 오류 내용을 상세히 기술해주세요."></textarea>
+      </div>
+      <div class="form-group">
+        <label>첨부파일</label>
+        <div class="drag-drop-zone" id="fbck-dropzone" style="padding:20px;">
+          <div class="drag-icon" style="font-size:24px;">📎</div>
+          <div class="drag-text" style="font-size:12px;">파일을 드래그하거나 클릭하여 첨부</div>
+          <div class="drag-hint">이미지, 문서, 로그 파일 (최대 10MB)</div>
+          <input type="file" id="fbck-file-input" multiple style="display:none;">
+        </div>
+        <div class="upload-file-list" id="fbck-file-list"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeColFeedbackModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveColFeedback()">등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 피드백 상세 모달 ===== -->
+<div class="modal-overlay" id="col-feedback-detail-modal" style="display:none;">
+  <div class="modal-card" style="width:720px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">피드백 상세</h3>
+      <button class="modal-close" onclick="closeColFeedbackDetailModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; overflow-y:auto;">
+      <!-- 피드백 정보 -->
+      <div style="display:flex; gap:12px; margin-bottom:16px;">
+        <div style="flex:1;">
+          <div style="font-size:11px; color:#999;">피드백 ID</div>
+          <div style="font-size:13px; font-weight:600;" id="fbck-detail-id">FBCK-2026-001</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:11px; color:#999;">유형</div>
+          <div id="fbck-detail-type"><span class="badge badge-info">수집결과 평가</span></div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:11px; color:#999;">상태</div>
+          <div id="fbck-detail-status"><span class="badge badge-success">완료</span></div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:11px; color:#999;">만족도</div>
+          <div id="fbck-detail-rating" style="color:#faad14; font-size:14px;">★★★★☆</div>
+        </div>
+      </div>
+      <div style="padding:12px; background:#f8f9fb; border-radius:8px; margin-bottom:16px;">
+        <div style="font-size:11px; color:#999; margin-bottom:4px;">파이프라인</div>
+        <div style="font-size:13px; font-weight:600;" id="fbck-detail-pipeline">SAP 재무수집_월별정산</div>
+        <div style="font-size:11px; color:#999; margin-top:8px; margin-bottom:4px;">제목</div>
+        <div style="font-size:13px; font-weight:600;" id="fbck-detail-title">수집 데이터 정합성 확인 결과 피드백</div>
+        <div style="font-size:11px; color:#999; margin-top:8px; margin-bottom:4px;">상세 내용</div>
+        <div style="font-size:13px; line-height:1.6;" id="fbck-detail-content">3월 정기 수집 결과, 금액 컬럼의 소수점 처리가 원본과 상이합니다. DMBTR 필드에서 원본은 소수점 2자리까지 저장되나, 수집 후 정수로 변환되어 정합성 오차가 발생합니다. 변환 규칙 검토를 요청합니다.</div>
+        <div style="font-size:11px; color:#999; margin-top:8px;">작성자: 박지은 (데이터품질팀) · 2026-03-15 14:22</div>
+      </div>
+
+      <!-- 처리 이력 타임라인 -->
+      <div style="font-size:13px; font-weight:600; margin-bottom:10px;">처리 이력</div>
+      <div class="feedback-timeline">
+        <div class="feedback-timeline-item done">
+          <div class="tl-date">2026-03-15 14:22</div>
+          <div class="tl-content">피드백 접수</div>
+          <div class="tl-desc">박지은 (데이터품질팀)</div>
+        </div>
+        <div class="feedback-timeline-item done">
+          <div class="tl-date">2026-03-15 16:05</div>
+          <div class="tl-content">담당자 배정</div>
+          <div class="tl-desc">김현우 (데이터엔지니어링팀) 배정</div>
+        </div>
+        <div class="feedback-timeline-item done">
+          <div class="tl-date">2026-03-16 09:30</div>
+          <div class="tl-content">원인 분석 완료</div>
+          <div class="tl-desc">DMBTR 컬럼 매핑 시 CAST(DECIMAL→INT) 변환 확인. 소수점 보존 규칙 누락.</div>
+        </div>
+        <div class="feedback-timeline-item active">
+          <div class="tl-date">2026-03-17 11:15</div>
+          <div class="tl-content">개선 조치 완료</div>
+          <div class="tl-desc">컬럼 매핑 변환 규칙을 DECIMAL(15,2)로 수정. 재수집 스케줄 등록 완료.</div>
+        </div>
+      </div>
+
+      <!-- 답변/코멘트 영역 -->
+      <div style="margin-top:20px; border-top:1px solid #e5e7eb; padding-top:16px;">
+        <div style="font-size:13px; font-weight:600; margin-bottom:10px;">답변 및 코멘트</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="padding:10px 12px; background:#f0f7ff; border-radius:8px; border-left:3px solid #1677ff;">
+            <div style="font-size:12px; font-weight:600;">김현우 (데이터엔지니어링팀)</div>
+            <div style="font-size:12px; color:#555; margin-top:4px;">DMBTR 컬럼 매핑 변환규칙을 수정하였습니다. 금일 06:00 배치에서 재수집 예정이며, 결과 확인 후 완료 처리하겠습니다.</div>
+            <div style="font-size:11px; color:#999; margin-top:4px;">2026-03-16 10:15</div>
+          </div>
+          <div style="padding:10px 12px; background:#f8f9fb; border-radius:8px; border-left:3px solid #d0d5dd;">
+            <div style="font-size:12px; font-weight:600;">박지은 (데이터품질팀)</div>
+            <div style="font-size:12px; color:#555; margin-top:4px;">재수집 결과 확인 완료했습니다. 소수점 2자리까지 정상 반영되었습니다. 감사합니다.</div>
+            <div style="font-size:11px; color:#999; margin-top:4px;">2026-03-17 08:40</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:12px;" data-perm="write">
+          <input type="text" id="fbck-reply-input" placeholder="코멘트를 입력하세요..."
+            style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:12px;">
+          <button class="btn btn-primary" onclick="addFeedbackReply()">등록</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeColFeedbackDetailModal()">닫기</button>
+      <button class="btn btn-primary" data-perm="manage" onclick="showToast('피드백 상태가 완료로 변경되었습니다.','success'); closeColFeedbackDetailModal();">처리 완료</button>
     </div>
   </div>
 </div>

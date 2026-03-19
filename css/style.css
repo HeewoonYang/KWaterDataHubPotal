@@ -6130,3 +6130,163 @@ body {
 [data-theme="dark"] .wtr-preview-panel div[style*="border-top:1px solid #e5e7eb"] {
   border-color: #334155 !important;
 }
+
+/* ── Drag & Drop 파일 업로드 영역 ── */
+.drag-drop-zone {
+  border: 2px dashed #d0d5dd;
+  border-radius: 10px;
+  padding: 32px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.25s, background 0.25s;
+  background: #fafbfc;
+}
+.drag-drop-zone:hover {
+  border-color: #1677ff;
+  background: #f0f7ff;
+}
+.drag-drop-zone.drag-over {
+  border-color: #1677ff;
+  background: #e6f4ff;
+  box-shadow: 0 0 0 3px rgba(22,119,255,0.1);
+}
+.drag-drop-zone .drag-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.drag-drop-zone .drag-text {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 4px;
+}
+.drag-drop-zone .drag-hint {
+  font-size: 11px;
+  color: #999;
+}
+.upload-file-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.upload-file-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #f8f9fb;
+  border-radius: 6px;
+  font-size: 12px;
+}
+.upload-file-item .file-name {
+  flex: 1;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.upload-file-item .file-size {
+  color: #888;
+  font-size: 11px;
+}
+.upload-file-item .file-remove {
+  color: #ff4d4f;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+}
+.upload-file-item .file-remove:hover {
+  color: #cf1322;
+}
+[data-theme="dark"] .drag-drop-zone {
+  background: #1e293b;
+  border-color: #475569;
+}
+[data-theme="dark"] .drag-drop-zone:hover,
+[data-theme="dark"] .drag-drop-zone.drag-over {
+  background: #1e3a5f;
+  border-color: #1677ff;
+}
+[data-theme="dark"] .drag-drop-zone .drag-text { color: #cbd5e1; }
+[data-theme="dark"] .drag-drop-zone .drag-hint { color: #64748b; }
+[data-theme="dark"] .upload-file-item {
+  background: #334155;
+}
+[data-theme="dark"] .upload-file-item .file-name { color: #e2e8f0; }
+
+/* ── 별점(Star rating) ── */
+.star-rating {
+  display: inline-flex;
+  gap: 2px;
+  direction: rtl;
+}
+.star-rating input {
+  display: none;
+}
+.star-rating label {
+  font-size: 22px;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+  color: #faad14;
+}
+[data-theme="dark"] .star-rating label { color: #475569; }
+
+/* ── 피드백 처리 타임라인 ── */
+.feedback-timeline {
+  position: relative;
+  padding-left: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.feedback-timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: #e5e7eb;
+}
+.feedback-timeline-item {
+  position: relative;
+}
+.feedback-timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #d0d5dd;
+  border: 2px solid #fff;
+}
+.feedback-timeline-item.active::before {
+  background: #1677ff;
+}
+.feedback-timeline-item.done::before {
+  background: #52c41a;
+}
+.feedback-timeline-item .tl-date {
+  font-size: 11px;
+  color: #999;
+}
+.feedback-timeline-item .tl-content {
+  font-size: 13px;
+  font-weight: 500;
+}
+.feedback-timeline-item .tl-desc {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+[data-theme="dark"] .feedback-timeline::before { background: #475569; }
+[data-theme="dark"] .feedback-timeline-item::before { border-color: #1e293b; background: #475569; }
+[data-theme="dark"] .feedback-timeline-item .tl-desc { color: #94a3b8; }

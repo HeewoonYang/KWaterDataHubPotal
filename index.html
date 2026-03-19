@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/styles/ag-theme-alpine.min.css">
   <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/dist/ag-grid-community.min.js"></script>
   <!-- Custom CSS (gradually replaced) -->
-  <link rel="stylesheet" href="css/style.css?v=20260319b">
+  <link rel="stylesheet" href="css/style.css?v=20260319c">
 </head>
 
 <body>
@@ -582,6 +582,9 @@
         <div class="menu-item" data-screen="col-dbt" onclick="navigate('col-dbt')">
           <span class="icon">🔧</span> 정제·변환 관리(dbt)
         </div>
+        <div class="menu-item" data-screen="col-feedback" onclick="navigate('col-feedback')">
+          <span class="icon">💬</span> 수집 피드백
+        </div>
       </div>
       <!-- 데이터 유통·활용 -->
       <div class="section-title" data-accordion="acc-distribute" onclick="toggleAccordion(this)">데이터 유통·활용 <span
@@ -705,7 +708,7 @@
 
   </div> <!-- /layout -->
 
-  <script src="js/main.js?v=20260319c"></script>
+  <script src="js/main.js?v=20260319d"></script>
   <script>
     // 페이지 로드 시 모든 섹션 HTML을 순차적으로 로드 (순서 보장)
     (async function () {

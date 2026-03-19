@@ -546,6 +546,32 @@ CREATE TABLE server_invntry (
 );
 
 
+-- 3-1-0. 수집 피드백 (REQ-DHUB-005-008 / 003)
+CREATE TABLE colct_fbck (
+    fbck_id       SERIAL        PRIMARY KEY,
+    ppln_id       INT           REFERENCES ppln(ppln_id),
+    fbck_ty       VARCHAR(30)   NOT NULL,              -- 수집결과 평가 / 개선 요청 / 오류 신고
+    titl          VARCHAR(300)  NOT NULL,
+    contn         TEXT          NOT NULL,
+    ratng         SMALLINT      CHECK (ratng BETWEEN 1 AND 5),  -- 만족도 별점 1~5
+    stat          VARCHAR(20)   DEFAULT 'pending',     -- pending / processing / completed / rejected
+    asgn_usr_id   UUID          REFERENCES usr_acnt(usr_id),  -- 처리 담당자
+    cmpltd_at     TIMESTAMPTZ,
+    atch_file     JSONB,                               -- 첨부파일 메타 [{name, size, path}]
+    crtd_at       TIMESTAMPTZ   DEFAULT now(),
+    crtd_by       UUID,
+    updtd_at      TIMESTAMPTZ   DEFAULT now(),
+    updtd_by      UUID
+);
+
+CREATE TABLE colct_fbck_rply (
+    rply_id       SERIAL        PRIMARY KEY,
+    fbck_id       INT           NOT NULL REFERENCES colct_fbck(fbck_id) ON DELETE CASCADE,
+    contn         TEXT          NOT NULL,
+    crtd_at       TIMESTAMPTZ   DEFAULT now(),
+    crtd_by       UUID
+);
+
 -- 3-1. DB 연결 관리 (요구사항 001)
 CREATE TABLE db_conn (
     db_conn_id    SERIAL        PRIMARY KEY,

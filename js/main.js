@@ -332,7 +332,7 @@ var RBAC_MATRIX = {
     screens: ['home', 'process', 'quality', 'measurement', 'ai', 'gallery', 'widget-settings', 'sitemap',
       'cat-search', 'cat-detail', 'cat-graph', 'cat-lineage', 'cat-bookmark', 'cat-request',
       'col-pipeline', 'col-register', 'col-db-conn', 'col-db-browse', 'col-system', 'col-db-view', 'col-migration', 'col-migration-log',
-      'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-dbt',
+      'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-dbt', 'col-feedback',
       'dist-product', 'dist-deidentify', 'dist-approval', 'dist-api', 'dist-external', 'dist-stats', 'dist-chart-content',
       'meta-glossary', 'meta-tag', 'meta-model', 'meta-dq', 'meta-ontology',
       'meta-std-dashboard', 'meta-std-words', 'meta-std-domains', 'meta-std-terms', 'meta-std-codes', 'meta-std-import',
@@ -344,7 +344,7 @@ var RBAC_MATRIX = {
     screens: ['home', 'process', 'quality', 'measurement', 'ai', 'gallery', 'widget-settings', 'sitemap',
       'cat-search', 'cat-detail', 'cat-graph', 'cat-lineage', 'cat-bookmark', 'cat-request',
       'col-pipeline', 'col-register', 'col-db-conn', 'col-db-browse', 'col-system', 'col-db-view', 'col-migration', 'col-migration-log',
-      'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt',
+      'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt', 'col-feedback',
       'dist-product', 'dist-approval', 'dist-stats',
       'meta-glossary', 'meta-tag', 'meta-model', 'meta-dq',
       'comm-notice', 'comm-internal', 'comm-archive'],
@@ -368,7 +368,7 @@ var RBAC_MATRIX = {
     screens: ['home', 'process', 'quality', 'measurement', 'asset-db', 'digital-twin', 'ai', 'llmops', 'gallery', 'widget-settings', 'sitemap',
       'cat-search', 'cat-detail', 'cat-graph', 'cat-lineage', 'cat-bookmark', 'cat-request',
       'col-pipeline', 'col-register', 'col-db-conn', 'col-db-browse', 'col-system', 'col-db-view', 'col-migration', 'col-migration-log',
-      'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt',
+      'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt', 'col-feedback',
       'meta-dq',
       'dist-product', 'dist-approval', 'dist-stats',
       'sys-interface', 'sys-intg-log', 'sys-k8s',
@@ -379,7 +379,7 @@ var RBAC_MATRIX = {
     screens: ['home', 'process', 'quality', 'measurement', 'asset-db', 'digital-twin', 'ai', 'gallery', 'widget-settings', 'sitemap',
       'cat-search', 'cat-detail', 'cat-graph', 'cat-lineage', 'cat-bookmark', 'cat-request',
       'col-pipeline', 'col-register', 'col-db-conn', 'col-db-browse', 'col-system', 'col-db-view', 'col-migration', 'col-migration-log',
-      'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt',
+      'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt', 'col-feedback',
       'meta-dq',
       'dist-product', 'dist-approval', 'dist-stats',
       'sys-interface', 'sys-intg-log',
@@ -390,7 +390,7 @@ var RBAC_MATRIX = {
     screens: ['home', 'process', 'quality', 'measurement', 'asset-db', 'digital-twin', 'ai', 'gallery', 'widget-settings', 'sitemap',
       'cat-search', 'cat-detail', 'cat-graph', 'cat-lineage', 'cat-bookmark', 'cat-request',
       'col-pipeline', 'col-register', 'col-db-conn', 'col-db-browse', 'col-system', 'col-db-view', 'col-migration', 'col-migration-log',
-      'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt',
+      'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt', 'col-feedback',
       'meta-glossary', 'meta-tag', 'meta-model', 'meta-dq', 'meta-ontology',
       'meta-std-dashboard', 'meta-std-words', 'meta-std-domains', 'meta-std-terms', 'meta-std-codes', 'meta-std-import',
       'dist-product', 'dist-approval', 'dist-stats',
@@ -402,7 +402,7 @@ var RBAC_MATRIX = {
     screens: ['home', 'process', 'quality', 'measurement', 'asset-db', 'digital-twin', 'ai', 'llmops', 'gallery', 'widget-settings', 'sitemap',
       'cat-search', 'cat-detail', 'cat-graph', 'cat-lineage', 'cat-bookmark', 'cat-request',
       'col-pipeline', 'col-register', 'col-db-conn', 'col-db-browse', 'col-system', 'col-db-view', 'col-migration', 'col-migration-log',
-      'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt',
+      'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt', 'col-feedback',
       'dist-product', 'dist-approval', 'dist-stats', 'dist-chart-content',
       'sys-user', 'sys-role', 'sys-security', 'sys-interface', 'sys-intg-log', 'sys-audit', 'sys-widget-template', 'sys-perm', 'sys-engine', 'sys-k8s', 'sys-erp-sync', 'sys-ext-register', 'sys-db-config', 'sys-backup-schedule', 'sys-backup-repl', 'sys-recovery-log',
       'comm-notice', 'comm-internal', 'comm-external', 'comm-archive'],
@@ -776,6 +776,12 @@ function navigate(screen) {
   }
   if (screen === 'col-log') {
     setTimeout(initLogScreen, 100);
+  }
+  if (screen === 'col-register') {
+    setTimeout(initDragDrop, 100);
+  }
+  if (screen === 'col-feedback') {
+    setTimeout(initColFeedbackScreen, 100);
   }
   if (screen === 'sys-perm') {
     setTimeout(initPermGrid, 100);
@@ -8915,7 +8921,7 @@ var SCREEN_GROUP_MAP = {
   'cat-lineage': '데이터 카탈로그', 'cat-bookmark': '데이터 카탈로그', 'cat-request': '데이터 카탈로그',
   'col-pipeline': '데이터 수집·통합', 'col-register': '데이터 수집·통합', 'col-cdc': '데이터 수집·통합', 'col-kafka': '데이터 수집·통합',
   'col-external': '데이터 수집·통합', 'col-oneway': '데이터 수집·통합', 'col-arch': '데이터 수집·통합', 'col-monitor': '데이터 수집·통합',
-  'col-log': '데이터 수집·통합', 'col-dbt': '데이터 수집·통합',
+  'col-log': '데이터 수집·통합', 'col-dbt': '데이터 수집·통합', 'col-feedback': '데이터 수집·통합',
   'dist-product': '데이터 유통·활용', 'dist-deidentify': '데이터 유통·활용', 'dist-approval': '데이터 유통·활용',
   'dist-api': '데이터 유통·활용', 'dist-external': '데이터 유통·활용', 'dist-stats': '데이터 유통·활용',
   'dist-chart-content': '대시보드',
@@ -8935,7 +8941,7 @@ var SCREEN_LABEL_MAP = {
   'cat-lineage': '데이터 리니지', 'cat-bookmark': '북마크', 'cat-request': '데이터 요청',
   'col-pipeline': '파이프라인 관리', 'col-register': '신규 등록', 'col-cdc': 'CDC 시스템',
   'col-kafka': 'Kafka 메시지', 'col-external': '외부연계',
-  'col-arch': '수집 아키텍처', 'col-monitor': '수집 모니터링', 'col-log': '수집 로그', 'col-dbt': 'dbt 모델',
+  'col-arch': '수집 아키텍처', 'col-monitor': '수집 모니터링', 'col-log': '수집 로그', 'col-dbt': 'dbt 모델', 'col-feedback': '수집 피드백',
   'dist-product': '데이터 제품', 'dist-deidentify': '비식별화', 'dist-approval': '배포승인',
   'dist-api': 'API 카탈로그', 'dist-external': '외부유통', 'dist-stats': '이용통계', 'dist-chart-content': '차트 콘텐츠',
   'meta-glossary': '표준용어사전', 'meta-tag': '태그 관리', 'meta-model': '메타모델',
@@ -11646,4 +11652,171 @@ function closeIntgLogDetail() {
   modal.style.display = 'none';
   var card = modal.querySelector('.modal-card');
   if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+}
+
+// ============================================================
+// Drag & Drop 파일 업로드
+// ============================================================
+var uploadedFiles = [];
+
+function initDragDrop() {
+  _bindDropZone('col-register-dropzone', 'col-register-file-input', 'col-register-file-list');
+  _bindDropZone('fbck-dropzone', 'fbck-file-input', 'fbck-file-list');
+}
+
+function _bindDropZone(zoneId, inputId, listId) {
+  var zone = document.getElementById(zoneId);
+  var input = document.getElementById(inputId);
+  if (!zone || !input) { return; }
+
+  zone.addEventListener('click', function () { input.click(); });
+
+  zone.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    zone.classList.add('drag-over');
+  });
+  zone.addEventListener('dragleave', function () {
+    zone.classList.remove('drag-over');
+  });
+  zone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    if (e.dataTransfer.files.length > 0) {
+      _handleFileSelect(e.dataTransfer.files, listId);
+    }
+  });
+  input.addEventListener('change', function () {
+    if (input.files.length > 0) {
+      _handleFileSelect(input.files, listId);
+    }
+    input.value = '';
+  });
+}
+
+function _handleFileSelect(files, listId) {
+  var list = document.getElementById(listId);
+  if (!list) { return; }
+  for (var i = 0; i < files.length; i++) {
+    var f = files[i];
+    var size = f.size < 1024 ? f.size + ' B'
+      : f.size < 1048576 ? (f.size / 1024).toFixed(1) + ' KB'
+      : (f.size / 1048576).toFixed(1) + ' MB';
+    var item = document.createElement('div');
+    item.className = 'upload-file-item';
+    item.innerHTML = '<span style="font-size:14px;">📄</span>'
+      + '<span class="file-name">' + f.name + '</span>'
+      + '<span class="file-size">' + size + '</span>'
+      + '<span class="file-remove" onclick="this.parentElement.remove()">×</span>';
+    list.appendChild(item);
+  }
+  showToast(files.length + '개 파일이 추가되었습니다.', 'success');
+}
+
+// ============================================================
+// 수집 피드백 화면 (col-feedback)
+// ============================================================
+function initColFeedbackScreen() {
+  initAGGrid('ag-grid-col-feedback', [
+    { field: 'regDate', headerName: '등록일', width: 100 },
+    { field: 'pipeline', headerName: '파이프라인', flex: 1, minWidth: 160 },
+    { field: 'type', headerName: '유형', width: 110, cellRenderer: function (p) {
+      var cls = { '수집결과 평가': 'badge-info', '개선 요청': 'badge-warning', '오류 신고': 'badge-error' };
+      return '<span class="badge ' + (cls[p.value] || 'badge-ghost') + '">' + p.value + '</span>';
+    }},
+    { field: 'title', headerName: '제목', flex: 1.5, minWidth: 200 },
+    { field: 'rating', headerName: '만족도', width: 90, cellRenderer: function (p) {
+      var stars = '';
+      for (var i = 0; i < 5; i++) {
+        stars += '<span style="color:' + (i < p.value ? '#faad14' : '#ddd') + '; font-size:12px;">★</span>';
+      }
+      return stars;
+    }},
+    { field: 'status', headerName: '상태', width: 80, cellRenderer: function (p) {
+      var cls = { '접수': 'badge-ghost', '처리중': 'badge-warning', '완료': 'badge-success', '반려': 'badge-error' };
+      return '<span class="badge ' + (cls[p.value] || 'badge-ghost') + '">' + p.value + '</span>';
+    }},
+    { field: 'author', headerName: '작성자', width: 110 },
+    { field: 'action', headerName: '상세', width: 60, sortable: false, filter: false, cellRenderer: function (p) {
+      return '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;" onclick="openColFeedbackDetail(\'' + p.data.id + '\')">상세</button>';
+    }}
+  ], [
+    { id: 'FBCK-047', regDate: '2026-03-18', pipeline: 'SAP 재무수집_월별정산', type: '수집결과 평가', title: '3월 수집 데이터 소수점 정합성 오류', rating: 4, status: '완료', author: '박지은' },
+    { id: 'FBCK-046', regDate: '2026-03-17', pipeline: 'RWIS 수위데이터 수집', type: '개선 요청', title: '수집 주기 변경 요청 (1시간→30분)', rating: 3, status: '처리중', author: '이민수' },
+    { id: 'FBCK-045', regDate: '2026-03-16', pipeline: '환경부 수질측정 API', type: '오류 신고', title: 'API 인증 토큰 만료로 수집 실패', rating: 2, status: '완료', author: '최영호' },
+    { id: 'FBCK-044', regDate: '2026-03-15', pipeline: '고객정보 CDC 동기화', type: '수집결과 평가', title: 'CDC 지연 시간 개선 확인', rating: 5, status: '완료', author: '김서현' },
+    { id: 'FBCK-043', regDate: '2026-03-14', pipeline: 'SAP 재무수집_월별정산', type: '개선 요청', title: '수집 실패 시 자동 재시도 기능 추가 요청', rating: 3, status: '처리중', author: '정우진' },
+    { id: 'FBCK-042', regDate: '2026-03-13', pipeline: '기상청 날씨 API', type: '수집결과 평가', title: '기상 데이터 수집 정상 확인', rating: 5, status: '완료', author: '한소영' },
+    { id: 'FBCK-041', regDate: '2026-03-12', pipeline: 'RWIS 수위데이터 수집', type: '오류 신고', title: '특정 관측소 데이터 누락 (3건)', rating: 2, status: '완료', author: '박지은' },
+    { id: 'FBCK-040', regDate: '2026-03-11', pipeline: '환경부 수질측정 API', type: '개선 요청', title: '수질 기준 초과 시 알림 추가', rating: 4, status: '처리중', author: '이민수' },
+    { id: 'FBCK-039', regDate: '2026-03-10', pipeline: 'SAP 재무수집_월별정산', type: '수집결과 평가', title: '2월 정산 데이터 수집 결과 양호', rating: 4, status: '완료', author: '김서현' },
+    { id: 'FBCK-038', regDate: '2026-03-09', pipeline: '고객정보 CDC 동기화', type: '오류 신고', title: 'Debezium 커넥터 연결 끊김 발생', rating: 1, status: '완료', author: '최영호' },
+    { id: 'FBCK-037', regDate: '2026-03-08', pipeline: '기상청 날씨 API', type: '개선 요청', title: '풍속 데이터 단위 변환 요청 (m/s→km/h)', rating: 3, status: '완료', author: '정우진' },
+    { id: 'FBCK-036', regDate: '2026-03-07', pipeline: 'SAP 재무수집_월별정산', type: '수집결과 평가', title: '재무 전표 수집 성능 개선 확인', rating: 5, status: '완료', author: '한소영' }
+  ]);
+}
+
+function filterColFeedback() {
+  var grid = agGridInstances['ag-grid-col-feedback'];
+  if (!grid) { return; }
+  var search = document.getElementById('col-feedback-search').value.toLowerCase();
+  var typeF = document.getElementById('col-feedback-type-filter').value;
+  var statF = document.getElementById('col-feedback-status-filter').value;
+  var pipeF = document.getElementById('col-feedback-pipeline-filter').value;
+  grid.setIsExternalFilterPresent(function () { return search || typeF || statF || pipeF; });
+  grid.setDoesExternalFilterPass(function (node) {
+    var d = node.data;
+    if (search && d.title.toLowerCase().indexOf(search) === -1
+      && d.pipeline.toLowerCase().indexOf(search) === -1
+      && d.author.toLowerCase().indexOf(search) === -1) { return false; }
+    if (typeF && d.type !== typeF) { return false; }
+    if (statF && d.status !== statF) { return false; }
+    if (pipeF && d.pipeline !== pipeF) { return false; }
+    return true;
+  });
+  grid.onFilterChanged();
+}
+
+function openColFeedbackModal() {
+  document.getElementById('col-feedback-modal').style.display = 'flex';
+  initDragDrop();
+}
+
+function closeColFeedbackModal() {
+  var modal = document.getElementById('col-feedback-modal');
+  modal.style.display = 'none';
+  var card = modal.querySelector('.modal-card');
+  if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+}
+
+function saveColFeedback() {
+  var pipeline = document.getElementById('fbck-pipeline').value;
+  var fbckType = document.getElementById('fbck-type').value;
+  var title = document.getElementById('fbck-title').value.trim();
+  var content = document.getElementById('fbck-content').value.trim();
+  if (!pipeline) { showToast('파이프라인을 선택해주세요.', 'error'); return; }
+  if (!fbckType) { showToast('피드백 유형을 선택해주세요.', 'error'); return; }
+  if (!title) { showToast('제목을 입력해주세요.', 'error'); return; }
+  if (!content) { showToast('상세 내용을 입력해주세요.', 'error'); return; }
+  showToast('피드백이 등록되었습니다.', 'success');
+  closeColFeedbackModal();
+}
+
+function openColFeedbackDetail(id) {
+  document.getElementById('fbck-detail-id').textContent = id;
+  document.getElementById('col-feedback-detail-modal').style.display = 'flex';
+}
+
+function closeColFeedbackDetailModal() {
+  var modal = document.getElementById('col-feedback-detail-modal');
+  modal.style.display = 'none';
+  var card = modal.querySelector('.modal-card');
+  if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+}
+
+function addFeedbackReply() {
+  var input = document.getElementById('fbck-reply-input');
+  var text = input.value.trim();
+  if (!text) { showToast('코멘트를 입력해주세요.', 'error'); return; }
+  showToast('코멘트가 등록되었습니다.', 'success');
+  input.value = '';
 }
