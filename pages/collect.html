@@ -165,6 +165,23 @@
 <div class="screen" id="screen-col-system">
   <div class="breadcrumb"><a href="#" onclick="navigate('col-pipeline')">데이터 수집·통합</a> &gt; <a href="#" onclick="navigate('col-pipeline')">파이프라인 관리</a> &gt; <strong>대내외시스템 연계관리</strong></div>
   <div class="page-title">대내외시스템 연계관리</div>
+  <!-- 필터 바 (요구사항 004 보강) -->
+  <div class="filter-bar">
+    <input type="text" id="col-system-search" placeholder="시스템명, 연계방식 검색..." style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;" onkeyup="filterColSystem()">
+    <select id="col-system-type-filter" onchange="filterColSystem()">
+      <option value="">구분: 전체</option>
+      <option>내부시스템</option>
+      <option>외부기관</option>
+      <option>클라우드</option>
+    </select>
+    <select id="col-system-stat-filter" onchange="filterColSystem()">
+      <option value="">상태: 전체</option>
+      <option>정상</option>
+      <option>진행중</option>
+      <option>오류</option>
+    </select>
+    <button class="btn btn-primary" data-perm="write" onclick="openMappingAddModal()">+ 연계 추가</button>
+  </div>
   <div class="count-cards">
     <div class="count-card">
       <div class="cc-num">12</div>
@@ -185,6 +202,196 @@
   </div>
   <div class="card" style="padding:0; overflow:hidden;">
     <div id="ag-grid-col-system" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
+<!-- 연계 추가 모달 (요구사항 004) -->
+<div class="modal-overlay" id="col-mapping-add-modal" style="display:none;">
+  <div class="modal-card" style="width:680px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">연계 시스템 추가</h3>
+      <button class="modal-close" onclick="closeMappingAddModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; overflow-y:auto;">
+      <div class="grid-2" style="gap:16px;">
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">연계명 <span style="color:#f44336;">*</span></label>
+          <input type="text" placeholder="예: 환경부 수질데이터" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">구분 <span style="color:#f44336;">*</span></label>
+          <select style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option value="">선택</option>
+            <option>내부시스템</option>
+            <option>외부기관</option>
+            <option>클라우드</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">소스 DB</label>
+          <select style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option value="">선택 (DB 연결 관리 참조)</option>
+            <option>SAP HANA 운영</option>
+            <option>RWIS DB</option>
+            <option>Oracle ERP</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">타겟 DB</label>
+          <select style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option value="">선택</option>
+            <option selected>DataHub PostgreSQL</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">연동 방식 <span style="color:#f44336;">*</span></label>
+          <select style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option>API 연계</option>
+            <option>DB Link</option>
+            <option>CDC</option>
+            <option>SFTP</option>
+            <option>마이그레이션</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">프로토콜</label>
+          <select style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option>REST / HTTPS</option>
+            <option>SOAP / HTTPS</option>
+            <option>gRPC</option>
+            <option>JDBC</option>
+            <option>SFTP</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">대상 테이블 선택</label>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; padding:8px; border:1px solid #d9d9d9; border-radius:6px; min-height:36px;">
+          <span class="col-tag">TB_WATER_QUALITY</span>
+          <span class="col-tag">TB_STATION_MASTER</span>
+          <span class="col-tag">TB_DAM_LEVEL</span>
+          <span class="col-tag">TB_SENSOR_DATA</span>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">담당자</label>
+        <input type="text" placeholder="담당자명" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeMappingAddModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveMappingAdd()">등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- 필드 매핑 추가 모달 (요구사항 004) -->
+<div class="modal-overlay" id="col-field-mapping-modal" style="display:none;">
+  <div class="modal-card" style="width:580px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">필드 매핑 추가</h3>
+      <button class="modal-close" onclick="closeFieldMappingModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; overflow-y:auto;">
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">원본 필드 <span style="color:#f44336;">*</span></label>
+        <input type="text" placeholder="예: temperature" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px; font-family:monospace;">
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">대상 테이블.컬럼 <span style="color:#f44336;">*</span></label>
+        <input type="text" placeholder="예: TB_WATER_QUALITY.TEMP_VAL" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px; font-family:monospace;">
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">변환 규칙</label>
+        <input type="text" placeholder="예: float, 소수점 2자리" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+      </div>
+      <div>
+        <label style="font-size:13px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+          <input type="checkbox"> 필수 필드
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeFieldMappingModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveFieldMapping()">추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- 스케줄 설정 모달 (요구사항 005) -->
+<div class="modal-overlay" id="col-schedule-modal" style="display:none;">
+  <div class="modal-card" style="width:620px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">스케줄 설정</h3>
+      <button class="modal-close" onclick="closeScheduleModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; overflow-y:auto;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:8px;">반복 주기</label>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <label style="padding:6px 14px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:4px;">
+            <input type="radio" name="sched-cycle" value="hourly" checked> 매시간
+          </label>
+          <label style="padding:6px 14px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:4px;">
+            <input type="radio" name="sched-cycle" value="daily"> 매일
+          </label>
+          <label style="padding:6px 14px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:4px;">
+            <input type="radio" name="sched-cycle" value="weekly"> 매주
+          </label>
+          <label style="padding:6px 14px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:4px;">
+            <input type="radio" name="sched-cycle" value="monthly"> 매월
+          </label>
+          <label style="padding:6px 14px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:4px;">
+            <input type="radio" name="sched-cycle" value="custom"> 커스텀
+          </label>
+        </div>
+      </div>
+      <div class="grid-2" style="gap:16px;">
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">실행 시간</label>
+          <input type="time" value="06:00" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">Cron 표현식</label>
+          <input type="text" id="sched-cron" value="0 * * * *" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px; font-family:monospace;">
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">타임아웃(초)</label>
+          <input type="number" value="30" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">재시도 횟수</label>
+          <select style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option>0회 (재시도 없음)</option>
+            <option>1회</option>
+            <option>2회</option>
+            <option selected>3회</option>
+            <option>5회</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">재시도 간격(초)</label>
+          <input type="number" value="10" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">최대 레코드/회</label>
+          <select style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option>1,000건</option>
+            <option>5,000건</option>
+            <option selected>10,000건</option>
+            <option>50,000건</option>
+            <option>무제한</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:16px; padding:10px 14px; background:#e6f7ff; border-radius:6px; font-size:12px; color:#0958d9;">
+        미리보기: 매 정시 (0분)에 실행됩니다. 다음 실행: 2026-03-19 15:00:00
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeScheduleModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveSchedule()">저장</button>
+    </div>
   </div>
 </div>
 
@@ -238,7 +445,15 @@
 
   <!-- 연계 스케줄 -->
   <div class="card">
-    <div class="card-title">⏰ 연계 스케줄 및 설정</div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:0;">⏰ 연계 스케줄 및 설정</div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <label style="font-size:12px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+          <input type="checkbox" checked onchange="showToast(this.checked?'스케줄 활성화':'스케줄 비활성화','success')"> 활성화
+        </label>
+        <button class="btn btn-outline" style="font-size:11px;" data-perm="write" onclick="openScheduleModal()">스케줄 설정</button>
+      </div>
+    </div>
     <div class="detail-info-grid">
       <div class="detail-info-item">
         <div class="dil">수집주기</div>
@@ -336,7 +551,13 @@
 
   <!-- 매핑 정보 -->
   <div class="card">
-    <div class="card-title">🔗 데이터 매핑 정보</div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:0;">🔗 데이터 매핑 정보</div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary" style="font-size:11px;" data-perm="write" onclick="openFieldMappingModal()">+ 매핑 추가</button>
+        <button class="btn btn-outline" style="font-size:11px; color:#f44336;" data-perm="manage" onclick="showToast('선택된 매핑이 삭제되었습니다.','success')">선택 삭제</button>
+      </div>
+    </div>
     <table class="data-table">
       <thead>
         <tr>
@@ -415,6 +636,37 @@
         <div class="div">99.5% (현재 99.8%)</div>
       </div>
     </div>
+  </div>
+
+  <!-- 매핑 변경 이력 (요구사항 004 보강) -->
+  <div class="card">
+    <div class="card-title">📝 매핑 변경 이력</div>
+    <table class="data-table" style="width:100%;">
+      <thead>
+        <tr><th>변경일시</th><th>변경자</th><th>변경 내용</th><th>이전값</th><th>변경후값</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>2026-03-15 14:22</td><td>정환경</td><td>변환규칙 수정 (bod)</td><td>float</td><td>float, 소수점 2자리</td></tr>
+        <tr><td>2026-03-10 09:30</td><td>김관리</td><td>매핑 추가 (dissolvedOxygen)</td><td>-</td><td>DO_VAL (float, mg/L)</td></tr>
+        <tr><td>2026-02-28 16:45</td><td>정환경</td><td>필수 해제 (cod)</td><td>필수</td><td>선택</td></tr>
+        <tr><td>2026-02-20 11:10</td><td>김관리</td><td>매핑 삭제 (temperature)</td><td>TEMP_VAL</td><td>삭제됨</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 스케줄 변경 이력 (요구사항 005 보강) -->
+  <div class="card">
+    <div class="card-title">🕐 스케줄 변경 이력</div>
+    <table class="data-table" style="width:100%;">
+      <thead>
+        <tr><th>변경일시</th><th>변경자</th><th>이전 Cron</th><th>변경 Cron</th><th>상태</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>2026-03-01 09:00</td><td>김관리</td><td>0 */2 * * *</td><td>0 * * * *</td><td><span class="badge badge-success">활성</span></td></tr>
+        <tr><td>2026-01-15 14:30</td><td>정환경</td><td>0 */6 * * *</td><td>0 */2 * * *</td><td><span class="badge badge-success">활성</span></td></tr>
+        <tr><td>2025-12-01 10:00</td><td>김관리</td><td>-</td><td>0 */6 * * *</td><td><span class="badge badge-info">최초 등록</span></td></tr>
+      </tbody>
+    </table>
   </div>
 
   <div style="display:flex; gap:8px; margin-top:16px;">
@@ -3269,6 +3521,813 @@
         <div style="width:14px; height:10px; background:#ff4d4f; border-radius:2px;"></div>
         <span>실패</span>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== COLLECT SCREEN: DB 연결 관리 (요구사항 001+002) ========== -->
+<div class="screen" id="screen-col-db-conn">
+  <div class="breadcrumb"><a href="#" onclick="navigate('col-pipeline')">데이터 수집·통합</a> &gt; <strong>DB 연결 관리</strong></div>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+    <div>
+      <div style="font-size:20px; font-weight:700; color:var(--text-color);">소스/목적 DB 연결 관리</div>
+      <div style="font-size:13px; color:var(--text-secondary);">데이터 수집을 위한 소스 DB 및 목적 DB 접속 정보를 관리합니다</div>
+    </div>
+  </div>
+  <!-- KPI 카드 -->
+  <div class="count-cards">
+    <div class="count-card">
+      <div class="cc-num">8</div>
+      <div class="cc-label">전체 DB 연결</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#4caf50;">6</div>
+      <div class="cc-label">정상 연결</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#f44336;">1</div>
+      <div class="cc-label">연결 오류</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#ff9800;">1</div>
+      <div class="cc-label">미확인</div>
+    </div>
+  </div>
+  <!-- 필터 바 -->
+  <div class="filter-bar">
+    <input type="text" id="db-conn-search" placeholder="연결명, 호스트, DB명 검색..." style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;" onkeyup="filterDbConn()">
+    <select id="db-conn-dbms-filter" onchange="filterDbConn()">
+      <option value="">DBMS: 전체</option>
+      <option>PostgreSQL</option>
+      <option>Oracle</option>
+      <option>MySQL</option>
+      <option>MSSQL</option>
+      <option>SAP HANA</option>
+    </select>
+    <select id="db-conn-stat-filter" onchange="filterDbConn()">
+      <option value="">상태: 전체</option>
+      <option>정상</option>
+      <option>오류</option>
+      <option>미확인</option>
+    </select>
+    <button class="btn btn-primary" data-perm="write" onclick="openDbConnModal()">+ DB 등록</button>
+  </div>
+  <!-- AG Grid -->
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div id="ag-grid-col-db-conn" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
+<!-- DB 등록/수정 모달 -->
+<div class="modal-overlay" id="col-db-conn-modal" style="display:none;">
+  <div class="modal-card" style="width:680px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">DB 연결 등록</h3>
+      <button class="modal-close" onclick="closeDbConnModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; overflow-y:auto;">
+      <div class="grid-2" style="gap:16px;">
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">연결명 <span style="color:#f44336;">*</span></label>
+          <input type="text" id="db-conn-name" placeholder="예: SAP_HANA_운영" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">DBMS 유형 <span style="color:#f44336;">*</span></label>
+          <select id="db-conn-dbms" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option value="">선택</option>
+            <option>PostgreSQL</option>
+            <option>Oracle</option>
+            <option>MySQL</option>
+            <option>MSSQL</option>
+            <option>SAP HANA</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">호스트 <span style="color:#f44336;">*</span></label>
+          <input type="text" id="db-conn-host" placeholder="예: 10.10.1.50" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">포트 <span style="color:#f44336;">*</span></label>
+          <input type="text" id="db-conn-port" placeholder="예: 5432" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">DB명 <span style="color:#f44336;">*</span></label>
+          <input type="text" id="db-conn-dbname" placeholder="예: datahub_prod" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">스키마</label>
+          <input type="text" id="db-conn-schema" placeholder="예: public" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">연결 용도 <span style="color:#f44336;">*</span></label>
+          <select id="db-conn-purpose" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option value="">선택</option>
+            <option>소스(Source)</option>
+            <option>목적(Target)</option>
+            <option>양방향</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">인증 방식</label>
+          <select id="db-conn-auth" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option>ID/PW</option>
+            <option>Kerberos</option>
+            <option>IAM</option>
+            <option>SSL 인증서</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">사용자 ID <span style="color:#f44336;">*</span></label>
+          <input type="text" id="db-conn-user" placeholder="DB 접속 사용자 ID" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">비밀번호 <span style="color:#f44336;">*</span></label>
+          <input type="password" id="db-conn-pwd" placeholder="********" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">설명</label>
+        <textarea id="db-conn-desc" rows="2" placeholder="DB 연결에 대한 설명" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px; resize:vertical;"></textarea>
+      </div>
+      <!-- 연결 테스트 -->
+      <div style="margin-top:16px; padding:14px; background:#f5f7fa; border-radius:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <span style="font-size:13px; font-weight:600;">연결 테스트</span>
+          <button class="btn btn-outline" onclick="testDbConnection()" style="font-size:12px;">연결 테스트 실행</button>
+        </div>
+        <div id="db-conn-test-result" style="display:none;">
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <div class="conn-test-item" id="db-test-network">
+              <span class="conn-test-icon">⏳</span>
+              <span class="conn-test-label">네트워크(방화벽)</span>
+            </div>
+            <div class="conn-test-item" id="db-test-auth">
+              <span class="conn-test-icon">⏳</span>
+              <span class="conn-test-label">DB 인증</span>
+            </div>
+            <div class="conn-test-item" id="db-test-access">
+              <span class="conn-test-icon">⏳</span>
+              <span class="conn-test-label">테이블 접근권한</span>
+            </div>
+            <div class="conn-test-item" id="db-test-sample">
+              <span class="conn-test-icon">⏳</span>
+              <span class="conn-test-label">샘플 데이터(10건)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeDbConnModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveDbConn()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- DB 사용자 관리 모달 (요구사항 002) -->
+<div class="modal-overlay" id="col-db-user-modal" style="display:none;">
+  <div class="modal-card" style="width:700px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">DB 사용자 관리 — <span id="db-user-modal-title">SAP HANA 운영</span></h3>
+      <button class="modal-close" onclick="closeDbUserModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; overflow-y:auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <span style="font-size:13px; color:var(--text-secondary);">DB 접속 사용자 계정 및 권한을 관리합니다</span>
+        <button class="btn btn-primary" style="font-size:12px;" data-perm="manage" onclick="addDbUser()">+ 사용자 추가</button>
+      </div>
+      <table class="data-table" style="width:100%;">
+        <thead>
+          <tr><th>사용자 ID</th><th>인증방식</th><th>권한수준</th><th>비밀번호</th><th>상태</th><th>최종접속</th><th>관리</th></tr>
+        </thead>
+        <tbody id="db-user-table-body">
+          <tr>
+            <td style="font-weight:600;">dh_admin</td><td>ID/PW</td>
+            <td><span class="badge badge-error">관리자</span></td>
+            <td style="font-family:monospace; letter-spacing:2px;">••••••••</td>
+            <td><span class="badge badge-success">활성</span></td>
+            <td>2026-03-19 09:15</td>
+            <td>
+              <button class="btn btn-outline" style="padding:1px 6px; font-size:11px;" onclick="showToast('비밀번호가 초기화되었습니다.','success')">PW초기화</button>
+              <button class="btn btn-outline" style="padding:1px 6px; font-size:11px; color:#f44336;" onclick="showToast('권한이 회수되었습니다.','success')">회수</button>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">dh_reader</td><td>ID/PW</td>
+            <td><span class="badge badge-info">읽기전용</span></td>
+            <td style="font-family:monospace; letter-spacing:2px;">••••••••</td>
+            <td><span class="badge badge-success">활성</span></td>
+            <td>2026-03-18 14:22</td>
+            <td>
+              <button class="btn btn-outline" style="padding:1px 6px; font-size:11px;" onclick="showToast('비밀번호가 초기화되었습니다.','success')">PW초기화</button>
+              <button class="btn btn-outline" style="padding:1px 6px; font-size:11px; color:#f44336;" onclick="showToast('권한이 회수되었습니다.','success')">회수</button>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">etl_worker</td><td>ID/PW</td>
+            <td><span class="badge badge-warning">쓰기</span></td>
+            <td style="font-family:monospace; letter-spacing:2px;">••••••••</td>
+            <td><span class="badge badge-success">활성</span></td>
+            <td>2026-03-19 08:00</td>
+            <td>
+              <button class="btn btn-outline" style="padding:1px 6px; font-size:11px;" onclick="showToast('비밀번호가 초기화되었습니다.','success')">PW초기화</button>
+              <button class="btn btn-outline" style="padding:1px 6px; font-size:11px; color:#f44336;" onclick="showToast('권한이 회수되었습니다.','success')">회수</button>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">batch_sync</td><td>Kerberos</td>
+            <td><span class="badge badge-ghost">비활성</span></td>
+            <td style="font-family:monospace; color:#999;">N/A</td>
+            <td><span class="badge badge-ghost">비활성</span></td>
+            <td>2026-02-10 11:33</td>
+            <td>
+              <button class="btn btn-primary" style="padding:1px 6px; font-size:11px;" onclick="showToast('권한이 부여되었습니다.','success')">부여</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeDbUserModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== COLLECT SCREEN: 테이블 조회 (요구사항 003) ========== -->
+<div class="screen" id="screen-col-db-browse">
+  <div class="breadcrumb"><a href="#" onclick="navigate('col-db-conn')">데이터 수집·통합</a> &gt; <a href="#" onclick="navigate('col-db-conn')">DB 연결 관리</a> &gt; <strong>테이블 조회</strong></div>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+    <div>
+      <div style="font-size:20px; font-weight:700; color:var(--text-color);">DB 테이블/스키마 조회</div>
+      <div style="font-size:13px; color:var(--text-secondary);">연결된 DB의 테이블 및 스키마 리스트를 조회하고 구조 정보를 확인합니다</div>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <select id="db-browse-conn" onchange="loadDbTables()" style="min-width:200px;">
+      <option value="">DB 연결 선택</option>
+      <option value="sap">SAP HANA 운영 (10.10.1.50)</option>
+      <option value="rwis">RWIS DB (10.10.2.30)</option>
+      <option value="oracle">Oracle ERP (10.10.3.10)</option>
+      <option value="pg">DataHub PostgreSQL (10.10.5.100)</option>
+      <option value="mysql">환경부 MySQL (203.10.1.5)</option>
+    </select>
+    <select id="db-browse-schema" onchange="loadDbTables()">
+      <option value="">스키마: 전체</option>
+      <option>public</option>
+      <option>datahub</option>
+      <option>archive</option>
+    </select>
+    <input type="text" id="db-browse-search" placeholder="테이블명 검색..." style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;" onkeyup="filterDbTables()">
+    <button class="btn btn-outline" onclick="loadDbTables()">조회</button>
+  </div>
+  <!-- 좌우 분할 -->
+  <div class="grid-2">
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div style="padding:12px 16px; border-bottom:1px solid #f0f0f0; font-size:13px; font-weight:600;">테이블 목록 <span id="db-browse-table-count" style="color:var(--text-secondary); font-weight:400;">(0개)</span></div>
+      <div id="ag-grid-col-db-tables" class="ag-theme-alpine" style="width:100%;"></div>
+    </div>
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div style="padding:12px 16px; border-bottom:1px solid #f0f0f0; font-size:13px; font-weight:600;">컬럼 구조 <span id="db-browse-col-table" style="color:#1677ff; font-weight:400;"></span></div>
+      <div id="ag-grid-col-db-columns" class="ag-theme-alpine" style="width:100%;"></div>
+    </div>
+  </div>
+  <!-- 샘플 데이터 미리보기 -->
+  <div class="card" style="padding:0; overflow:hidden; margin-top:16px;">
+    <div style="padding:12px 16px; border-bottom:1px solid #f0f0f0; display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:13px; font-weight:600;">샘플 데이터 미리보기 (상위 10건)</span>
+      <button class="btn btn-outline" style="font-size:11px;" onclick="refreshDbPreview()">새로고침</button>
+    </div>
+    <div id="ag-grid-col-db-preview" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
+<!-- ========== COLLECT SCREEN: 뷰 관리 (요구사항 006) ========== -->
+<div class="screen" id="screen-col-db-view">
+  <div class="breadcrumb"><a href="#" onclick="navigate('col-pipeline')">데이터 수집·통합</a> &gt; <strong>뷰 관리</strong></div>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+    <div>
+      <div style="font-size:20px; font-weight:700; color:var(--text-color);">연계 테이블 뷰 관리</div>
+      <div style="font-size:13px; color:var(--text-secondary);">뷰(View) 단위 연결, 생성, 삭제 및 이력 관리를 제공합니다</div>
+    </div>
+  </div>
+  <div class="count-cards">
+    <div class="count-card">
+      <div class="cc-num">15</div>
+      <div class="cc-label">전체 뷰</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#4caf50;">12</div>
+      <div class="cc-label">활성</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#ff9800;">2</div>
+      <div class="cc-label">비활성</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#f44336;">1</div>
+      <div class="cc-label">오류</div>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <input type="text" id="db-view-search" placeholder="뷰명, DB명 검색..." style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;" onkeyup="filterDbViews()">
+    <select id="db-view-db-filter" onchange="filterDbViews()">
+      <option value="">대상 DB: 전체</option>
+      <option>DataHub PostgreSQL</option>
+      <option>SAP HANA 운영</option>
+      <option>Oracle ERP</option>
+    </select>
+    <select id="db-view-stat-filter" onchange="filterDbViews()">
+      <option value="">상태: 전체</option>
+      <option>활성</option>
+      <option>비활성</option>
+      <option>오류</option>
+    </select>
+    <button class="btn btn-primary" data-perm="write" onclick="openViewModal()">+ 뷰 생성</button>
+  </div>
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div id="ag-grid-col-db-view" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
+<!-- 뷰 생성/수정 모달 -->
+<div class="modal-overlay" id="col-view-modal" style="display:none;">
+  <div class="modal-card" style="width:740px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">뷰 생성</h3>
+      <button class="modal-close" onclick="closeViewModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; overflow-y:auto;">
+      <div class="grid-2" style="gap:16px;">
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">뷰명 <span style="color:#f44336;">*</span></label>
+          <input type="text" id="view-name" placeholder="예: v_daily_water_quality" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">대상 DB <span style="color:#f44336;">*</span></label>
+          <select id="view-db" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option value="">선택</option>
+            <option>DataHub PostgreSQL</option>
+            <option>SAP HANA 운영</option>
+            <option>Oracle ERP</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">참조 테이블</label>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; padding:8px; border:1px solid #d9d9d9; border-radius:6px; min-height:36px;">
+          <span class="col-tag selected">water_quality_raw</span>
+          <span class="col-tag selected">station_master</span>
+          <span class="col-tag">dam_level</span>
+          <span class="col-tag">sensor_data</span>
+          <span class="col-tag">weather_daily</span>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <label style="font-size:13px; font-weight:600;">SQL 정의 <span style="color:#f44336;">*</span></label>
+          <button class="btn btn-outline" style="font-size:11px;" onclick="validateViewSql()">SQL 검증</button>
+        </div>
+        <textarea id="view-sql" rows="8" placeholder="CREATE OR REPLACE VIEW ... AS&#10;SELECT ..." style="width:100%; padding:10px 14px; border:1px solid #d9d9d9; border-radius:6px; font-size:12px; font-family:'Consolas','Courier New',monospace; resize:vertical; line-height:1.5; background:#fafafa;">SELECT
+  wq.measure_date,
+  wq.station_id,
+  sm.station_name,
+  wq.ph_value,
+  wq.dissolved_oxygen,
+  wq.turbidity
+FROM water_quality_raw wq
+JOIN station_master sm ON wq.station_id = sm.station_id
+WHERE wq.measure_date >= CURRENT_DATE - INTERVAL '30 days'</textarea>
+        <div id="view-sql-result" style="display:none; margin-top:8px; padding:8px 12px; border-radius:6px; font-size:12px;"></div>
+      </div>
+      <div style="margin-top:16px;">
+        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">설명</label>
+        <input type="text" id="view-desc" placeholder="뷰에 대한 설명" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeViewModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveView()">생성</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== COLLECT SCREEN: 마이그레이션 관리 (요구사항 007) ========== -->
+<div class="screen" id="screen-col-migration">
+  <div class="breadcrumb"><a href="#" onclick="navigate('col-pipeline')">데이터 수집·통합</a> &gt; <strong>마이그레이션</strong></div>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+    <div>
+      <div style="font-size:20px; font-weight:700; color:var(--text-color);">소스 DB → 데이터허브 마이그레이션</div>
+      <div style="font-size:13px; color:var(--text-secondary);">ETL 기반 데이터 추출·변환·적재 작업을 관리합니다</div>
+    </div>
+  </div>
+  <!-- KPI 카드 -->
+  <div class="count-cards">
+    <div class="count-card">
+      <div class="cc-num">24</div>
+      <div class="cc-label">전체 작업</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#1677ff;">3</div>
+      <div class="cc-label">진행중</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#4caf50;">18</div>
+      <div class="cc-label">완료</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#f44336;">2</div>
+      <div class="cc-label">실패</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#666;">4:32</div>
+      <div class="cc-label">평균 소요시간(분)</div>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <input type="text" id="migration-search" placeholder="작업ID, DB명 검색..." style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;" onkeyup="filterMigration()">
+    <select id="migration-src-filter" onchange="filterMigration()">
+      <option value="">소스 DB: 전체</option>
+      <option>SAP HANA 운영</option>
+      <option>RWIS DB</option>
+      <option>Oracle ERP</option>
+      <option>환경부 MySQL</option>
+    </select>
+    <select id="migration-stat-filter" onchange="filterMigration()">
+      <option value="">상태: 전체</option>
+      <option>진행중</option>
+      <option>완료</option>
+      <option>실패</option>
+      <option>대기</option>
+    </select>
+    <button class="btn btn-primary" data-perm="write" onclick="openMigrationModal()">+ 마이그레이션 등록</button>
+  </div>
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div id="ag-grid-col-migration" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+</div>
+
+<!-- 마이그레이션 등록 모달 -->
+<div class="modal-overlay" id="col-migration-modal" style="display:none;">
+  <div class="modal-card" style="width:740px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">마이그레이션 등록</h3>
+      <button class="modal-close" onclick="closeMigrationModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; overflow-y:auto;">
+      <div class="grid-2" style="gap:16px;">
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">소스 DB <span style="color:#f44336;">*</span></label>
+          <select id="migr-src-db" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option value="">선택</option>
+            <option>SAP HANA 운영</option>
+            <option>RWIS DB</option>
+            <option>Oracle ERP</option>
+            <option>환경부 MySQL</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">타겟 DB <span style="color:#f44336;">*</span></label>
+          <select id="migr-tgt-db" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option value="">선택</option>
+            <option selected>DataHub PostgreSQL</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">처리 방식 <span style="color:#f44336;">*</span></label>
+          <select id="migr-type" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option>전체(Full)</option>
+            <option>증분(Incremental)</option>
+            <option>스키마변경 중분</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">배치 크기</label>
+          <select id="migr-batch" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option>1,000건</option>
+            <option selected>5,000건</option>
+            <option>10,000건</option>
+            <option>50,000건</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">병렬도</label>
+          <select id="migr-parallel" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+            <option>1 (직렬)</option>
+            <option selected>2</option>
+            <option>4</option>
+            <option>8</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">타임아웃(초)</label>
+          <input type="number" id="migr-timeout" value="300" style="width:100%; padding:8px 12px; border:1px solid #d9d9d9; border-radius:6px; font-size:13px;">
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:4px;">대상 테이블 선택 <span style="color:#f44336;">*</span></label>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; padding:8px; border:1px solid #d9d9d9; border-radius:6px; min-height:36px;">
+          <span class="col-tag selected">BKPF (회계전표헤더)</span>
+          <span class="col-tag selected">BSEG (회계전표항목)</span>
+          <span class="col-tag">MARA (자재마스터)</span>
+          <span class="col-tag selected">KNA1 (고객마스터)</span>
+          <span class="col-tag">LFA1 (공급업체마스터)</span>
+          <span class="col-tag">EKKO (구매오더헤더)</span>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:8px;">ETL 단계별 설정</label>
+        <div style="display:flex; gap:12px;">
+          <div style="flex:1; padding:12px; background:#f5f7fa; border-radius:8px;">
+            <div style="font-size:12px; font-weight:600; margin-bottom:6px; color:#1677ff;">추출(Extract)</div>
+            <label style="font-size:11px; display:flex; align-items:center; gap:4px; margin-bottom:4px;">
+              <input type="checkbox" checked> 증분 키 사용
+            </label>
+            <label style="font-size:11px; display:flex; align-items:center; gap:4px;">
+              <input type="checkbox" checked> 삭제 감지
+            </label>
+          </div>
+          <div style="flex:1; padding:12px; background:#f5f7fa; border-radius:8px;">
+            <div style="font-size:12px; font-weight:600; margin-bottom:6px; color:#ff9800;">변환(Transform)</div>
+            <label style="font-size:11px; display:flex; align-items:center; gap:4px; margin-bottom:4px;">
+              <input type="checkbox" checked> 데이터타입 자동 변환
+            </label>
+            <label style="font-size:11px; display:flex; align-items:center; gap:4px;">
+              <input type="checkbox"> PII 마스킹 적용
+            </label>
+          </div>
+          <div style="flex:1; padding:12px; background:#f5f7fa; border-radius:8px;">
+            <div style="font-size:12px; font-weight:600; margin-bottom:6px; color:#4caf50;">적재(Load)</div>
+            <label style="font-size:11px; display:flex; align-items:center; gap:4px; margin-bottom:4px;">
+              <input type="checkbox" checked> Upsert 모드
+            </label>
+            <label style="font-size:11px; display:flex; align-items:center; gap:4px;">
+              <input type="checkbox" checked> 적재 후 검증
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeMigrationModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveMigration()">등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- 마이그레이션 상세 모달 -->
+<div class="modal-overlay" id="col-migration-detail-modal" style="display:none;">
+  <div class="modal-card" style="width:780px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">마이그레이션 상세 — <span id="migr-detail-id">MIGR-2026-0042</span></h3>
+      <button class="modal-close" onclick="closeMigrationDetailModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; overflow-y:auto;">
+      <!-- 기본 정보 -->
+      <div class="detail-info-grid">
+        <div class="detail-info-item"><div class="dil">소스 DB</div><div class="div">SAP HANA 운영</div></div>
+        <div class="detail-info-item"><div class="dil">타겟 DB</div><div class="div">DataHub PostgreSQL</div></div>
+        <div class="detail-info-item"><div class="dil">처리방식</div><div class="div">전체(Full)</div></div>
+        <div class="detail-info-item"><div class="dil">시작시간</div><div class="div">2026-03-19 06:00:12</div></div>
+        <div class="detail-info-item"><div class="dil">종료시간</div><div class="div">2026-03-19 06:04:44</div></div>
+        <div class="detail-info-item"><div class="dil">소요시간</div><div class="div">4분 32초</div></div>
+      </div>
+      <!-- 진행 상태 프로그레스 -->
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title">ETL 진행 상태</div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+          <div style="flex:1;">
+            <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-secondary); margin-bottom:4px;">
+              <span>전체 진행률</span><span style="font-weight:600; color:#4caf50;">100%</span>
+            </div>
+            <div style="height:8px; background:#f0f0f0; border-radius:4px; overflow:hidden;">
+              <div style="height:100%; width:100%; background:linear-gradient(90deg, #1677ff, #4caf50); border-radius:4px;"></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <div style="flex:1; padding:10px; background:#e6f7ff; border-radius:6px; text-align:center;">
+            <div style="font-size:11px; color:#0958d9; font-weight:600;">추출(Extract)</div>
+            <div style="font-size:18px; font-weight:700; color:#0958d9;">✅</div>
+            <div style="font-size:10px; color:#666;">125,430건</div>
+          </div>
+          <div style="font-size:18px; color:#d9d9d9; display:flex; align-items:center;">→</div>
+          <div style="flex:1; padding:10px; background:#fff7e6; border-radius:6px; text-align:center;">
+            <div style="font-size:11px; color:#d48806; font-weight:600;">변환(Transform)</div>
+            <div style="font-size:18px; font-weight:700; color:#d48806;">✅</div>
+            <div style="font-size:10px; color:#666;">125,430건</div>
+          </div>
+          <div style="font-size:18px; color:#d9d9d9; display:flex; align-items:center;">→</div>
+          <div style="flex:1; padding:10px; background:#f6ffed; border-radius:6px; text-align:center;">
+            <div style="font-size:11px; color:#389e0d; font-weight:600;">적재(Load)</div>
+            <div style="font-size:18px; font-weight:700; color:#389e0d;">✅</div>
+            <div style="font-size:10px; color:#666;">125,428건</div>
+          </div>
+          <div style="font-size:18px; color:#d9d9d9; display:flex; align-items:center;">→</div>
+          <div style="flex:1; padding:10px; background:#f9f0ff; border-radius:6px; text-align:center;">
+            <div style="font-size:11px; color:#722ed1; font-weight:600;">검증(Verify)</div>
+            <div style="font-size:18px; font-weight:700; color:#722ed1;">✅</div>
+            <div style="font-size:10px; color:#666;">99.998%</div>
+          </div>
+        </div>
+      </div>
+      <!-- 테이블별 진행 현황 -->
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title">테이블별 진행 현황</div>
+        <table class="data-table" style="width:100%;">
+          <thead>
+            <tr><th>테이블명</th><th>총 레코드</th><th>적재 건수</th><th>오류 건수</th><th>상태</th><th>소요시간</th></tr>
+          </thead>
+          <tbody>
+            <tr><td style="font-weight:600;">BKPF</td><td style="text-align:right;">52,140</td><td style="text-align:right;">52,140</td><td style="text-align:right; color:#4caf50;">0</td><td><span class="badge badge-success">완료</span></td><td>1:42</td></tr>
+            <tr><td style="font-weight:600;">BSEG</td><td style="text-align:right;">61,280</td><td style="text-align:right;">61,278</td><td style="text-align:right; color:#f44336;">2</td><td><span class="badge badge-warning">경고</span></td><td>2:18</td></tr>
+            <tr><td style="font-weight:600;">KNA1</td><td style="text-align:right;">12,010</td><td style="text-align:right;">12,010</td><td style="text-align:right; color:#4caf50;">0</td><td><span class="badge badge-success">완료</span></td><td>0:32</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- 오류 로그 -->
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title">오류 로그 (2건)</div>
+        <pre style="background:#1a2744; color:#e0e0e0; padding:12px; border-radius:6px; font-size:11px; overflow-x:auto; line-height:1.6;">[2026-03-19 06:03:22] ERROR BSEG row#48921: 데이터타입 불일치 - VARCHAR(10) → INTEGER 변환 실패 (원본값: 'N/A')
+[2026-03-19 06:03:45] ERROR BSEG row#55102: NULL 제약조건 위반 - 컬럼 'BUKRS' NOT NULL (원본값: NULL)</pre>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeMigrationDetailModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== COLLECT SCREEN: 마이그레이션 로그 (요구사항 008) ========== -->
+<div class="screen" id="screen-col-migration-log">
+  <div class="breadcrumb"><a href="#" onclick="navigate('col-pipeline')">데이터 수집·통합</a> &gt; <strong>마이그레이션 로그</strong></div>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+    <div>
+      <div style="font-size:20px; font-weight:700; color:var(--text-color);">마이그레이션 결과 및 세부 로그</div>
+      <div style="font-size:13px; color:var(--text-secondary);">작업별 결과 요약, 상세 이력 및 오류 추적 기능을 제공합니다</div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-outline" onclick="exportMigrationLog()">내보내기</button>
+      <button class="btn btn-outline" onclick="resetMigrationLogFilter()">초기화</button>
+    </div>
+  </div>
+  <!-- KPI 카드 -->
+  <div class="count-cards" style="grid-template-columns:repeat(6, 1fr); display:grid; gap:12px;">
+    <div class="count-card">
+      <div class="cc-num">248</div>
+      <div class="cc-label">전체 실행 건수</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#4caf50;">96.4%</div>
+      <div class="cc-label">성공률</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#f44336;">9</div>
+      <div class="cc-label">실패 건수</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#666;">3:28</div>
+      <div class="cc-label">평균 소요시간</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#722ed1;">91.2%</div>
+      <div class="cc-label">검증 완료율</div>
+    </div>
+    <div class="count-card">
+      <div class="cc-num" style="color:#1677ff;">14</div>
+      <div class="cc-label">금일 실행</div>
+    </div>
+  </div>
+  <!-- 필터 -->
+  <div class="filter-bar" style="flex-wrap:wrap;">
+    <input type="date" id="migr-log-from" value="2026-03-01" style="padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+    <span style="color:var(--text-secondary);">~</span>
+    <input type="date" id="migr-log-to" value="2026-03-19" style="padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+    <select id="migr-log-db-filter" onchange="filterMigrationLog()">
+      <option value="">소스 DB: 전체</option>
+      <option>SAP HANA 운영</option>
+      <option>RWIS DB</option>
+      <option>Oracle ERP</option>
+      <option>환경부 MySQL</option>
+    </select>
+    <select id="migr-log-type-filter" onchange="filterMigrationLog()">
+      <option value="">유형: 전체</option>
+      <option>전체(Full)</option>
+      <option>증분(Incremental)</option>
+      <option>스키마변경</option>
+    </select>
+    <select id="migr-log-stat-filter" onchange="filterMigrationLog()">
+      <option value="">상태: 전체</option>
+      <option>성공</option>
+      <option>실패</option>
+      <option>진행중</option>
+    </select>
+    <select id="migr-log-verify-filter" onchange="filterMigrationLog()">
+      <option value="">검증: 전체</option>
+      <option>검증완료</option>
+      <option>미검증</option>
+      <option>검증실패</option>
+    </select>
+    <input type="text" id="migr-log-search" placeholder="작업ID, DB명, 테이블명 검색..." style="flex:1; min-width:180px; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;" onkeyup="filterMigrationLog()">
+  </div>
+  <!-- AG Grid -->
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div id="ag-grid-col-migration-log" class="ag-theme-alpine" style="width:100%;"></div>
+  </div>
+  <!-- 하단 통계 -->
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="card">
+      <div class="card-title">유형별 분포</div>
+      <div style="display:flex; gap:8px; align-items:flex-end; height:120px; padding:0 20px;">
+        <div style="flex:1; text-align:center;">
+          <div style="background:#1677ff; height:100px; border-radius:4px 4px 0 0;"></div>
+          <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Full</div>
+          <div style="font-size:12px; font-weight:600;">142</div>
+        </div>
+        <div style="flex:1; text-align:center;">
+          <div style="background:#ff9800; height:70px; border-radius:4px 4px 0 0;"></div>
+          <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Incremental</div>
+          <div style="font-size:12px; font-weight:600;">86</div>
+        </div>
+        <div style="flex:1; text-align:center;">
+          <div style="background:#722ed1; height:25px; border-radius:4px 4px 0 0;"></div>
+          <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">스키마변경</div>
+          <div style="font-size:12px; font-weight:600;">20</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">DB별 실행 통계</div>
+      <table class="data-table" style="width:100%;">
+        <thead><tr><th>소스 DB</th><th>실행 횟수</th><th>성공률</th><th>평균 시간</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:600;">SAP HANA 운영</td><td style="text-align:right;">98</td><td style="text-align:right; color:#4caf50;">98.0%</td><td>4:12</td></tr>
+          <tr><td style="font-weight:600;">RWIS DB</td><td style="text-align:right;">72</td><td style="text-align:right; color:#4caf50;">97.2%</td><td>2:45</td></tr>
+          <tr><td style="font-weight:600;">Oracle ERP</td><td style="text-align:right;">48</td><td style="text-align:right; color:#ff9800;">93.8%</td><td>5:18</td></tr>
+          <tr><td style="font-weight:600;">환경부 MySQL</td><td style="text-align:right;">30</td><td style="text-align:right; color:#4caf50;">96.7%</td><td>1:52</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 마이그레이션 로그 상세 모달 -->
+<div class="modal-overlay" id="col-migration-log-detail-modal" style="display:none;">
+  <div class="modal-card" style="width:760px; max-height:90vh;">
+    <div class="modal-header">
+      <h3 class="modal-title">마이그레이션 로그 상세 — <span id="migr-log-detail-id">MIGR-2026-0042</span></h3>
+      <button class="modal-close" onclick="closeMigrationLogDetailModal()">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px; overflow-y:auto;">
+      <div class="detail-info-grid">
+        <div class="detail-info-item"><div class="dil">작업 ID</div><div class="div">MIGR-2026-0042</div></div>
+        <div class="detail-info-item"><div class="dil">소스 DB</div><div class="div">SAP HANA 운영</div></div>
+        <div class="detail-info-item"><div class="dil">유형</div><div class="div">전체(Full)</div></div>
+        <div class="detail-info-item"><div class="dil">상태</div><div class="div"><span class="badge badge-success">성공</span></div></div>
+        <div class="detail-info-item"><div class="dil">시작</div><div class="div">2026-03-19 06:00:12</div></div>
+        <div class="detail-info-item"><div class="dil">종료</div><div class="div">2026-03-19 06:04:44</div></div>
+        <div class="detail-info-item"><div class="dil">소요시간</div><div class="div">4분 32초</div></div>
+        <div class="detail-info-item"><div class="dil">총 레코드</div><div class="div">125,430건</div></div>
+        <div class="detail-info-item"><div class="dil">검증</div><div class="div"><span class="badge badge-success">검증완료</span> (99.998%)</div></div>
+      </div>
+      <!-- 단계별 타임라인 -->
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title">단계별 실행 로그</div>
+        <div style="padding-left:16px; border-left:2px solid #1677ff;">
+          <div style="margin-bottom:12px; position:relative;">
+            <div style="position:absolute; left:-22px; top:2px; width:12px; height:12px; background:#4caf50; border-radius:50%; border:2px solid #fff;"></div>
+            <div style="font-size:12px; color:var(--text-secondary);">06:00:12</div>
+            <div style="font-size:13px; font-weight:600;">추출 시작 — SAP HANA 운영 (BKPF, BSEG, KNA1)</div>
+          </div>
+          <div style="margin-bottom:12px; position:relative;">
+            <div style="position:absolute; left:-22px; top:2px; width:12px; height:12px; background:#4caf50; border-radius:50%; border:2px solid #fff;"></div>
+            <div style="font-size:12px; color:var(--text-secondary);">06:01:54</div>
+            <div style="font-size:13px; font-weight:600;">추출 완료 — 125,430건 (1분 42초)</div>
+          </div>
+          <div style="margin-bottom:12px; position:relative;">
+            <div style="position:absolute; left:-22px; top:2px; width:12px; height:12px; background:#4caf50; border-radius:50%; border:2px solid #fff;"></div>
+            <div style="font-size:12px; color:var(--text-secondary);">06:01:55</div>
+            <div style="font-size:13px; font-weight:600;">변환 시작 — 데이터타입 변환, NULL 처리</div>
+          </div>
+          <div style="margin-bottom:12px; position:relative;">
+            <div style="position:absolute; left:-22px; top:2px; width:12px; height:12px; background:#ff9800; border-radius:50%; border:2px solid #fff;"></div>
+            <div style="font-size:12px; color:var(--text-secondary);">06:03:22</div>
+            <div style="font-size:13px; font-weight:600; color:#ff9800;">경고 — BSEG 2건 변환 오류 (스킵 처리)</div>
+          </div>
+          <div style="margin-bottom:12px; position:relative;">
+            <div style="position:absolute; left:-22px; top:2px; width:12px; height:12px; background:#4caf50; border-radius:50%; border:2px solid #fff;"></div>
+            <div style="font-size:12px; color:var(--text-secondary);">06:03:48</div>
+            <div style="font-size:13px; font-weight:600;">적재 완료 — 125,428건 (DataHub PostgreSQL)</div>
+          </div>
+          <div style="position:relative;">
+            <div style="position:absolute; left:-22px; top:2px; width:12px; height:12px; background:#722ed1; border-radius:50%; border:2px solid #fff;"></div>
+            <div style="font-size:12px; color:var(--text-secondary);">06:04:44</div>
+            <div style="font-size:13px; font-weight:600;">검증 완료 — 건수 일치율 99.998%, 체크섬 통과</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeMigrationLogDetailModal()">닫기</button>
     </div>
   </div>
 </div>

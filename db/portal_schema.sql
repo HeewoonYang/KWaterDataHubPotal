@@ -546,6 +546,144 @@ CREATE TABLE server_invntry (
 );
 
 
+-- 3-1. DB 연결 관리 (요구사항 001)
+CREATE TABLE db_conn (
+    db_conn_id    SERIAL        PRIMARY KEY,
+    conn_nm       VARCHAR(200)  NOT NULL,
+    dbms_ty       VARCHAR(30)   NOT NULL,           -- PostgreSQL / Oracle / MySQL / MSSQL / SAP HANA
+    host          VARCHAR(200)  NOT NULL,
+    port          INT           NOT NULL,
+    db_nm         VARCHAR(100)  NOT NULL,
+    schma         VARCHAR(100),
+    conn_purps    VARCHAR(30)   DEFAULT 'source',    -- source / target / both
+    auth_ty       VARCHAR(30)   DEFAULT 'idpw',      -- idpw / kerberos / iam / ssl
+    usr_nm        VARCHAR(100),
+    usr_pwd_hash  VARCHAR(500),
+    conn_stat     VARCHAR(20)   DEFAULT 'unknown',   -- normal / error / unknown
+    last_test_at  TIMESTAMPTZ,
+    dc            TEXT,
+    crtd_at       TIMESTAMPTZ   DEFAULT now(),
+    crtd_by       UUID REFERENCES usr_acnt(usr_id),
+    updtd_at      TIMESTAMPTZ   DEFAULT now(),
+    updtd_by      UUID
+);
+COMMENT ON TABLE db_conn IS '소스/목적 DB 연결 정보 (요구사항 001)';
+
+-- 3-2. DB 연결별 사용자 계정 (요구사항 002)
+CREATE TABLE db_conn_usr (
+    db_conn_usr_id  SERIAL        PRIMARY KEY,
+    db_conn_id      INT           NOT NULL REFERENCES db_conn(db_conn_id),
+    usr_nm          VARCHAR(100)  NOT NULL,
+    pwd_hash        VARCHAR(500),
+    auth_ty         VARCHAR(30)   DEFAULT 'idpw',
+    perm_lvl        VARCHAR(30)   DEFAULT 'readonly',  -- admin / readwrite / readonly / disabled
+    stat            entity_status DEFAULT 'active',
+    last_conn_at    TIMESTAMPTZ,
+    crtd_at         TIMESTAMPTZ   DEFAULT now(),
+    crtd_by         UUID REFERENCES usr_acnt(usr_id),
+    updtd_at        TIMESTAMPTZ   DEFAULT now(),
+    updtd_by        UUID
+);
+COMMENT ON TABLE db_conn_usr IS 'DB 접속 사용자 계정 관리 (요구사항 002)';
+
+-- 3-3. 연계 테이블 매핑 (요구사항 004)
+CREATE TABLE tbl_mapng (
+    tbl_mapng_id     SERIAL        PRIMARY KEY,
+    intgrn_id        INT           REFERENCES extn_intgrn(intgrn_id),
+    src_db_conn_id   INT           REFERENCES db_conn(db_conn_id),
+    trget_db_conn_id INT           REFERENCES db_conn(db_conn_id),
+    src_tbl          VARCHAR(200)  NOT NULL,
+    trget_tbl        VARCHAR(200)  NOT NULL,
+    trsfm_rule       TEXT,
+    is_reqrd         BOOLEAN       DEFAULT false,
+    stat             entity_status DEFAULT 'active',
+    crtd_at          TIMESTAMPTZ   DEFAULT now(),
+    crtd_by          UUID REFERENCES usr_acnt(usr_id),
+    updtd_at         TIMESTAMPTZ   DEFAULT now(),
+    updtd_by         UUID
+);
+COMMENT ON TABLE tbl_mapng IS '연계 테이블 매핑 관리 (요구사항 004)';
+
+-- 3-4. 매핑 변경 이력 (요구사항 004)
+CREATE TABLE tbl_mapng_hist (
+    mapng_hist_id  SERIAL        PRIMARY KEY,
+    tbl_mapng_id   INT           NOT NULL REFERENCES tbl_mapng(tbl_mapng_id),
+    chgd_field     VARCHAR(100)  NOT NULL,
+    prev_val       TEXT,
+    new_val        TEXT,
+    crtd_at        TIMESTAMPTZ   DEFAULT now(),
+    crtd_by        UUID REFERENCES usr_acnt(usr_id)
+);
+COMMENT ON TABLE tbl_mapng_hist IS '매핑 변경 이력 (요구사항 004)';
+
+-- 3-5. 뷰 정의 (요구사항 006)
+CREATE TABLE db_view_def (
+    view_def_id  SERIAL        PRIMARY KEY,
+    db_conn_id   INT           NOT NULL REFERENCES db_conn(db_conn_id),
+    view_nm      VARCHAR(200)  NOT NULL,
+    sql_def      TEXT          NOT NULL,
+    ref_tbls     TEXT[],
+    dc           TEXT,
+    stat         entity_status DEFAULT 'active',
+    crtd_at      TIMESTAMPTZ   DEFAULT now(),
+    crtd_by      UUID REFERENCES usr_acnt(usr_id),
+    updtd_at     TIMESTAMPTZ   DEFAULT now(),
+    updtd_by     UUID
+);
+COMMENT ON TABLE db_view_def IS '연계 테이블 뷰 정의 (요구사항 006)';
+
+-- 3-6. 마이그레이션 작업 (요구사항 007)
+CREATE TABLE migr_job (
+    migr_job_id       SERIAL        PRIMARY KEY,
+    src_db_conn_id    INT           NOT NULL REFERENCES db_conn(db_conn_id),
+    trget_db_conn_id  INT           NOT NULL REFERENCES db_conn(db_conn_id),
+    migr_ty           VARCHAR(30)   NOT NULL DEFAULT 'full',  -- full / incremental / schema_change
+    trget_tbls        TEXT[],
+    batch_sz          INT           DEFAULT 5000,
+    prll_co           INT           DEFAULT 2,
+    tmout_secnd       INT           DEFAULT 300,
+    stat              entity_status DEFAULT 'pending',
+    prgrs_pct         INT           DEFAULT 0,
+    crtd_at           TIMESTAMPTZ   DEFAULT now(),
+    crtd_by           UUID REFERENCES usr_acnt(usr_id),
+    updtd_at          TIMESTAMPTZ   DEFAULT now(),
+    updtd_by          UUID
+);
+COMMENT ON TABLE migr_job IS '마이그레이션 작업 정의 (요구사항 007)';
+
+-- 3-7. 마이그레이션 실행 이력 (요구사항 007+008)
+CREATE TABLE migr_exec (
+    migr_exec_id  SERIAL        PRIMARY KEY,
+    migr_job_id   INT           NOT NULL REFERENCES migr_job(migr_job_id),
+    strtd_at      TIMESTAMPTZ,
+    fnshed_at     TIMESTAMPTZ,
+    dur_secnd     INT,
+    tot_rcrds     BIGINT        DEFAULT 0,
+    migr_rcrds    BIGINT        DEFAULT 0,
+    err_rcrds     BIGINT        DEFAULT 0,
+    stat          VARCHAR(20)   DEFAULT 'running',   -- running / success / failed / cancelled
+    vrfy_stat     VARCHAR(20)   DEFAULT 'pending',   -- pending / verified / failed
+    crtd_at       TIMESTAMPTZ   DEFAULT now(),
+    crtd_by       UUID REFERENCES usr_acnt(usr_id)
+);
+COMMENT ON TABLE migr_exec IS '마이그레이션 실행 이력 (요구사항 007+008)';
+
+-- 3-8. 마이그레이션 실행 상세 (요구사항 008)
+CREATE TABLE migr_exec_dtl (
+    migr_exec_dtl_id  SERIAL        PRIMARY KEY,
+    migr_exec_id      INT           NOT NULL REFERENCES migr_exec(migr_exec_id),
+    trget_tbl         VARCHAR(200)  NOT NULL,
+    tot_rcrds         BIGINT        DEFAULT 0,
+    migr_rcrds        BIGINT        DEFAULT 0,
+    err_rcrds         BIGINT        DEFAULT 0,
+    stat              VARCHAR(20)   DEFAULT 'running',
+    strtd_at          TIMESTAMPTZ,
+    fnshed_at         TIMESTAMPTZ,
+    err_log           TEXT
+);
+COMMENT ON TABLE migr_exec_dtl IS '마이그레이션 테이블별 실행 상세 (요구사항 008)';
+
+
 -- ============================================================================
 -- 4. 유통·활용 도메인
 -- ============================================================================

@@ -2961,6 +2961,17 @@ body {
   color: #f44336;
 }
 
+.conn-test-icon {
+  font-size: 14px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.conn-test-label {
+  font-size: 12px;
+  color: var(--text-color);
+}
+
 /* Architecture diagram */
 .arch-zone {
   border: 2px dashed;

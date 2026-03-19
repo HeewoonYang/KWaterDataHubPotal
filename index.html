@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/styles/ag-theme-alpine.min.css">
   <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/dist/ag-grid-community.min.js"></script>
   <!-- Custom CSS (gradually replaced) -->
-  <link rel="stylesheet" href="css/style.css?v=20260319a">
+  <link rel="stylesheet" href="css/style.css?v=20260319b">
 </head>
 
 <body>
@@ -80,6 +80,7 @@
             <option value="수공직원|일반사용자">홍길동 — 일반사용자</option>
             <option value="수공직원|부서관리자">김영희 — 부서관리자</option>
             <option value="수공직원|데이터스튜어드">이철수 — 데이터 스튜어드</option>
+            <option value="수공직원|데이터관리자">박수원 — 데이터 관리자</option>
           </select>
         </fieldset>
         <button class="btn btn-primary w-full mt-2" onclick="doLogin('sso')">SSO 자동 로그인</button>
@@ -542,6 +543,24 @@
         <div class="menu-item" data-screen="col-pipeline" onclick="navigate('col-pipeline')">
           <span class="icon">⚙️</span> 파이프라인 관리
         </div>
+        <div class="menu-item" data-screen="col-db-conn" onclick="navigate('col-db-conn')">
+          <span class="icon">🔌</span> DB 연결 관리
+        </div>
+        <div class="menu-item" data-screen="col-db-browse" onclick="navigate('col-db-browse')">
+          <span class="icon">🗂️</span> 테이블 조회
+        </div>
+        <div class="menu-item" data-screen="col-system" onclick="navigate('col-system')">
+          <span class="icon">🔗</span> 대내외시스템 연계
+        </div>
+        <div class="menu-item" data-screen="col-db-view" onclick="navigate('col-db-view')">
+          <span class="icon">📊</span> 뷰 관리
+        </div>
+        <div class="menu-item" data-screen="col-migration" onclick="navigate('col-migration')">
+          <span class="icon">🔄</span> 마이그레이션
+        </div>
+        <div class="menu-item" data-screen="col-migration-log" onclick="navigate('col-migration-log')">
+          <span class="icon">📝</span> 마이그레이션 로그
+        </div>
         <div class="menu-item" data-screen="col-monitor" onclick="navigate('col-monitor')">
           <span class="icon">📈</span> 수집현황 모니터링
         </div>
@@ -674,7 +693,7 @@
 
   </div> <!-- /layout -->
 
-  <script src="js/main.js?v=20260319a"></script>
+  <script src="js/main.js?v=20260319b"></script>
   <script>
     // 페이지 로드 시 모든 섹션 HTML을 순차적으로 로드 (순서 보장)
     (async function () {

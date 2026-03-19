@@ -156,6 +156,17 @@
 | 142 | 복원 | RSTR | RESTORE | N | 데이터 복원 |
 | 143 | 크기 | SZ | SIZE | N | 데이터 크기 |
 | 144 | 차등 | DIFRL | DIFFERENTIAL | N | 차등 백업/복구 |
+| 145 | 연결 | CONN | CONNECTION | N | DB 연결 정보 |
+| 146 | 마이그레이션 | MIGR | MIGRATION | N | 데이터 마이그레이션 |
+| 147 | 병렬도 | PRLL | PARALLEL | N | 병렬 처리 수 |
+| 148 | 진행률 | PRGRS | PROGRESS | N | 작업 진행 퍼센트 |
+| 149 | 뷰 | VIEW | VIEW | N | DB 뷰 정의 |
+| 150 | 정의 | DEF | DEFINITION | N | 뷰/규칙 정의 |
+| 151 | 참조테이블 | REF_TBLS | REFERENCE TABLES | N | 뷰 참조 테이블 목록 |
+| 152 | 비밀번호해시 | PWD_HASH | PASSWORD HASH | N | 암호화된 비밀번호 |
+| 153 | 인증 | AUTH | AUTHENTICATION | N | 인증 방식 |
+| 154 | 배치크기 | BATCH_SZ | BATCH SIZE | N | 배치 처리 단위 |
+| 155 | 용도 | PURPS | PURPOSE | N | 연결 용도 (소스/목적) |
 
 ## 보정 단어 (기존 표준사전 약어 수정 권고)
 
