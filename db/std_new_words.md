@@ -164,6 +164,17 @@
 | 150 | 포트 | PORT | PORT | N | 네트워크 포트 |
 | 151 | 경로 | PATH | PATH | N | 저장 경로 |
 | 152 | 복제됨 | REPLCD | REPLICATED | N | 복제 완료 레코드 |
+| 153 | 연결 | CONN | CONNECTION | N | DB 연결 정보 |
+| 154 | 마이그레이션 | MIGR | MIGRATION | N | 데이터 마이그레이션 |
+| 155 | 병렬도 | PRLL | PARALLEL | N | 병렬 처리 수 |
+| 156 | 진행률 | PRGRS | PROGRESS | N | 작업 진행 퍼센트 |
+| 157 | 뷰 | VIEW | VIEW | N | DB 뷰 정의 |
+| 158 | 정의 | DEF | DEFINITION | N | 뷰/규칙 정의 |
+| 159 | 참조테이블 | REF_TBLS | REFERENCE TABLES | N | 뷰 참조 테이블 목록 |
+| 160 | 비밀번호해시 | PWD_HASH | PASSWORD HASH | N | 암호화된 비밀번호 |
+| 161 | 인증 | AUTH | AUTHENTICATION | N | 인증 방식 |
+| 162 | 배치크기 | BATCH_SZ | BATCH SIZE | N | 배치 처리 단위 |
+| 163 | 용도 | PURPS | PURPOSE | N | 연결 용도 (소스/목적) |
 
 ## 보정 단어 (기존 표준사전 약어 수정 권고)
 

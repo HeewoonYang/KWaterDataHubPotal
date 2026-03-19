@@ -12,7 +12,7 @@
 |------|:---------:|:---------:|
 | 사용자·조직·권한 | 8 | login_type |
 | 카탈로그·메타데이터 | 14 | data_asset_type, data_security_level |
-| 수집 관리 | 8 | collect_method |
+| 수집 관리 | 16 | collect_method |
 | 유통·활용 | 11 | deidentify_rule_type |
 | 데이터 품질 | 4 | — |
 | 온톨로지 | 3 | — |
@@ -59,7 +59,7 @@
 | 20 | `model_entty` | entty_id | → data_model | 모델 엔티티 |
 | 21 | `model_atrb` | atrb_id | → model_entty | 모델 속성 |
 
-### 2-3. 수집 관리 (8개)
+### 2-3. 수집 관리 (16개)
 
 | # | 테이블 | PK | 핵심 FK/관계 | 설명 |
 |---|--------|-----|-------------|------|
@@ -71,6 +71,14 @@
 | 27 | `extn_intgrn` | intgrn_id | — | 외부 연계 |
 | 28 | `dbt_model` | dbt_model_id | → user | dbt 변환 모델 |
 | 29 | `server_invntry` | server_id | — | 서버 인프라 자산 |
+| 30a | `db_conn` | db_conn_id | → usr_acnt | DB 연결 정보 (요구사항 001) |
+| 30b | `db_conn_usr` | db_conn_usr_id | → db_conn | DB 접속 사용자 (요구사항 002) |
+| 30c | `tbl_mapng` | tbl_mapng_id | → extn_intgrn, db_conn | 테이블 매핑 (요구사항 004) |
+| 30d | `tbl_mapng_hist` | mapng_hist_id | → tbl_mapng | 매핑 변경 이력 (요구사항 004) |
+| 30e | `db_view_def` | view_def_id | → db_conn | 뷰 정의 (요구사항 006) |
+| 30f | `migr_job` | migr_job_id | → db_conn | 마이그레이션 작업 (요구사항 007) |
+| 30g | `migr_exec` | migr_exec_id | → migr_job | 마이그레이션 실행 (요구사항 007+008) |
+| 30h | `migr_exec_dtl` | migr_exec_dtl_id | → migr_exec | 마이그레이션 상세 (요구사항 008) |
 
 ### 2-4. 유통·활용 (11개)
 
