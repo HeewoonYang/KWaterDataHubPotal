@@ -371,7 +371,7 @@ var RBAC_MATRIX = {
       'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt',
       'meta-dq',
       'dist-product', 'dist-approval', 'dist-stats',
-      'sys-interface', 'sys-k8s',
+      'sys-interface', 'sys-intg-log', 'sys-k8s',
       'comm-notice', 'comm-internal', 'comm-archive'],
     topNav: ['dashboard', 'catalog', 'collect', 'distribute', 'meta', 'community', 'system']
   },
@@ -382,7 +382,7 @@ var RBAC_MATRIX = {
       'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt',
       'meta-dq',
       'dist-product', 'dist-approval', 'dist-stats',
-      'sys-interface',
+      'sys-interface', 'sys-intg-log',
       'comm-notice', 'comm-internal', 'comm-archive'],
     topNav: ['dashboard', 'catalog', 'collect', 'distribute', 'meta', 'community', 'system']
   },
@@ -404,7 +404,7 @@ var RBAC_MATRIX = {
       'col-pipeline', 'col-register', 'col-db-conn', 'col-db-browse', 'col-system', 'col-db-view', 'col-migration', 'col-migration-log',
       'col-cdc', 'col-kafka', 'col-external', 'col-arch', 'col-monitor', 'col-log', 'col-dbt',
       'dist-product', 'dist-approval', 'dist-stats', 'dist-chart-content',
-      'sys-user', 'sys-role', 'sys-security', 'sys-interface', 'sys-audit', 'sys-widget-template', 'sys-perm', 'sys-engine', 'sys-k8s', 'sys-erp-sync', 'sys-ext-register', 'sys-db-config', 'sys-backup-schedule', 'sys-backup-repl', 'sys-recovery-log',
+      'sys-user', 'sys-role', 'sys-security', 'sys-interface', 'sys-intg-log', 'sys-audit', 'sys-widget-template', 'sys-perm', 'sys-engine', 'sys-k8s', 'sys-erp-sync', 'sys-ext-register', 'sys-db-config', 'sys-backup-schedule', 'sys-backup-repl', 'sys-recovery-log',
       'comm-notice', 'comm-internal', 'comm-external', 'comm-archive'],
     topNav: ['dashboard', 'catalog', 'collect', 'distribute', 'community', 'system']
   },
@@ -413,7 +413,7 @@ var RBAC_MATRIX = {
       'cat-search', 'cat-detail', 'cat-graph', 'cat-lineage', 'cat-bookmark', 'cat-request',
       'col-arch', 'col-log',
       'dist-deidentify', 'dist-approval', 'dist-stats', 'dist-chart-content',
-      'sys-user', 'sys-role', 'sys-security', 'sys-audit', 'sys-widget-template', 'sys-perm', 'sys-engine', 'sys-k8s', 'sys-erp-sync', 'sys-ext-register', 'sys-db-config', 'sys-backup-schedule', 'sys-backup-repl', 'sys-recovery-log',
+      'sys-user', 'sys-role', 'sys-security', 'sys-intg-log', 'sys-audit', 'sys-widget-template', 'sys-perm', 'sys-engine', 'sys-k8s', 'sys-erp-sync', 'sys-ext-register', 'sys-db-config', 'sys-backup-schedule', 'sys-backup-repl', 'sys-recovery-log',
       'comm-notice', 'comm-archive'],
     topNav: ['dashboard', 'catalog', 'collect', 'distribute', 'community', 'system']
   },
@@ -458,8 +458,8 @@ var RBAC_SCREEN_PERMS = {
   '데이터엔지니어|파이프라인관리자': { _default: 'manage' },
   '데이터엔지니어|ETL운영자':      { _default: 'manage' },
   '데이터엔지니어|DBA':            { _default: 'manage' },
-  '관리자|시스템관리자':           { _default: 'manage', 'sys-user': 'admin', 'sys-role': 'admin', 'sys-security': 'admin', 'sys-perm': 'admin', 'sys-erp-sync': 'admin', 'sys-ext-register': 'admin', 'sys-recovery-log': 'admin', 'sys-db-config': 'admin', 'sys-backup-schedule': 'admin', 'sys-backup-repl': 'admin', 'dist-approval': 'read' },
-  '관리자|보안관리자':             { _default: 'manage', 'sys-security': 'admin', 'sys-audit': 'admin', 'sys-ext-register': 'admin', 'sys-recovery-log': 'admin', 'sys-db-config': 'admin', 'sys-backup-schedule': 'admin', 'sys-backup-repl': 'admin', 'dist-approval': 'read', 'dist-stats': 'read' },
+  '관리자|시스템관리자':           { _default: 'manage', 'sys-user': 'admin', 'sys-role': 'admin', 'sys-security': 'admin', 'sys-perm': 'admin', 'sys-erp-sync': 'admin', 'sys-ext-register': 'admin', 'sys-recovery-log': 'admin', 'sys-db-config': 'admin', 'sys-backup-schedule': 'admin', 'sys-backup-repl': 'admin', 'sys-intg-log': 'admin', 'dist-approval': 'read' },
+  '관리자|보안관리자':             { _default: 'manage', 'sys-security': 'admin', 'sys-audit': 'admin', 'sys-ext-register': 'admin', 'sys-recovery-log': 'admin', 'sys-db-config': 'admin', 'sys-backup-schedule': 'admin', 'sys-backup-repl': 'admin', 'sys-intg-log': 'admin', 'dist-approval': 'read', 'dist-stats': 'read' },
   '관리자|슈퍼관리자':             { _default: 'admin' }
 };
 
@@ -785,6 +785,12 @@ function navigate(screen) {
   }
   if (screen === 'sys-recovery-log') {
     setTimeout(initRecoveryLogScreen, 100);
+  }
+  if (screen === 'sys-interface') {
+    setTimeout(initSysInterfaceScreen, 100);
+  }
+  if (screen === 'sys-intg-log') {
+    setTimeout(initIntgLogScreen, 100);
   }
   if (screen === 'sys-db-config') {
     setTimeout(initDbConfigScreen, 100);
@@ -6838,28 +6844,7 @@ function initSystemGrids() {
     }
   });
 
-  // 연계인터페이스 모니터링
-  initAGGrid('ag-grid-sys-interface', [
-    { field: 'name', headerName: '인터페이스', flex: 1, cellRenderer: function (p) { return '<strong>' + p.value + '</strong>'; } },
-    { field: 'type', headerName: '유형', width: 80, cellRenderer: function (p) { return '<span style="background:' + p.data.typeBg + ';color:' + p.data.typeColor + ';padding:1px 8px;border-radius:4px;font-size:11px;">' + p.value + '</span>'; } },
-    {
-      field: 'status', headerName: '상태', width: 80, cellRenderer: function (p) {
-        var c = p.value === '정상' ? '#4caf50' : '#f44336';
-        return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;"><span style="width:6px;height:6px;border-radius:50%;background:' + c + ';display:inline-block;"></span>' + p.value + '</span>';
-      }
-    },
-    { field: 'latency', headerName: 'Latency', width: 85 },
-    { field: 'uptime', headerName: 'Uptime', width: 75 },
-    { field: 'lastSync', headerName: '최근 동기화', width: 110 },
-    { field: 'action', headerName: '관리', width: 70, sortable: false, filter: false, cellRenderer: function () { return '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;" onclick="navigate(\'sys-interface-detail\')">상세</button>'; } }
-  ], [
-    { name: 'MCP 연동', type: 'MCP', typeBg: '#e8f0fe', typeColor: '#1967d2', status: '정상', latency: '120ms', uptime: '99.5%', lastSync: '11:42' },
-    { name: '내부 API 게이트웨이', type: 'REST', typeBg: '#e8f5e9', typeColor: '#2e7d32', status: '정상', latency: '35ms', uptime: '99.9%', lastSync: '11:42' },
-    { name: '외부 API 게이트웨이', type: 'REST', typeBg: '#e8f5e9', typeColor: '#2e7d32', status: '정상', latency: '85ms', uptime: '99.8%', lastSync: '11:42' },
-    { name: 'SSO 인증서버', type: 'SAML', typeBg: '#f3e5f5', typeColor: '#7b1fa2', status: '정상', latency: '45ms', uptime: '99.99%', lastSync: '11:42' },
-    { name: 'DMZ 프록시', type: 'Proxy', typeBg: '#fff3e0', typeColor: '#ef6c00', status: '정상', latency: '12ms', uptime: '99.95%', lastSync: '11:42' },
-    { name: 'Kafka Broker', type: 'Kafka', typeBg: '#fce4ec', typeColor: '#c62828', status: '정상', latency: '8ms', uptime: '99.99%', lastSync: '11:42' }
-  ]);
+  // 연계인터페이스 모니터링 — initSysInterfaceScreen()으로 이동 (navigate에서 호출)
 
   // API 호출 이력
   initAGGrid('ag-grid-sys-api-log', [
@@ -8937,7 +8922,7 @@ var SCREEN_GROUP_MAP = {
   'meta-glossary': '메타데이터', 'meta-tag': '메타데이터', 'meta-model': '메타데이터',
   'meta-dq': '메타데이터', 'meta-ontology': '메타데이터',
   'sys-user': '시스템관리', 'sys-role': '시스템관리', 'sys-security': '시스템관리',
-  'sys-interface': '시스템관리', 'sys-audit': '시스템관리', 'sys-perm': '시스템관리', 'sys-engine': '시스템관리', 'sys-erp-sync': '시스템관리', 'sys-db-config': '시스템관리', 'sys-backup-schedule': '시스템관리', 'sys-backup-repl': '시스템관리', 'sys-recovery-log': '시스템관리', 'llmops': '시스템관리',
+  'sys-interface': '시스템관리', 'sys-intg-log': '시스템관리', 'sys-audit': '시스템관리', 'sys-perm': '시스템관리', 'sys-engine': '시스템관리', 'sys-erp-sync': '시스템관리', 'sys-db-config': '시스템관리', 'sys-backup-schedule': '시스템관리', 'sys-backup-repl': '시스템관리', 'sys-recovery-log': '시스템관리', 'llmops': '시스템관리',
   'sys-widget-template': '대시보드',
   'comm-notice': '커뮤니티', 'comm-internal': '커뮤니티', 'comm-external': '커뮤니티', 'comm-archive': '커뮤니티'
 };
@@ -8956,7 +8941,7 @@ var SCREEN_LABEL_MAP = {
   'meta-glossary': '표준용어사전', 'meta-tag': '태그 관리', 'meta-model': '메타모델',
   'meta-dq': '데이터 품질', 'meta-ontology': '온톨로지',
   'sys-user': '조직 및 사용자관리', 'sys-role': '권한 및 역할관리', 'sys-security': '데이터등급·보안정책',
-  'sys-interface': '연계인터페이스 모니터링', 'sys-audit': '접속통계·감사로그',
+  'sys-interface': '연계인터페이스 모니터링', 'sys-intg-log': '연계 로그 조회', 'sys-audit': '접속통계·감사로그',
   'sys-widget-template': '위젯 템플릿 관리', 'sys-perm': '화면별 권한설정', 'sys-engine': '데이터허브 엔진관리', 'sys-erp-sync': 'ERP 인사정보 동기화', 'sys-ext-register': '외부사용자 관리', 'sys-db-config': '연계 DB 설정', 'sys-backup-schedule': '백업 복구 스케줄', 'sys-backup-repl': '백업 데이터 복제·이관', 'sys-recovery-log': '복구 로그 조회', 'llmops': 'LLMOps 관리',
   'comm-notice': '공지사항', 'comm-internal': '내부게시판', 'comm-external': '외부협력게시판', 'comm-archive': '자료실'
 };
@@ -11441,6 +11426,222 @@ function openReplDetail(data) {
 
 function closeReplDetailModal() {
   var modal = document.getElementById('repl-detail-modal');
+  if (!modal) { return; }
+  modal.style.display = 'none';
+  var card = modal.querySelector('.modal-card');
+  if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+}
+
+// ===== 연계인터페이스 모니터링 (요구사항 001) =====
+
+var intfcEndptData = [
+  { name: 'MCP 연동', type: 'MCP', typeBg: '#e8f0fe', typeColor: '#1967d2', status: '정상', latency: '120ms', uptime: '99.5%', lastSync: '11:42', cycle: '5분', mgr: '김인프라', url: 'https://mcp.kwater.or.kr/api/v2' },
+  { name: '내부 API 게이트웨이', type: 'API', typeBg: '#e8f5e9', typeColor: '#2e7d32', status: '정상', latency: '35ms', uptime: '99.9%', lastSync: '11:42', cycle: '3분', mgr: '박운영', url: 'https://api-gw.kwater.or.kr' },
+  { name: '외부 공공데이터 API', type: 'API', typeBg: '#e8f5e9', typeColor: '#2e7d32', status: '정상', latency: '85ms', uptime: '99.8%', lastSync: '11:42', cycle: '10분', mgr: '이연계', url: 'https://api.data.go.kr/openapi' },
+  { name: 'SSO 인증 게이트웨이', type: 'SSO', typeBg: '#f3e5f5', typeColor: '#7b1fa2', status: '정상', latency: '45ms', uptime: '99.99%', lastSync: '11:42', cycle: '5분', mgr: '최보안', url: 'https://sso.kwater.or.kr' },
+  { name: 'SAP ERP 연계', type: 'DB', typeBg: '#fff3e0', typeColor: '#ef6c00', status: '정상', latency: '210ms', uptime: '99.2%', lastSync: '11:30', cycle: '15분', mgr: '정시스템', url: 'db-sap.kwater.or.kr:30013' },
+  { name: 'DMZ 외부 API', type: 'API', typeBg: '#e8f5e9', typeColor: '#2e7d32', status: '장애', latency: '-', uptime: '98.1%', lastSync: '10:15', cycle: '5분', mgr: '박운영', url: 'https://dmz-api.kwater.or.kr' },
+  { name: 'Kafka 브로커', type: 'MQ', typeBg: '#fce4ec', typeColor: '#c62828', status: '점검중', latency: '8ms', uptime: '99.99%', lastSync: '11:42', cycle: '1분', mgr: '김인프라', url: 'kafka-01.kwater.or.kr:9092' },
+  { name: '기상청 API', type: 'API', typeBg: '#e8f5e9', typeColor: '#2e7d32', status: '정상', latency: '152ms', uptime: '99.5%', lastSync: '11:40', cycle: '10분', mgr: '이연계', url: 'https://apis.data.go.kr/weather' }
+];
+
+function initSysInterfaceScreen() {
+  if (agGridInstances['ag-grid-sys-interface']) { return; }
+  var cols = [
+    { field: 'name', headerName: '인터페이스명', flex: 1, minWidth: 150, cellRenderer: function (p) { return '<strong>' + p.value + '</strong>'; } },
+    { field: 'type', headerName: '유형', width: 75, cellRenderer: function (p) { return '<span style="background:' + p.data.typeBg + ';color:' + p.data.typeColor + ';padding:1px 8px;border-radius:4px;font-size:11px;font-weight:600;">' + p.value + '</span>'; } },
+    {
+      field: 'status', headerName: '상태', width: 80, cellRenderer: function (p) {
+        var m = { '정상': '#4caf50', '장애': '#f44336', '점검중': '#ff9800' };
+        var c = m[p.value] || '#888';
+        return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;"><span style="width:6px;height:6px;border-radius:50%;background:' + c + ';display:inline-block;"></span>' + p.value + '</span>';
+      }
+    },
+    { field: 'latency', headerName: 'Latency', width: 85 },
+    { field: 'uptime', headerName: 'Uptime', width: 75 },
+    { field: 'cycle', headerName: '점검주기', width: 80 },
+    { field: 'lastSync', headerName: '최종점검', width: 90 },
+    { field: 'mgr', headerName: '담당자', width: 80 },
+    {
+      field: 'action', headerName: '관리', width: 120, sortable: false, filter: false, cellRenderer: function () {
+        return '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;margin-right:4px;" onclick="navigate(\'sys-interface-detail\')">상세</button>' +
+               '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;" onclick="event.stopPropagation()">점검</button>';
+      }
+    }
+  ];
+  initAGGrid('ag-grid-sys-interface', cols, intfcEndptData, {
+    getRowStyle: function (p) {
+      if (p.data.status === '장애') { return { background: '#fff5f5' }; }
+      if (p.data.status === '점검중') { return { background: '#fffbe6' }; }
+      return null;
+    }
+  });
+}
+
+function filterIntfcEndpt() {
+  var grid = agGridInstances['ag-grid-sys-interface'];
+  if (!grid) { return; }
+  var typeVal = document.getElementById('intfc-filter-type').value;
+  var statVal = document.getElementById('intfc-filter-stat').value;
+  var searchVal = document.getElementById('intfc-filter-search').value.trim().toLowerCase();
+  grid.setGridOption('isExternalFilterPresent', function () { return typeVal !== '' || statVal !== '' || searchVal !== ''; });
+  grid.setGridOption('doesExternalFilterPass', function (node) {
+    var d = node.data;
+    if (typeVal && d.type !== typeVal) { return false; }
+    if (statVal && d.status !== statVal) { return false; }
+    if (searchVal && d.name.toLowerCase().indexOf(searchVal) < 0 && (d.url || '').toLowerCase().indexOf(searchVal) < 0) { return false; }
+    return true;
+  });
+  grid.onFilterChanged();
+}
+
+function runBulkCheck() {
+  showToast('전체 연계포인트 일괄 점검을 시작합니다...', 'success');
+  setTimeout(function () { showToast('8건 점검 완료: 정상 6, 장애 1, 점검중 1', 'success'); }, 1500);
+}
+
+function openEndptModal(data) {
+  var modal = document.getElementById('endpt-modal');
+  if (!modal) { return; }
+  document.getElementById('endpt-modal-title').textContent = data ? '⚡ 연계포인트 수정' : '⚡ 연계포인트 등록';
+  document.getElementById('endpt-form-name').value = data ? (data.name || '') : '';
+  document.getElementById('endpt-form-type').value = data ? (data.type || 'API') : 'API';
+  document.getElementById('endpt-form-url').value = data ? (data.url || '') : '';
+  document.getElementById('endpt-form-auth').value = data ? (data.auth || '없음') : '없음';
+  document.getElementById('endpt-form-cycle').value = data ? (parseInt(data.cycle) || 5) : 5;
+  document.getElementById('endpt-form-mgr').value = data ? (data.mgr || '') : '';
+  document.getElementById('endpt-form-desc').value = '';
+  modal.style.display = 'flex';
+}
+
+function saveEndpt() {
+  var name = document.getElementById('endpt-form-name').value.trim();
+  if (!name) { showToast('엔드포인트명을 입력하세요.', 'error'); return; }
+  showToast('연계포인트가 저장되었습니다.', 'success');
+  closeEndptModal();
+}
+
+function closeEndptModal() {
+  var modal = document.getElementById('endpt-modal');
+  if (!modal) { return; }
+  modal.style.display = 'none';
+  var card = modal.querySelector('.modal-card');
+  if (card) { card.style.transform = ''; card.style.left = ''; card.style.top = ''; card.style.position = ''; card.style.margin = ''; }
+}
+
+// ===== 연계 로그 조회 (요구사항 002) =====
+
+var intgLogData = [
+  { time: '11:42:15', name: '내부 API 게이트웨이', dir: 'OUTBOUND', method: 'GET', url: '/api/v1/datasets?page=1&size=20', code: '200', ms: '35ms', reqSize: '0.2KB', rspnsSize: '24.5KB', stat: '성공', errMsg: '' },
+  { time: '11:42:10', name: 'MCP 연동', dir: 'OUTBOUND', method: 'POST', url: '/api/v2/tools/execute', code: '200', ms: '245ms', reqSize: '1.2KB', rspnsSize: '8.2KB', stat: '성공', errMsg: '' },
+  { time: '11:41:58', name: '외부 공공데이터 API', dir: 'INBOUND', method: 'GET', url: '/openapi/waterLevel?stationId=1018680', code: '200', ms: '152ms', reqSize: '0.1KB', rspnsSize: '3.8KB', stat: '성공', errMsg: '' },
+  { time: '11:41:42', name: 'SAP ERP 연계', dir: 'INBOUND', method: 'POST', url: '/sap/opu/odata/sap/HR_SYNC', code: '200', ms: '312ms', reqSize: '5.4KB', rspnsSize: '15.7KB', stat: '성공', errMsg: '' },
+  { time: '11:41:30', name: 'MCP 연동', dir: 'OUTBOUND', method: 'GET', url: '/api/v2/health', code: '200', ms: '12ms', reqSize: '0KB', rspnsSize: '0.3KB', stat: '성공', errMsg: '' },
+  { time: '11:40:55', name: 'MCP 연동', dir: 'OUTBOUND', method: 'POST', url: '/api/v2/tools/execute', code: '504', ms: '30,012ms', reqSize: '1.5KB', rspnsSize: '0KB', stat: '타임아웃', errMsg: 'Gateway Timeout: 원격 MCP 서버 응답 지연 (30초 초과). 자동 재시도 3회 후 최종 실패.' },
+  { time: '11:40:20', name: 'DMZ 외부 API', dir: 'OUTBOUND', method: 'GET', url: '/ext/partner/data/sync', code: '503', ms: '-', reqSize: '0.1KB', rspnsSize: '0KB', stat: '실패', errMsg: 'Service Unavailable: DMZ 프록시 서버 다운. 방화벽 정책 확인 필요.' },
+  { time: '11:39:58', name: '내부 API 게이트웨이', dir: 'OUTBOUND', method: 'POST', url: '/api/v1/pipelines/run', code: '200', ms: '198ms', reqSize: '2.8KB', rspnsSize: '6.4KB', stat: '성공', errMsg: '' },
+  { time: '11:39:45', name: 'Kafka 브로커', dir: 'INBOUND', method: '-', url: 'topic:water-level-raw (partition 0)', code: '-', ms: '3ms', reqSize: '0.5KB', rspnsSize: '-', stat: '성공', errMsg: '' },
+  { time: '11:39:30', name: 'SSO 인증 게이트웨이', dir: 'OUTBOUND', method: 'POST', url: '/auth/token/validate', code: '200', ms: '42ms', reqSize: '0.8KB', rspnsSize: '1.2KB', stat: '성공', errMsg: '' },
+  { time: '11:38:15', name: '기상청 API', dir: 'INBOUND', method: 'GET', url: '/weather/forecast?region=seoul&type=short', code: '200', ms: '185ms', reqSize: '0.1KB', rspnsSize: '12.4KB', stat: '성공', errMsg: '' },
+  { time: '11:37:50', name: '내부 API 게이트웨이', dir: 'OUTBOUND', method: 'PUT', url: '/api/v1/metadata/columns/TB_WATER_LEVEL', code: '200', ms: '68ms', reqSize: '3.2KB', rspnsSize: '1.1KB', stat: '성공', errMsg: '' },
+  { time: '11:37:20', name: 'SAP ERP 연계', dir: 'INBOUND', method: 'POST', url: '/sap/opu/odata/sap/ASSET_SYNC', code: '401', ms: '15ms', reqSize: '0.4KB', rspnsSize: '0.2KB', stat: '실패', errMsg: 'Unauthorized: SAP 인증 토큰 만료. 토큰 갱신 후 재시도 필요.' },
+  { time: '11:36:40', name: '외부 공공데이터 API', dir: 'INBOUND', method: 'GET', url: '/openapi/rainfall?stationId=1018680', code: '200', ms: '178ms', reqSize: '0.1KB', rspnsSize: '5.2KB', stat: '성공', errMsg: '' },
+  { time: '11:35:10', name: 'MCP 연동', dir: 'OUTBOUND', method: 'POST', url: '/api/v2/prompts/search', code: '200', ms: '89ms', reqSize: '0.6KB', rspnsSize: '12.1KB', stat: '성공', errMsg: '' }
+];
+
+function initIntgLogScreen() {
+  if (agGridInstances['ag-grid-sys-intg-log']) { return; }
+  var cols = [
+    { field: 'time', headerName: '시간', width: 85, cellStyle: { fontSize: '12px', color: '#888', fontFamily: 'monospace' } },
+    { field: 'name', headerName: '인터페이스', flex: 1, minWidth: 140, cellRenderer: function (p) { return '<strong>' + p.value + '</strong>'; } },
+    {
+      field: 'dir', headerName: '방향', width: 90, cellRenderer: function (p) {
+        var isIn = p.value === 'INBOUND';
+        return '<span style="background:' + (isIn ? '#e8f5e9' : '#e8f0fe') + ';color:' + (isIn ? '#2e7d32' : '#1967d2') + ';padding:1px 8px;border-radius:4px;font-size:11px;font-weight:600;">' + (isIn ? '↓ 수신' : '↑ 송신') + '</span>';
+      }
+    },
+    { field: 'method', headerName: '메서드', width: 72, cellRenderer: function (p) { var m = { 'GET': '#1967d2', 'POST': '#4caf50', 'PUT': '#ff9800', 'DELETE': '#f44336' }; return '<span style="color:' + (m[p.value] || '#888') + ';font-weight:600;font-size:11px;">' + p.value + '</span>'; } },
+    { field: 'url', headerName: '요청 URL', flex: 2, minWidth: 200, cellStyle: { fontFamily: 'monospace', fontSize: '11px' } },
+    { field: 'code', headerName: '응답코드', width: 80, cellRenderer: function (p) { var c = parseInt(p.value) >= 400 ? '#f44336' : '#333'; return '<span style="color:' + c + ';font-weight:' + (parseInt(p.value) >= 400 ? '700' : '400') + ';">' + p.value + '</span>'; } },
+    { field: 'ms', headerName: '응답시간', width: 90 },
+    {
+      field: 'stat', headerName: '결과', width: 85, cellRenderer: function (p) {
+        var m = { '성공': { icon: '✅', c: '#4caf50' }, '실패': { icon: '❌', c: '#f44336' }, '타임아웃': { icon: '⏱️', c: '#ff9800' } };
+        var s = m[p.value] || { icon: '', c: '#888' };
+        return '<span style="color:' + s.c + ';font-size:11px;">' + s.icon + ' ' + p.value + '</span>';
+      }
+    },
+    { field: 'detail', headerName: '상세', width: 60, sortable: false, filter: false, cellRenderer: function () { return '<button class="btn btn-outline" style="padding:1px 6px;font-size:11px;">보기</button>'; } }
+  ];
+  initAGGrid('ag-grid-sys-intg-log', cols, intgLogData, {
+    getRowStyle: function (p) {
+      if (p.data.stat === '실패') { return { background: '#fff5f5' }; }
+      if (p.data.stat === '타임아웃') { return { background: '#fffbe6' }; }
+      return null;
+    },
+    onCellClicked: function (e) {
+      if (e.colDef.field === 'detail') { openIntgLogDetail(e.data); }
+    }
+  });
+}
+
+function filterIntgLog() {
+  var grid = agGridInstances['ag-grid-sys-intg-log'];
+  if (!grid) { return; }
+  var endptVal = document.getElementById('intg-log-filter-endpt').value;
+  var dirVal = document.getElementById('intg-log-filter-dir').value;
+  var statVal = document.getElementById('intg-log-filter-stat').value;
+  var searchVal = document.getElementById('intg-log-filter-search').value.trim().toLowerCase();
+  grid.setGridOption('isExternalFilterPresent', function () { return endptVal !== '' || dirVal !== '' || statVal !== '' || searchVal !== ''; });
+  grid.setGridOption('doesExternalFilterPass', function (node) {
+    var d = node.data;
+    if (endptVal && d.name !== endptVal) { return false; }
+    if (dirVal && d.dir !== dirVal) { return false; }
+    if (statVal && d.stat !== statVal) { return false; }
+    if (searchVal && d.url.toLowerCase().indexOf(searchVal) < 0 && (d.errMsg || '').toLowerCase().indexOf(searchVal) < 0) { return false; }
+    return true;
+  });
+  grid.onFilterChanged();
+}
+
+function resetIntgLogFilter() {
+  document.getElementById('intg-log-filter-endpt').value = '';
+  document.getElementById('intg-log-filter-dir').value = '';
+  document.getElementById('intg-log-filter-stat').value = '';
+  document.getElementById('intg-log-filter-search').value = '';
+  var grid = agGridInstances['ag-grid-sys-intg-log'];
+  if (grid) {
+    grid.setGridOption('isExternalFilterPresent', function () { return false; });
+    grid.onFilterChanged();
+  }
+}
+
+function openIntgLogDetail(data) {
+  var modal = document.getElementById('intg-log-detail-modal');
+  if (!modal) { return; }
+  document.getElementById('ilog-dtl-name').textContent = data.name || '-';
+  document.getElementById('ilog-dtl-time').textContent = data.time || '-';
+  document.getElementById('ilog-dtl-dir').textContent = data.dir === 'INBOUND' ? '↓ Inbound (수신)' : '↑ Outbound (송신)';
+  document.getElementById('ilog-dtl-method').textContent = data.method || '-';
+  document.getElementById('ilog-dtl-url').textContent = data.url || '-';
+  document.getElementById('ilog-dtl-code').textContent = data.code || '-';
+  document.getElementById('ilog-dtl-ms').textContent = data.ms || '-';
+  document.getElementById('ilog-dtl-req-size').textContent = data.reqSize || '-';
+  document.getElementById('ilog-dtl-rspns-size').textContent = data.rspnsSize || '-';
+  document.getElementById('ilog-dtl-stat').textContent = data.stat || '-';
+  document.getElementById('ilog-dtl-at').textContent = '2026-03-19 ' + (data.time || '');
+  var errArea = document.getElementById('ilog-dtl-err-area');
+  if (data.errMsg) {
+    errArea.style.display = 'block';
+    document.getElementById('ilog-dtl-err').textContent = data.errMsg;
+  } else {
+    errArea.style.display = 'none';
+  }
+  modal.style.display = 'flex';
+}
+
+function closeIntgLogDetail() {
+  var modal = document.getElementById('intg-log-detail-modal');
   if (!modal) { return; }
   modal.style.display = 'none';
   var card = modal.querySelector('.modal-card');

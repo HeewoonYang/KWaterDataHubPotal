@@ -175,6 +175,13 @@
 | 161 | 인증 | AUTH | AUTHENTICATION | N | 인증 방식 |
 | 162 | 배치크기 | BATCH_SZ | BATCH SIZE | N | 배치 처리 단위 |
 | 163 | 용도 | PURPS | PURPOSE | N | 연결 용도 (소스/목적) |
+| 164 | 인터페이스 | INTFC | INTERFACE | N | 연계 인터페이스 |
+| 165 | 점검 | CHK | CHECK | N | 상태 점검 |
+| 166 | 응답 | RSPNS | RESPONSE | N | HTTP 응답 |
+| 167 | 메서드 | MTHD | METHOD | N | HTTP 메서드 |
+| 168 | 방향 | DRCTN | DIRECTION | N | 데이터 송수신 방향 |
+| 169 | 요청 | REQ | REQUEST | N | HTTP 요청 |
+| 170 | 관리자명 | MGR_NM | MANAGER NAME | Y | 담당자 이름 |
 
 ## 보정 단어 (기존 표준사전 약어 수정 권고)
 

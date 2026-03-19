@@ -1707,6 +1707,79 @@ CREATE INDEX idx_repl_hist_stat  ON bkup_repl_hist (stat);
 
 COMMENT ON TABLE bkup_repl_hist IS '백업 복제·이관 이력, 증분/전체 복제 실행 결과';
 
+-- ============================================================================
+-- 연계 인터페이스 관리
+-- ============================================================================
+
+-- 연계 엔드포인트 (연계포인트 등록·관리)
+CREATE TABLE intfc_endpt (
+    endpt_id        SERIAL          PRIMARY KEY,
+    endpt_nm        VARCHAR(200)    NOT NULL,
+    endpt_ty        VARCHAR(20)     NOT NULL CHECK (endpt_ty IN ('API','DB','MQ','FILE','SSO','MCP')),
+    endpt_url       VARCHAR(500),
+    auth_mthd       VARCHAR(50),
+    stat            entity_status   NOT NULL DEFAULT 'active',
+    chk_cycle_min   INT             DEFAULT 5,
+    last_chk_at     TIMESTAMPTZ,
+    last_chk_rslt   VARCHAR(20)     CHECK (last_chk_rslt IN ('정상','장애','타임아웃','오류')),
+    mgr_nm          VARCHAR(100),
+    desc_txt        TEXT,
+    crtd_at         TIMESTAMPTZ     DEFAULT now(),
+    crtd_by         UUID,
+    updtd_at        TIMESTAMPTZ     DEFAULT now(),
+    updtd_by        UUID
+);
+
+CREATE INDEX idx_intfc_endpt_ty   ON intfc_endpt (endpt_ty);
+CREATE INDEX idx_intfc_endpt_stat ON intfc_endpt (stat);
+
+COMMENT ON TABLE intfc_endpt IS '연계 엔드포인트 등록 정보 (API, DB, MQ, FILE, SSO, MCP)';
+
+-- 연계 점검 이력
+CREATE TABLE intfc_chk_hist (
+    chk_id          BIGSERIAL       PRIMARY KEY,
+    endpt_id        INT             NOT NULL REFERENCES intfc_endpt(endpt_id) ON DELETE CASCADE,
+    chk_at          TIMESTAMPTZ     NOT NULL DEFAULT now(),
+    chk_rslt        VARCHAR(20)     NOT NULL CHECK (chk_rslt IN ('정상','장애','타임아웃','오류')),
+    rspns_ms        INT,
+    err_msg         TEXT,
+    crtd_at         TIMESTAMPTZ     DEFAULT now(),
+    crtd_by         UUID,
+    updtd_at        TIMESTAMPTZ     DEFAULT now(),
+    updtd_by        UUID
+);
+
+CREATE INDEX idx_intfc_chk_endpt  ON intfc_chk_hist (endpt_id, chk_at DESC);
+CREATE INDEX idx_intfc_chk_rslt   ON intfc_chk_hist (chk_rslt);
+
+COMMENT ON TABLE intfc_chk_hist IS '연계 엔드포인트 상태 점검 이력';
+
+-- 연계 로그 (송수신 이력)
+CREATE TABLE intfc_log (
+    log_id          BIGSERIAL       PRIMARY KEY,
+    endpt_id        INT             NOT NULL REFERENCES intfc_endpt(endpt_id) ON DELETE CASCADE,
+    log_at          TIMESTAMPTZ     NOT NULL DEFAULT now(),
+    drctn           VARCHAR(10)     NOT NULL CHECK (drctn IN ('INBOUND','OUTBOUND')),
+    http_mthd       VARCHAR(10),
+    req_url         VARCHAR(500),
+    rspns_cd        VARCHAR(10),
+    rspns_ms        INT,
+    req_sz_bytes    BIGINT,
+    rspns_sz_bytes  BIGINT,
+    stat            VARCHAR(20)     NOT NULL CHECK (stat IN ('성공','실패','타임아웃')),
+    err_msg         TEXT,
+    crtd_at         TIMESTAMPTZ     DEFAULT now(),
+    crtd_by         UUID,
+    updtd_at        TIMESTAMPTZ     DEFAULT now(),
+    updtd_by        UUID
+);
+
+CREATE INDEX idx_intfc_log_endpt  ON intfc_log (endpt_id, log_at DESC);
+CREATE INDEX idx_intfc_log_stat   ON intfc_log (stat);
+CREATE INDEX idx_intfc_log_at     ON intfc_log (log_at DESC);
+
+COMMENT ON TABLE intfc_log IS '연계 데이터 송수신 로그 (성공/실패/타임아웃 이력)';
+
 
 -- ============================================================================
 -- 12. 초기 데이터
